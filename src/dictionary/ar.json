@@ -1,0 +1,11 @@
+{
+  "Index": {
+    "boilerplateName": "قالب i18n لـ Next.js",
+    "title": "مرحباً بك في مطعمنا"
+  },
+  "Metadata": {
+    "title": "قالب Next.js للتدويل - مطعم",
+    "description": "قالب انطلاق قوي للتطبيقات متعددة اللغات.",
+    "keywords": "Next.js, i18n, مطعم"
+  }
+}
