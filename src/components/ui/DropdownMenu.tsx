@@ -375,7 +375,7 @@ const DropdownMenuItem = React.forwardRef<
                     disabled && 'pointer-events-none opacity-50',
                     '[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4',
                     '[&_svg:not([class*="text-"])]:text-muted-foreground',
-                    variant === 'destructive' && '[&_svg]:!text-destructive',
+                    variant === 'destructive' && '[&_svg]:text-destructive!',
                     className,
                 )}
                 {...props}>
@@ -694,7 +694,7 @@ const DropdownMenuSubContent = React.forwardRef<
             }}
             className={cn(
                 'bg-popover text-popover-foreground animate-in fade-in-0 zoom-in-95 slide-in-from-left-1',
-                'min-w-[8rem] overflow-hidden rounded-md border p-1 shadow-lg',
+                'min-w-32 overflow-hidden rounded-md border p-1 shadow-lg',
                 className,
             )}
             onClick={(e) => e.stopPropagation()}
