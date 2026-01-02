@@ -1,5 +1,5 @@
 import { setupLocale } from '@/i18n/setup-locale';
-import LandingPage from '@/components/pages/LandingPage';
+import LandingPage from '@/components/pages/landing-page/LandingPage';
 
 export default async function HomePage({
     params,
