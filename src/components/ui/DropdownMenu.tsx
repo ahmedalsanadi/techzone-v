@@ -219,35 +219,26 @@ const DropdownMenuContent = React.forwardRef<
             if (open && triggerRef?.current && internalRef.current) {
                 const triggerRect = triggerRef.current.getBoundingClientRect();
                 const contentRect = internalRef.current.getBoundingClientRect();
-                const scrollY = window.scrollY;
-                const scrollX = window.scrollX;
 
                 let top = 0;
                 let left = 0;
 
                 switch (side) {
                     case 'top':
-                        top =
-                            triggerRect.top +
-                            scrollY -
-                            contentRect.height -
-                            sideOffset;
+                        top = triggerRect.top - contentRect.height - sideOffset;
                         break;
                     case 'bottom':
                     default:
-                        top = triggerRect.bottom + scrollY + sideOffset;
+                        top = triggerRect.bottom + sideOffset;
                         break;
                     case 'left':
                         left =
-                            triggerRect.left +
-                            scrollX -
-                            contentRect.width -
-                            sideOffset;
-                        top = triggerRect.top + scrollY;
+                            triggerRect.left - contentRect.width - sideOffset;
+                        top = triggerRect.top;
                         break;
                     case 'right':
-                        left = triggerRect.right + scrollX + sideOffset;
-                        top = triggerRect.top + scrollY;
+                        left = triggerRect.right + sideOffset;
+                        top = triggerRect.top;
                         break;
                 }
 
@@ -255,15 +246,14 @@ const DropdownMenuContent = React.forwardRef<
                     case 'center':
                         left =
                             triggerRect.left +
-                            scrollX +
                             (triggerRect.width - contentRect.width) / 2;
                         break;
                     case 'end':
-                        left = triggerRect.right + scrollX - contentRect.width;
+                        left = triggerRect.right - contentRect.width;
                         break;
                     case 'start':
                     default:
-                        left = triggerRect.left + scrollX;
+                        left = triggerRect.left;
                         break;
                 }
 
@@ -271,17 +261,17 @@ const DropdownMenuContent = React.forwardRef<
                 const viewportWidth = window.innerWidth;
                 const viewportHeight = window.innerHeight;
 
-                if (left + contentRect.width > viewportWidth + scrollX) {
-                    left = viewportWidth + scrollX - contentRect.width - 8;
+                if (left + contentRect.width > viewportWidth) {
+                    left = viewportWidth - contentRect.width - 8;
                 }
-                if (left < scrollX) {
-                    left = scrollX + 8;
+                if (left < 0) {
+                    left = 8;
                 }
-                if (top + contentRect.height > viewportHeight + scrollY) {
-                    top = viewportHeight + scrollY - contentRect.height - 8;
+                if (top + contentRect.height > viewportHeight) {
+                    top = viewportHeight - contentRect.height - 8;
                 }
-                if (top < scrollY) {
-                    top = scrollY + 8;
+                if (top < 0) {
+                    top = 8;
                 }
 
                 setPosition({ top, left });
@@ -296,10 +286,10 @@ const DropdownMenuContent = React.forwardRef<
                 data-slot="dropdown-menu-content"
                 data-state={open ? 'open' : 'closed'}
                 style={{
-                    position: 'absolute',
+                    position: 'fixed',
                     top: `${position.top}px`,
                     left: `${position.left}px`,
-                    zIndex: 50,
+                    zIndex: 100,
                 }}
                 className={cn(
                     'bg-popover text-popover-foreground animate-in fade-in-0 zoom-in-95',
@@ -687,10 +677,10 @@ const DropdownMenuSubContent = React.forwardRef<
             ref={combinedRef}
             data-slot="dropdown-menu-sub-content"
             style={{
-                position: 'absolute',
+                position: 'fixed',
                 top: `${position.top}px`,
                 left: `${position.left}px`,
-                zIndex: 50,
+                zIndex: 100,
             }}
             className={cn(
                 'bg-popover text-popover-foreground animate-in fade-in-0 zoom-in-95 slide-in-from-left-1',
