@@ -2,7 +2,7 @@
 
 import { useLocale } from 'next-intl';
 import { usePathname, useRouter } from '@/i18n/navigation';
-import { Button } from '@/components/ui/Button';
+import { Globe } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -16,31 +16,20 @@ const LanguageSwitcher = () => {
     const locale = useLocale();
 
     const changeLanguage = (newLanguage: string) => {
-        // Check if the language is actually changing to avoid unnecessary re-renders/pushes
         if (newLanguage === locale) return;
-
         document.cookie = `NEXT_LOCALE=${newLanguage}; path=/;`;
-
-        // next-intl's useRouter.push handles the locale prefixing automatically
-        // if configured in navigation.ts
         router.push(pathname, { locale: newLanguage });
         router.refresh();
-    };
-
-    const languageLabels = {
-        ar: 'العربية',
-        en: 'English',
     };
 
     return (
         <DropdownMenu dir={locale === 'ar' ? 'rtl' : 'ltr'}>
             <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                    {languageLabels[locale as keyof typeof languageLabels] ||
-                        languageLabels.en}
-                </Button>
+                <button className="relative p-2 text-white hover:bg-white/10 rounded-full transition-colors outline-none cursor-pointer">
+                    <Globe size={24} strokeWidth={1.5} />
+                </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="center" className="min-w-[120px]">
                 <DropdownMenuItem onClick={() => changeLanguage('en')}>
                     English
                 </DropdownMenuItem>
