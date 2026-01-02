@@ -281,7 +281,7 @@ export default function LandingPage() {
                         <div className="content-stretch flex flex-col items-start px-4 sm:px-8 md:px-12 lg:px-16 xl:px-24 py-8 md:py-[32px] relative w-full">
                             <div className="h-[200px] sm:h-[300px] md:h-[385px] lg:h-[450px] relative rounded-[24px] shrink-0 w-full shadow-2xl overflow-hidden group">
                                 <Image
-                                    src="/svgs/image-19-1.png"
+                                    src="/svgs/hero.svg"
                                     alt="Super Delicious Burger"
                                     fill
                                     className="object-cover group-hover:scale-105 transition-transform duration-1000"
