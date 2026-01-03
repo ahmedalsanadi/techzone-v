@@ -3,6 +3,7 @@
 import { useUiStore } from '@/store/use-ui-store';
 import Navbar from './Navbar';
 import SubHeader from './SubHeader';
+import Footer from './Footer';
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 
@@ -20,7 +21,7 @@ export default function PageContainer({
     }, [pathname, setMobileMenuOpen]);
 
     return (
-        <main className="min-h-screen">
+        <main className="min-h-screen flex flex-col">
             {/*-------- Red bg header ----------- */}
             <nav
                 className={`bg-libero-red transition-all duration-300 ${
@@ -31,7 +32,9 @@ export default function PageContainer({
                     {showSubHeader && <SubHeader />}
                 </div>
             </nav>
-            <div className="container mx-auto px-4">{children}</div>
+            <div className="container mx-auto px-4 flex-1">{children}</div>
+
+            <Footer />
         </main>
     );
 }
