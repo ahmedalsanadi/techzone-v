@@ -1,21 +1,24 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useUiStore } from '@/store/use-ui-store';
+// import { useUiStore } from '@/store/use-ui-store';
+import HeroSlider from './HeroSlider';
 
 export default function LandingPage() {
-    const { setShowSubHeader } = useUiStore();
+    // const { setShowSubHeader } = useUiStore();
 
-    // Ensure SubHeader is shown on landing page
-    useEffect(() => {
-        setShowSubHeader(true);
-        // Optional: return () => setShowSubHeader(false); if you want it hidden by default on other pages
-    }, [setShowSubHeader]);
+    // // Ensure SubHeader is shown on landing page
+    // useEffect(() => {
+    //     setShowSubHeader(true);
+    // }, [setShowSubHeader]);
 
     return (
-        <div className="py-8">
-            {/* Landing page content goes here */}
-            <h1 className="text-2xl font-bold">Welcome to Fasto</h1>
+        <div className="pb-12 bg-white">
+            <HeroSlider />
+
+            <div className="container mx-auto px-4 mt-8">
+                {/* Other landing page content will go here */}
+            </div>
         </div>
     );
 }
