@@ -30,24 +30,24 @@ const UserMenu = () => {
                         <div className="size-[30px] lg:size-[32px] bg-gray-50 rounded-full flex items-center justify-center border border-gray-100 shadow-xs">
                             <User
                                 size={16}
-                                className="text-gray-500"
+                                className="text-libero-red"
                                 strokeWidth={2}
                             />
                         </div>
                         <div className="absolute -bottom-0.5 -right-0.5 size-3.5 bg-white rounded-full border border-gray-100 flex items-center justify-center shadow-xs">
                             <ChevronDown
                                 size={10}
-                                className="text-gray-400"
+                                className="text-libero-red"
                                 strokeWidth={3}
                             />
                         </div>
                     </div>
-                    <span className="text-gray-700 font-bold text-[13px] whitespace-nowrap hidden lg:inline mx-1">
+                    <span className="text-libero-red font-bold text-[13px] whitespace-nowrap hidden lg:inline mx-1">
                         {t('username')}
                     </span>
                     <ChevronDown
                         size={14}
-                        className="text-gray-400 hidden lg:inline"
+                        className="text-libero-red hidden lg:inline"
                     />
                 </button>
             </DropdownMenuTrigger>
@@ -60,7 +60,7 @@ const UserMenu = () => {
                     <div className="size-14 bg-gray-50 rounded-full flex items-center justify-center border border-gray-100">
                         <User
                             size={28}
-                            className="text-gray-600"
+                            className="text-libero-red"
                             strokeWidth={1.5}
                         />
                     </div>
