@@ -1,25 +1,21 @@
 'use client';
 
-import Navbar from '@/components/layouts/Navbar';
-import SubHeader from '@/components/layouts/SubHeader';
-import Image from 'next/image';
-import Link from 'next/link';
+import { useEffect } from 'react';
+import { useUiStore } from '@/store/use-ui-store';
 
 export default function LandingPage() {
+    const { setShowSubHeader } = useUiStore();
+
+    // Ensure SubHeader is shown on landing page
+    useEffect(() => {
+        setShowSubHeader(true);
+        // Optional: return () => setShowSubHeader(false); if you want it hidden by default on other pages
+    }, [setShowSubHeader]);
 
     return (
-        <main>
-            {/*-------- Red bg header ----------- */}
-            <nav className="bg-libero-red h-[140px] ">
-                <div className="relative container mx-auto p-4">
-                    {/*-- Navbar---- */}
-                     <Navbar />  
-
-                     <SubHeader />
-                </div>
-            </nav>
-        </main>
+        <div className="py-8">
+            {/* Landing page content goes here */}
+            <h1 className="text-2xl font-bold">Welcome to Fasto</h1>
+        </div>
     );
 }
-
-
