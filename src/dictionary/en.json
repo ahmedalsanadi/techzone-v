@@ -1,11 +1,33 @@
 {
   "Index": {
-    "boilerplateName": "Next.js i18n Template",
-    "title": "Welcome to our Restaurant"
+    "boilerplateName": "Fasto Template",
+    "title": "Welcome to Fasto"
   },
   "Metadata": {
-    "title": "Next.js i18n Template - Multilingual Starter",
-    "description": "A powerful multilingual starter template.",
-    "keywords": "Next.js, i18n, starter"
+    "title": "Fasto - Your Favorite Restaurant",
+    "description": "Fasto is a modern restaurant landing page template.",
+    "keywords": "Next.js, i18n, restaurant, Fasto"
+  },
+  "Navbar": {
+    "searchPlaceholder": "Search for anything ...",
+    "nav": {
+      "home": "Home",
+      "categories": "Categories",
+      "branches": "Branches",
+      "offers": "Offers",
+      "my-orders": "My Orders"
+    }
+  },
+  "UserMenu": {
+    "username": "Fahd Abdullah",
+    "profile": "Profile",
+    "myOrders": "My Orders",
+    "logout": "Logout"
+  },
+  "Cart": {
+    "empty": "Your shopping cart is empty"
+  },
+  "Notifications": {
+    "empty": "No new notifications"
   }
 }

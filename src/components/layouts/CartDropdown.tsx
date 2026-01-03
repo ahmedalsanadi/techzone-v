@@ -1,14 +1,16 @@
 'use client';
 
 import { ShoppingCart } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import {
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuItem,
     DropdownMenuTrigger,
 } from '../ui/DropdownMenu';
 
 const CartDropdown = () => {
+    const t = useTranslations('Cart');
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -22,7 +24,7 @@ const CartDropdown = () => {
             <DropdownMenuContent align="center" className="min-w-[200px] p-4">
                 <div className="text-center py-4">
                     <p className="text-sm font-medium text-muted-foreground">
-                        سلة المشتريات فارغة
+                        {t('empty')}
                     </p>
                 </div>
             </DropdownMenuContent>

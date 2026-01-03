@@ -13,8 +13,12 @@ import CartDropdown from './CartDropdown';
 import NotificationDropdown from './NotificationDropdown';
 import LanguageSwitcher from './LanguageSwitcher';
 
+import { useTranslations } from 'next-intl';
+
 export default function Navbar() {
     const pathname = usePathname();
+    const t = useTranslations('Navbar');
+
     return (
         <div className="flex items-center justify-between">
             {/*-------- logo----------- */}
@@ -31,7 +35,7 @@ export default function Navbar() {
                     return (
                         <NavItem
                             key={item.id}
-                            label={item.label}
+                            label={t(`nav.${item.id}`)}
                             href={item.href}
                             icon={item.icon}
                             isActive={isActive}
@@ -45,7 +49,7 @@ export default function Navbar() {
             <div className="hidden lg:flex items-center mt-2">
                 <Input
                     type="text"
-                    placeholder="اكتب شيء للبحث عنه ..."
+                    placeholder={t('searchPlaceholder')}
                     inputSize="md"
                     startIcon={
                         <Search

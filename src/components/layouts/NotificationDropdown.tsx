@@ -1,14 +1,16 @@
 'use client';
 
 import { Bell } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import {
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuItem,
     DropdownMenuTrigger,
 } from '../ui/DropdownMenu';
 
 const NotificationDropdown = () => {
+    const t = useTranslations('Notifications');
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -22,7 +24,7 @@ const NotificationDropdown = () => {
             <DropdownMenuContent align="center" className="min-w-[200px] p-4">
                 <div className="text-center py-4">
                     <p className="text-sm font-medium text-muted-foreground">
-                        لا توجد إشعارات جديدة
+                        {t('empty')}
                     </p>
                 </div>
             </DropdownMenuContent>

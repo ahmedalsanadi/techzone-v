@@ -1,11 +1,33 @@
 {
   "Index": {
-    "boilerplateName": "قالب i18n لـ Next.js",
-    "title": "مرحباً بك في مطعمنا"
+    "boilerplateName": "قالب Fasto",
+    "title": "مرحباً بك في Fasto"
   },
   "Metadata": {
-    "title": "قالب Next.js للتدويل - مطعم",
-    "description": "قالب انطلاق قوي للتطبيقات متعددة اللغات.",
-    "keywords": "Next.js, i18n, مطعم"
+    "title": "Fasto - مطعمك المفضل",
+    "description": "Fasto هو قالب لصفحة هبوط لمطعم عصري.",
+    "keywords": "Next.js, i18n, مطعم, Fasto"
+  },
+  "Navbar": {
+    "searchPlaceholder": "اكتب شيء للبحث عنه ...",
+    "nav": {
+      "home": "الرئيسية",
+      "categories": "الأقسام",
+      "branches": "الفروع",
+      "offers": "العروض",
+      "my-orders": "طلباتي"
+    }
+  },
+  "UserMenu": {
+    "username": "فهد عبدالله",
+    "profile": "الملف الشخصي",
+    "myOrders": "طلباتي",
+    "logout": "تسجيل الخروج"
+  },
+  "Cart": {
+    "empty": "سلة المشتريات فارغة"
+  },
+  "Notifications": {
+    "empty": "لا توجد إشعارات جديدة"
   }
 }
