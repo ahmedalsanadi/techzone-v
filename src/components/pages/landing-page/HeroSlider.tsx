@@ -18,7 +18,7 @@ const slides = [
         title: 'BURGER',
         deal: "Today's Best Deal",
         discount: '50% OFF',
-        image: '/images/svgs/hero.svg',
+        image: '/images/images/burger.webp',
         bgColor: 'bg-[#212529]', // Dark charcoal background
     },
     {
@@ -27,7 +27,7 @@ const slides = [
         title: 'PIZZA',
         deal: 'Weekend Special',
         discount: '30% OFF',
-        image: '/images/svgs/hero.svg', // Reusing for now or could be another SVG
+        image: '/images/images/pizza-hero.webp', // Reusing for now or could be another SVG
         bgColor: 'bg-[#1a1a1a]',
     },
 ];
