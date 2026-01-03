@@ -23,7 +23,7 @@ export default function Navbar() {
     const { toggleMobileMenu } = useUiStore();
 
     return (
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
                 {/*-------- Hamburger (Mobile Only) ----------- */}
                 <button
@@ -39,7 +39,7 @@ export default function Navbar() {
                 />
             </div>
 
-            {/*-------- Navlist (Desktop Only) ----------- */}
+            {/*-------- Navlist----------- */}
             <div className="hidden lg:flex items-center gap-2 pt-1 text-nowrap">
                 {NAV_ITEMS.map((item) => {
                     const isActive =
@@ -60,7 +60,7 @@ export default function Navbar() {
                 })}
             </div>
 
-            {/*-------- Search (Desktop Only) ----------- */}
+            {/*-------- Search----------- */}
             <div className="hidden lg:flex items-center mt-2">
                 <Input
                     type="text"
@@ -77,7 +77,7 @@ export default function Navbar() {
                 />
             </div>
 
-            <div className="relative flex items-center gap-1 sm:gap-2 h-8 flex-shrink-0">
+            <div className="relative flex items-center gap-2 h-8">
                 <LanguageSwitcher />
                 <NotificationDropdown />
                 <CartDropdown />
