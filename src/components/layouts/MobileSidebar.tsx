@@ -9,6 +9,9 @@ import NavItem from './NavItem';
 import { Input } from '../ui/Input';
 import Logo from './Logo';
 
+import NotificationDropdown from './NotificationDropdown';
+import LanguageSwitcher from './LanguageSwitcher';
+
 export default function MobileSidebar() {
     const { isMobileMenuOpen, setMobileMenuOpen } = useUiStore();
     const t = useTranslations('Navbar');
@@ -22,7 +25,7 @@ export default function MobileSidebar() {
         <div className="fixed inset-0 z-50 lg:hidden">
             {/* Overlay */}
             <div
-                className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
+                className="absolute inset-0 bg-black/40 backdrop-blur-[2px] transition-opacity"
                 onClick={() => setMobileMenuOpen(false)}
             />
 
@@ -32,29 +35,36 @@ export default function MobileSidebar() {
                     isArabic ? 'right-0' : 'left-0'
                 } h-full w-[280px] bg-libero-red shadow-2xl transition-transform duration-300 ease-in-out flex flex-col`}>
                 <div className="p-4 flex items-center justify-between border-b border-white/10 bg-libero-red text-white">
-                    <Logo
-                        brandName="Fasto"
-                        brandLogo="/images/svgs/logo-icon.svg"
-                    />
-                    <button
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="p-2 hover:bg-white/10 rounded-full transition-colors">
-                        <X size={24} />
-                    </button>
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="p-1.5 hover:bg-white/10 rounded-full transition-colors">
+                            <X size={24} />
+                        </button>
+                        <Logo
+                            brandName="Fasto"
+                            brandLogo="/images/svgs/logo-icon.svg"
+                        />
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                        <LanguageSwitcher />
+                        <NotificationDropdown />
+                    </div>
                 </div>
 
                 <div className="p-4 flex flex-col gap-4 flex-1 overflow-y-auto">
                     {/* Search in Sidebar */}
-                    <div className="mb-4">
+                    <div className="mb-2">
                         <Input
                             type="text"
                             placeholder={t('searchPlaceholder')}
                             inputSize="md"
                             startIcon={
-                                <Search size={20} className="text-white/60" />
+                                <Search size={20} className="text-white/40" />
                             }
-                            containerClassName="w-full bg-white/10 border-white/20 focus-within:ring-white/30"
-                            className="text-white placeholder:text-white/60"
+                            containerClassName="w-full bg-white/5 border-white/10 focus-within:bg-white/10 focus-within:ring-white/20"
+                            className="text-white placeholder:text-white/40"
                         />
                     </div>
 
