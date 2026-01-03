@@ -29,6 +29,8 @@ const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
 // Extract domain to a constant to avoid repetition
 const DOMAIN = siteConfig.url;
 
+import PageContainer from '@/components/layouts/PageContainer';
+
 export default async function RootLayout({
     children,
     params,
@@ -73,11 +75,11 @@ export default async function RootLayout({
                 suppressHydrationWarning>
                 <ThemeProvider
                     attribute="class"
-                    defaultTheme="dark"
+                    defaultTheme="light"
                     enableSystem
                     disableTransitionOnChange>
                     <NextIntlClientProvider locale={locale} messages={messages}>
-                        {children}
+                        <PageContainer>{children}</PageContainer>
                     </NextIntlClientProvider>
                 </ThemeProvider>
                 <Analytics />

@@ -1,7 +1,7 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Search } from 'lucide-react';
+import { Search, Menu } from 'lucide-react';
 import { NAV_ITEMS } from '@/config/navigation';
 import Logo from './Logo';
 import { usePathname } from 'next/navigation';
@@ -14,18 +14,33 @@ import NotificationDropdown from './NotificationDropdown';
 import LanguageSwitcher from './LanguageSwitcher';
 
 import { useTranslations } from 'next-intl';
+import { useUiStore } from '@/store/use-ui-store';
+import MobileSidebar from './MobileSidebar';
 
 export default function Navbar() {
     const pathname = usePathname();
     const t = useTranslations('Navbar');
+    const { toggleMobileMenu } = useUiStore();
 
     return (
-        <div className="flex items-center justify-between">
-            {/*-------- logo----------- */}
-            <Logo brandName="Fasto" brandLogo="/images/svgs/logo-icon.svg" />
+        <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+                {/*-------- Hamburger (Mobile Only) ----------- */}
+                <button
+                    onClick={toggleMobileMenu}
+                    className="lg:hidden p-2 text-white hover:bg-white/10 rounded-full transition-colors">
+                    <Menu size={24} strokeWidth={1.5} />
+                </button>
 
-            {/*-------- Navlist----------- */}
-            <div className="flex items-center gap-2 pt-1">
+                {/*-------- logo----------- */}
+                <Logo
+                    brandName="Fasto"
+                    brandLogo="/images/svgs/logo-icon.svg"
+                />
+            </div>
+
+            {/*-------- Navlist (Desktop Only) ----------- */}
+            <div className="hidden lg:flex items-center gap-2 pt-1 text-nowrap">
                 {NAV_ITEMS.map((item) => {
                     const isActive =
                         item.href === '/'
@@ -45,7 +60,7 @@ export default function Navbar() {
                 })}
             </div>
 
-            {/*-------- Search----------- */}
+            {/*-------- Search (Desktop Only) ----------- */}
             <div className="hidden lg:flex items-center mt-2">
                 <Input
                     type="text"
@@ -62,12 +77,15 @@ export default function Navbar() {
                 />
             </div>
 
-            <div className="relative flex items-center gap-2 h-8">
+            <div className="relative flex items-center gap-1 sm:gap-2 h-8 flex-shrink-0">
                 <LanguageSwitcher />
                 <NotificationDropdown />
                 <CartDropdown />
                 <UserMenu />
             </div>
+
+            {/*-------- Mobile Sidebar ----------- */}
+            <MobileSidebar />
         </div>
     );
 }
