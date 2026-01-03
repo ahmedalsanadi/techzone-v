@@ -65,7 +65,7 @@ const PromotionsSection = () => {
                 {products.map((product) => (
                     <div
                         key={product.id}
-                        className="bg-white border border-gray-100 rounded-xl md:rounded-[2.5rem] p-4 md:p-6 relative group shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-500 flex flex-col items-center">
+                        className="bg-white border border-gray-100 rounded-xl md:rounded-3xl p-4 md:p-6 relative group shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-500 flex flex-col items-center">
                         {/* Wishlist Button */}
                         <button className="absolute top-4 right-4 w-9 h-9 md:w-10 md:h-10 bg-white shadow-sm rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:scale-110 transition-all z-10 border border-gray-50">
                             <Heart className="w-5 h-5 md:w-6 md:h-6" />
