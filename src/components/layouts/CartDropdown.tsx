@@ -1,3 +1,4 @@
+//src/components/layouts/CartDropdown.tsx
 'use client';
 
 import { ShoppingCart } from 'lucide-react';

@@ -1,3 +1,4 @@
+//src/components/layouts/NotificationDropdown.tsx
 'use client';
 
 import { Bell } from 'lucide-react';
