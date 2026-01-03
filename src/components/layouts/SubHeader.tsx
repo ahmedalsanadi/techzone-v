@@ -82,8 +82,8 @@ export default function SubHeader() {
                             key={type.id}
                             onClick={() => setActiveType(type.id)}
                             className={`
-                                flex-1 h-10 rounded-lg text-sm font-bold 
-                                transition-all duration-200 cursor-pointer
+                                flex-1 h-10 rounded-lg text-xs font-bold 
+                                transition-all duration-200 cursor-pointer 
                                 ${
                                     activeType === type.id
                                         ? 'bg-white text-libero-red shadow-sm'
