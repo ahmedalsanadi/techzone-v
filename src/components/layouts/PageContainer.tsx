@@ -24,7 +24,7 @@ export default function PageContainer({
             {/*-------- Red bg header ----------- */}
             <nav
                 className={`bg-libero-red transition-all duration-300 ${
-                    showSubHeader ? 'h-[140px] lg:h-[140px]' : 'h-[75px]'
+                    showSubHeader ? 'h-[190px] lg:h-[140px]' : 'h-[75px]'
                 } flex flex-col`}>
                 <div className="container mx-auto px-4 py-4 flex-1 flex flex-col">
                     <Navbar />
