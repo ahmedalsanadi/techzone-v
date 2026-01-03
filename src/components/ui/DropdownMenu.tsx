@@ -13,8 +13,8 @@ const cn = (...classes: (string | undefined | boolean)[]): string => {
 interface DropdownContextType {
     open: boolean;
     setOpen: (open: boolean) => void;
-    triggerRef: React.RefObject<HTMLElement> | null;
-    contentRef: React.RefObject<HTMLDivElement> | null;
+    triggerRef: React.RefObject<HTMLElement | null> | null;
+    contentRef: React.RefObject<HTMLDivElement | null> | null;
 }
 
 const DropdownContext = React.createContext<DropdownContextType>({
@@ -111,7 +111,7 @@ const DropdownMenuTrigger = ({
     const { open, setOpen, triggerRef } = React.useContext(DropdownContext);
     const childRefStore = useRef<React.Ref<HTMLElement> | undefined>(undefined);
 
-    const handleClick = (e: React.MouseEvent) => {
+    const handleClick = (e: React.MouseEvent<HTMLElement>) => {
         e.stopPropagation();
         setOpen(!open);
     };
@@ -144,7 +144,7 @@ const DropdownMenuTrigger = ({
 
         return React.cloneElement(child, {
             ref: mergedRefCallback,
-            onClick: (e: React.MouseEvent) => {
+            onClick: (e: React.MouseEvent<HTMLElement>) => {
                 child.props.onClick?.(e);
                 handleClick(e);
             },
@@ -156,7 +156,7 @@ const DropdownMenuTrigger = ({
 
     return (
         <button
-            ref={triggerRef as React.RefObject<HTMLButtonElement>}
+            ref={triggerRef as React.RefObject<HTMLButtonElement | null>}
             onClick={handleClick}
             aria-expanded={open}
             data-state={open ? 'open' : 'closed'}
@@ -202,12 +202,13 @@ const DropdownMenuContent = React.forwardRef<
                 if (typeof ref === 'function') {
                     ref(node);
                 } else if (ref) {
-                    (ref as React.MutableRefObject<HTMLDivElement>).current =
-                        node;
+                    (
+                        ref as React.MutableRefObject<HTMLDivElement | null>
+                    ).current = node;
                 }
                 if (contentRef) {
                     (
-                        contentRef as React.MutableRefObject<HTMLDivElement>
+                        contentRef as React.MutableRefObject<HTMLDivElement | null>
                     ).current = node;
                 }
             },
@@ -342,7 +343,7 @@ const DropdownMenuItem = React.forwardRef<
     ) => {
         const { setOpen } = React.useContext(DropdownContext);
 
-        const handleClick = (e: React.MouseEvent) => {
+        const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
             if (disabled) return;
             props.onClick?.(e);
             setOpen(false);
@@ -630,7 +631,7 @@ DropdownMenuSubTrigger.displayName = 'DropdownMenuSubTrigger';
 interface DropdownMenuSubContentProps
     extends React.HTMLAttributes<HTMLDivElement> {
     open?: boolean;
-    triggerRef?: React.RefObject<HTMLElement>;
+    triggerRef?: React.RefObject<HTMLElement | null>;
     onOpenChange?: (open: boolean) => void;
 }
 
@@ -647,7 +648,8 @@ const DropdownMenuSubContent = React.forwardRef<
             if (typeof ref === 'function') {
                 ref(node);
             } else if (ref) {
-                (ref as React.MutableRefObject<HTMLDivElement>).current = node;
+                (ref as React.MutableRefObject<HTMLDivElement | null>).current =
+                    node;
             }
         },
         [ref],
