@@ -18,28 +18,41 @@ const categories = [
 const CategorySection = () => {
     return (
         <section className="mt-8 mb-12">
-            <div className="flex items-center gap-4 overflow-x-auto pb-4 scrollbar-hide rtl justify-center px-4">
+            <div className="flex items-center gap-2.5 md:gap-4 overflow-x-auto pb-4 scrollbar-hide rtl justify-start lg:justify-center px-4">
                 {categories.map((cat) => (
                     <div
                         key={cat.id}
-                        className="flex flex-col items-center gap-2 min-w-[100px] group cursor-pointer">
-                        <div className="w-16 h-20 md:w-20 md:h-24 bg-white border border-gray-100 rounded-2xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-all group-hover:border-red-100">
+                        className="flex flex-col items-center min-w-[85px] md:min-w-[110px] group cursor-pointer">
+                        <div className="w-full aspect-[4/5.2] bg-white border border-gray-200/60 rounded-xl md:rounded-2xl flex flex-col items-center justify-center gap-2.5 p-3 shadow-xs group-hover:shadow-md transition-all group-hover:border-[#B44734]/20">
                             {cat.isMain ? (
-                                <LayoutGrid className="w-8 h-8 text-[#B44734]" />
-                            ) : (
-                                <div className="relative w-12 h-12 md:w-14 md:h-14">
-                                    <Image
-                                        src={cat.image || ''}
-                                        alt={cat.name}
-                                        fill
-                                        className="object-contain"
-                                    />
+                                <div className="flex flex-col items-center gap-3 w-full">
+                                    <div className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center">
+                                        <LayoutGrid
+                                            size={32}
+                                            className="text-[#B44734]"
+                                            strokeWidth={1.5}
+                                        />
+                                    </div>
+                                    <span className="text-[11px] md:text-sm font-bold text-gray-800 group-hover:text-[#B44734] transition-colors">
+                                        {cat.name}
+                                    </span>
                                 </div>
+                            ) : (
+                                <>
+                                    <div className="relative w-10 h-10 md:w-14 md:h-14">
+                                        <Image
+                                            src={cat.image || ''}
+                                            alt={cat.name}
+                                            fill
+                                            className="object-contain"
+                                        />
+                                    </div>
+                                    <span className="text-[11px] md:text-sm font-bold text-gray-800 group-hover:text-[#B44734] transition-colors leading-tight">
+                                        {cat.name}
+                                    </span>
+                                </>
                             )}
                         </div>
-                        <span className="text-sm font-medium text-gray-700 group-hover:text-[#B44734] transition-colors">
-                            {cat.name}
-                        </span>
                     </div>
                 ))}
             </div>
