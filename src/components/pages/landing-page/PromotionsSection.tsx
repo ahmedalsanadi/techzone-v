@@ -3,60 +3,63 @@
 import React from 'react';
 import Image from 'next/image';
 import { Heart, Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 const products = [
     {
         id: 1,
-        name: 'اسم الطبق',
+        nameKey: 'dishName',
         image: '/images/images/dish.png',
         price: 230,
         oldPrice: 250,
-        discount: 'وفر 5%',
+        discountAmount: '5%',
     },
     {
         id: 2,
-        name: 'اسم الطبق',
+        nameKey: 'dishName',
         image: '/images/images/dish.png',
         price: 230,
         oldPrice: 250,
-        discount: 'وفر 5%',
+        discountAmount: '5%',
     },
     {
         id: 3,
-        name: 'اسم الطبق',
+        nameKey: 'dishName',
         image: '/images/images/dish.png',
         price: 230,
         oldPrice: 250,
-        discount: 'وفر 5%',
+        discountAmount: '5%',
     },
     {
         id: 4,
-        name: 'اسم الطبق',
+        nameKey: 'dishName',
         image: '/images/images/dish.png',
         price: 230,
         oldPrice: 250,
-        discount: 'وفر 5%',
+        discountAmount: '5%',
     },
     {
         id: 5,
-        name: 'اسم الطبق',
+        nameKey: 'dishName',
         image: '/images/images/dish.png',
         price: 230,
         oldPrice: 250,
-        discount: 'وفر 5%',
+        discountAmount: '5%',
     },
 ];
 
 const PromotionsSection = () => {
+    const t = useTranslations('Promotions');
+
     return (
         <section className="mt-12 mb-16" dir="rtl">
             {/* Section Header */}
             <div className="flex items-center justify-between mb-8">
                 <h2 className="text-3xl font-black text-gray-900 tracking-tight">
-                    العروض
+                    {t('title')}
                 </h2>
                 <button className="bg-gray-100/80 hover:bg-gray-200 text-gray-600 px-6 py-2 rounded-xl text-sm font-bold transition-all">
-                    المزيد
+                    {t('more')}
                 </button>
             </div>
 
@@ -75,7 +78,7 @@ const PromotionsSection = () => {
                         <div className="relative w-full aspect-square mb-6 group-hover:scale-105 transition-transform duration-500">
                             <Image
                                 src={product.image}
-                                alt={product.name}
+                                alt={t(product.nameKey)}
                                 fill
                                 className="object-contain drop-shadow-xl"
                             />
@@ -84,7 +87,7 @@ const PromotionsSection = () => {
                         {/* Product Info */}
                         <div className="w-full text-right space-y-2">
                             <h3 className="text-lg md:text-xl font-bold text-gray-800">
-                                {product.name}
+                                {t(product.nameKey)}
                             </h3>
                             <div className="flex items-center justify-between mt-3">
                                 <div className="flex items-center gap-1.5 md:gap-2">
@@ -103,7 +106,9 @@ const PromotionsSection = () => {
                                     </span>
                                 </div>
                                 <span className="text-[10px] md:text-xs font-bold text-red-500 bg-red-50 px-2 py-1 rounded-lg">
-                                    {product.discount}
+                                    {t('save', {
+                                        amount: product.discountAmount,
+                                    })}
                                 </span>
                             </div>
                         </div>
@@ -112,7 +117,7 @@ const PromotionsSection = () => {
                         <button className="w-full mt-8 bg-[#FEF4F1] hover:bg-[#FDE7E0] text-[#B44734] font-bold py-3 md:py-4 rounded-xl md:rounded-2xl flex items-center justify-center gap-2 transition-all group-active:scale-95 border border-[#FDE7E0]/50 shadow-sm">
                             <Plus className="w-5 h-5" />
                             <span className="text-sm md:text-base">
-                                اضافة إلى السلة
+                                {t('addToCart')}
                             </span>
                         </button>
                     </div>

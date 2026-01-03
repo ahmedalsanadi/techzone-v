@@ -79,5 +79,20 @@
       "libro": "Libro",
       "driver": "Driver"
     }
+  },
+  "Categories": {
+    "all": "All",
+    "pizza": "Pizza",
+    "burger": "Burger",
+    "sweets": "Sweets",
+    "drinks": "Drinks",
+    "meals": "Meals"
+  },
+  "Promotions": {
+    "title": "Offers",
+    "more": "More",
+    "dishName": "Dish Name",
+    "save": "Save {amount}",
+    "addToCart": "Add to Cart"
   }
 }

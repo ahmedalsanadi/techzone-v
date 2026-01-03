@@ -79,5 +79,20 @@
       "libro": "ليبرو",
       "driver": "سائق"
     }
+  },
+  "Categories": {
+    "all": "الأقسام",
+    "pizza": "بيتزا",
+    "burger": "برجر",
+    "sweets": "حلويات",
+    "drinks": "مشروبات",
+    "meals": "وجبات"
+  },
+  "Promotions": {
+    "title": "العروض",
+    "more": "المزيد",
+    "dishName": "اسم الطبق",
+    "save": "وفر {amount}",
+    "addToCart": "اضافة إلى السلة"
   }
 }
