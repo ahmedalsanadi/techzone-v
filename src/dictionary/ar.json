@@ -29,5 +29,12 @@
   },
   "Notifications": {
     "empty": "لا توجد إشعارات جديدة"
+  },
+  "SubHeader": {
+    "selectOrderType": "حدد نوع الطلب:",
+    "delivery": "توصيل إلى موقعي",
+    "pickup": "استلام من الفرع",
+    "dineIn": "تناول داخل الفرع",
+    "defaultBranch": "فرع النخيل"
   }
 }

@@ -29,5 +29,12 @@
   },
   "Notifications": {
     "empty": "No new notifications"
+  },
+  "SubHeader": {
+    "selectOrderType": "Select order type:",
+    "delivery": "Delivery to my location",
+    "pickup": "Pick up from branch",
+    "dineIn": "Dine-in",
+    "defaultBranch": "Al-Nakheel Branch"
   }
 }
