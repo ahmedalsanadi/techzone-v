@@ -35,7 +35,7 @@ const slides = [
 const HeroSlider = () => {
     return (
         <section className="container mx-auto px-4 mt-4 md:mt-6">
-            <div className="relative rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl group/slider">
+            <div className="relative rounded-3xl md:rounded-[2.5rem] overflow-hidden shadow-2xl group/slider">
                 <Swiper
                     modules={[Pagination, Autoplay, EffectFade]}
                     pagination={{

@@ -78,7 +78,9 @@ export default function Navbar() {
             </div>
 
             <div className="relative flex items-center gap-2 h-8">
-                <LanguageSwitcher />
+                <div className="hidden lg:block">
+                    <LanguageSwitcher />
+                </div>
                 <NotificationDropdown />
                 <CartDropdown />
                 <UserMenu />
