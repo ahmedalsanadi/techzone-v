@@ -36,5 +36,48 @@
     "pickup": "Pick up from branch",
     "dineIn": "Dine-in",
     "defaultBranch": "Al-Nakheel Branch"
+  },
+  "Footer": {
+    "description": "At our restaurant, we offer a dining experience that combines high quality and distinct taste, using the best fresh ingredients under the supervision of a specialized team to ensure the highest standards of hygiene and quality.",
+    "sections": {
+      "categories": "Categories",
+      "more": "More",
+      "about": "About Fasto"
+    },
+    "links": {
+      "sweets": "Sweets",
+      "burger": "Burger",
+      "pizza": "Pizza",
+      "meals": "Meals",
+      "drinks": "Drinks",
+      "myAddresses": "My Addresses",
+      "wallet": "Wallet",
+      "favorites": "Favorites",
+      "profile": "My Profile",
+      "contactUs": "Contact Us",
+      "faq": "FAQ",
+      "terms": "Terms & Conditions"
+    },
+    "contact": "Contact Us",
+    "downloadApp": "Download App",
+    "poweredBy": "Powered By",
+    "rights": "All rights reserved © 2025",
+    "badges": {
+      "appStore": "App Store",
+      "googlePlay": "Google Play",
+      "appGallery": "AppGallery",
+      "maarof": "Maarof",
+      "saudiBusiness": "Saudi Business Center",
+      "mastercard": "Mastercard",
+      "mada": "Mada",
+      "visa": "Visa",
+      "applePay": "Apple Pay",
+      "stcPay": "STC Pay",
+      "tamara": "Tamara",
+      "tabby": "Tabby",
+      "careem": "Careem",
+      "libro": "Libro",
+      "driver": "Driver"
+    }
   }
 }

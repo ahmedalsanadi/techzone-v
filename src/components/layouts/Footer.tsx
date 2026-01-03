@@ -19,8 +19,11 @@ import {
     partnerBadges,
     socialLinks,
 } from './footer/FooterData';
+import { useTranslations } from 'next-intl';
 
 const Footer = () => {
+    const t = useTranslations('Footer');
+
     return (
         <footer className="w-full flex flex-col font-sans" dir="rtl">
             {/* Top Section: Links & Apps */}
@@ -38,10 +41,7 @@ const Footer = () => {
                             />
                         </div>
                         <p className="text-gray-600 text-[14px] leading-relaxed font-medium lg:text-center">
-                            نقدّم في مطعمنا تجربة طعام تجمع بين الجودة العالية
-                            والطعم المميّز، باستخدام أفضل المكونات الطازجة
-                            وبإشراف فريق متخصّص لضمان أعلى معايير النظافة
-                            والجودة.
+                            {t('description')}
                         </p>
                     </div>
 
@@ -49,7 +49,7 @@ const Footer = () => {
                     {footerSections.map((section, idx) => (
                         <FooterColumn
                             key={idx}
-                            title={section.title}
+                            titleKey={section.titleKey}
                             links={section.links}
                         />
                     ))}
@@ -57,7 +57,7 @@ const Footer = () => {
                     {/* Contact Us Column */}
                     <div>
                         <h4 className="font-black text-gray-900 mb-8 text-xl">
-                            تواصل معنا
+                            {t('contact')}
                         </h4>
                         <ul className="space-y-6">
                             <li className="flex items-center gap-3 text-gray-600 font-black text-lg justify-end">
@@ -80,14 +80,14 @@ const Footer = () => {
                     {/* Apps Column - Leftmost in RTL */}
                     <div className="flex flex-col items-start lg:items-end">
                         <h4 className="font-black text-gray-900 mb-8 text-xl">
-                            حمل التطبيق
+                            {t('downloadApp')}
                         </h4>
                         <div className="flex flex-col gap-4">
                             {appBadges.map((badge, idx) => (
                                 <AppBadge
                                     key={idx}
                                     src={badge.src}
-                                    alt={badge.alt}
+                                    altKey={badge.altKey}
                                     href={badge.href}
                                 />
                             ))}
@@ -106,7 +106,7 @@ const Footer = () => {
                                 <PaymentBadge
                                     key={idx}
                                     src={badge.src}
-                                    alt={badge.alt}
+                                    altKey={badge.altKey}
                                     width={badge.width}
                                     height={45}
                                     className="h-10 w-auto"
@@ -120,7 +120,7 @@ const Footer = () => {
                                 <PaymentBadge
                                     key={idx}
                                     src={badge.src}
-                                    alt={badge.alt}
+                                    altKey={badge.altKey}
                                 />
                             ))}
                         </div>
@@ -131,7 +131,7 @@ const Footer = () => {
                                 <PaymentBadge
                                     key={idx}
                                     src={badge.src}
-                                    alt={badge.alt}
+                                    altKey={badge.altKey}
                                     width={90}
                                     height={45}
                                     className="h-10 w-auto"
@@ -160,7 +160,7 @@ const Footer = () => {
                     {/* Powered By Center */}
                     <div className="flex items-center gap-2">
                         <span className="text-white/90 text-[15px] font-bold">
-                            يعمل بواسطة
+                            {t('poweredBy')}
                         </span>
                         <Image
                             src="/images/logo/libero-copywrite.svg"
@@ -173,7 +173,7 @@ const Footer = () => {
 
                     {/* Copyright Left */}
                     <div className="text-white/90 text-sm font-bold">
-                        جميع الحقوق محفوظة © 2025
+                        {t('rights')}
                     </div>
                 </div>
             </div>

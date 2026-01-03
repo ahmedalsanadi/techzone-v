@@ -11,30 +11,30 @@ import {
 
 export const footerSections = [
     {
-        title: 'الاقسام',
+        titleKey: 'sections.categories',
         links: [
-            { label: 'الحلويات', href: '/' },
-            { label: 'البرجر', href: '/' },
-            { label: 'البيتزا', href: '/' },
-            { label: 'وجبات', href: '/' },
-            { label: 'المشروبات', href: '/' },
+            { labelKey: 'links.sweets', href: '/' },
+            { labelKey: 'links.burger', href: '/' },
+            { labelKey: 'links.pizza', href: '/' },
+            { labelKey: 'links.meals', href: '/' },
+            { labelKey: 'links.drinks', href: '/' },
         ],
     },
     {
-        title: 'المزيد',
+        titleKey: 'sections.more',
         links: [
-            { label: 'عناويني', href: '/' },
-            { label: 'المحفظة', href: '/' },
-            { label: 'المفضلة', href: '/' },
-            { label: 'ملفي الشخصي', href: '/' },
+            { labelKey: 'links.myAddresses', href: '/' },
+            { labelKey: 'links.wallet', href: '/' },
+            { labelKey: 'links.favorites', href: '/' },
+            { labelKey: 'links.profile', href: '/' },
         ],
     },
     {
-        title: 'عن فاستو',
+        titleKey: 'sections.about',
         links: [
-            { label: 'اتصل بنا', href: '/' },
-            { label: 'الاسئلة الشائعة', href: '/' },
-            { label: 'الشروط والاحكام', href: '/' },
+            { labelKey: 'links.contactUs', href: '/' },
+            { labelKey: 'links.faq', href: '/' },
+            { labelKey: 'links.terms', href: '/' },
         ],
     },
 ];
@@ -42,44 +42,48 @@ export const footerSections = [
 export const appBadges = [
     {
         src: '/images/badges/download-app-store-badge.svg',
-        alt: 'App Store',
+        altKey: 'badges.appStore',
         href: '/',
     },
     {
         src: '/images/badges/download-google-play-badge.svg',
-        alt: 'Google Play',
+        altKey: 'badges.googlePlay',
         href: '/',
     },
     {
         src: '/images/badges/download-huawei-badge.svg',
-        alt: 'AppGallery',
+        altKey: 'badges.appGallery',
         href: '/',
     },
 ];
 
 export const trustBadges = [
-    { src: '/images/badges/marouf-pay-badge.svg', alt: 'Maarof', width: 90 },
+    {
+        src: '/images/badges/marouf-pay-badge.svg',
+        altKey: 'badges.maarof',
+        width: 90,
+    },
     {
         src: '/images/badges/saudi-business-center-badge.svg',
-        alt: 'Saudi Business',
+        altKey: 'badges.saudiBusiness',
         width: 110,
     },
 ];
 
 export const paymentBadges = [
-    { src: '/images/badges/master-pay-badge.svg', alt: 'Mastercard' },
-    { src: '/images/badges/mada-pay-badge.svg', alt: 'Mada' },
-    { src: '/images/badges/visa-pay-badge.svg', alt: 'Visa' },
-    { src: '/images/badges/e-pay-badge.svg', alt: 'Apple Pay' },
-    { src: '/images/badges/stc-pay-badge.svg', alt: 'STC Pay' },
-    { src: '/images/badges/tamara-pay-badge.svg', alt: 'Tamara' },
-    { src: '/images/badges/tabby-pay-badge.svg', alt: 'Tabby' },
+    { src: '/images/badges/master-pay-badge.svg', altKey: 'badges.mastercard' },
+    { src: '/images/badges/mada-pay-badge.svg', altKey: 'badges.mada' },
+    { src: '/images/badges/visa-pay-badge.svg', altKey: 'badges.visa' },
+    { src: '/images/badges/e-pay-badge.svg', altKey: 'badges.applePay' },
+    { src: '/images/badges/stc-pay-badge.svg', altKey: 'badges.stcPay' },
+    { src: '/images/badges/tamara-pay-badge.svg', altKey: 'badges.tamara' },
+    { src: '/images/badges/tabby-pay-badge.svg', altKey: 'badges.tabby' },
 ];
 
 export const partnerBadges = [
-    { src: '/images/badges/kareem-pay-badge.svg', alt: 'Careem' },
-    { src: '/images/badges/libero-pay-badge.svg', alt: 'Libro' },
-    { src: '/images/badges/driver-pay-badge.svg', alt: 'Driver' },
+    { src: '/images/badges/kareem-pay-badge.svg', altKey: 'badges.careem' },
+    { src: '/images/badges/libero-pay-badge.svg', altKey: 'badges.libro' },
+    { src: '/images/badges/driver-pay-badge.svg', altKey: 'badges.driver' },
 ];
 
 export const socialLinks = [
