@@ -22,13 +22,13 @@ const Footer = () => {
     const t = useTranslations('Footer');
 
     return (
-        <footer className="w-full flex flex-col ">
+        <footer className="w-full flex flex-col">
             {/* Top Section: Links & Apps */}
-            <div className="bg-[#FAF4F0] py-18 px-4">
-                <div className="container mx-auto grid grid-cols-2 md:grid-cols-6 gap-4 md:gap-10">
+            <div className="bg-[#FAF4F0] py-12 md:py-18 px-4">
+                <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-10 lg:gap-8">
                     {/* Logo & Info */}
-                    <div className="flex flex-col items-start ">
-                        <div className="flex flex-col items-center mb-6">
+                    <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
+                        <div className="flex flex-col items-center lg:items-start mb-6">
                             <Image
                                 src="/images/logo/fasto-logo.svg"
                                 alt="Fasto Logo"
@@ -40,34 +40,35 @@ const Footer = () => {
                                 Fasto
                             </h3>
                         </div>
-                        <p className="text-gray-600 text-[14px] leading-relaxed font-medium ">
+                        <p className="text-gray-600 text-[14px] leading-relaxed font-medium max-w-sm">
                             {t('description')}
                         </p>
                     </div>
 
                     {/* Columns Order based on image */}
                     {footerSections.map((section, idx) => (
-                        <FooterColumn
-                            key={idx}
-                            titleKey={section.titleKey}
-                            links={section.links}
-                        />
+                        <div key={idx} className="text-center lg:text-left">
+                            <FooterColumn
+                                titleKey={section.titleKey}
+                                links={section.links}
+                            />
+                        </div>
                     ))}
 
                     {/* Contact Us Column */}
-                    <div>
-                        <h4 className="font-black text-gray-900 mb-8 text-xl">
+                    <div className="text-center lg:text-left">
+                        <h4 className="font-black text-gray-900 mb-6 lg:mb-8 text-xl">
                             {t('contact')}
                         </h4>
-                        <ul className="space-y-6">
-                            <li className="flex items-center gap-2 text-gray-600 font-bold text-md justify-start">
+                        <ul className="space-y-4 lg:space-y-6">
+                            <li className="flex items-center gap-2 text-gray-600 font-bold text-md justify-center lg:justify-start">
                                 <Phone
                                     className="w-5 h-5 text-[#B44734]"
                                     strokeWidth={2.5}
                                 />
                                 <span>+966 55 123 9876</span>
                             </li>
-                            <li className="flex items-center gap-2 text-gray-600 font-bold text-md justify-start">
+                            <li className="flex items-center gap-2 text-gray-600 font-bold text-md justify-center lg:justify-start">
                                 <Mail
                                     className="w-5 h-5 text-[#B44734]"
                                     strokeWidth={2.5}
@@ -78,11 +79,11 @@ const Footer = () => {
                     </div>
 
                     {/* Apps Column  */}
-                    <div className="flex flex-col items-start">
-                        <h4 className="font-black text-gray-900 mb-8 text-xl">
+                    <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
+                        <h4 className="font-black text-gray-900 mb-6 lg:mb-8 text-xl">
                             {t('downloadApp')}
                         </h4>
-                        <div className="flex flex-col gap-4">
+                        <div className="flex flex-row lg:flex-col gap-4 justify-center">
                             {appBadges.map((badge, idx) => (
                                 <AppBadge
                                     key={idx}
@@ -97,11 +98,11 @@ const Footer = () => {
             </div>
 
             {/* Middle Section: Partners & Payment Strip */}
-            <div className="bg-libero-red py-4 border-b border-[#FFB800]/30 relative">
+            <div className="bg-libero-red py-8 lg:py-4 border-b border-[#FFB800]/30 relative">
                 <div className="container mx-auto px-4 ">
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+                    <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12">
                         {/* Section: Delivery & Partners */}
-                        <div className="flex items-center gap-4 ">
+                        <div className="flex flex-wrap justify-center items-center gap-4">
                             {partnerBadges.map((badge, idx) => (
                                 <PaymentBadge
                                     key={idx}
@@ -109,13 +110,13 @@ const Footer = () => {
                                     altKey={badge.altKey}
                                     width={90}
                                     height={45}
-                                    className="h-10 w-auto"
+                                    className="h-8 lg:h-10 w-auto"
                                 />
                             ))}
                         </div>
 
                         {/* Middle Section: Payment Methods */}
-                        <div className="flex flex-wrap items-center justify-center gap-4 flex-1 max-w-3xl">
+                        <div className="flex flex-wrap items-center justify-center gap-4 lg:flex-1 w-full max-w-3xl">
                             {paymentBadges.map((badge, idx) => (
                                 <PaymentBadge
                                     key={idx}
@@ -126,7 +127,7 @@ const Footer = () => {
                         </div>
 
                         {/* Section: Trust Badges */}
-                        <div className="flex items-center gap-4 ">
+                        <div className="flex flex-wrap justify-center items-center gap-4">
                             {trustBadges.map((badge, idx) => (
                                 <PaymentBadge
                                     key={idx}
@@ -134,7 +135,7 @@ const Footer = () => {
                                     altKey={badge.altKey}
                                     width={90}
                                     height={45}
-                                    className="h-10 w-auto"
+                                    className="h-8 lg:h-10 w-auto"
                                 />
                             ))}
                         </div>
@@ -143,15 +144,15 @@ const Footer = () => {
             </div>
 
             {/* Bottom Bar: Socials, Powered By & Copyright */}
-            <div className="bg-libero-red p-4">
-                <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-10">
+            <div className="bg-libero-red p-6 lg:p-4">
+                <div className="container mx-auto flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-10">
                     {/* Copyright Left */}
-                    <div className="text-white/90 text-sm font-bold">
+                    <div className="text-white/90 text-sm font-bold text-center lg:text-left order-3 lg:order-1">
                         {t('rights')}
                     </div>
 
                     {/* Powered By Center */}
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 order-2 lg:order-2">
                         <span className="text-white/90 text-[15px] font-bold">
                             {t('poweredBy')}
                         </span>
@@ -165,12 +166,12 @@ const Footer = () => {
                     </div>
 
                     {/* Social Icons */}
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-6 lg:gap-4 order-1 lg:order-3">
                         {socialLinks.map((social, idx) => (
                             <Link
                                 key={idx}
                                 href={social.href}
-                                className="text-white/90 hover:text-[#FFB800] transition-colors drop-shadow-sm">
+                                className="text-white/90 hover:text-[#FFB800] transition-colors drop-shadow-sm scale-110 lg:scale-100">
                                 <social.icon className="w-5 h-5" />
                             </Link>
                         ))}
