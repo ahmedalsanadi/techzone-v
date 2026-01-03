@@ -59,31 +59,30 @@ export const appBadges = [
 
 export const trustBadges = [
     {
-        src: '/images/badges/marouf-pay-badge.svg',
-        altKey: 'badges.maarof',
-        width: 90,
-    },
-    {
         src: '/images/badges/saudi-business-center-badge.svg',
         altKey: 'badges.saudiBusiness',
-        width: 110,
+    },
+
+    {
+        src: '/images/badges/marouf-pay-badge.svg',
+        altKey: 'badges.maarof',
     },
 ];
 
 export const paymentBadges = [
-    { src: '/images/badges/master-pay-badge.svg', altKey: 'badges.mastercard' },
-    { src: '/images/badges/mada-pay-badge.svg', altKey: 'badges.mada' },
-    { src: '/images/badges/visa-pay-badge.svg', altKey: 'badges.visa' },
-    { src: '/images/badges/e-pay-badge.svg', altKey: 'badges.applePay' },
-    { src: '/images/badges/stc-pay-badge.svg', altKey: 'badges.stcPay' },
-    { src: '/images/badges/tamara-pay-badge.svg', altKey: 'badges.tamara' },
     { src: '/images/badges/tabby-pay-badge.svg', altKey: 'badges.tabby' },
+    { src: '/images/badges/tamara-pay-badge.svg', altKey: 'badges.tamara' },
+    { src: '/images/badges/stc-pay-badge.svg', altKey: 'badges.stcPay' },
+    { src: '/images/badges/e-pay-badge.svg', altKey: 'badges.applePay' },
+    { src: '/images/badges/visa-pay-badge.svg', altKey: 'badges.visa' },
+    { src: '/images/badges/mada-pay-badge.svg', altKey: 'badges.mada' },
+    { src: '/images/badges/master-pay-badge.svg', altKey: 'badges.mastercard' },
 ];
 
 export const partnerBadges = [
-    { src: '/images/badges/kareem-pay-badge.svg', altKey: 'badges.careem' },
-    { src: '/images/badges/libero-pay-badge.svg', altKey: 'badges.libro' },
     { src: '/images/badges/driver-pay-badge.svg', altKey: 'badges.driver' },
+    { src: '/images/badges/libero-pay-badge.svg', altKey: 'badges.libro' },
+    { src: '/images/badges/kareem-pay-badge.svg', altKey: 'badges.careem' },
 ];
 
 export const socialLinks = [

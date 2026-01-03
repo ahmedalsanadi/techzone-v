@@ -12,10 +12,10 @@ const FooterColumn = ({ titleKey, links }: FooterColumnProps) => {
 
     return (
         <div>
-            <h4 className="font-black text-gray-900 mb-8 text-xl">
+            <h4 className="font-black text-gray-900 mb-6 text-xl">
                 {t(titleKey)}
             </h4>
-            <ul className="space-y-4 text-gray-500 font-bold text-sm">
+            <ul className="space-y-4 text-gray-600 font-medium text-sm">
                 {links.map((link, idx) => (
                     <li key={idx}>
                         <Link
