@@ -19,31 +19,31 @@ export default function SubHeader() {
     const inactiveStyle = 'bg-gray-50 text-gray-500 hover:border-gray-200';
 
     return (
-        <div className="mt-4 bg-white rounded-t-xl h-16 flex items-center justify-between px-4 shadow-t-sm border-t border-gray-200">
+        <div className="mt-4 bg-white rounded-t-xl h-16 flex items-center justify-between px-3 sm:px-4 shadow-t-sm border-t border-gray-200 overflow-hidden shrink-0">
             <button
-                className="flex items-center gap-2 hover:bg-gray-50 p-2 rounded-lg transition-colors duration-200 group"
+                className="flex items-center gap-2 hover:bg-gray-50 p-1.5 sm:p-2 rounded-lg transition-colors duration-200 group shrink-0"
                 aria-label={t('defaultBranch')}>
-                <div className="size-8 rounded-full border border-gray-200 flex items-center justify-center bg-gray-50">
+                <div className="size-8 rounded-full border border-gray-200 flex items-center justify-center bg-gray-50 hidden sm:flex">
                     <Building2 className="size-4.5 text-gray-500" />
                 </div>
-                <span className="text-gray-900 font-semibold text-sm">
+                <span className="text-gray-900 font-semibold text-[13px] sm:text-sm truncate max-w-[100px] sm:max-w-none">
                     {t('defaultBranch')}
                 </span>
                 <ChevronDown className="size-3.5 text-gray-500 group-hover:text-libero-red transition-colors duration-200" />
             </button>
 
-            <div className="flex items-center gap-4">
-                <span className="text-gray-900 font-medium text-sm whitespace-nowrap">
+            <div className="flex items-center gap-2 sm:gap-4 overflow-x-auto no-scrollbar py-1">
+                <span className="text-gray-900 font-medium text-xs sm:text-sm whitespace-nowrap hidden md:inline">
                     {t('selectOrderType')}
                 </span>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2">
                     {orderTypes.map((type) => (
                         <button
                             key={type.id}
                             onClick={() => setActiveType(type.id)}
                             className={`
-                                h-10 px-4 rounded-md text-sm font-medium 
-                                transition-all duration-200 cursor-pointer border
+                                h-9 sm:h-10 px-3 sm:px-4 rounded-md text-[12px] sm:text-sm font-medium 
+                                transition-all duration-200 cursor-pointer border whitespace-nowrap
                                 ${
                                     activeType === type.id
                                         ? activeStyle
