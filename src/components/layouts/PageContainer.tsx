@@ -5,7 +5,7 @@ import Navbar from './Navbar';
 import SubHeader from './SubHeader';
 import Footer from './Footer';
 import { useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname } from '@/i18n/navigation';
 
 export default function PageContainer({
     children,

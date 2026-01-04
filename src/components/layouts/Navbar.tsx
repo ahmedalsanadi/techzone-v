@@ -1,10 +1,9 @@
 'use client';
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link, usePathname } from '@/i18n/navigation';
 import { Search, Menu } from 'lucide-react';
 import { NAV_ITEMS } from '@/config/navigation';
 import Logo from './Logo';
-import { usePathname } from 'next/navigation';
 import NavItem from './NavItem';
 import { Input } from '../ui/Input';
 
