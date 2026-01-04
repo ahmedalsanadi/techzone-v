@@ -3,6 +3,8 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import { Plus, Minus } from 'lucide-react';
+import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
 interface ProductActionBarProps {
     totalPrice: number;
@@ -23,9 +25,9 @@ const QtyButton = React.memo(
         <button
             onClick={onClick}
             disabled={disabled}
-            className="w-8 h-8 sm:w-10 sm:h-10 rounded-md sm:rounded-lg bg-white flex items-center justify-center text-gray-600 hover:text-[#B44B3A] transition-all shadow-sm disabled:opacity-30 active:scale-95">
+            className="w-9 h-9  rounded-lg bg-white flex items-center justify-center text-gray-600 hover:text-[#B44B3A] transition-all shadow-sm disabled:opacity-30 active:scale-95 cursor-pointer">
             <Icon
-                className="w-3.5 h-3.5 sm:w-[18px] sm:h-[18px]"
+                className="w-3.5 h-3.5 "
                 strokeWidth={3}
             />
         </button>
@@ -53,38 +55,57 @@ export default function ProductActionBar({
     );
 
     return (
-        <div className="border-t border-gray-100 pt-8 mt-auto">
-            <div className="flex items-center justify-between gap-4">
+        <div className="border-t border-gray-200 pt-8 mt-auto">
+            <div className="flex items-center justify-end gap-4">
                 {/* Quantity Selector */}
-                <div className="flex items-center bg-[#F1F3F5] rounded-lg sm:rounded-xl p-1 sm:p-1.5 shadow-inner">
-                    <QtyButton icon={Plus} onClick={handleIncrement} />
-                    <span className="w-8 sm:w-12 text-center text-base sm:text-lg font-bold text-gray-800">
-                        {quantity}
-                    </span>
+                <div className="flex items-center bg-[#F1F3F5] rounded-lg p-1.5 shadow-inner">
                     <QtyButton
                         icon={Minus}
                         onClick={handleDecrement}
                         disabled={quantity <= 1}
                     />
+                    <span className="w-12 text-center text-lg font-bold text-gray-800">
+                        {quantity}
+                    </span>
+
+                    <QtyButton icon={Plus} onClick={handleIncrement} />
                 </div>
 
                 {/* Add to Cart Button */}
                 <button
                     onClick={onAddToCart}
-                    className="flex-1 max-w-[280px] bg-[#B44B3A] hover:bg-[#A04234] text-white rounded-lg sm:rounded-xl px-4 py-2.5 sm:px-6 sm:py-4 flex items-center justify-between transition-all active:scale-[0.98] shadow-lg shadow-[#B44B3A]/10 group">
-                    <div className="flex items-center gap-2 sm:gap-2.5">
-                        <span className="text-base sm:text-xl font-black">
-                            {totalPrice} {t('currency')}
-                        </span>
-                        {originalPrice && (
-                            <span className="text-[10px] sm:text-sm opacity-60 line-through font-bold">
-                                {originalPrice * quantity} {t('currency')}
-                            </span>
-                        )}
-                    </div>
+                    className="flex items-center justify-between gap-12 max-w-[260px] bg-[#B44B3A] hover:bg-[#A04234] text-white
+                     px-5 py-2.5  rounded-lg transition-all active:scale-[0.98] shadow-lg shadow-[#B44B3A]/10 group cursor-pointer">
                     <span className="text-sm sm:text-lg font-bold">
                         {t('addToCart')}
                     </span>
+                    <div className="flex items-center gap-2 sm:gap-2.5">
+                        {originalPrice && (
+                            <span className="text-[10px] sm:text-sm opacity-60 line-through font-bold">
+                                {originalPrice * quantity}
+                                {t('currency') !== 'ر.س' && ` ${t('currency')}`}
+                            </span>
+                        )}
+
+                        <div className="flex items-center gap-1">
+                            <span className="text-base sm:text-xl font-black">
+                                {totalPrice}
+                            </span>
+                            {t('currency') === 'ر.س' ? (
+                                <Image
+                                    src="/images/svgs/sar-riyal.svg"
+                                    alt="SAR"
+                                    width={16}
+                                    height={16}
+                                    className="brightness-0 invert w-3.5 h-3.5 sm:w-5 sm:h-5 opacity-90"
+                                />
+                            ) : (
+                                <span className="text-base sm:text-lg font-bold">
+                                    {t('currency')}
+                                </span>
+                            )}
+                        </div>
+                    </div>
                 </button>
             </div>
         </div>
