@@ -19,7 +19,7 @@ export default function NavItem({
 }: NavItemProps) {
     const activeStyles = 'bg-white rounded-lg shadow-xl border border-white/20';
     const inactiveStyles =
-        'rounded-lg cursor-pointer hover:bg-white/10 transition-colors group';
+        'rounded-lg cursor-pointer hover:bg-white/10 transition-colors group border border-transparent';
 
     const textActiveStyles = 'text-libero-red font-bold';
     const textInactiveStyles = 'text-white group-hover:font-bold';
@@ -43,12 +43,17 @@ export default function NavItem({
                 style={isActive ? { filter: iconFilter } : undefined}
                 className={!isActive ? iconFilter : ''}
             />
-            <p
-                className={`text-sm text-center text-nowrap truncate ${
+            <span
+                className={`text-sm text-center text-nowrap inline-flex flex-col items-center ${
                     isActive ? textActiveStyles : textInactiveStyles
                 }`}>
+                <span
+                    className="h-0 overflow-hidden invisible font-bold"
+                    aria-hidden="true">
+                    {label}
+                </span>
                 {label}
-            </p>
+            </span>
         </Link>
     );
 }
