@@ -21,6 +21,8 @@ import {
     Minus,
     Trash2,
     MessageCircle,
+    Heart,
+    Share2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -30,8 +32,6 @@ interface ProductDetailsProps {
 
 export default function ProductDetails({ product }: ProductDetailsProps) {
     const t = useTranslations('Product');
-    const locale = useLocale();
-    const isAr = locale === 'ar';
 
     const [selectedVarietyId, setSelectedVarietyId] = useState<string>(
         product.varieties.find((v) => v.isDefault)?.id ||
@@ -89,33 +89,65 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     return (
         <div className="flex flex-col gap-10 pb-24 relative">
             {/* Top Section: Info & Image */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+                {/* Gallery Column */}
+                <div className="order-2 lg:order-1 sticky top-24 col-span-1">
+                    <ProductGallery images={product.images} />
+                </div>
+
                 {/* Info Column */}
-                <div className="flex flex-col gap-8 order-2 lg:order-1">
+                <div className="flex flex-col gap-8 order-1 lg:order-2 col-span-1 lg:col-span-2 p-2">
+                    <div className="flex items-center justify-end gap-3">
+                        {/* share button and faviorate buttons with text and icons*/}
+                        <button
+                            className="bg-white border-gray-200 text-gray-600 hover:bg-gray-50 flex items-center gap-2.5 px-5 py-2 rounded-md h-auto transition-all group shadow-sm cursor-pointer">
+
+                            <Share2
+                                size={16}
+                                className="text-gray-400 group-hover:text-libero-red transition-colors"
+                            />
+                            <span className="text-sm font-bold">
+                                {t('share')}
+                            </span>
+
+                        </button>
+                        <button
+                            
+                            className="bg-white border-gray-200 text-gray-600 hover:bg-gray-50 flex items-center gap-2.5 px-5 py-2 rounded-md h-auto transition-all group shadow-sm cursor-pointer">
+                          <Heart
+                                size={16}
+                                className="text-gray-400 group-hover:text-libero-red transition-colors"
+                            />
+                            <span className="text-sm font-bold">
+                                {t('favorite')}
+                            </span>
+
+                        </button>
+                    </div>
                     <div className="space-y-4">
-                        <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-white leading-tight">
+                        <h1 className="text-2xl  font-medium tracking-tight text-gray-900 leading-tight">
                             {product.name}
                         </h1>
-                        <p className="text-gray-500 dark:text-gray-400 text-lg md:text-xl leading-relaxed max-w-2xl">
+                        <p className="text-gray-600 font-medium leading-relaxed text-sm  max-w-2xl">
                             {product.description}
                         </p>
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2.5 px-4 py-2 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-700">
+                        <div className="flex items-center gap-2.5 px-4 py-2 bg-gray-50  rounded-2xl border border-gray-100">
                             <div className="text-orange-500">
                                 <Flame size={20} />
                             </div>
-                            <span className="font-semibold text-gray-700 dark:text-gray-200">
+                            <span className="font-semibold text-gray-700">
                                 {selectedVariety.calories || product.calories}{' '}
                                 {t('calories')}
                             </span>
                         </div>
-                        <div className="flex items-center gap-2.5 px-4 py-2 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-700">
+                        <div className="flex items-center gap-2.5 px-4 py-2 bg-gray-50  rounded-2xl border border-gray-100 ">
                             <div className="text-blue-500">
                                 <Clock size={20} />
                             </div>
-                            <span className="font-semibold text-gray-700 dark:text-gray-200">
+                            <span className="font-semibold text-gray-700">
                                 {selectedVariety.prepTime || product.prepTime}{' '}
                                 {t('prepTime')}
                             </span>
@@ -123,12 +155,12 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                     </div>
 
                     {/* Allergy Info Card */}
-                    <div className="bg-white dark:bg-gray-800 rounded-[2.5rem] p-8 border border-gray-100 dark:border-gray-700 shadow-sm relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-gray-50 dark:bg-gray-700/30 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110" />
+                    <div className="bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-sm relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-gray-50 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110" />
 
                         <div className="relative">
-                            <div className="flex items-center gap-3 mb-6 text-gray-900 dark:text-gray-100">
-                                <div className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/40 flex items-center justify-center text-blue-600">
+                            <div className="flex items-center gap-3 mb-6 text-gray-900">
+                                <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
                                     <Info size={18} />
                                 </div>
                                 <h3 className="text-xl font-bold">
@@ -140,11 +172,11 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                                 {product.allergies.map((allergy, idx) => (
                                     <div
                                         key={idx}
-                                        className="flex items-center gap-2.5 bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2.5 rounded-2xl border border-gray-100 dark:border-gray-600 transition-colors">
+                                        className="flex items-center gap-2.5 bg-gray-50 hover:bg-gray-100 px-4 py-2.5 rounded-2xl border border-gray-100 transition-colors">
                                         <span className="text-xl">
                                             {allergy.icon}
                                         </span>
-                                        <span className="text-sm font-semibold text-gray-600 dark:text-gray-300">
+                                        <span className="text-sm font-semibold text-gray-600">
                                             {allergy.name}
                                         </span>
                                     </div>
@@ -155,7 +187,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
                     {/* Action Bar */}
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mt-2">
-                        <div className="flex-1 bg-white dark:bg-gray-800 p-2 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 flex items-center gap-2">
+                        <div className="flex-1 bg-white p-2 rounded-3xl shadow-xl border border-gray-100 flex items-center gap-2">
                             <div className="flex-1 bg-libero-red hover:bg-libero-red/90 text-white rounded-2xl p-4 flex items-center justify-between transition-all active:scale-[0.98] cursor-pointer shadow-lg shadow-libero-red/20 group">
                                 <div className="flex flex-col">
                                     <span className="text-2xl font-black">
@@ -168,7 +200,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-4 px-4 bg-gray-100 dark:bg-gray-700 h-[72px] rounded-2xl">
+                            <div className="flex items-center gap-4 px-4 bg-gray-100 h-[72px] rounded-2xl">
                                 <button
                                     onClick={() =>
                                         setQuantity((prev) =>
@@ -176,37 +208,32 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                                         )
                                     }
                                     disabled={quantity <= 1}
-                                    className="w-10 h-10 rounded-xl bg-white dark:bg-gray-600 flex items-center justify-center text-gray-500 shadow-sm disabled:opacity-30 disabled:shadow-none hover:text-libero-red transition-all">
+                                    className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-gray-500 shadow-sm disabled:opacity-30 disabled:shadow-none hover:text-libero-red transition-all">
                                     <Minus size={24} strokeWidth={3} />
                                 </button>
-                                <span className="w-8 text-center text-2xl font-black text-gray-900 dark:text-white">
+                                <span className="w-8 text-center text-2xl font-black text-gray-900">
                                     {quantity}
                                 </span>
                                 <button
                                     onClick={() =>
                                         setQuantity((prev) => prev + 1)
                                     }
-                                    className="w-10 h-10 rounded-xl bg-white dark:bg-gray-600 flex items-center justify-center text-gray-500 shadow-sm hover:text-libero-red transition-all">
+                                    className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-gray-500 shadow-sm hover:text-libero-red transition-all">
                                     <Plus size={24} strokeWidth={3} />
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                {/* Gallery Column */}
-                <div className="order-1 lg:order-2 sticky top-24">
-                    <ProductGallery images={product.images} />
-                </div>
             </div>
 
             {/* Customization Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {/* Size Selection */}
-                <div className="flex flex-col gap-6 bg-white dark:bg-gray-800 rounded-[2.5rem] p-8 border border-gray-100 dark:border-gray-700 shadow-sm">
+                <div className="flex flex-col gap-6 bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-sm">
                     <div className="flex items-center justify-between">
                         <h3 className="text-2xl font-bold">{t('size')}</h3>
-                        <span className="bg-red-50 dark:bg-red-900/20 text-red-500 px-4 py-1 rounded-full text-sm font-bold border border-red-100 dark:border-red-900/30">
+                        <span className="bg-red-50 text-red-500 px-4 py-1 rounded-full text-sm font-bold border border-red-100">
                             {t('required')}
                         </span>
                     </div>
@@ -220,8 +247,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                                     className={cn(
                                         'flex items-center justify-between p-5 rounded-3xl border-2 transition-all cursor-pointer relative overflow-hidden group',
                                         isSelected
-                                            ? 'border-libero-red bg-libero-red/[0.03] dark:bg-libero-red/[0.05]'
-                                            : 'border-gray-50 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-200',
+                                            ? 'border-libero-red bg-libero-red/3'
+                                            : 'border-gray-50 bg-white hover:border-gray-200',
                                     )}>
                                     <div className="flex items-center gap-4 relative z-10">
                                         <div
@@ -229,7 +256,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                                                 'w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all',
                                                 isSelected
                                                     ? 'border-libero-red bg-libero-red/10'
-                                                    : 'border-gray-300 dark:border-gray-600',
+                                                    : 'border-gray-300',
                                             )}>
                                             {isSelected && (
                                                 <div className="w-3 h-3 rounded-full bg-libero-red" />
@@ -248,7 +275,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
                                     <div className="flex flex-col items-end relative z-10">
                                         <div className="flex items-center gap-2">
-                                            <span className="text-xl font-black text-gray-900 dark:text-white">
+                                            <span className="text-xl font-black text-gray-900">
                                                 {v.price} {t('currency')}
                                             </span>
                                             {v.originalPrice && (
@@ -274,13 +301,13 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 </div>
 
                 {/* Extras / Addons Selection */}
-                <div className="flex flex-col gap-6 bg-white dark:bg-gray-800 rounded-[2.5rem] p-8 border border-gray-100 dark:border-gray-700 shadow-sm">
+                <div className="flex flex-col gap-6 bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-sm">
                     <div className="flex flex-col gap-1">
                         <div className="flex items-center justify-between">
                             <h3 className="text-2xl font-bold">
                                 {t('addons')}
                             </h3>
-                            <span className="bg-gray-50 dark:bg-gray-700 text-gray-500 px-4 py-1 rounded-full text-sm font-bold border border-gray-100 dark:border-gray-600">
+                            <span className="bg-gray-50 text-gray-500 px-4 py-1 rounded-full text-sm font-bold border border-gray-100">
                                 {t('optional')}
                             </span>
                         </div>
@@ -292,7 +319,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                         </p>
                     </div>
 
-                    <div className="space-y-1 divide-y divide-gray-50 dark:divide-gray-700/50">
+                    <div className="space-y-1 divide-y divide-gray-50">
                         {product.addons.map((addon) => {
                             const isSelected = selectedAddons.includes(
                                 addon.id,
@@ -307,7 +334,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                                                 'w-7 h-7 rounded-xl border-2 flex items-center justify-center transition-all',
                                                 isSelected
                                                     ? 'border-libero-red bg-libero-red text-white'
-                                                    : 'border-gray-200 dark:border-gray-600 group-hover:border-gray-300',
+                                                    : 'border-gray-200 group-hover:border-gray-300',
                                             )}>
                                             {isSelected && (
                                                 <Check
@@ -316,12 +343,12 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                                                 />
                                             )}
                                         </div>
-                                        <span className="text-lg font-bold text-gray-700 dark:text-gray-200 transition-colors group-hover:text-black dark:group-hover:text-white">
+                                        <span className="text-lg font-bold text-gray-700 transition-colors group-hover:text-black">
                                             {addon.name}
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-lg font-black text-gray-900 dark:text-white">
+                                        <span className="text-lg font-black text-gray-900">
                                             + {addon.price} {t('currency')}
                                         </span>
                                     </div>
@@ -338,31 +365,31 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 </div>
 
                 {/* Sauce Selection */}
-                <div className="flex flex-col gap-6 bg-white dark:bg-gray-800 rounded-[2.5rem] p-8 border border-gray-100 dark:border-gray-700 shadow-sm">
+                <div className="flex flex-col gap-6 bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-sm">
                     <div className="flex items-center justify-between">
                         <h3 className="text-2xl font-bold">{t('sauce')}</h3>
-                        <span className="bg-gray-50 dark:bg-gray-700 text-gray-500 px-4 py-1 rounded-full text-sm font-bold border border-gray-100 dark:border-gray-600">
+                        <span className="bg-gray-50 text-gray-500 px-4 py-1 rounded-full text-sm font-bold border border-gray-100">
                             {t('optional')}
                         </span>
                     </div>
 
-                    <div className="space-y-1 divide-y divide-gray-50 dark:divide-gray-700/50">
+                    <div className="space-y-1 divide-y divide-gray-50">
                         {product.sauces.map((sauce) => {
                             const qty = selectedSauces[sauce.id] || 0;
                             return (
                                 <div
                                     key={sauce.id}
                                     className="flex items-center justify-between py-4 group">
-                                    <span className="text-lg font-bold text-gray-700 dark:text-gray-200 transition-colors group-hover:text-black dark:group-hover:text-white">
+                                    <span className="text-lg font-bold text-gray-700 transition-colors group-hover:text-black">
                                         {sauce.name}
                                     </span>
 
                                     <div className="flex items-center gap-4">
-                                        <span className="text-lg font-black text-gray-900 dark:text-white group-hover:text-libero-red">
+                                        <span className="text-lg font-black text-gray-900 group-hover:text-libero-red">
                                             + {sauce.price} {t('currency')}
                                         </span>
 
-                                        <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-700/50 p-1.5 rounded-2xl border border-gray-100 dark:border-gray-600">
+                                        <div className="flex items-center gap-3 bg-gray-50 p-1.5 rounded-2xl border border-gray-100">
                                             <button
                                                 onClick={() =>
                                                     updateSauceQuantity(
@@ -371,7 +398,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                                                     )
                                                 }
                                                 disabled={qty === 0}
-                                                className="w-8 h-8 rounded-xl bg-white dark:bg-gray-600 flex items-center justify-center text-gray-500 shadow-sm disabled:opacity-20 transition-all hover:text-red-500">
+                                                className="w-8 h-8 rounded-xl bg-white flex items-center justify-center text-gray-500 shadow-sm disabled:opacity-20 transition-all hover:text-red-500">
                                                 {qty === 1 ? (
                                                     <Trash2 size={16} />
                                                 ) : (
@@ -391,7 +418,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                                                         1,
                                                     )
                                                 }
-                                                className="w-8 h-8 rounded-xl bg-white dark:bg-gray-600 flex items-center justify-center text-gray-500 shadow-sm transition-all hover:text-libero-red">
+                                                className="w-8 h-8 rounded-xl bg-white flex items-center justify-center text-gray-500 shadow-sm transition-all hover:text-libero-red">
                                                 <Plus
                                                     size={16}
                                                     strokeWidth={3}
@@ -404,22 +431,6 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                         })}
                     </div>
                 </div>
-            </div>
-
-            {/* Floating Buttons Mockup (as shown in image) */}
-            <div className="fixed bottom-8 left-8 flex flex-col gap-4 z-40 pointer-events-none">
-                <button className="w-16 h-16 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform cursor-pointer pointer-events-auto shadow-green-500/20">
-                    <svg
-                        viewBox="0 0 24 24"
-                        width="32"
-                        height="32"
-                        fill="currentColor">
-                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.937 3.659 1.432 5.63 1.433h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-                    </svg>
-                </button>
-                <button className="w-16 h-16 bg-[#F04E30] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform cursor-pointer pointer-events-auto shadow-red-500/20">
-                    <MessageCircle size={32} fill="white" />
-                </button>
             </div>
         </div>
     );

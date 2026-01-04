@@ -107,6 +107,8 @@
     "sauce": "Choice of Sauce",
     "maxAddons": "You can choose up to {max} add-ons ({current}/{max})",
     "addToCart": "Add",
-    "currency": "SAR"
+    "currency": "SAR",
+    "share": "Share",
+    "favorite": "Favorite"
   }
 }

@@ -107,6 +107,8 @@
     "sauce": "اختيارك للصوص",
     "maxAddons": "يمكنك اختيار حتى {max} اضافات ({current}/{max})",
     "addToCart": "اضافة",
-    "currency": "ر.س"
+    "currency": "ر.س",
+    "share": "مشاركة",
+    "favorite": "المفضلة"
   }
 }
