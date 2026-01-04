@@ -9,10 +9,7 @@ interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
     asChild?: boolean;
 }
 
-// Utility function to combine class names (simple version)
-function cn(...classes: (string | undefined | boolean)[]) {
-    return classes.filter(Boolean).join(' ');
-}
+import { cn } from '@/lib/utils';
 
 // Variant styles mapping
 const variantStyles: Record<BadgeVariant, string> = {
