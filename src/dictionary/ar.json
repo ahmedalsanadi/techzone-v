@@ -95,5 +95,18 @@
     "dishName": "اسم الطبق",
     "save": "وفر {amount}",
     "addToCart": "اضافة إلى السلة"
+  },
+  "Product": {
+    "calories": "سعرة حرارية",
+    "prepTime": "دقيقة",
+    "allergies": "مسببات الحساسية",
+    "required": "مطلوب",
+    "optional": "اختياري",
+    "size": "الحجم",
+    "addons": "الاضافات",
+    "sauce": "اختيارك للصوص",
+    "maxAddons": "يمكنك اختيار حتى {max} اضافات ({current}/{max})",
+    "addToCart": "اضافة",
+    "currency": "ر.س"
   }
 }

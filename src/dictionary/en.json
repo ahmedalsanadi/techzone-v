@@ -95,5 +95,18 @@
     "dishName": "Dish Name",
     "save": "Save {amount}",
     "addToCart": "Add to Cart"
+  },
+  "Product": {
+    "calories": "Calories",
+    "prepTime": "min",
+    "allergies": "Allergy Information",
+    "required": "Required",
+    "optional": "Optional",
+    "size": "Size",
+    "addons": "Add-ons",
+    "sauce": "Choice of Sauce",
+    "maxAddons": "You can choose up to {max} add-ons ({current}/{max})",
+    "addToCart": "Add",
+    "currency": "SAR"
   }
 }
