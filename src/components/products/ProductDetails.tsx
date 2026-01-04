@@ -84,11 +84,11 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     };
 
     return (
-        <div className="flex flex-col gap-16 pb-24 relative pt-4">
+        <div className="flex flex-col gap-16 pb-24 relative pt-4 ">
             {/* Top Section: Info & Image */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-stretch">
                 {/* Info Column */}
-                <div className="lg:col-span-7 flex flex-col gap-8 order-2 ">
+                <div className="lg:col-span-7 flex flex-col gap-8 order-2 px-2">
                     <ProductShareActions />
 
                     <ProductInfo

@@ -23,8 +23,11 @@ const QtyButton = React.memo(
         <button
             onClick={onClick}
             disabled={disabled}
-            className="w-10 h-10 rounded-lg bg-white flex items-center justify-center text-gray-600 hover:text-[#B44B3A] transition-all shadow-sm disabled:opacity-30 active:scale-95">
-            <Icon size={18} strokeWidth={3} />
+            className="w-8 h-8 sm:w-10 sm:h-10 rounded-md sm:rounded-lg bg-white flex items-center justify-center text-gray-600 hover:text-[#B44B3A] transition-all shadow-sm disabled:opacity-30 active:scale-95">
+            <Icon
+                className="w-3.5 h-3.5 sm:w-[18px] sm:h-[18px]"
+                strokeWidth={3}
+            />
         </button>
     ),
 );
@@ -53,9 +56,9 @@ export default function ProductActionBar({
         <div className="border-t border-gray-100 pt-8 mt-auto">
             <div className="flex items-center justify-between gap-4">
                 {/* Quantity Selector */}
-                <div className="flex items-center bg-[#F1F3F5] rounded-xl p-1.5 shadow-inner">
+                <div className="flex items-center bg-[#F1F3F5] rounded-lg sm:rounded-xl p-1 sm:p-1.5 shadow-inner">
                     <QtyButton icon={Plus} onClick={handleIncrement} />
-                    <span className="w-12 text-center text-lg font-bold text-gray-800">
+                    <span className="w-8 sm:w-12 text-center text-base sm:text-lg font-bold text-gray-800">
                         {quantity}
                     </span>
                     <QtyButton
@@ -68,18 +71,20 @@ export default function ProductActionBar({
                 {/* Add to Cart Button */}
                 <button
                     onClick={onAddToCart}
-                    className="flex-1 max-w-[280px] bg-[#B44B3A] hover:bg-[#A04234] text-white rounded-xl px-6 py-4 flex items-center justify-between transition-all active:scale-[0.98] shadow-lg shadow-[#B44B3A]/10 group">
-                    <div className="flex items-center gap-2.5">
-                        <span className="text-xl font-black">
+                    className="flex-1 max-w-[280px] bg-[#B44B3A] hover:bg-[#A04234] text-white rounded-lg sm:rounded-xl px-4 py-2.5 sm:px-6 sm:py-4 flex items-center justify-between transition-all active:scale-[0.98] shadow-lg shadow-[#B44B3A]/10 group">
+                    <div className="flex items-center gap-2 sm:gap-2.5">
+                        <span className="text-base sm:text-xl font-black">
                             {totalPrice} {t('currency')}
                         </span>
                         {originalPrice && (
-                            <span className="text-sm opacity-60 line-through font-bold">
+                            <span className="text-[10px] sm:text-sm opacity-60 line-through font-bold">
                                 {originalPrice * quantity} {t('currency')}
                             </span>
                         )}
                     </div>
-                    <span className="text-lg font-bold">{t('addToCart')}</span>
+                    <span className="text-sm sm:text-lg font-bold">
+                        {t('addToCart')}
+                    </span>
                 </button>
             </div>
         </div>

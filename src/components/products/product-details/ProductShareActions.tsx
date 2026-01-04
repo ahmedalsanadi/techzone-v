@@ -10,12 +10,9 @@ interface ActionButtonProps {
 }
 
 const ActionButton = React.memo(({ icon: Icon, label }: ActionButtonProps) => (
-    <button className="bg-white border border-gray-100 text-gray-600 hover:bg-gray-50 flex items-center gap-2.5 px-5 py-2.5 rounded-2xl transition-all group shadow-sm cursor-pointer">
-        <Icon
-            size={18}
-            className="text-gray-400 group-hover:text-libero-red transition-colors"
-        />
-        <span className="text-sm font-bold">{label}</span>
+    <button className="bg-white border border-gray-100 text-gray-600 hover:bg-gray-50 flex items-center gap-1.5 sm:gap-2.5 px-3 py-2 sm:px-5 sm:py-2.5 rounded-md sm:rounded-xl transition-all group shadow-sm cursor-pointer">
+        <Icon className="w-4 h-4 sm:w-[18px] sm:h-[18px] text-gray-400 group-hover:text-libero-red transition-colors" />
+        <span className="text-xs sm:text-sm font-bold">{label}</span>
     </button>
 ));
 
@@ -33,8 +30,8 @@ export default function ProductShareActions() {
     );
 
     return (
-        <div className="flex items-center justify-end gap-3">
-            <div className="flex items-center gap-3">
+        <div className="flex items-center justify-end gap-2 sm:gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
                 {actions.map((action, index) => (
                     <ActionButton key={index} {...action} />
                 ))}

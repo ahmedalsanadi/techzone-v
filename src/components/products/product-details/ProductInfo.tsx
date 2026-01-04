@@ -56,8 +56,8 @@ export default function ProductInfo({
 
     return (
         <>
-            <div className="space-y-5 text-right rtl:text-right">
-                <h1 className="text-4xl font-bold tracking-tight text-gray-900 leading-tight">
+            <div className="space-y-5 ">
+                <h1 className="text-2xl font-bold tracking-tight text-gray-900 leading-tight">
                     {name}
                 </h1>
                 <p className="text-gray-500 font-medium leading-relaxed text-base max-w-2xl">
@@ -65,7 +65,7 @@ export default function ProductInfo({
                 </p>
             </div>
 
-            <div className="flex items-center gap-4 justify-start lg:justify-end">
+            <div className="flex items-center gap-4 justify-start ">
                 {infoItems.map((item, index) => (
                     <InfoItem key={index} {...item} />
                 ))}
