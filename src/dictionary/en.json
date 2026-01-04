@@ -109,6 +109,8 @@
     "addToCart": "Add",
     "currency": "SAR",
     "share": "Share",
-    "favorite": "Favorite"
+    "favorite": "Favorite",
+    "products": "Products",
+    "home": "Home"
   }
 }

@@ -11,6 +11,7 @@ import ProductActionBar from './product-details/ProductActionBar';
 import SizeSelector from './product-details/SizeSelector';
 import AddonSelector from './product-details/AddonSelector';
 import SauceSelector from './product-details/SauceSelector';
+import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
 interface ProductDetailsProps {
     product: Product;
@@ -84,35 +85,50 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     };
 
     return (
-        <div className="flex flex-col gap-16 pb-24 relative pt-4 ">
-            {/* Top Section: Info & Image */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-stretch">
-                {/* Info Column */}
-                <div className="lg:col-span-7 flex flex-col gap-8 order-2 px-2">
-                    <ProductShareActions />
+        <div className="flex flex-col gap-16 pb-24 relative pt-4 px-2 md:px-4">
+            <div className="flex flex-col gap-6">
+                {/* Breadcrumbs */}
+                <Breadcrumbs
+                    items={[
+                        { label: t('home'), href: '/' },
+                        { label: t('products'), href: '/products' },
+                        { label: product.name },
+                    ]}
+                />
 
-                    <ProductInfo
-                        name={product.name}
-                        description={product.description}
-                        calories={selectedVariety.calories || product.calories}
-                        prepTime={selectedVariety.prepTime || product.prepTime}
-                    />
+                {/* Top Section: Info & Image */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-stretch">
+                    {/* Info Column */}
+                    <div className="lg:col-span-7 flex flex-col gap-8 order-2 ">
+                        <ProductShareActions />
 
-                    <ProductAllergies allergies={product.allergies} />
+                        <ProductInfo
+                            name={product.name}
+                            description={product.description}
+                            calories={
+                                selectedVariety.calories || product.calories
+                            }
+                            prepTime={
+                                selectedVariety.prepTime || product.prepTime
+                            }
+                        />
 
-                    <ProductActionBar
-                        totalPrice={calculateTotalPrice()}
-                        originalPrice={selectedVariety.originalPrice}
-                        quantity={quantity}
-                        setQuantity={setQuantity}
-                        onAddToCart={handleAddToCart}
-                    />
-                </div>
+                        <ProductAllergies allergies={product.allergies} />
 
-                {/* Gallery Column */}
-                <div className="lg:col-span-5 order-1 ">
-                    <div className="sticky top-24">
-                        <ProductGallery images={product.images} />
+                        <ProductActionBar
+                            totalPrice={calculateTotalPrice()}
+                            originalPrice={selectedVariety.originalPrice}
+                            quantity={quantity}
+                            setQuantity={setQuantity}
+                            onAddToCart={handleAddToCart}
+                        />
+                    </div>
+
+                    {/* Gallery Column */}
+                    <div className="lg:col-span-5 order-1 ">
+                        <div className="sticky top-24">
+                            <ProductGallery images={product.images} />
+                        </div>
                     </div>
                 </div>
             </div>

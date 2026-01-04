@@ -34,10 +34,11 @@ export default function ProductAllergies({ allergies }: ProductAllergiesProps) {
     return (
         <div className="space-y-4 pt-4">
             <div className="flex items-center gap-2 text-gray-900 justify-start">
-                <h3 className="text-base font-bold">{t('allergies')}</h3>
                 <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
                     <Info size={18} />
                 </div>
+                <h3 className="text-base font-bold">{t('allergies')}</h3>
+
             </div>
 
             <div className="flex flex-wrap gap-6 justify-start">
