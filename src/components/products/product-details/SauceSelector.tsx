@@ -6,6 +6,7 @@ import { ProductSauce } from '@/lib/mock-data';
 import { Plus, Minus, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import CustomizationCard from './CustomizationCard';
+import CurrencySymbol from '@/components/ui/CurrencySymbol';
 
 interface SauceSelectorProps {
     sauces: ProductSauce[];
@@ -28,9 +29,12 @@ const SauceItem = React.memo(
             </span>
 
             <div className="flex items-center gap-3">
-                <span className="text-md font-bold  text-gray-800">
-                    + {sauce.price} {t('currency')}
-                </span>
+                <div className="flex items-center gap-1">
+                    <span className="text-md font-bold text-gray-800 leading-none">
+                        + {sauce.price}
+                    </span>
+                    <CurrencySymbol className="w-4 h-4" />
+                </div>
 
                 <div className="flex items-center gap-2 bg-[#F1F3F5] p-1 rounded-lg shadow-inner">
                     <button

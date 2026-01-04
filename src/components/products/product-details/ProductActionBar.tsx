@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Plus, Minus } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import CurrencySymbol from '@/components/ui/CurrencySymbol';
 
 interface ProductActionBarProps {
     totalPrice: number;
@@ -26,10 +27,7 @@ const QtyButton = React.memo(
             onClick={onClick}
             disabled={disabled}
             className="w-9 h-9  rounded-lg bg-white flex items-center justify-center text-gray-600 hover:text-[#B44B3A] transition-all shadow-sm disabled:opacity-30 active:scale-95 cursor-pointer">
-            <Icon
-                className="w-3.5 h-3.5 "
-                strokeWidth={3}
-            />
+            <Icon className="w-3.5 h-3.5 " strokeWidth={3} />
         </button>
     ),
 );
@@ -81,29 +79,19 @@ export default function ProductActionBar({
                     </span>
                     <div className="flex items-center gap-2 sm:gap-2.5">
                         {originalPrice && (
-                            <span className="text-[10px] sm:text-sm opacity-60 line-through font-bold">
-                                {originalPrice * quantity}
-                                {t('currency') !== 'ر.س' && ` ${t('currency')}`}
-                            </span>
+                            <div className="flex items-center gap-1 opacity-60">
+                                <span className="text-[10px] sm:text-sm line-through font-bold">
+                                    {originalPrice * quantity}
+                                </span>
+                                <CurrencySymbol className="brightness-0 invert w-2.5 h-2.5" />
+                            </div>
                         )}
 
                         <div className="flex items-center gap-1">
                             <span className="text-base sm:text-xl font-black">
                                 {totalPrice}
                             </span>
-                            {t('currency') === 'ر.س' ? (
-                                <Image
-                                    src="/images/svgs/sar-riyal.svg"
-                                    alt="SAR"
-                                    width={16}
-                                    height={16}
-                                    className="brightness-0 invert w-3.5 h-3.5 sm:w-5 sm:h-5 opacity-90"
-                                />
-                            ) : (
-                                <span className="text-base sm:text-lg font-bold">
-                                    {t('currency')}
-                                </span>
-                            )}
+                            <CurrencySymbol className="brightness-0 invert w-3.5 h-3.5 sm:w-5 sm:h-5" />
                         </div>
                     </div>
                 </button>

@@ -6,6 +6,7 @@ import { ProductAddon } from '@/lib/mock-data';
 import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import CustomizationCard from './CustomizationCard';
+import CurrencySymbol from '@/components/ui/CurrencySymbol';
 
 interface AddonSelectorProps {
     addons: ProductAddon[];
@@ -41,10 +42,11 @@ const AddonItem = React.memo(
                     {addon.name}
                 </span>
             </div>
-            <div className="flex items-center gap-2">
-                <span className="text-md font-bold text-gray-900">
-                    + {addon.price} {t('currency')}
+            <div className="flex items-center gap-1.5">
+                <span className="text-md font-bold text-gray-900 leading-none">
+                    + {addon.price}
                 </span>
+                <CurrencySymbol className="w-4 h-4" />
             </div>
             <input
                 type="checkbox"

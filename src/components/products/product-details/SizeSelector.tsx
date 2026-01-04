@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { ProductVariety } from '@/lib/mock-data';
 import { cn } from '@/lib/utils';
 import CustomizationCard from './CustomizationCard';
+import CurrencySymbol from '@/components/ui/CurrencySymbol';
 
 interface SizeSelectorProps {
     varieties: ProductVariety[];
@@ -21,7 +22,7 @@ interface VarietyItemProps {
 
 const VarietyItem = React.memo(
     ({ v, isSelected, onSelect, t }: VarietyItemProps) => (
-        <label className="flex items-center justify-between py-3 cursor-pointer group hover:bg-gray-50/50 -mx-2 px-2 rounded-xl transition-colors">
+        <label className="flex items-center justify-between py-3 cursor-pointer group hover:bg-gray-50 -mx-2 px-2 rounded-xl transition-colors">
             <div className="flex items-center gap-3">
                 <div
                     className={cn(
@@ -61,13 +62,19 @@ const VarietyItem = React.memo(
 
             <div className="flex items-center gap-2">
                 <div className="flex flex-col items-end">
-                    <span className="text-md font-bold text-gray-900">
-                        {v.price} {t('currency')}
-                    </span>
-                    {v.originalPrice && (
-                        <span className="text-[10px] text-gray-300 line-through font-bold">
-                            {v.originalPrice}
+                    <div className="flex items-center gap-1">
+                        <span className="text-md font-bold text-gray-900 leading-none">
+                            {v.price}
                         </span>
+                        <CurrencySymbol className="w-3.5 h-3.5" />
+                    </div>
+                    {v.originalPrice && (
+                        <div className="flex items-center gap-1 opacity-60">
+                            <span className="text-[12px] text-gray-500 line-through font-semibold leading-none">
+                                {v.originalPrice}
+                            </span>
+                            <CurrencySymbol className="w-3 h-3" />
+                        </div>
                     )}
                 </div>
             </div>
