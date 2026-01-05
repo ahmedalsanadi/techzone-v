@@ -131,5 +131,10 @@
       "delivered": "Delivered",
       "waiting": "Waiting"
     }
+  },
+  "NotFound": {
+    "title": "Oops! Page Not Found",
+    "description": "It seems you've taken a wrong turn. The page you're looking for isn't available or has been moved.",
+    "backHome": "Back to Home"
   }
 }

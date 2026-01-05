@@ -10,14 +10,14 @@ export const NAV_ITEMS: NavItemType[] = [
     {
         id: 'home',
         label: 'الرئيسية',
-        href: '',
+        href: '/',
         icon: '/images/svgs/home-icon.svg',
         alt: 'Home',
     },
     {
         id: 'categories',
         label: 'الأقسام',
-        href: '/categories',
+        href: '/products',
         icon: '/images/svgs/4grid-squares-icon.svg',
         alt: 'Categories',
     },

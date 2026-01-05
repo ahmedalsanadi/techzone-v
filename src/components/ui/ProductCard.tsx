@@ -4,6 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import { Heart, Plus } from 'lucide-react';
 import CurrencySymbol from './CurrencySymbol';
+import { Link } from '@/i18n/navigation';
 
 interface ProductCardProps {
     name: string;
@@ -29,7 +30,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
     onClick,
 }) => {
     return (
-        <div
+    <Link href={`/products/1`}>
+            <div
             onClick={onClick}
             className="bg-white border border-gray-100 rounded-xl md:rounded-3xl p-4 md:p-6 relative group shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-500 flex flex-col items-center cursor-pointer">
             {/* Wishlist Button */}
@@ -91,6 +93,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 </span>
             </button>
         </div>
+</Link>
     );
 };
 
