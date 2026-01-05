@@ -31,6 +31,8 @@ const DOMAIN = siteConfig.url;
 
 import PageContainer from '@/components/layouts/PageContainer';
 
+import { QueryProvider } from '@/components/providers/query-provider';
+
 export default async function RootLayout({
     children,
     params,
@@ -79,9 +81,12 @@ export default async function RootLayout({
                     enableSystem
                     disableTransitionOnChange>
                     <NextIntlClientProvider locale={locale} messages={messages}>
-                        <PageContainer>{children}</PageContainer>
+                        <QueryProvider>
+                            <PageContainer>{children}</PageContainer>
+                        </QueryProvider>
                     </NextIntlClientProvider>
                 </ThemeProvider>
+
                 <Analytics />
                 <SpeedInsights />
             </body>
