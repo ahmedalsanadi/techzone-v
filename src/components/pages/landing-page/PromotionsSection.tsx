@@ -3,6 +3,7 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import ProductCard from '@/components/ui/ProductCard';
+import { useCartStore } from '@/store/useCartStore';
 
 const products = [
     {
@@ -49,6 +50,7 @@ const products = [
 
 const PromotionsSection = () => {
     const t = useTranslations('Promotions');
+    const addItem = useCartStore((state) => state.addItem);
 
     return (
         <section className="mt-12 mb-16" dir="rtl">
@@ -71,10 +73,21 @@ const PromotionsSection = () => {
                         image={product.image}
                         price={product.price}
                         oldPrice={product.oldPrice}
+                        href={`/products/${product.id}`}
                         discountBadge={t('save', {
                             amount: product.discountAmount,
                         })}
                         addToCartLabel={t('addToCart')}
+                        onAddToCartClick={() => {
+                            addItem({
+                                id: String(product.id),
+                                name: t(product.nameKey),
+
+                                image: product.image,
+                                price: product.price,
+                                categoryId: 'promo', // Placeholder
+                            });
+                        }}
                     />
                 ))}
             </div>

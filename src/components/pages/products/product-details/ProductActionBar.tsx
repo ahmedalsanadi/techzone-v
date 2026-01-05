@@ -26,7 +26,7 @@ const QtyButton = React.memo(
         <button
             onClick={onClick}
             disabled={disabled}
-            className="w-9 h-9  rounded-lg bg-white flex items-center justify-center text-gray-600 hover:text-[#B44B3A] transition-all shadow-sm disabled:opacity-30 active:scale-95 cursor-pointer">
+            className="w-9 h-9  rounded-lg bg-white flex items-center justify-center text-gray-600 hover:text-[#B44734] transition-all shadow-sm disabled:opacity-30 active:scale-95 cursor-pointer">
             <Icon className="w-3.5 h-3.5 " strokeWidth={3} />
         </button>
     ),
@@ -72,8 +72,8 @@ export default function ProductActionBar({
                 {/* Add to Cart Button */}
                 <button
                     onClick={onAddToCart}
-                    className="flex items-center justify-between gap-12 max-w-[260px] bg-[#B44B3A] hover:bg-[#A04234] text-white
-                     px-5 py-2.5  rounded-lg transition-all active:scale-[0.98] shadow-lg shadow-[#B44B3A]/10 group cursor-pointer">
+                    className="flex items-center justify-between gap-12 max-w-[260px] bg-[#B44734] hover:bg-[#9a3c2c] text-white
+                     px-5 py-2.5  rounded-lg transition-all active:scale-[0.98] shadow-lg shadow-[#B44734]/10 group cursor-pointer">
                     <span className="text-sm sm:text-lg font-bold">
                         {t('addToCart')}
                     </span>

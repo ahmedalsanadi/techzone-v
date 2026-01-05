@@ -12,6 +12,7 @@ import SizeSelector from './product-details/SizeSelector';
 import AddonSelector from './product-details/AddonSelector';
 import SauceSelector from './product-details/SauceSelector';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import { useCartStore } from '@/store/useCartStore';
 
 interface ProductDetailsProps {
     product: Product;
@@ -73,15 +74,30 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         });
     };
 
+    const addItem = useCartStore((state) => state.addItem);
+
     const handleAddToCart = () => {
-        console.log('Added to cart:', {
-            product,
-            selectedVariety,
-            selectedAddons,
-            selectedSauces,
+        // Create a unique key for this specific configuration
+        const addonsKey = selectedAddons.sort().join(',');
+        const saucesKey = JSON.stringify(selectedSauces);
+        const uniqueId = `${product.id}-${selectedVarietyId}-${addonsKey}-${saucesKey}`;
+
+        addItem(
+            {
+                id: uniqueId,
+                name: product.name,
+                image: product.images[0],
+                price: calculateTotalPrice() / quantity,
+                categoryId: 'detailed',
+                metadata: {
+                    productId: product.id,
+                    variety: selectedVariety,
+                    addons: selectedAddons,
+                    sauces: selectedSauces,
+                },
+            },
             quantity,
-            totalPrice: calculateTotalPrice(),
-        });
+        );
     };
 
     return (

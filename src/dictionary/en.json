@@ -25,9 +25,6 @@
     "wallet": "Wallet",
     "logout": "Logout"
   },
-  "Cart": {
-    "empty": "Your shopping cart is empty"
-  },
   "Notifications": {
     "empty": "No new notifications"
   },
@@ -136,5 +133,20 @@
     "title": "Oops! Page Not Found",
     "description": "It seems you've taken a wrong turn. The page you're looking for isn't available or has been moved.",
     "backHome": "Back to Home"
+  },
+  "Cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty",
+    "emptyDesc": "It looks like you haven't added any products yet. Explore our menu and pick your favorite meal!",
+    "backToMenu": "Back to Menu",
+    "viewCart": "View Cart",
+    "summary": "Order Summary",
+    "subtotal": "Subtotal",
+    "delivery": "Delivery Fee",
+    "free": "Free",
+    "total": "Total",
+    "checkout": "Checkout",
+    "remove": "Remove",
+    "items": "{count} items"
   }
 }

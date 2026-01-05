@@ -4,6 +4,7 @@ import React from 'react';
 import { Product } from '@/data/mock-data';
 import ProductCard from '@/components/ui/ProductCard';
 import { useTranslations } from 'next-intl';
+import { useCartStore } from '@/store/useCartStore';
 
 interface ProductsGridProps {
     products: Product[];
@@ -12,6 +13,7 @@ interface ProductsGridProps {
 
 const ProductsGrid: React.FC<ProductsGridProps> = ({ products, loading }) => {
     const t = useTranslations('Promotions');
+    const addItem = useCartStore((state) => state.addItem);
 
     if (loading) {
         return (
@@ -45,12 +47,23 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({ products, loading }) => {
                     image={product.image}
                     price={product.price}
                     oldPrice={product.oldPrice}
+                    href={`/products/${product.id}`}
                     discountBadge={
                         product.discountAmount
                             ? t('save', { amount: product.discountAmount })
                             : undefined
                     }
                     addToCartLabel={t('addToCart')}
+                    onAddToCartClick={() => {
+                        addItem({
+                            id: String(product.id),
+                            name: t(product.nameKey),
+
+                            image: product.image,
+                            price: product.price,
+                            categoryId: product.categoryId,
+                        });
+                    }}
                 />
             ))}
         </div>
