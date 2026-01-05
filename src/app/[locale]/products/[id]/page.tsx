@@ -1,8 +1,7 @@
 import { getProductById } from '@/lib/mock-data';
 import { notFound } from 'next/navigation';
-import ProductDetails from '@/components/products/ProductDetails';
+import ProductDetails from '@/components/pages/products/ProductDetails';
 import { Metadata } from 'next';
-
 
 interface Props {
     params: Promise<{ id: string; locale: string }>;

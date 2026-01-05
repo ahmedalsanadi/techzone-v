@@ -4,7 +4,7 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 import { ProductVariety } from '@/lib/mock-data';
 import { cn } from '@/lib/utils';
-import CustomizationCard from './CustomizationCard';
+import CustomizationCard from '@/components/pages/products/product-details/CustomizationCard';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
 
 interface SizeSelectorProps {

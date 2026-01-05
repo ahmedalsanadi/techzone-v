@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { ProductAddon } from '@/lib/mock-data';
 import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import CustomizationCard from './CustomizationCard';
+import CustomizationCard from '@/components/pages/products/product-details/CustomizationCard';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
 
 interface AddonSelectorProps {

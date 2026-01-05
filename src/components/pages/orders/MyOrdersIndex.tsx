@@ -1,7 +1,6 @@
 import React from 'react';
 import { getTranslations } from 'next-intl/server';
 import OrderCard from './OrderCard';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import SubHeaderManager from '@/components/layouts/SubHeaderManager';
 import { Order } from '@/lib/mock-data';
 
@@ -11,7 +10,6 @@ interface MyOrdersIndexProps {
 
 export default async function MyOrdersIndex({ orders }: MyOrdersIndexProps) {
     const t = await getTranslations('Orders');
-    const commonT = await getTranslations('Product');
     return (
         
         <section className="min-h-screen pb-16 pt-6 px-2 md:px-4">
@@ -27,7 +25,7 @@ export default async function MyOrdersIndex({ orders }: MyOrdersIndexProps) {
 
             {/* Orders Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
-                {orders.map((order, index) => (
+                {orders.map((order) => (
                     <div
                         key={order.id}
                         className="h-full">

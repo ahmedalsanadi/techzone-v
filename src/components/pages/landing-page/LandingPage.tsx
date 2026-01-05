@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 // import { useUiStore } from '@/store/use-ui-store';
 import HeroSlider from './HeroSlider';
 import CategorySection from './CategorySection';
