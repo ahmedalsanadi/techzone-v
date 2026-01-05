@@ -86,9 +86,7 @@ export default async function RootLayout({
                         <QueryProvider>
                             <PageContainer>{children}</PageContainer>
                             <Toaster
-                                position={
-                                    isArabic ? 'top-right' : 'top-left'
-                                }
+                                position={isArabic ? 'top-right' : 'top-left'}
                                 expand={false}
                                 richColors
                                 closeButton
@@ -100,14 +98,11 @@ export default async function RootLayout({
                                         background: 'rgba(255, 255, 255, 0.95)',
                                     },
                                     actionButtonStyle: {
-                                        backgroundColor: '#B44734',
-                                        color: '#fff',
-
-                                        borderRadius: '12px',
-                                        fontWeight: 'bold',
-                                        padding: '10px 16px',
-                                        fontSize: '12px',
-                                        transition: 'all 0.2s',
+                                        backgroundColor: 'transparent',
+                                        color: '#B44734',
+                                        fontWeight: '800',
+                                        fontSize: '13px',
+                                        padding: '8px 12px',
                                     },
                                 }}
                             />
