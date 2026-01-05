@@ -4,7 +4,7 @@ export default function FloatingButtons() {
     return (
         <div>
             {/* Floating Buttons Mockup (as shown in image) */}
-            <div className="fixed bottom-40 end-8 flex flex-col gap-4 z-40 pointer-events-none">
+            <div className="fixed bottom-4 md:bottom-40 end-2 md:end-8 flex flex-col gap-2 md:gap-4 z-40 pointer-events-none">
                 {/*Whatsapp floating icon button */}
                 <button className="w-12 h-12 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform cursor-pointer pointer-events-auto shadow-green-500/20">
                     <svg
