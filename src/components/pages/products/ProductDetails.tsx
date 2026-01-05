@@ -12,8 +12,7 @@ import SizeSelector from './product-details/SizeSelector';
 import AddonSelector from './product-details/AddonSelector';
 import SauceSelector from './product-details/SauceSelector';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
-import { useCartStore } from '@/store/useCartStore';
-import { toast } from 'sonner';
+import { useCartActions } from '@/hooks/useCartActions';
 
 interface ProductDetailsProps {
     product: Product;
@@ -75,8 +74,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         });
     };
 
-    const addItem = useCartStore((state) => state.addItem);
-    const tCart = useTranslations('Cart');
+    const { addToCart } = useCartActions();
 
     const handleAddToCart = () => {
         // Create a unique key for this specific configuration
@@ -84,7 +82,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         const saucesKey = JSON.stringify(selectedSauces);
         const uniqueId = `${product.id}-${selectedVarietyId}-${addonsKey}-${saucesKey}`;
 
-        addItem(
+        addToCart(
             {
                 id: uniqueId,
                 name: product.name,
@@ -100,7 +98,6 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             },
             quantity,
         );
-        toast.success(tCart('added', { name: product.name }));
     };
 
     return (

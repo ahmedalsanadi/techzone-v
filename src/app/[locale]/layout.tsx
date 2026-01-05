@@ -10,6 +10,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { siteConfig } from '../../config/site';
 import '../globals.css';
 import { Toaster } from 'sonner';
+import { ShoppingCart } from 'lucide-react';
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -88,9 +89,27 @@ export default async function RootLayout({
                                 position={
                                     isArabic ? 'top-right' : 'top-left'
                                 }
-                                expand={true}
+                                expand={false}
                                 richColors
+                                closeButton
                                 dir={isArabic ? 'rtl' : 'ltr'}
+                                toastOptions={{
+                                    className:
+                                        'font-ibm-plex-sans-arabic border-0 shadow-[0_20px_40px_rgba(0,0,0,0.15)] rounded-2xl p-4 gap-4 bg-white/95 backdrop-blur-md',
+                                    style: {
+                                        background: 'rgba(255, 255, 255, 0.95)',
+                                    },
+                                    actionButtonStyle: {
+                                        backgroundColor: '#B44734',
+                                        color: '#fff',
+
+                                        borderRadius: '12px',
+                                        fontWeight: 'bold',
+                                        padding: '10px 16px',
+                                        fontSize: '12px',
+                                        transition: 'all 0.2s',
+                                    },
+                                }}
                             />
                         </QueryProvider>
                     </NextIntlClientProvider>

@@ -3,8 +3,7 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import ProductCard from '@/components/ui/ProductCard';
-import { useCartStore } from '@/store/useCartStore';
-import { toast } from 'sonner';
+import { useCartActions } from '@/hooks/useCartActions';
 
 const products = [
     {
@@ -51,8 +50,7 @@ const products = [
 
 const PromotionsSection = () => {
     const t = useTranslations('Promotions');
-    const tCart = useTranslations('Cart');
-    const addItem = useCartStore((state) => state.addItem);
+    const { addToCart } = useCartActions();
 
     return (
         <section className="mt-12 mb-16" dir="rtl">
@@ -82,14 +80,13 @@ const PromotionsSection = () => {
                         addToCartLabel={t('addToCart')}
                         onAddToCartClick={() => {
                             const name = t(product.nameKey);
-                            addItem({
+                            addToCart({
                                 id: String(product.id),
                                 name,
                                 image: product.image,
                                 price: product.price,
                                 categoryId: 'promo', // Placeholder
                             });
-                            toast.success(tCart('added', { name }));
                         }}
                     />
                 ))}
