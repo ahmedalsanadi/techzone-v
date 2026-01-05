@@ -25,14 +25,11 @@ export interface ButtonProps
     children?: React.ReactNode;
 }
 
-// Utility function to merge classes (simplified version of cn)
-const cn = (...classes: (string | undefined | boolean)[]): string => {
-    return classes.filter(Boolean).join(' ');
-};
+import { cn } from '@/lib/utils';
 
 // Base styles that are common to all buttons
 const baseStyles =
-    'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 outline-none focus-visible:ring-[3px]';
+    'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 outline-none focus-visible:ring-[3px] cursor-pointer';
 
 // Variant styles
 const variantStyles: Record<ButtonVariant, string> = {
