@@ -87,7 +87,10 @@
     "burger": "Burger",
     "sweets": "Sweets",
     "drinks": "Drinks",
-    "meals": "Meals"
+    "meals": "Meals",
+    "chickenPizza": "Chicken Pizza",
+    "beefPizza": "Beef Pizza",
+    "veggiePizza": "Veggie Pizza"
   },
   "Promotions": {
     "title": "Offers",
@@ -111,7 +114,8 @@
     "share": "Share",
     "favorite": "Favorite",
     "products": "Products",
-    "home": "Home"
+    "home": "Home",
+    "description": "Explore Fasto's diverse menu, from delicious pizzas and mouth-watering burgers to sweets and refreshing drinks. Order now for an unforgettable taste."
   },
   "Orders": {
     "title": "My Orders",
