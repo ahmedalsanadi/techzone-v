@@ -13,6 +13,7 @@ import AddonSelector from './product-details/AddonSelector';
 import SauceSelector from './product-details/SauceSelector';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import { useCartStore } from '@/store/useCartStore';
+import { toast } from 'sonner';
 
 interface ProductDetailsProps {
     product: Product;
@@ -75,6 +76,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     };
 
     const addItem = useCartStore((state) => state.addItem);
+    const tCart = useTranslations('Cart');
 
     const handleAddToCart = () => {
         // Create a unique key for this specific configuration
@@ -98,6 +100,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             },
             quantity,
         );
+        toast.success(tCart('added', { name: product.name }));
     };
 
     return (

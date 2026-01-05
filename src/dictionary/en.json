@@ -147,6 +147,7 @@
     "total": "Total",
     "checkout": "Checkout",
     "remove": "Remove",
-    "items": "{count} items"
+    "items": "{count} items",
+    "added": "{name} has been added to your cart!"
   }
 }

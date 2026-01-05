@@ -5,6 +5,7 @@ import { Product } from '@/data/mock-data';
 import ProductCard from '@/components/ui/ProductCard';
 import { useTranslations } from 'next-intl';
 import { useCartStore } from '@/store/useCartStore';
+import { toast } from 'sonner';
 
 interface ProductsGridProps {
     products: Product[];
@@ -13,6 +14,7 @@ interface ProductsGridProps {
 
 const ProductsGrid: React.FC<ProductsGridProps> = ({ products, loading }) => {
     const t = useTranslations('Promotions');
+    const tCart = useTranslations('Cart');
     const addItem = useCartStore((state) => state.addItem);
 
     if (loading) {
@@ -55,14 +57,15 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({ products, loading }) => {
                     }
                     addToCartLabel={t('addToCart')}
                     onAddToCartClick={() => {
+                        const name = t(product.nameKey);
                         addItem({
                             id: String(product.id),
-                            name: t(product.nameKey),
-
+                            name,
                             image: product.image,
                             price: product.price,
                             categoryId: product.categoryId,
                         });
+                        toast.success(tCart('added', { name }));
                     }}
                 />
             ))}

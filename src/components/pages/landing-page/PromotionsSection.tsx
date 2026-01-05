@@ -4,6 +4,7 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 import ProductCard from '@/components/ui/ProductCard';
 import { useCartStore } from '@/store/useCartStore';
+import { toast } from 'sonner';
 
 const products = [
     {
@@ -50,6 +51,7 @@ const products = [
 
 const PromotionsSection = () => {
     const t = useTranslations('Promotions');
+    const tCart = useTranslations('Cart');
     const addItem = useCartStore((state) => state.addItem);
 
     return (
@@ -79,14 +81,15 @@ const PromotionsSection = () => {
                         })}
                         addToCartLabel={t('addToCart')}
                         onAddToCartClick={() => {
+                            const name = t(product.nameKey);
                             addItem({
                                 id: String(product.id),
-                                name: t(product.nameKey),
-
+                                name,
                                 image: product.image,
                                 price: product.price,
                                 categoryId: 'promo', // Placeholder
                             });
+                            toast.success(tCart('added', { name }));
                         }}
                     />
                 ))}

@@ -9,6 +9,7 @@ import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { siteConfig } from '../../config/site';
 import '../globals.css';
+import { Toaster } from 'sonner';
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -83,6 +84,14 @@ export default async function RootLayout({
                     <NextIntlClientProvider locale={locale} messages={messages}>
                         <QueryProvider>
                             <PageContainer>{children}</PageContainer>
+                            <Toaster
+                                position={
+                                    isArabic ? 'top-right' : 'top-left'
+                                }
+                                expand={true}
+                                richColors
+                                dir={isArabic ? 'rtl' : 'ltr'}
+                            />
                         </QueryProvider>
                     </NextIntlClientProvider>
                 </ThemeProvider>
