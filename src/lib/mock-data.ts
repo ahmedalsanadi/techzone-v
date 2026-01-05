@@ -107,3 +107,61 @@ export async function getProductById(id: string): Promise<Product | null> {
     await new Promise((resolve) => setTimeout(resolve, 500));
     return mockProducts.find((p) => p.id === id) || null;
 }
+
+export interface Order {
+    id: string;
+    orderNumber: string;
+    branchName: string;
+    createdAt: string;
+    deliveryLocation: string;
+    totalAmount: number;
+    rating: number;
+    status: 'delivered' | 'waiting';
+}
+
+export async function getOrders(): Promise<Order[]> {
+    // Simulate API delay
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    return [
+        {
+            id: '1',
+            orderNumber: '2431',
+            branchName: 'النخيل',
+            createdAt: '22/11/2025, 10:00 م',
+            deliveryLocation: 'للمنزل',
+            totalAmount: 35.0,
+            rating: 4.5,
+            status: 'delivered',
+        },
+        {
+            id: '2',
+            orderNumber: '2431',
+            branchName: 'النخيل',
+            createdAt: '22/11/2025, 10:00 م',
+            deliveryLocation: 'للمنزل',
+            totalAmount: 35.0,
+            rating: 4.5,
+            status: 'waiting',
+        },
+        {
+            id: '3',
+            orderNumber: '2431',
+            branchName: 'النخيل',
+            createdAt: '22/11/2025, 10:00 م',
+            deliveryLocation: 'للمنزل',
+            totalAmount: 35.0,
+            rating: 4.5,
+            status: 'waiting',
+        },
+        {
+            id: '4',
+            orderNumber: '2431',
+            branchName: 'النخيل',
+            createdAt: '22/11/2025, 10:00 م',
+            deliveryLocation: 'للمنزل',
+            totalAmount: 35.0,
+            rating: 4.5,
+            status: 'waiting',
+        },
+    ];
+}

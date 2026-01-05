@@ -112,5 +112,20 @@
     "favorite": "المفضلة",
     "products": "المنتجات",
     "home": "الرئيسية"
+  },
+  "Orders": {
+    "title": "طلباتي",
+    "orderNumber": "طلب رقم #{number}",
+    "branch": "فرع {name}",
+    "createdAt": "تم انشاء الطلب في {date}, {time}",
+    "deliveryTo": "توصيل إلى {location}",
+    "total": "{amount}",
+    "details": "التفاصيل",
+    "reorder": "إعادة الطلب",
+    "reportProblem": "الإبلاغ عن مشكلة",
+    "status": {
+      "delivered": "تم التوصيل",
+      "waiting": "في انتظار الموعد"
+    }
   }
 }
