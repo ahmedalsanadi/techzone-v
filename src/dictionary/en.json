@@ -95,5 +95,37 @@
     "dishName": "Dish Name",
     "save": "Save {amount}",
     "addToCart": "Add to Cart"
+  },
+  "Product": {
+    "calories": "Calories",
+    "prepTime": "min",
+    "allergies": "Allergy Information",
+    "required": "Required",
+    "optional": "Optional",
+    "size": "Size",
+    "addons": "Add-ons",
+    "sauce": "Choice of Sauce",
+    "maxAddons": "You can choose up to {max} add-ons ({current}/{max})",
+    "addToCart": "Add",
+    "currency": "SAR",
+    "share": "Share",
+    "favorite": "Favorite",
+    "products": "Products",
+    "home": "Home"
+  },
+  "Orders": {
+    "title": "My Orders",
+    "orderNumber": "Order #{number}",
+    "branch": "{name} Branch",
+    "createdAt": "Order created on {date}, {time}",
+    "deliveryTo": "Delivery to {location}",
+    "total": "{amount}",
+    "details": "Details",
+    "reorder": "Reorder",
+    "reportProblem": "Report a Problem",
+    "status": {
+      "delivered": "Delivered",
+      "waiting": "Waiting"
+    }
   }
 }

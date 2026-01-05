@@ -4,7 +4,7 @@ import { X, Search } from 'lucide-react';
 import { useUiStore } from '@/store/use-ui-store';
 import { NAV_ITEMS } from '@/config/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { usePathname } from 'next/navigation';
+import { Link, usePathname } from '@/i18n/navigation';
 import NavItem from './NavItem';
 import { Input } from '../ui/Input';
 import Logo from './Logo';

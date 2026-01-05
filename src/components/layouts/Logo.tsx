@@ -1,6 +1,7 @@
 //src/components/layouts/Logo.tsx
 
 import Image from 'next/image';
+import { Link } from '@/i18n/navigation';
 
 interface LogoProps {
     brandName: string;
@@ -8,7 +9,7 @@ interface LogoProps {
 }
 export default function Logo({ brandName, brandLogo }: LogoProps) {
     return (
-        <div className="flex items-center gap-1.5 md:gap-2">
+        <Link href="/" className="flex items-center gap-1.5 md:gap-2">
             <Image
                 src={brandLogo}
                 alt={brandName}
@@ -19,6 +20,6 @@ export default function Logo({ brandName, brandLogo }: LogoProps) {
             <p className="text-amber-300 text-xl md:text-[28px] font-medium leading-none">
                 {brandName}
             </p>
-        </div>
+        </Link>
     );
 }

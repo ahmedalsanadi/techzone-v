@@ -95,5 +95,37 @@
     "dishName": "اسم الطبق",
     "save": "وفر {amount}",
     "addToCart": "اضافة إلى السلة"
+  },
+  "Product": {
+    "calories": "سعرة حرارية",
+    "prepTime": "دقيقة",
+    "allergies": "مسببات الحساسية",
+    "required": "مطلوب",
+    "optional": "اختياري",
+    "size": "الحجم",
+    "addons": "الاضافات",
+    "sauce": "اختيارك للصوص",
+    "maxAddons": "يمكنك اختيار حتى {max} اضافات ({current}/{max})",
+    "addToCart": "اضافة",
+    "currency": "ر.س",
+    "share": "مشاركة",
+    "favorite": "المفضلة",
+    "products": "المنتجات",
+    "home": "الرئيسية"
+  },
+  "Orders": {
+    "title": "طلباتي",
+    "orderNumber": "طلب رقم #{number}",
+    "branch": "فرع {name}",
+    "createdAt": "تم انشاء الطلب في {date}, {time}",
+    "deliveryTo": "توصيل إلى {location}",
+    "total": "{amount}",
+    "details": "التفاصيل",
+    "reorder": "إعادة الطلب",
+    "reportProblem": "الإبلاغ عن مشكلة",
+    "status": {
+      "delivered": "تم التوصيل",
+      "waiting": "في انتظار الموعد"
+    }
   }
 }
