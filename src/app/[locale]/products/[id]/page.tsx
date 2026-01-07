@@ -2,10 +2,7 @@
 import { notFound } from 'next/navigation';
 import ProductDetails from '@/components/pages/products/ProductDetails';
 import { Metadata } from 'next';
-import {
-    generateProductMetadata,
-    generateProductStructuredData,
-} from '@/lib/metadata';
+import { generateProductStructuredData} from '@/lib/metadata';
 import { storeService } from '@/services/store-service';
 import { siteConfig } from '@/config/site';
 
