@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useTransition } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { storeService } from '@/services/store-service';
 import { Product, Category } from '@/services/types';
@@ -22,6 +22,7 @@ const ProductsContent = ({
     const t = useTranslations('Product');
     const router = useRouter();
     const pathname = usePathname();
+    const [isPending, startTransition] = useTransition();
 
     const [selectedCategoryId, setSelectedCategoryId] = useState<string>(
         initialCategoryId || '',
@@ -78,39 +79,49 @@ const ProductsContent = ({
 
     const handleCategoryChange = (id: string) => {
         const idStr = id.toString();
-        setSelectedCategoryId(idStr);
-        setSelectedSubCategoryId(''); // Reset subcategory when main category changes
 
-        const category = categories.find((c) => c.id.toString() === idStr);
+        startTransition(() => {
+            setSelectedCategoryId(idStr);
+            setSelectedSubCategoryId(''); // Reset subcategory when main category changes
 
-        // Update URL slug without refreshing
-        if (category) {
-            const query = new URLSearchParams();
-            if (category.slug) query.set('category', category.slug);
-            query.set('category_id', category.id.toString());
+            const category = categories.find((c) => c.id.toString() === idStr);
 
-            router.replace(`${pathname}?${query.toString()}`, {
-                scroll: false,
-            });
-        } else {
-            router.replace(pathname, { scroll: false });
-        }
+            // Update URL slug without refreshing
+            if (category) {
+                const query = new URLSearchParams();
+                if (category.slug) query.set('category', category.slug);
+                query.set('category_id', category.id.toString());
+
+                router.replace(`${pathname}?${query.toString()}`, {
+                    scroll: false,
+                });
+            } else {
+                router.replace(pathname, { scroll: false });
+            }
+        });
     };
 
     return (
-        <div className="container mx-auto py-8">
+        <div
+            className={`container mx-auto py-8 transition-opacity duration-300 ${
+                isPending ? 'opacity-70' : 'opacity-100'
+            }`}>
             <h1 className="sr-only">{t('products')}</h1>
-            <CategoryTabs
-                categories={categories}
-                activeCategoryId={selectedCategoryId}
-                onCategorySelect={handleCategoryChange}
-            />
+            <div className="min-h-[70px]">
+                <CategoryTabs
+                    categories={categories}
+                    activeCategoryId={selectedCategoryId}
+                    onCategorySelect={handleCategoryChange}
+                />
+            </div>
 
-            <SubCategorySelection
-                subCategories={subCategories}
-                activeSubCategoryId={selectedSubCategoryId}
-                onSubCategorySelect={setSelectedSubCategoryId}
-            />
+            <div className="min-h-[120px]">
+                <SubCategorySelection
+                    subCategories={subCategories}
+                    activeSubCategoryId={selectedSubCategoryId}
+                    onSubCategorySelect={setSelectedSubCategoryId}
+                />
+            </div>
 
             <ProductsGrid
                 products={filteredProducts}

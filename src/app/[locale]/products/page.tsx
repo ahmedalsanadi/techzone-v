@@ -82,11 +82,35 @@ export default async function ProductsPage({
             
             <Suspense fallback={
                 <div className="container mx-auto py-8 px-4">
-                    <div className="h-14 bg-gray-200/50 animate-pulse rounded-2xl mb-8 w-full max-w-3xl mx-auto" />
-                    <div className="h-24 bg-gray-100/50 animate-pulse rounded-[32px] mb-10 mx-4" />
+                    {/* Category Tabs Skeleton */}
+                    <div className="h-[70px] mb-8 flex justify-center gap-4 overflow-hidden">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                            <div key={i} className="h-12 w-24 bg-gray-100 animate-pulse rounded-2xl shrink-0" />
+                        ))}
+                    </div>
+                    {/* Subcategories Skeleton */}
+                    <div className="h-[120px] bg-gray-50/50 border border-gray-100 rounded-[32px] mb-10 mx-4 animate-pulse flex items-center px-8 gap-10">
+                        {Array.from({ length: 6 }).map((_, i) => (
+                            <div key={i} className="flex flex-col items-center gap-2">
+                                <div className="w-16 h-16 rounded-full bg-gray-100" />
+                                <div className="h-2 w-10 bg-gray-100 rounded" />
+                            </div>
+                        ))}
+                    </div>
+                    {/* Products Grid Skeleton - Matches ProductCard exactly */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
                         {Array.from({ length: 10 }).map((_, i) => (
-                            <div key={i} className="bg-white border border-gray-100 rounded-3xl aspect-4/5 animate-pulse" />
+                            <div key={i} className="bg-white border border-gray-100 rounded-3xl p-6 flex flex-col items-center shadow-sm">
+                                <div className="w-full aspect-square bg-gray-50 rounded-2xl animate-pulse mb-6" />
+                                <div className="w-full space-y-3">
+                                    <div className="h-4 bg-gray-100 rounded-md w-3/4 animate-pulse" />
+                                    <div className="flex justify-between items-center">
+                                        <div className="h-6 bg-gray-100 rounded-md w-1/3 animate-pulse" />
+                                        <div className="h-4 bg-gray-100 rounded-md w-1/4 animate-pulse" />
+                                    </div>
+                                    <div className="h-12 bg-gray-50 rounded-xl w-full animate-pulse mt-4" />
+                                </div>
+                            </div>
                         ))}
                     </div>
                 </div>
