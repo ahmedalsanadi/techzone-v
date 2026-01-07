@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
-import { Heart, Plus } from 'lucide-react';
+import DynamicImage from './DynamicImage';
+import { Heart, Plus, ShoppingBasket } from 'lucide-react';
 import CurrencySymbol from './CurrencySymbol';
 import { Link } from '@/i18n/navigation';
 
@@ -53,12 +53,20 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 className="w-full flex flex-col items-center z-10">
                 {/* Product Image */}
                 <div className="relative w-full aspect-square mb-6 group-hover:scale-105 transition-transform duration-500">
-                    <Image
+                    <DynamicImage
                         src={image}
                         alt={name}
                         fill
-                        className="object-contain drop-shadow-xl"
+                        className="object-cover drop-shadow-sm"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        fallbackComponent={
+                            <div className="flex flex-col items-center justify-center gap-2 text-gray-300">
+                                <ShoppingBasket size={48} strokeWidth={1} />
+                                <span className="text-[10px] font-medium opacity-50 uppercase tracking-wider">
+                                    {name}
+                                </span>
+                            </div>
+                        }
                     />
                 </div>
 

@@ -94,7 +94,8 @@
     "more": "More",
     "dishName": "Dish Name",
     "save": "Save {amount}",
-    "addToCart": "Add to Cart"
+    "addToCart": "Add to Cart",
+    "noProducts": "No products available currently"
   },
   "Product": {
     "calories": "Calories",

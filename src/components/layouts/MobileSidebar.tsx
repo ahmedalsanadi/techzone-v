@@ -1,7 +1,7 @@
 'use client';
 
 import { X, Search } from 'lucide-react';
-import { useUiStore } from '@/store/use-ui-store';
+import { useUiStore } from '@/store/useUiStore';
 import { NAV_ITEMS } from '@/config/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { Link, usePathname } from '@/i18n/navigation';
@@ -11,6 +11,8 @@ import { Input } from '../ui/Input';
 import NotificationDropdown from './NotificationDropdown';
 import LanguageSwitcher from './LanguageSwitcher';
 import LogoImage from '@/components/layouts/LogoImage';
+import { useStore } from '@/components/providers/StoreProvider';
+import { siteConfig } from '@/config/site';
 
 export default function MobileSidebar() {
     const { isMobileMenuOpen, setMobileMenuOpen } = useUiStore();
@@ -18,6 +20,7 @@ export default function MobileSidebar() {
     const pathname = usePathname();
     const locale = useLocale();
     const isArabic = locale === 'ar';
+    const { config } = useStore();
 
     if (!isMobileMenuOpen) return null;
 
@@ -42,8 +45,11 @@ export default function MobileSidebar() {
                             <X size={24} />
                         </button>
                         <LogoImage
-                            brandName="Fasto"
-                            brandLogo="/images/svgs/logo-icon.svg"
+                            brandName={config?.store?.name || siteConfig.name}
+                            brandLogo={
+                                config?.store?.logo_url ||
+                                '/images/svgs/logo-icon.svg'
+                            }
                         />
                     </div>
 
@@ -96,7 +102,8 @@ export default function MobileSidebar() {
                 {/* Bottom Footer or secondary links could go here if needed */}
                 <div className="p-6 mt-auto border-t border-white/10">
                     <p className="text-white/40 text-[10px] text-center">
-                        © {new Date().getFullYear()} Fasto Restaurant Store
+                        © {new Date().getFullYear()}{' '}
+                        {config?.store?.name || siteConfig.name} Store
                     </p>
                 </div>
             </div>

@@ -3,7 +3,7 @@
 import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
-import Image from 'next/image';
+import DynamicImage from '@/components/ui/DynamicImage';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -28,7 +28,7 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
                 {images.map((image, index) => (
                     <SwiperSlide key={index}>
                         <div className="relative w-full h-full">
-                            <Image
+                            <DynamicImage
                                 src={image}
                                 alt={`Product image ${index + 1}`}
                                 fill

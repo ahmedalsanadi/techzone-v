@@ -1,17 +1,10 @@
 'use client';
 
-// import { useUiStore } from '@/store/use-ui-store';
 import HeroSlider from './HeroSlider';
 import CategorySection from './CategorySection';
 import PromotionsSection from './PromotionsSection';
 
 export default function LandingPage() {
-    // const { setShowSubHeader } = useUiStore();
-
-    // // Ensure SubHeader is shown on landing page
-    // useEffect(() => {
-    //     setShowSubHeader(true);
-    // }, [setShowSubHeader]);
 
     return (
         <div className="pb-12 bg-white">

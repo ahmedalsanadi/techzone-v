@@ -2,7 +2,7 @@
 
 import { ShoppingCart, X, ArrowRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import Image from 'next/image';
+import DynamicImage from '../ui/DynamicImage';
 import { useCartStore } from '@/store/useCartStore';
 import { Link } from '@/i18n/navigation';
 import CurrencySymbol from '../ui/CurrencySymbol';
@@ -65,7 +65,7 @@ const CartDropdown = () => {
                                     key={item.id}
                                     className="flex items-center gap-3 group relative">
                                     <div className="relative w-16 h-16 bg-gray-50 rounded-xl overflow-hidden shrink-0 border border-gray-100">
-                                        <Image
+                                        <DynamicImage
                                             src={item.image}
                                             alt={item.name}
                                             fill

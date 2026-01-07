@@ -7,7 +7,8 @@ export const getQueryClient = () =>
     new QueryClient({
         defaultOptions: {
             queries: {
-                staleTime: 60 * 1000,
+                staleTime: 5 * 60 * 1000,
+                gcTime: 10 * 60 * 1000,
             },
             dehydrate: {
                 // per default, only successful queries are dehydrated,

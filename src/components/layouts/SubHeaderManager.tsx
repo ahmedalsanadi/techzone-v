@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useUiStore } from '@/store/use-ui-store';
+import { useUiStore } from '@/store/useUiStore';
 
 export default function SubHeaderManager({ show }: { show: boolean }) {
     const { setShowSubHeader } = useUiStore();

@@ -12,14 +12,17 @@ import NotificationDropdown from './NotificationDropdown';
 import LanguageSwitcher from './LanguageSwitcher';
 
 import { useTranslations } from 'next-intl';
-import { useUiStore } from '@/store/use-ui-store';
+import { useUiStore } from '@/store/useUiStore';
 import MobileSidebar from './MobileSidebar';
 import LogoImage from '@/components/layouts/LogoImage';
+import { useStore } from '@/components/providers/StoreProvider';
+import { siteConfig } from '@/config/site';
 
 export default function Navbar() {
     const pathname = usePathname();
     const t = useTranslations('Navbar');
     const { toggleMobileMenu } = useUiStore();
+    const { config } = useStore();
 
     return (
         <div className="flex items-center justify-between">
@@ -32,9 +35,11 @@ export default function Navbar() {
                 </button>
 
                 {/*-------- logo----------- */}
-                <LogoImage   
-                    brandName="Fasto"
-                    brandLogo="/images/svgs/logo-icon.svg"
+                <LogoImage
+                    brandName={config?.store?.name || siteConfig.name}
+                    brandLogo={
+                        config?.store?.logo_url || '/images/svgs/logo-icon.svg'
+                    }
                 />
             </div>
 

@@ -1,39 +1,38 @@
+// src/app/[locale]/layout.tsx
 import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
-import { getMessages, getTranslations } from 'next-intl/server';
 import { setupLocale } from '@/i18n/setup-locale';
 import { Metadata } from 'next';
-import { ThemeProvider } from '@/components/providers/theme-provider';
+import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { Geist, Geist_Mono, IBM_Plex_Sans_Arabic } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
-import { siteConfig } from '../../config/site';
-import '../globals.css';
+import { siteConfig } from '@/config/site';
 import { Toaster } from 'sonner';
-import { ShoppingCart } from 'lucide-react';
+
+import '@/app/globals.css';
+import PageContainer from '@/components/layouts/PageContainer';
+import { ServiceUnavailableFallback } from '@/components/layouts/service-unavailable-fallback';
+import { QueryProvider } from '@/components/providers/QueryProvider';
+import { getStoreConfig } from '@/services/store-config';
+import { StoreProvider } from '@/components/providers/StoreProvider';
+import { generateStoreMetadata, generateStructuredData } from '@/lib/metadata';
+
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
     subsets: ['latin'],
 });
-
 const geistMono = Geist_Mono({
     variable: '--font-geist-mono',
     subsets: ['latin'],
 });
-
 const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
     variable: '--font-ibm-plex-sans-arabic',
     subsets: ['arabic'],
     weight: ['400', '500', '700'],
 });
-
-// Extract domain to a constant to avoid repetition
-const DOMAIN = siteConfig.url;
-
-import PageContainer from '@/components/layouts/PageContainer';
-
-import { QueryProvider } from '@/components/providers/query-provider';
 
 export default async function RootLayout({
     children,
@@ -48,7 +47,16 @@ export default async function RootLayout({
 
     const isArabic = locale === 'ar';
     const messages = await getMessages({ locale });
-    const t = await getTranslations({ locale, namespace: 'Metadata' });
+
+    // Fetch the unique config for this tenant (Laravel Multi-tenant Backend)
+    const storeConfig = await getStoreConfig();
+
+    // Generate structured data for SEO using the specific store config
+    const structuredData = generateStructuredData(
+        storeConfig,
+        locale,
+        siteConfig.url,
+    );
 
     return (
         <html
@@ -56,60 +64,74 @@ export default async function RootLayout({
             dir={isArabic ? 'rtl' : 'ltr'}
             suppressHydrationWarning>
             <head>
-                <link rel="icon" href="/favicon.ico" />
-                <meta name="theme-color" content="#000000" />
-                <meta name="theme-color" content="#000000" />
-
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify({
-                            '@context': 'https://schema.org',
-                            '@type': 'WebSite',
-                            name: t('title'),
-                            description: t('description'),
-                            url: DOMAIN,
-                            inLanguage: locale,
-                        }),
-                    }}
-                />
-            </head>
-            <body
-                className={`${geistSans.variable} ${geistMono.variable} ${ibmPlexSansArabic.variable} antialiased`}
-                suppressHydrationWarning>
-                <ThemeProvider
-                    attribute="class"
-                    defaultTheme="light"
-                    enableSystem
-                    disableTransitionOnChange>
-                    <NextIntlClientProvider locale={locale} messages={messages}>
-                        <QueryProvider>
-                            <PageContainer>{children}</PageContainer>
-                            <Toaster
-                                position={isArabic ? 'top-right' : 'top-left'}
-                                expand={false}
-                                richColors
-                                closeButton
-                                dir={isArabic ? 'rtl' : 'ltr'}
-                                toastOptions={{
-                                    className:
-                                        'font-ibm-plex-sans-arabic border-0 shadow-[0_20px_40px_rgba(0,0,0,0.15)] rounded-2xl p-4 gap-4 bg-white/95 backdrop-blur-md',
-                                    style: {
-                                        background: 'rgba(255, 255, 255, 0.95)',
-                                    },
-                                    actionButtonStyle: {
-                                        backgroundColor: 'transparent',
-                                        color: '#B44734',
-                                        fontWeight: '800',
-                                        fontSize: '13px',
-                                        padding: '8px 12px',
-                                    },
+                {storeConfig && (
+                    <>
+                        <link
+                            rel="icon"
+                            href={storeConfig.store.logo_url || '/favicon.ico'}
+                        />
+                        <meta
+                            name="theme-color"
+                            content={
+                                storeConfig.theme.primary_color || '#FF5200'
+                            }
+                        />
+                        {structuredData && (
+                            <script
+                                type="application/ld+json"
+                                dangerouslySetInnerHTML={{
+                                    __html: JSON.stringify(structuredData),
                                 }}
                             />
-                        </QueryProvider>
-                    </NextIntlClientProvider>
-                </ThemeProvider>
-
+                        )}
+                    </>
+                )}
+            </head>
+            <body
+                className={`${geistSans.variable} ${geistMono.variable} ${ibmPlexSansArabic.variable} antialiased font-sans`}
+                suppressHydrationWarning>
+                {!storeConfig ? (
+                    <ServiceUnavailableFallback />
+                ) : (
+                    <ThemeProvider
+                        attribute="class"
+                        defaultTheme="light"
+                        enableSystem>
+                        <NextIntlClientProvider
+                            locale={locale}
+                            messages={messages}>
+                            <StoreProvider config={storeConfig}>
+                                <QueryProvider>
+                                    <PageContainer>{children}</PageContainer>
+                                    <Toaster
+                                        position={
+                                            isArabic ? 'top-right' : 'top-left'
+                                        }
+                                        expand={false}
+                                        richColors
+                                        closeButton
+                                        dir={isArabic ? 'rtl' : 'ltr'}
+                                        toastOptions={{
+                                            className:
+                                                'font-ibm-plex-sans-arabic border-0 shadow-[0_20px_40px_rgba(0,0,0,0.15)] rounded-2xl p-4 gap-4 bg-white/95 backdrop-blur-md',
+                                            style: {
+                                                background:
+                                                    'rgba(255, 255, 255, 0.95)',
+                                            },
+                                            actionButtonStyle: {
+                                                backgroundColor: 'transparent',
+                                                color: '#B44734',
+                                                fontWeight: '800',
+                                                fontSize: '13px',
+                                                padding: '8px 12px',
+                                            },
+                                        }}
+                                    />
+                                </QueryProvider>
+                            </StoreProvider>
+                        </NextIntlClientProvider>
+                    </ThemeProvider>
+                )}
                 <Analytics />
                 <SpeedInsights />
             </body>
@@ -127,57 +149,6 @@ export async function generateMetadata({
     params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
     const { locale } = await params;
-    const t = await getTranslations({ locale, namespace: 'Metadata' });
-
-    const alternates: Record<string, string> = {};
-    routing.locales.forEach((l) => {
-        alternates[l] = `${DOMAIN}/${l}`;
-    });
-
-    return {
-        title: t('title'),
-        description: t('description'),
-        keywords: t('keywords'),
-        other: {
-            'google-site-verification': '',
-        },
-        openGraph: {
-            title: t('title'),
-            description: t('description'),
-            url: DOMAIN,
-            siteName: '',
-            images: [
-                {
-                    url: `${DOMAIN}/og-image.png`,
-                    width: 1200,
-                    height: 630,
-                    alt: t('title'),
-                },
-            ],
-            locale: locale,
-            type: 'website',
-        },
-        twitter: {
-            card: 'summary_large_image',
-            title: t('title'),
-            description: t('description'),
-            images: [`${DOMAIN}/og-image.png`],
-            creator: '@s0ver5',
-        },
-        alternates: {
-            canonical: DOMAIN,
-            languages: alternates,
-        },
-        robots: {
-            index: true,
-            follow: true,
-            googleBot: {
-                index: true,
-                follow: true,
-                'max-video-preview': -1,
-                'max-image-preview': 'large',
-                'max-snippet': -1,
-            },
-        },
-    };
+    // Uses the backend API to get the correct SEO for the specific store tenant
+    return generateStoreMetadata(locale);
 }

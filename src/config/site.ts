@@ -1,13 +1,25 @@
+import { env } from './env';
+
+/**
+ * Site configuration
+ * This provides default values used for SEO and fallback data across the application.
+ * In this multi-tenant setup, these values act as the platform-level defaults.
+ */
 export const siteConfig = {
     name: 'Fasto',
-    description: 'Fasto is a restaurant landing page',
-    url:
-        process.env.NEXT_PUBLIC_SITE_URL ||
-        'https://fasto.vercel.app',
+    description: 'A premium restaurant management and ordering platform.',
+    url: env.siteUrl,
+    ogImage: `${env.siteUrl}/og-image.png`,
     links: {
-        twitter: 'https://twitter.com/s0ver5',
-        github: 'https://github.com/s0ver5',
+        twitter: 'https://twitter.com/libero',
+        github: 'https://github.com/libero-ecommerce',
     },
+    mainNav: [
+        {
+            title: 'Home',
+            href: '/',
+        },
+    ],
 };
 
 export type SiteConfig = typeof siteConfig;

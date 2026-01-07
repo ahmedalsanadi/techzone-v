@@ -1,6 +1,6 @@
 'use client';
 
-import { useUiStore } from '@/store/use-ui-store';
+import { useUiStore } from '@/store/useUiStore';
 import Navbar from './Navbar';
 import SubHeader from './SubHeader';
 import Footer from './Footer';
@@ -34,7 +34,7 @@ export default function PageContainer({
                 </div>
             </nav>
             <div className="container mx-auto px-4 flex-1">{children}</div>
-            <FloatingButtons/>
+            <FloatingButtons />
             <Footer />
         </main>
     );

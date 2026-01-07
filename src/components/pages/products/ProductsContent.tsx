@@ -2,13 +2,8 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import {
-    CATEGORIES,
-    Category,
-    Product,
-    fetchCategories,
-    fetchProducts,
-} from '@/data/mock-data';
+import { storeService } from '@/services/store-service';
+import { Product, Category } from '@/services/types';
 import { useTranslations } from 'next-intl';
 import { useRouter, usePathname } from '@/i18n/navigation';
 import CategoryTabs from './CategoryTabs';
@@ -17,23 +12,19 @@ import ProductsGrid from './ProductsGrid';
 
 interface ProductsContentProps {
     initialCategorySlug?: string;
+    initialCategoryId?: string;
 }
 
-const ProductsContent = ({ initialCategorySlug }: ProductsContentProps) => {
+const ProductsContent = ({
+    initialCategorySlug,
+    initialCategoryId,
+}: ProductsContentProps) => {
     const t = useTranslations('Product');
     const router = useRouter();
     const pathname = usePathname();
 
-    const initialCategory = useMemo(() => {
-        if (!initialCategorySlug) return CATEGORIES[0];
-        return (
-            CATEGORIES.find((c) => c.slug === initialCategorySlug) ||
-            CATEGORIES[0]
-        );
-    }, [initialCategorySlug]);
-
     const [selectedCategoryId, setSelectedCategoryId] = useState<string>(
-        initialCategory.id,
+        initialCategoryId || '',
     );
     const [selectedSubCategoryId, setSelectedSubCategoryId] =
         useState<string>('');
@@ -42,18 +33,31 @@ const ProductsContent = ({ initialCategorySlug }: ProductsContentProps) => {
         Category[]
     >({
         queryKey: ['categories'],
-        queryFn: fetchCategories,
+        queryFn: () => storeService.getCategories(true),
     });
 
-    const { data: allProducts = [], isLoading: productsLoading } = useQuery<
-        Product[]
-    >({
-        queryKey: ['products'],
-        queryFn: fetchProducts,
+    const { data: productsResult, isLoading: productsLoading } = useQuery({
+        queryKey: ['products', selectedCategoryId],
+        queryFn: () =>
+            storeService.getProducts({ category_id: selectedCategoryId }),
     });
+
+    const allProducts = productsResult?.data || [];
+
+    // Update selected category if slug is provided but ID isn't set yet (e.g. initial mount)
+    useEffect(() => {
+        if (
+            initialCategorySlug &&
+            !selectedCategoryId &&
+            categories.length > 0
+        ) {
+            const cat = categories.find((c) => c.slug === initialCategorySlug);
+            if (cat) setSelectedCategoryId(cat.id.toString());
+        }
+    }, [initialCategorySlug, categories, selectedCategoryId]);
 
     const activeCategory = useMemo(
-        () => categories.find((c: Category) => c.id === selectedCategoryId),
+        () => categories.find((c) => c.id.toString() === selectedCategoryId),
         [categories, selectedCategoryId],
     );
 
@@ -63,46 +67,33 @@ const ProductsContent = ({ initialCategorySlug }: ProductsContentProps) => {
     );
 
     const filteredProducts = useMemo(() => {
-        if (selectedCategoryId === '1' || !selectedCategoryId)
-            return allProducts;
+        if (!selectedSubCategoryId) return allProducts;
 
-        return allProducts.filter((p: Product) => {
-            const isMainCategoryMatch = p.categoryId === selectedCategoryId;
-            if (!isMainCategoryMatch) return false;
-
-            // If no subcategory is selected, show all in this category
-            if (!selectedSubCategoryId) return true;
-
-            const subCat = subCategories.find(
-                (s: Category) => s.id === selectedSubCategoryId,
-            );
-            if (subCat?.slug === 'all') return true;
-
-            return p.subCategoryId === selectedSubCategoryId;
+        return allProducts.filter((p) => {
+            // In a real API, products might already be filtered by the main category_id from the query
+            // We just need to filter by subcategory if selected
+            return p.categoryId?.toString() === selectedSubCategoryId;
         });
-    }, [allProducts, selectedCategoryId, selectedSubCategoryId, subCategories]);
+    }, [allProducts, selectedSubCategoryId]);
 
     const handleCategoryChange = (id: string) => {
-        setSelectedCategoryId(id);
-        const category = categories.find((c: Category) => c.id === id);
+        const idStr = id.toString();
+        setSelectedCategoryId(idStr);
+        setSelectedSubCategoryId(''); // Reset subcategory when main category changes
+
+        const category = categories.find((c) => c.id.toString() === idStr);
 
         // Update URL slug without refreshing
-        if (category && category.id !== '1') {
-            router.replace(`${pathname}?category=${category.slug}`, {
+        if (category) {
+            const query = new URLSearchParams();
+            if (category.slug) query.set('category', category.slug);
+            query.set('category_id', category.id.toString());
+
+            router.replace(`${pathname}?${query.toString()}`, {
                 scroll: false,
             });
         } else {
             router.replace(pathname, { scroll: false });
-        }
-
-        if (category?.children && category.children.length > 0) {
-            // Default to 'All' subcategory if it exists
-            const allSub = category.children.find(
-                (s: Category) => s.slug === 'all',
-            );
-            setSelectedSubCategoryId(allSub?.id || category.children[0].id);
-        } else {
-            setSelectedSubCategoryId('');
         }
     };
 

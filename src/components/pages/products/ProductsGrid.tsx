@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Product } from '@/data/mock-data';
+import { Product } from '@/services/types';
 import ProductCard from '@/components/ui/ProductCard';
 import { useTranslations } from 'next-intl';
 import { useCartActions } from '@/hooks/useCartActions';
@@ -21,7 +21,7 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({ products, loading }) => {
                 {Array.from({ length: 10 }).map((_, i) => (
                     <div
                         key={i}
-                        className="bg-gray-100 animate-pulse rounded-3xl aspect-3/4"
+                        className="bg-gray-100 animate-pulse rounded-3xl aspect-square"
                     />
                 ))}
             </div>
@@ -31,9 +31,7 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({ products, loading }) => {
     if (!loading && products.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center py-20 text-gray-500">
-                <span className="text-lg font-medium">
-                    لا توجد منتجات في هذا القسم حالياً
-                </span>
+                <span className="text-lg font-medium">{t('noProducts')}</span>
             </div>
         );
     }
@@ -43,25 +41,32 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({ products, loading }) => {
             {products.map((product) => (
                 <ProductCard
                     key={product.id}
-                    name={t(product.nameKey)}
-                    image={product.image}
-                    price={product.price}
-                    oldPrice={product.oldPrice}
-                    href={`/products/${product.id}`}
-                    discountBadge={
-                        product.discountAmount
-                            ? t('save', { amount: product.discountAmount })
+                    name={product.title}
+                    image={product.cover_image_url || ''}
+                    price={
+                        typeof product.price === 'string'
+                            ? parseFloat(product.price)
+                            : product.price
+                    }
+                    oldPrice={
+                        product.sale_price
+                            ? typeof product.sale_price === 'string'
+                                ? parseFloat(product.sale_price)
+                                : product.sale_price
                             : undefined
                     }
+                    href={`/products/${product.id}`}
                     addToCartLabel={t('addToCart')}
                     onAddToCartClick={() => {
-                        const name = t(product.nameKey);
                         addToCart({
                             id: String(product.id),
-                            name,
-                            image: product.image,
-                            price: product.price,
-                            categoryId: product.categoryId,
+                            name: product.title,
+                            image: product.cover_image_url || '',
+                            price:
+                                typeof product.price === 'string'
+                                    ? parseFloat(product.price)
+                                    : product.price,
+                            categoryId: String(product.categoryId),
                         });
                     }}
                 />

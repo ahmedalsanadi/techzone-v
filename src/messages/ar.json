@@ -94,7 +94,8 @@
     "more": "المزيد",
     "dishName": "اسم الطبق",
     "save": "وفر {amount}",
-    "addToCart": "اضافة إلى السلة"
+    "addToCart": "اضافة إلى السلة",
+    "noProducts": "لا توجد منتجات متوفرة حالياً"
   },
   "Product": {
     "calories": "سعرة حرارية",
