@@ -1,8 +1,7 @@
-//src/app/[locale]/products/page.tsx
+// src/app/[locale]/products/page.tsx
 import React, { Suspense } from 'react';
 import ProductsContent from '@/components/pages/products/ProductsContent';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
-
 import { getTranslations } from 'next-intl/server';
 import { Metadata } from 'next';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
@@ -11,6 +10,58 @@ import { storeService } from '@/services/store-service';
 import { generateCollectionStructuredData } from '@/lib/metadata';
 import { siteConfig } from '@/config/site';
 
+// GENERATE METADATA FOR THIS PAGE
+export async function generateMetadata({
+    params,
+    searchParams,
+}: {
+    params: Promise<{ locale: string }>;
+    searchParams: Promise<{ category?: string; category_id?: string }>;
+}): Promise<Metadata> {
+    const { locale } = await params;
+    const { category, category_id } = await searchParams;
+    
+    const t = await getTranslations({ locale, namespace: 'Product' });
+    
+    let title = t('products');
+    let description = t('products_description', { defaultValue: 'Browse our wide selection of products' });
+    
+    // If filtering by category, get category name
+    if (category_id) {
+        try {
+            const categories = await storeService.getCategories(true);
+            const categoryData = categories.find(cat => cat.id === category_id);
+            if (categoryData) {
+                title = categoryData.name;
+                description = categoryData.description || `Browse ${categoryData.name} products`;
+            }
+        } catch (error) {
+            // Fallback to default
+        }
+    }
+
+    return {
+        title,
+        description,
+        openGraph: {
+            title,
+            description,
+            type: 'website',
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+        },
+        alternates: {
+            canonical: category_id ? `/products?category_id=${category_id}` : '/products',
+            languages: {
+                en: `/en/products${category_id ? `?category_id=${category_id}` : ''}`,
+                ar: `/ar/products${category_id ? `?category_id=${category_id}` : ''}`,
+            },
+        },
+    };
+}
 async function ContentDataWrapper({ 
     locale,
     categorySlug, 
@@ -22,7 +73,6 @@ async function ContentDataWrapper({
 }) {
     const queryClient = getQueryClient();
 
-    // Prefetch in parallel - cache() handles deduplication
     const [productsResult] = await Promise.all([
         storeService.getProducts({ category_id }),
         queryClient.prefetchQuery({
@@ -31,7 +81,6 @@ async function ContentDataWrapper({
         })
     ]);
 
-    // Also prime the query cache with the products we just fetched
     queryClient.setQueryData(['products', category_id || ''], productsResult);
 
     const structuredData = generateCollectionStructuredData(
@@ -49,7 +98,10 @@ async function ContentDataWrapper({
                     }}
                 />
             )}
-            <ProductsContent initialCategorySlug={categorySlug} initialCategoryId={category_id} />
+            <ProductsContent 
+                initialCategorySlug={categorySlug} 
+                initialCategoryId={category_id} 
+            />
         </HydrationBoundary>
     );
 }
@@ -76,8 +128,22 @@ export default async function ProductsPage({
                 <Breadcrumbs items={breadcrumbItems} />
             </div>
             
-            <Suspense fallback={
-                <div className="container mx-auto py-8 px-4">
+            <Suspense fallback={<ProductsPageSkeleton />}>
+                <ContentDataWrapper 
+                    locale={locale}
+                    categorySlug={categorySlug} 
+                    category_id={category_id} 
+                />
+            </Suspense>
+        </main>
+    );
+}
+
+
+// Extract skeleton to separate component
+function ProductsPageSkeleton() {
+    return (
+     <div className="container mx-auto py-8 px-4">
                     {/* Category Tabs Skeleton */}
                     <div className="h-[70px] mb-8 flex justify-center gap-4 overflow-hidden">
                         {Array.from({ length: 5 }).map((_, i) => (
@@ -109,14 +175,5 @@ export default async function ProductsPage({
                             </div>
                         ))}
                     </div>
-                </div>
-            }>
-                <ContentDataWrapper 
-                    locale={locale}
-                    categorySlug={categorySlug} 
-                    category_id={category_id} 
-                />
-            </Suspense>
-        </main>
-    );
-}
+    </div>
+    );}

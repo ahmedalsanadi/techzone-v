@@ -50,25 +50,35 @@ const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
  * This prevents title flicker and slow navigation.
  */
 export const metadata: Metadata = {
-  title: {
-    default: siteConfig.name,           // "Fasto"
-    template: '%s | ' + siteConfig.name // "Products | Fasto"
-  },
-  description: siteConfig.description,
-  metadataBase: new URL(siteConfig.url),
-  openGraph: {
-    siteName: siteConfig.name,
-    type: 'website',
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
+    title: {
+        default: siteConfig.name, // "Fasto"
+        template: `%s | ${siteConfig.name}`, // "Products | Fasto"
+    },
+    description: siteConfig.description,
+    metadataBase: new URL(siteConfig.url),
+    openGraph: {
+        siteName: siteConfig.name,
+        type: 'website',
+        images: [{ url: '/og-image.png' }],
+    },
+    twitter: {
+        card: 'summary_large_image',
+    },
+    robots: {
+        index: true,
+        follow: true,
+    },
+    alternates: {
+        languages: {
+            en: '/en',
+            ar: '/ar',
+        },
+    },
 };
 
-//this maybe used laterly dont remove it at all 
+//this maybe used laterly dont remove it at all
 // export async function generateMetadata(): Promise<Metadata> {
-//   const site = await resolveSiteIdentity(); 
+//   const site = await resolveSiteIdentity();
 
 //   return {
 //     title: {
@@ -118,16 +128,13 @@ export default async function RootLayout({
             <head>
                 {storeConfig && (
                     <>
-                        {/* Branding-only head tags (SAFE) */}
                         <link
                             rel="icon"
                             href={storeConfig.store.logo_url || '/favicon.ico'}
                         />
                         <meta
                             name="theme-color"
-                            content={
-                                storeConfig.theme.primary_color || '#FF5200'
-                            }
+                            content={storeConfig.theme.primary_color || '#FF5200'}
                         />
                     </>
                 )}
