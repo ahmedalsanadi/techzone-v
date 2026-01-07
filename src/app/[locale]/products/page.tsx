@@ -11,45 +11,26 @@ import { generatePageMetadata } from '@/lib/metadata';
 
 export async function generateMetadata({
     params,
-    searchParams,
 }: {
     params: Promise<{ locale: string }>;
-    searchParams: Promise<{ category?: string; category_id?: string }>;
 }): Promise<Metadata> {
     const { locale } = await params;
-    const { category, category_id } = await searchParams;
     const t = await getTranslations({ locale, namespace: 'Product' });
 
-    let pageTitle = t('products');
-
-    // If category is selected, try to get its title
-    if (category_id || category) {
-        try {
-            const categories = await storeService.getCategories();
-            const selectedCat = categories.find(
-                (c) => c.slug === category || c.id.toString() === category_id
-            );
-            if (selectedCat) {
-                pageTitle = selectedCat.name;
-            }
-        } catch (e) {
-            /* Fallback to generic title */
-        }
-    }
-
-    const query = new URLSearchParams();
-    if (category) query.set('category', category);
-    if (category_id) query.set('category_id', category_id);
-    const queryString = query.toString();
-
+    // Conventional E-commerce SEO: Keep the main products title stable 
+    // even when filtering by categories via query parameters.
     return generatePageMetadata({
         locale,
-        title: pageTitle,
-        path: `/products${queryString ? `?${queryString}` : ''}`,
+        title: t('products'),
+        path: '/products',
     });
 }
 
-async function ProductsContentWrapper({ 
+/**
+ * Optimized Wrapper that handles nested hydration.
+ * This allows Categories to render while Products are still fetching.
+ */
+async function ContentDataWrapper({ 
     categorySlug, 
     category_id 
 }: { 
@@ -58,7 +39,7 @@ async function ProductsContentWrapper({
 }) {
     const queryClient = getQueryClient();
 
-    // Prefetch data on the server
+    // Prefetch in parallel - cache() handles deduplication
     await Promise.all([
         queryClient.prefetchQuery({
             queryKey: ['categories'],
@@ -101,15 +82,16 @@ export default async function ProductsPage({
             
             <Suspense fallback={
                 <div className="container mx-auto py-8 px-4">
-                    <div className="h-12 bg-gray-100 animate-pulse rounded-2xl mb-8" />
+                    <div className="h-14 bg-gray-200/50 animate-pulse rounded-2xl mb-8 w-full max-w-3xl mx-auto" />
+                    <div className="h-24 bg-gray-100/50 animate-pulse rounded-[32px] mb-10 mx-4" />
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
                         {Array.from({ length: 10 }).map((_, i) => (
-                            <div key={i} className="bg-gray-100 animate-pulse rounded-3xl aspect-square" />
+                            <div key={i} className="bg-white border border-gray-100 rounded-3xl aspect-4/5 animate-pulse" />
                         ))}
                     </div>
                 </div>
             }>
-                <ProductsContentWrapper 
+                <ContentDataWrapper 
                     categorySlug={categorySlug} 
                     category_id={category_id} 
                 />
