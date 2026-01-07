@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useTranslations } from 'next-intl';
-import { ProductAddon } from '@/lib/mock-data';
+import { ProductAddon } from '@/services/types';
 import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import CustomizationCard from '@/components/pages/products/product-details/CustomizationCard';
@@ -52,7 +52,7 @@ const AddonItem = React.memo(
                 type="checkbox"
                 className="hidden"
                 checked={isSelected}
-                onChange={() => onToggle(addon.id)}
+                onChange={() => onToggle(String(addon.id))}
             />
         </label>
     ),
@@ -80,7 +80,7 @@ export default function AddonSelector({
                     <AddonItem
                         key={addon.id}
                         addon={addon}
-                        isSelected={selectedAddons.includes(addon.id)}
+                        isSelected={selectedAddons.includes(String(addon.id))}
                         onToggle={onToggle}
                         t={t}
                     />

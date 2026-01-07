@@ -95,15 +95,50 @@ export interface StoreConfig {
     checkout: CheckoutSettings;
 }
 
+export interface ProductVariety {
+    id: string | number;
+    name: string;
+    price: number;
+    originalPrice?: number;
+    calories?: number;
+    prepTime?: number;
+    isDefault?: boolean;
+}
+
+export interface ProductAddon {
+    id: string | number;
+    name: string;
+    price: number;
+}
+
+export interface ProductSauce {
+    id: string | number;
+    name: string;
+    price: number;
+}
+
+export interface ProductAllergy {
+    name: string;
+    icon: string;
+}
+
 export interface Product {
     id: number | string;
     title: string;
+    name?: string; // Fallback for UI
     price: string | number;
     sale_price: string | number | null;
     cover_image_url: string;
+    images?: string[]; // Multiple images for gallery
     is_available: boolean;
     type: string;
     categoryId?: string | number;
     subCategoryId?: string | number;
-    description?: string;
+    description: string;
+    calories?: number;
+    prepTime?: number;
+    allergies?: ProductAllergy[];
+    varieties?: ProductVariety[];
+    addons?: ProductAddon[];
+    sauces?: ProductSauce[];
 }

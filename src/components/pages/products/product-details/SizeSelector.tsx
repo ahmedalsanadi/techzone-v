@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useTranslations } from 'next-intl';
-import { ProductVariety } from '@/lib/mock-data';
+import { ProductVariety } from '@/services/types';
 import { cn } from '@/lib/utils';
 import CustomizationCard from '@/components/pages/products/product-details/CustomizationCard';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
@@ -83,7 +83,7 @@ const VarietyItem = React.memo(
                 type="radio"
                 className="hidden"
                 checked={isSelected}
-                onChange={() => onSelect(v.id)}
+                onChange={() => onSelect(String(v.id))}
             />
         </label>
     ),
@@ -107,7 +107,7 @@ export default function SizeSelector({
                     <VarietyItem
                         key={v.id}
                         v={v}
-                        isSelected={selectedVarietyId === v.id}
+                        isSelected={selectedVarietyId === String(v.id)}
                         onSelect={onSelect}
                         t={t}
                     />

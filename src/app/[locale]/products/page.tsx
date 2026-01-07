@@ -7,52 +7,46 @@ import { Metadata } from 'next';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { getQueryClient } from '@/lib/getQueryClient';
 import { storeService } from '@/services/store-service';
-import { generatePageMetadata } from '@/lib/metadata';
-
-export async function generateMetadata({
-    params,
-}: {
-    params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
-    const { locale } = await params;
-    const t = await getTranslations({ locale, namespace: 'Product' });
-
-    // Conventional E-commerce SEO: Keep the main products title stable 
-    // even when filtering by categories via query parameters.
-    return generatePageMetadata({
-        locale,
-        title: t('products'),
-        path: '/products',
-    });
-}
-
-/**
- * Optimized Wrapper that handles nested hydration.
- * This allows Categories to render while Products are still fetching.
- */
+import { generateCollectionStructuredData } from '@/lib/metadata';
+import { siteConfig } from '@/config/site';
 async function ContentDataWrapper({ 
+    locale,
     categorySlug, 
     category_id 
 }: { 
+    locale: string;
     categorySlug?: string; 
     category_id?: string 
 }) {
     const queryClient = getQueryClient();
 
     // Prefetch in parallel - cache() handles deduplication
-    await Promise.all([
+    const [productsResult] = await Promise.all([
+        storeService.getProducts({ category_id }),
         queryClient.prefetchQuery({
             queryKey: ['categories'],
             queryFn: () => storeService.getCategories(true),
-        }),
-        queryClient.prefetchQuery({
-            queryKey: ['products', category_id || ''],
-            queryFn: () => storeService.getProducts({ category_id }),
-        }),
+        })
     ]);
+
+    // Also prime the query cache with the products we just fetched
+    queryClient.setQueryData(['products', category_id || ''], productsResult);
+
+    const structuredData = generateCollectionStructuredData(
+        productsResult.data,
+        siteConfig.url
+    );
 
     return (
         <HydrationBoundary state={dehydrate(queryClient)}>
+            {structuredData && (
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify(structuredData),
+                    }}
+                />
+            )}
             <ProductsContent initialCategorySlug={categorySlug} initialCategoryId={category_id} />
         </HydrationBoundary>
     );
@@ -116,6 +110,7 @@ export default async function ProductsPage({
                 </div>
             }>
                 <ContentDataWrapper 
+                    locale={locale}
                     categorySlug={categorySlug} 
                     category_id={category_id} 
                 />

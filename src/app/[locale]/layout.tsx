@@ -19,7 +19,6 @@ import { getStoreConfig } from '@/services/store-config';
 import { StoreProvider } from '@/components/providers/StoreProvider';
 import { generateStoreMetadata, generateStructuredData } from '@/lib/metadata';
 
-
 const geistSans = Geist({
     variable: '--font-geist-sans',
     subsets: ['latin'],
@@ -52,11 +51,7 @@ export default async function RootLayout({
     const storeConfig = await getStoreConfig();
 
     // Generate structured data for SEO using the specific store config
-    const structuredData = generateStructuredData(
-        storeConfig,
-        locale,
-        siteConfig.url,
-    );
+    const structuredData = generateStructuredData(storeConfig, siteConfig.url);
 
     return (
         <html
@@ -143,12 +138,7 @@ export function generateStaticParams() {
     return routing.locales.map((locale) => ({ locale }));
 }
 
-export async function generateMetadata({
-    params,
-}: {
-    params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
-    const { locale } = await params;
+export async function generateMetadata(): Promise<Metadata> {
     // Uses the backend API to get the correct SEO for the specific store tenant
-    return generateStoreMetadata(locale);
+    return generateStoreMetadata();
 }

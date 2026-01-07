@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
-import { Product } from '@/lib/mock-data';
+import { Product } from '@/services/types';
 import ProductGallery from './product-details/ProductGallery';
 import ProductShareActions from './product-details/ProductShareActions';
 import ProductInfo from './product-details/ProductInfo';
@@ -21,9 +21,16 @@ interface ProductDetailsProps {
 export default function ProductDetails({ product }: ProductDetailsProps) {
     const t = useTranslations('Product');
 
+    const varieties = product.varieties || [];
+    const addons = product.addons || [];
+    const sauces = product.sauces || [];
+    const images = product.images || [product.cover_image_url];
+    const name = product.name || product.title;
+
     const [selectedVarietyId, setSelectedVarietyId] = useState<string>(
-        product.varieties.find((v) => v.isDefault)?.id ||
-            product.varieties[0].id,
+        String(
+            varieties.find((v) => v.isDefault)?.id || varieties[0]?.id || '',
+        ),
     );
     const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
     const [selectedSauces, setSelectedSauces] = useState<
@@ -32,22 +39,25 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     const [quantity, setQuantity] = useState(1);
 
     const selectedVariety = useMemo(
-        () => product.varieties.find((v) => v.id === selectedVarietyId)!,
-        [selectedVarietyId, product.varieties],
+        () => varieties.find((v) => String(v.id) === selectedVarietyId)!,
+        [selectedVarietyId, varieties],
     );
 
     const calculateTotalPrice = () => {
+        // Fallback for when no variety is selected or exists
+        if (!selectedVariety) return Number(product.price) * quantity;
+
         let price = selectedVariety.price;
 
         // Addons
         selectedAddons.forEach((id) => {
-            const addon = product.addons.find((a) => a.id === id);
+            const addon = addons.find((a) => String(a.id) === id);
             if (addon) price += addon.price;
         });
 
         // Sauces
         Object.entries(selectedSauces).forEach(([id, qty]) => {
-            const sauce = product.sauces.find((s) => s.id === id);
+            const sauce = sauces.find((s) => String(s.id) === id);
             if (sauce) price += sauce.price * qty;
         });
 
@@ -85,8 +95,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         addToCart(
             {
                 id: uniqueId,
-                name: product.name,
-                image: product.images[0],
+                name: name,
+                image: images[0],
                 price: calculateTotalPrice() / quantity,
                 categoryId: 'detailed',
                 metadata: {
@@ -108,7 +118,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                     items={[
                         { label: t('home'), href: '/' },
                         { label: t('products'), href: '/products' },
-                        { label: product.name },
+                        { label: name },
                     ]}
                 />
 
@@ -119,21 +129,25 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                         <ProductShareActions />
 
                         <ProductInfo
-                            name={product.name}
+                            name={name}
                             description={product.description}
                             calories={
-                                selectedVariety.calories || product.calories
+                                selectedVariety?.calories ||
+                                product.calories ||
+                                0
                             }
                             prepTime={
-                                selectedVariety.prepTime || product.prepTime
+                                selectedVariety?.prepTime ||
+                                product.prepTime ||
+                                0
                             }
                         />
 
-                        <ProductAllergies allergies={product.allergies} />
+                        <ProductAllergies allergies={product.allergies || []} />
 
                         <ProductActionBar
                             totalPrice={calculateTotalPrice()}
-                            originalPrice={selectedVariety.originalPrice}
+                            originalPrice={selectedVariety?.originalPrice || 0}
                             quantity={quantity}
                             setQuantity={setQuantity}
                             onAddToCart={handleAddToCart}
@@ -143,7 +157,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                     {/* Gallery Column */}
                     <div className="lg:col-span-5 order-1 ">
                         <div className="sticky top-24">
-                            <ProductGallery images={product.images} />
+                            <ProductGallery images={images} />
                         </div>
                     </div>
                 </div>
@@ -152,19 +166,19 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             {/* Customization Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <SizeSelector
-                    varieties={product.varieties}
+                    varieties={varieties}
                     selectedVarietyId={selectedVarietyId}
                     onSelect={setSelectedVarietyId}
                 />
 
                 <AddonSelector
-                    addons={product.addons}
+                    addons={addons}
                     selectedAddons={selectedAddons}
                     onToggle={toggleAddon}
                 />
 
                 <SauceSelector
-                    sauces={product.sauces}
+                    sauces={sauces}
                     selectedSauces={selectedSauces}
                     onUpdateQuantity={updateSauceQuantity}
                 />

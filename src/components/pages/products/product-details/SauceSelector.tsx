@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useTranslations } from 'next-intl';
-import { ProductSauce } from '@/lib/mock-data';
+import { ProductSauce } from '@/services/types';
 import { Plus, Minus, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import CustomizationCard from '@/components/pages/products/product-details/CustomizationCard';
@@ -38,7 +38,7 @@ const SauceItem = React.memo(
 
                 <div className="flex items-center gap-2 bg-[#F1F3F5] p-1 rounded-lg shadow-inner">
                     <button
-                        onClick={() => onUpdateQuantity(sauce.id, -1)}
+                        onClick={() => onUpdateQuantity(String(sauce.id), -1)}
                         className={cn(
                             'w-7 h-7 rounded-md bg-white flex items-center justify-center transition-all shadow-sm active:scale-95',
                             qty === 0
@@ -56,7 +56,7 @@ const SauceItem = React.memo(
                         {qty}
                     </span>
                     <button
-                        onClick={() => onUpdateQuantity(sauce.id, 1)}
+                        onClick={() => onUpdateQuantity(String(sauce.id), 1)}
                         className="w-7 h-7 rounded-md bg-white flex items-center justify-center text-gray-600 hover:text-libero-red transition-all shadow-sm active:scale-95">
                         <Plus size={13} strokeWidth={3} />
                     </button>
@@ -84,7 +84,7 @@ export default function SauceSelector({
                     <SauceItem
                         key={sauce.id}
                         sauce={sauce}
-                        qty={selectedSauces[sauce.id] || 0}
+                        qty={selectedSauces[String(sauce.id)] || 0}
                         onUpdateQuantity={onUpdateQuantity}
                         t={t}
                     />

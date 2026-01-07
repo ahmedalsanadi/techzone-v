@@ -1,45 +1,40 @@
-import { getProductById } from '@/lib/mock-data';
 import { notFound } from 'next/navigation';
 import ProductDetails from '@/components/pages/products/ProductDetails';
 import { Metadata } from 'next';
+import {
+    generateProductMetadata,
+    generateProductStructuredData,
+} from '@/lib/metadata';
+import { storeService } from '@/services/store-service';
+import { siteConfig } from '@/config/site';
 
 interface Props {
     params: Promise<{ id: string; locale: string }>;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const { id } = await params;
-    const product = await getProductById(id);
-
-    if (!product) return {};
-
-    return {
-        title: `${product.name} | Fasto`,
-        description: product.description,
-        openGraph: {
-            title: product.name,
-            description: product.description,
-            images: product.images.map((img) => ({ url: img })),
-        },
-        twitter: {
-            card: 'summary_large_image',
-            title: product.name,
-            description: product.description,
-            images: [product.images[0]],
-        },
-    };
-}
-
 export default async function ProductPage({ params }: Props) {
-    const { id } = await params;
-    const product = await getProductById(id);
+    const { id, locale } = await params;
+    const product = await storeService.getProduct(id);
 
     if (!product) {
         notFound();
     }
 
+    const structuredData = generateProductStructuredData(
+        product,
+        siteConfig.url,
+    );
+
     return (
         <div className="py-8">
+            {structuredData && (
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify(structuredData),
+                    }}
+                />
+            )}
             <ProductDetails product={product} />
         </div>
     );

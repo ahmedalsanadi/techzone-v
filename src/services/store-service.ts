@@ -54,4 +54,12 @@ export const storeService = {
             },
         };
     },
+
+    /**
+     * Get a single product by ID.
+     */
+    getProduct: (id: string) =>
+        fetchLibero<Product>(`/store/products/${id}`, {
+            next: { revalidate: 60 },
+        }),
 };
