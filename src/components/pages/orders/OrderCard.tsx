@@ -4,7 +4,7 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 import { Star, Store, Calendar, MapPin, Banknote, Info } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
+import { Badge } from '@/components/ui/badge';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
 import { cn } from '@/lib/utils';
 

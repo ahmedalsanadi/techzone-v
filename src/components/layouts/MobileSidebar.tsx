@@ -7,10 +7,10 @@ import { useTranslations, useLocale } from 'next-intl';
 import { Link, usePathname } from '@/i18n/navigation';
 import NavItem from './NavItem';
 import { Input } from '../ui/Input';
-import Logo from './Logo';
 
 import NotificationDropdown from './NotificationDropdown';
 import LanguageSwitcher from './LanguageSwitcher';
+import LogoImage from '@/components/layouts/LogoImage';
 
 export default function MobileSidebar() {
     const { isMobileMenuOpen, setMobileMenuOpen } = useUiStore();
@@ -41,7 +41,7 @@ export default function MobileSidebar() {
                             className="p-1.5 hover:bg-white/10 rounded-full transition-colors">
                             <X size={24} />
                         </button>
-                        <Logo
+                        <LogoImage
                             brandName="Fasto"
                             brandLogo="/images/svgs/logo-icon.svg"
                         />

@@ -1,9 +1,8 @@
 'use client';
-import Image from 'next/image';
 import { Link, usePathname } from '@/i18n/navigation';
 import { Search, Menu } from 'lucide-react';
 import { NAV_ITEMS } from '@/config/navigation';
-import Logo from './Logo';
+
 import NavItem from './NavItem';
 import { Input } from '../ui/Input';
 
@@ -15,6 +14,7 @@ import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslations } from 'next-intl';
 import { useUiStore } from '@/store/use-ui-store';
 import MobileSidebar from './MobileSidebar';
+import LogoImage from '@/components/layouts/LogoImage';
 
 export default function Navbar() {
     const pathname = usePathname();
@@ -32,7 +32,7 @@ export default function Navbar() {
                 </button>
 
                 {/*-------- logo----------- */}
-                <Logo
+                <LogoImage   
                     brandName="Fasto"
                     brandLogo="/images/svgs/logo-icon.svg"
                 />
