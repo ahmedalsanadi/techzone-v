@@ -1,3 +1,4 @@
+//src/app/[locale]/products/page.tsx
 import React, { Suspense } from 'react';
 import ProductsContent from '@/components/pages/products/ProductsContent';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
@@ -9,6 +10,7 @@ import { getQueryClient } from '@/lib/getQueryClient';
 import { storeService } from '@/services/store-service';
 import { generateCollectionStructuredData } from '@/lib/metadata';
 import { siteConfig } from '@/config/site';
+
 async function ContentDataWrapper({ 
     locale,
     categorySlug, 

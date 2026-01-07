@@ -1,25 +1,16 @@
 import { env } from './env';
 
 /**
- * Site configuration
- * This provides default values used for SEO and fallback data across the application.
- * In this multi-tenant setup, these values act as the platform-level defaults.
+ * ⚠️ PLATFORM DEFAULTS
+ * - Used for dev
+ * - Used as SEO fallback
+ * - MUST remain static
  */
 export const siteConfig = {
-    name: 'Fasto',
-    description: 'A premium restaurant management and ordering platform.',
-    url: env.siteUrl,
-    ogImage: `${env.siteUrl}/og-image.png`,
-    links: {
-        twitter: 'https://twitter.com/libero',
-        github: 'https://github.com/libero-ecommerce',
-    },
-    mainNav: [
-        {
-            title: 'Home',
-            href: '/',
-        },
-    ],
+  name: 'Fasto',
+  description: 'A premium restaurant management and ordering platform.',
+  url: env.siteUrl,
+  ogImage: `${env.siteUrl}/og-image.png`,
 };
 
 export type SiteConfig = typeof siteConfig;
