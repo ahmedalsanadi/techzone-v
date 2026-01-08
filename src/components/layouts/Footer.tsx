@@ -49,7 +49,7 @@ const Footer = () => {
             <div className="bg-[#FAF4F0] py-12 md:py-18 px-4">
                 <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-10 lg:gap-8">
                     {/* Logo & Info */}
-                    <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
+                    <div className="flex flex-col items-center lg:items-start text-center  ">
                         <div className="flex flex-col items-center lg:items-start mb-6">
                             <Image
                                 src="/images/logo/fasto-logo.svg"
@@ -69,7 +69,7 @@ const Footer = () => {
 
                     {/* Columns Order based on image */}
                     {dynamicFooterSections.map((section, idx) => (
-                        <div key={idx} className="text-center lg:text-left">
+                        <div key={idx} className="text-center  ">
                             <FooterColumn
                                 titleKey={section.titleKey}
                                 links={section.links}
@@ -78,7 +78,7 @@ const Footer = () => {
                     ))}
 
                     {/* Contact Us Column */}
-                    <div className="text-center lg:text-left">
+                    <div className="text-center ">
                         <h4 className="font-black text-gray-900 mb-6 lg:mb-8 text-xl">
                             {t('contact')}
                         </h4>
@@ -88,7 +88,7 @@ const Footer = () => {
                                     className="w-5 h-5 text-[#B44734]"
                                     strokeWidth={2.5}
                                 />
-                                <span>+966 55 123 9876</span>
+                                <span dir="ltr">+966 55 123 9876</span>
                             </li>
                             <li className="flex items-center gap-2 text-gray-600 font-bold text-md justify-center lg:justify-start">
                                 <Mail
@@ -101,7 +101,7 @@ const Footer = () => {
                     </div>
 
                     {/* Apps Column  */}
-                    <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
+                    <div className="flex flex-col items-center lg:items-start text-center  ">
                         <h4 className="font-black text-gray-900 mb-6 lg:mb-8 text-xl">
                             {t('downloadApp')}
                         </h4>
@@ -169,7 +169,7 @@ const Footer = () => {
             <div className="bg-libero-red p-6 lg:p-4">
                 <div className="container mx-auto flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-10">
                     {/* Copyright Left */}
-                    <div className="text-white/90 text-sm font-bold text-center lg:text-left order-3 lg:order-1">
+                    <div className="text-white/90 text-sm font-bold text-center   order-3 lg:order-1">
                         {t('rights')}
                     </div>
 

@@ -113,7 +113,13 @@ export default async function ContactPage({
                                                 />
                                             )}
                                         </div>
-                                        <span className="text-gray-600 font-medium group-hover:text-[#B44734] transition-colors">
+                                        <span
+                                            className="text-gray-600 font-medium group-hover:text-[#B44734] transition-colors"
+                                            dir={
+                                                channel.type === 'phone'
+                                                    ? 'ltr'
+                                                    : undefined
+                                            }>
                                             {channel.value}
                                         </span>
                                     </div>
