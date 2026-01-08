@@ -18,6 +18,7 @@ import { getStoreConfig } from '@/services/store-config';
 import { StoreProvider } from '@/components/providers/StoreProvider';
 import ToasterContainer from '@/components/layouts/ToasterContainer';
 import { resolveSiteIdentity } from '@/lib/tenant/resolve-site';
+import { QueryClient, dehydrate } from '@tanstack/react-query';
 
 /* -------------------------------------------------------------------------- */
 /*                                   FONTS                                    */
@@ -134,7 +135,9 @@ export default async function RootLayout({
                         />
                         <meta
                             name="theme-color"
-                            content={storeConfig.theme.primary_color || '#FF5200'}
+                            content={
+                                storeConfig.theme.primary_color || '#FF5200'
+                            }
                         />
                     </>
                 )}

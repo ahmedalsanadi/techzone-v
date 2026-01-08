@@ -12,7 +12,10 @@ export const storeService = {
      */
     getConfig: cache(() =>
         fetchLibero<StoreConfig>('/store/config', {
-            next: { revalidate: 3600 },
+            next: {
+                revalidate: 3600,
+                tags: ['store-config'],
+            },
         }),
     ),
 

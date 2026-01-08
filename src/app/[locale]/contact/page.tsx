@@ -3,7 +3,7 @@ import React from 'react';
 import { getTranslations } from 'next-intl/server';
 import { Metadata } from 'next';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
-import { storeService } from '@/services/store-service';
+import { getStoreConfig } from '@/services/store-config';
 import {
     Mail,
     Phone,
@@ -37,7 +37,7 @@ export default async function ContactPage({
 }) {
     const { locale } = await params;
     const t = await getTranslations({ locale, namespace: 'Contact' });
-    const config = await storeService.getConfig();
+    const config = await getStoreConfig();
     const store = config?.store;
 
     const breadcrumbItems = [

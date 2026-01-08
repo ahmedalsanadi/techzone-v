@@ -2,7 +2,7 @@
 import React from 'react';
 import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { storeService } from '@/services/store-service';
+import { getStoreConfig } from '@/services/store-config';
 import SignupContent from './SignupContent';
 
 export async function generateMetadata({
@@ -24,7 +24,7 @@ export default async function SignupPage({
     params: Promise<{ locale: string }>;
 }) {
     const { locale } = await params;
-    const config = await storeService.getConfig();
+    const config = await getStoreConfig();
 
     if (!config) {
         return null; // Handle error or redirect

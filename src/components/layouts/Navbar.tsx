@@ -1,5 +1,6 @@
+//src/components/layouts/navbar.tsx
 'use client';
-import { Link, usePathname } from '@/i18n/navigation';
+import { usePathname } from '@/i18n/navigation';
 import { Search, Menu } from 'lucide-react';
 import { NAV_ITEMS } from '@/config/navigation';
 
