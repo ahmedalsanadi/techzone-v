@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl';
 
 interface FooterColumnProps {
     titleKey: string;
-    links: { labelKey: string; href: string }[];
+    links: { labelKey?: string; label?: string; href: string }[];
 }
 
 const FooterColumn = ({ titleKey, links }: FooterColumnProps) => {
@@ -20,7 +20,8 @@ const FooterColumn = ({ titleKey, links }: FooterColumnProps) => {
                         <Link
                             href={link.href}
                             className="hover:text-[#B44734] transition-colors">
-                            {t(link.labelKey)}
+                            {link.label ||
+                                (link.labelKey ? t(link.labelKey) : '')}
                         </Link>
                     </li>
                 ))}

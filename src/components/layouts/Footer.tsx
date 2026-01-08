@@ -17,9 +17,31 @@ import {
     socialLinks,
 } from './footer/FooterData';
 import { useTranslations } from 'next-intl';
+import { useQuery } from '@tanstack/react-query';
+import { storeService } from '@/services/store-service';
 
 const Footer = () => {
     const t = useTranslations('Footer');
+
+    // Fetch categories for footer
+    const { data: categories } = useQuery({
+        queryKey: ['footer-categories'],
+        queryFn: () => storeService.getCategories(false), // Fetch flat list
+        staleTime: 1000 * 60 * 60, // 1 hour
+    });
+
+    const dynamicFooterSections = footerSections.map((section) => {
+        if (section.titleKey === 'sections.categories' && categories) {
+            return {
+                ...section,
+                links: categories.slice(0, 5).map((cat: any) => ({
+                    label: cat.name,
+                    href: `/categories/${cat.slug || cat.id}`,
+                })),
+            };
+        }
+        return section;
+    });
 
     return (
         <footer className="w-full flex flex-col">
@@ -46,7 +68,7 @@ const Footer = () => {
                     </div>
 
                     {/* Columns Order based on image */}
-                    {footerSections.map((section, idx) => (
+                    {dynamicFooterSections.map((section, idx) => (
                         <div key={idx} className="text-center lg:text-left">
                             <FooterColumn
                                 titleKey={section.titleKey}
