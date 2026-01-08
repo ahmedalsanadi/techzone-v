@@ -4,7 +4,7 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 import { Star, Store, Calendar, MapPin, Banknote, Info } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/Badge';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
 import { cn } from '@/lib/utils';
 
@@ -34,7 +34,6 @@ export default function OrderCard({ order }: OrderCardProps) {
 
     return (
         <div className="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col gap-5 shadow-sm hover:shadow-md transition-all duration-300 ">
-
             {/* Header: Status, Rating and Order Number */}
             <div className="flex items-center justify-between gap-4 pt-2 pb-4 border-b border-gray-200">
                 <h3 className="text-lg md:text-2xl font-black text-gray-900 truncate">
@@ -58,24 +57,20 @@ export default function OrderCard({ order }: OrderCardProps) {
                         {currentStatus.label}
                     </Badge>
                 </div>
-
-
             </div>
 
             {/* Order Details List */}
             <div className="flex flex-col gap-3">
                 {/* Branch */}
                 <div className="flex items-center gap-3 text-gray-500">
-                   
                     <Store className="w-5 h-5 opacity-60" />
-                     <span className="text-sm font-medium">
+                    <span className="text-sm font-medium">
                         {t('branch', { name: order.branchName })}
                     </span>
                 </div>
 
                 {/* Created At */}
                 <div className="flex items-center gap-3 text-gray-500">
-
                     <Calendar className="w-5 h-5 opacity-60" />
 
                     <span className="text-sm font-medium" dir="rtl">
@@ -88,14 +83,13 @@ export default function OrderCard({ order }: OrderCardProps) {
 
                 {/* Delivery Location */}
                 <div className="flex items-center gap-3 text-gray-500">
-
                     <MapPin className="w-5 h-5 opacity-60" />
 
-                     <div className="flex flex-col">
+                    <div className="flex flex-col">
                         <span className="text-[11px] opacity-70 leading-tight">
                             حي اليرموك، شارع النجاح، منزل رقم 42، الرياض 13243
                         </span>
-                         <span className="text-sm font-medium">
+                        <span className="text-sm font-medium">
                             {t('deliveryTo', {
                                 location: order.deliveryLocation,
                             })}
@@ -105,10 +99,9 @@ export default function OrderCard({ order }: OrderCardProps) {
 
                 {/* Total */}
                 <div className="flex items-center gap-3 text-gray-900">
-                   
                     <Banknote className="w-5 h-5 opacity-60" />
 
-                     <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1">
                         <span className="text-lg font-black tracking-tight">
                             {order.totalAmount.toFixed(2)}
                         </span>

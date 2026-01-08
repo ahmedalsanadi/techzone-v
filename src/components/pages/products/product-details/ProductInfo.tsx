@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 import { Flame } from 'lucide-react';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/Badge';
 
 interface ProductInfoProps {
     name: string;
