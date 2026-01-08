@@ -21,6 +21,16 @@ export default function PageContainer({
         setMobileMenuOpen(false);
     }, [pathname, setMobileMenuOpen]);
 
+    const isAuthPage = pathname?.includes('/signup');
+
+    if (isAuthPage) {
+        return (
+            <main className="min-h-screen flex flex-col relative overflow-x-hidden">
+                <div className="flex-1">{children}</div>
+            </main>
+        );
+    }
+
     return (
         <main className="min-h-screen flex flex-col relative">
             {/*-------- Red bg header ----------- */}

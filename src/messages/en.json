@@ -200,5 +200,19 @@
       "placeholder_email": "someone@gmail.com",
       "placeholder_subject": "The problem"
     }
+  },
+  "Signup": {
+    "title": "Create Account",
+    "subtitle": "Please complete the following details:",
+    "name": "Name",
+    "phone": "Phone Number",
+    "email": "Email Address",
+    "submit": "Register",
+    "otpTitle": "Verify Phone Number",
+    "otpSubtitle": "Enter the verification code sent to your phone number:",
+    "continue": "Continue",
+    "resend": "Didn't receive the code?",
+    "timer": "00:30",
+    "poweredBy": "Powered by"
   }
 }
