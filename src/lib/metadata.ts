@@ -4,10 +4,7 @@ import { siteConfig } from '@/config/site';
 /**
  * Generates Product Structured Data with correct Schema.org enumerations
  */
-export function generateProductStructuredData(
-    product: any,
-    siteUrl: string,
-) {
+export function generateProductStructuredData(product: any, siteUrl: string) {
     if (!product) return null;
 
     return {
@@ -23,12 +20,12 @@ export function generateProductStructuredData(
         },
         offers: {
             '@type': 'Offer',
-            url: `${siteUrl}/products/${product.id}`,
+            url: `${siteUrl}/products/${product.slug || product.id}`,
             priceCurrency: 'SAR',
             price: product.price,
             // Use correct Schema.org enumeration URLs
-            availability: product.is_available 
-                ? 'https://schema.org/InStock' 
+            availability: product.is_available
+                ? 'https://schema.org/InStock'
                 : 'https://schema.org/OutOfStock',
             itemCondition: 'https://schema.org/NewCondition',
             // Add platform information
@@ -40,15 +37,16 @@ export function generateProductStructuredData(
             validFrom: new Date().toISOString(),
         },
         // Add aggregateRating if you have reviews
-        ...(product.rating && product.review_count && {
-            aggregateRating: {
-                '@type': 'AggregateRating',
-                ratingValue: product.rating,
-                reviewCount: product.review_count,
-                bestRating: '5',
-                worstRating: '1',
-            },
-        }),
+        ...(product.rating &&
+            product.review_count && {
+                aggregateRating: {
+                    '@type': 'AggregateRating',
+                    ratingValue: product.rating,
+                    reviewCount: product.review_count,
+                    bestRating: '5',
+                    worstRating: '1',
+                },
+            }),
     };
 }
 
@@ -70,7 +68,7 @@ export function generateCollectionStructuredData(
         itemListElement: products.slice(0, 20).map((product, index) => ({
             '@type': 'ListItem',
             position: index + 1,
-            url: `${siteUrl}/products/${product.id}`,
+            url: `${siteUrl}/products/${product.slug || product.id}`,
             item: {
                 '@type': 'Product',
                 name: product.name || product.title,
@@ -80,8 +78,8 @@ export function generateCollectionStructuredData(
                     '@type': 'Offer',
                     price: product.price,
                     priceCurrency: 'SAR',
-                    availability: product.is_available 
-                        ? 'https://schema.org/InStock' 
+                    availability: product.is_available
+                        ? 'https://schema.org/InStock'
                         : 'https://schema.org/OutOfStock',
                 },
             },
@@ -129,13 +127,13 @@ export function generateOrganizationStructuredData(
                 inLanguage: ['en', 'ar'],
                 actionPlatform: [
                     'https://schema.org/DesktopWebPlatform',
-                    'https://schema.org/MobileWebPlatform'
-                ]
+                    'https://schema.org/MobileWebPlatform',
+                ],
             },
             deliveryMethod: [
                 'https://schema.org/OnSitePickup',
-                'https://schema.org/DeliveryMethod'
-            ]
-        }
+                'https://schema.org/DeliveryMethod',
+            ],
+        },
     };
 }

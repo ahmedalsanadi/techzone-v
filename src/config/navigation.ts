@@ -17,7 +17,7 @@ export const NAV_ITEMS: NavItemType[] = [
     {
         id: 'categories',
         label: 'الأقسام',
-        href: '/products',
+        href: '/categories',
         icon: '/images/svgs/4grid-squares-icon.svg',
         alt: 'Categories',
     },

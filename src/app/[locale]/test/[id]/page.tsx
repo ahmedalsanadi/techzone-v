@@ -1,4 +1,4 @@
-//src/app/[locale]/products/[id]/page.tsx
+
 import { notFound } from 'next/navigation';
 import ProductDetails from '@/components/pages/products/ProductDetails';
 import { Metadata } from 'next';

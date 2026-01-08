@@ -95,7 +95,9 @@
     "dishName": "Dish Name",
     "save": "Save {amount}",
     "addToCart": "Add to Cart",
-    "noProducts": "No products available currently"
+    "noProducts": "No products available currently",
+    "previous": "Previous",
+    "next": "Next"
   },
   "Product": {
     "calories": "Calories",
@@ -116,7 +118,22 @@
     "price": "Price",
     "products_description": "Browse our wide selection of products",
     "home": "Home",
-    "description": "Explore Fasto's diverse menu, from delicious pizzas and mouth-watering burgers to sweets and refreshing drinks. Order now for an unforgettable taste."
+    "description": "Explore Fasto's diverse menu, from delicious pizzas and mouth-watering burgers to sweets and refreshing drinks. Order now for an unforgettable taste.",
+    "price_range": "Price Range",
+    "quick_filters": "Quick Filters",
+    "featured": "Featured",
+    "latest": "Latest",
+    "clear_all": "Clear All",
+    "sortBy": "Sort By",
+    "default": "Default",
+    "price_low_high": "Price: Low to High",
+    "price_high_low": "Price: High to Low",
+    "newest": "Newest",
+    "name_a_z": "Name (A-Z)",
+    "notes": "Notes",
+    "addNotes": "Add any notes or special instructions...",
+    "outOfStock": "Out of Stock",
+    "categories": "Categories"
   },
   "Orders": {
     "title": "My Orders",
@@ -153,5 +170,21 @@
     "remove": "Remove",
     "items": "{count} items",
     "added": "{name} has been added to your cart!"
+  },
+  "Category": {
+    "categories": "Categories",
+    "categories_description": "Browse all our store categories",
+    "explore_categories": "Explore Categories",
+    "home": "Home",
+    "all_products": "All Products"
+  },
+  "Search": {
+    "results_for": "Results for",
+    "search": "Search",
+    "search_description": "Search for your favorite products",
+    "search_products": "Search Products",
+    "items_found": "Items found",
+    "no_query": "Please enter a search term",
+    "no_results": "Sorry, no results found for your query"
   }
 }

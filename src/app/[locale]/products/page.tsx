@@ -7,113 +7,71 @@ import { Metadata } from 'next';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { getQueryClient } from '@/lib/getQueryClient';
 import { storeService } from '@/services/store-service';
-import { generateCollectionStructuredData } from '@/lib/metadata';
-import { siteConfig } from '@/config/site';
 
-// GENERATE METADATA FOR THIS PAGE
+interface SearchParams {
+    [key: string]: string | undefined;
+    search?: string;
+    category_id?: string;
+    brand_id?: string;
+    is_featured?: string;
+    is_latest?: string;
+    min_price?: string;
+    max_price?: string;
+    sort?: string;
+    order?: string;
+    page?: string;
+}
+
 export async function generateMetadata({
     params,
     searchParams,
 }: {
     params: Promise<{ locale: string }>;
-    searchParams: Promise<{ category?: string; category_id?: string }>;
+    searchParams: Promise<SearchParams>;
 }): Promise<Metadata> {
     const { locale } = await params;
-    const { category, category_id } = await searchParams;
-
     const t = await getTranslations({ locale, namespace: 'Product' });
 
-    let title = t('products');
-    let description = t('products_description', {
-        defaultValue: 'Browse our wide selection of products',
-    });
-
-    // If filtering by category, get category name
-    if (category_id) {
-        try {
-            const categories = await storeService.getCategories(true);
-            const categoryData = categories.find(
-                (cat) => cat.id === category_id,
-            );
-            if (categoryData) {
-                title = categoryData.name;
-                description =
-                    categoryData.description ||
-                    `Browse ${categoryData.name} products`;
-            }
-        } catch (error) {
-            // Fallback to default
-        }
-    }
-
     return {
-        title,
-        description,
+        title: t('products'),
+        description: t('products_description'),
         openGraph: {
-            title,
-            description,
+            title: t('products'),
+            description: t('products_description'),
             type: 'website',
         },
-        twitter: {
-            card: 'summary_large_image',
-            title,
-            description,
-        },
         alternates: {
-            canonical: category_id
-                ? `/products?category_id=${category_id}`
-                : '/products',
+            canonical: '/products',
             languages: {
-                en: `/en/products${
-                    category_id ? `?category_id=${category_id}` : ''
-                }`,
-                ar: `/ar/products${
-                    category_id ? `?category_id=${category_id}` : ''
-                }`,
+                en: '/en/products',
+                ar: '/ar/products',
             },
         },
     };
 }
+
 async function ContentDataWrapper({
-    locale,
-    categorySlug,
-    category_id,
+    searchParams,
 }: {
-    locale: string;
-    categorySlug?: string;
-    category_id?: string;
+    searchParams: SearchParams;
 }) {
     const queryClient = getQueryClient();
 
-    const [productsResult] = await Promise.all([
-        storeService.getProducts({ category_id }),
+    // Prefetch initial data
+    await Promise.all([
+        queryClient.prefetchQuery({
+            queryKey: ['products', searchParams],
+            queryFn: () => storeService.getProducts(searchParams),
+        }),
         queryClient.prefetchQuery({
             queryKey: ['categories'],
             queryFn: () => storeService.getCategories(true),
         }),
     ]);
 
-    queryClient.setQueryData(['products', category_id || ''], productsResult);
-
-    const structuredData = generateCollectionStructuredData(
-        productsResult.data,
-        siteConfig.url,
-    );
-
     return (
         <HydrationBoundary state={dehydrate(queryClient)}>
-            {structuredData && (
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify(structuredData),
-                    }}
-                />
-            )}
-            <ProductsContent
-                initialCategorySlug={categorySlug}
-                initialCategoryId={category_id}
-            />
+            <ProductsContent initialFilters={searchParams} />
         </HydrationBoundary>
     );
 }
@@ -123,10 +81,10 @@ export default async function ProductsPage({
     searchParams,
 }: {
     params: Promise<{ locale: string }>;
-    searchParams: Promise<{ category?: string; category_id?: string }>;
+    searchParams: Promise<SearchParams>;
 }) {
     const { locale } = await params;
-    const { category: categorySlug, category_id } = await searchParams;
+    const filters = await searchParams;
     const t = await getTranslations({ locale, namespace: 'Product' });
 
     const breadcrumbItems = [
@@ -141,55 +99,36 @@ export default async function ProductsPage({
             </div>
 
             <Suspense fallback={<ProductsPageSkeleton />}>
-                <ContentDataWrapper
-                    locale={locale}
-                    categorySlug={categorySlug}
-                    category_id={category_id}
-                />
+                <ContentDataWrapper searchParams={filters} />
             </Suspense>
         </main>
     );
 }
 
-// Extract skeleton to separate component
 function ProductsPageSkeleton() {
     return (
-        <div className="container mx-auto py-8 px-4">
-            {/* Category Tabs Skeleton */}
-            <div className="h-[70px] mb-8 flex justify-center gap-4 overflow-hidden">
-                {Array.from({ length: 5 }).map((_, i) => (
-                    <div
-                        key={i}
-                        className="h-12 w-24 bg-gray-100 animate-pulse rounded-2xl shrink-0"
-                    />
-                ))}
-            </div>
-            {/* Subcategories Skeleton */}
-            <div className="h-[120px] bg-gray-50/50 border border-gray-100 rounded-[32px] mb-10 mx-4 animate-pulse flex items-center px-8 gap-10">
-                {Array.from({ length: 6 }).map((_, i) => (
-                    <div key={i} className="flex flex-col items-center gap-2">
-                        <div className="w-16 h-16 rounded-full bg-gray-100" />
-                        <div className="h-2 w-10 bg-gray-100 rounded" />
+        <div className="container mx-auto px-4 py-8">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                {/* Filters skeleton */}
+                <div className="space-y-6">
+                    {Array.from({ length: 4 }).map((_, i) => (
+                        <div
+                            key={i}
+                            className="h-32 bg-gray-200 rounded-lg animate-pulse"
+                        />
+                    ))}
+                </div>
+                {/* Products skeleton */}
+                <div className="lg:col-span-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {Array.from({ length: 9 }).map((_, i) => (
+                            <div
+                                key={i}
+                                className="h-64 bg-gray-200 rounded-lg animate-pulse"
+                            />
+                        ))}
                     </div>
-                ))}
-            </div>
-            {/* Products Grid Skeleton - Matches ProductCard exactly */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                {Array.from({ length: 10 }).map((_, i) => (
-                    <div
-                        key={i}
-                        className="bg-white border border-gray-100 rounded-3xl p-6 flex flex-col items-center shadow-sm">
-                        <div className="w-full aspect-square bg-gray-50 rounded-2xl animate-pulse mb-6" />
-                        <div className="w-full space-y-3">
-                            <div className="h-4 bg-gray-100 rounded-md w-3/4 animate-pulse" />
-                            <div className="flex justify-between items-center">
-                                <div className="h-6 bg-gray-100 rounded-md w-1/3 animate-pulse" />
-                                <div className="h-4 bg-gray-100 rounded-md w-1/4 animate-pulse" />
-                            </div>
-                            <div className="h-12 bg-gray-50 rounded-xl w-full animate-pulse mt-4" />
-                        </div>
-                    </div>
-                ))}
+                </div>
             </div>
         </div>
     );

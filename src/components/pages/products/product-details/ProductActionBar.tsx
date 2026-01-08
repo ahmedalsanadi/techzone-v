@@ -13,6 +13,7 @@ interface ProductActionBarProps {
     quantity: number;
     setQuantity: (qty: number | ((prev: number) => number)) => void;
     onAddToCart: () => void;
+    isAvailable?: boolean;
 }
 
 interface QtyButtonProps {
@@ -40,6 +41,7 @@ export default function ProductActionBar({
     quantity,
     setQuantity,
     onAddToCart,
+    isAvailable = true,
 }: ProductActionBarProps) {
     const t = useTranslations('Product');
 
@@ -60,40 +62,50 @@ export default function ProductActionBar({
                     <QtyButton
                         icon={Minus}
                         onClick={handleDecrement}
-                        disabled={quantity <= 1}
+                        disabled={quantity <= 1 || !isAvailable}
                     />
                     <span className="w-12 text-center text-lg font-bold text-gray-800">
                         {quantity}
                     </span>
 
-                    <QtyButton icon={Plus} onClick={handleIncrement} />
+                    <QtyButton
+                        icon={Plus}
+                        onClick={handleIncrement}
+                        disabled={!isAvailable}
+                    />
                 </div>
 
                 {/* Add to Cart Button */}
                 <button
                     onClick={onAddToCart}
-                    className="flex items-center justify-between gap-12 max-w-[260px] bg-[#B44734] hover:bg-[#9a3c2c] text-white
-                     px-5 py-2.5  rounded-lg transition-all active:scale-[0.98] shadow-lg shadow-[#B44734]/10 group cursor-pointer">
+                    disabled={!isAvailable}
+                    className={cn(
+                        'flex items-center justify-between gap-12 min-w-[200px] bg-[#B44734] hover:bg-[#9a3c2c] text-white',
+                        'px-5 py-2.5 rounded-lg transition-all active:scale-[0.98] shadow-lg shadow-[#B44734]/10 group cursor-pointer',
+                        'disabled:bg-gray-400 disabled:shadow-none disabled:cursor-not-allowed',
+                    )}>
                     <span className="text-sm sm:text-lg font-bold">
-                        {t('addToCart')}
+                        {isAvailable ? t('addToCart') : t('outOfStock')}
                     </span>
-                    <div className="flex items-center gap-2 sm:gap-2.5">
-                        {originalPrice && (
-                            <div className="flex items-center gap-1 opacity-60">
-                                <span className="text-[10px] sm:text-sm line-through font-bold">
-                                    {originalPrice * quantity}
-                                </span>
-                                <CurrencySymbol className="brightness-0 invert w-2.5 h-2.5" />
-                            </div>
-                        )}
+                    {isAvailable && (
+                        <div className="flex items-center gap-2 sm:gap-2.5">
+                            {originalPrice && (
+                                <div className="flex items-center gap-1 opacity-60">
+                                    <span className="text-[10px] sm:text-sm line-through font-bold">
+                                        {originalPrice * quantity}
+                                    </span>
+                                    <CurrencySymbol className="brightness-0 invert w-2.5 h-2.5" />
+                                </div>
+                            )}
 
-                        <div className="flex items-center gap-1">
-                            <span className="text-base sm:text-xl font-black">
-                                {totalPrice}
-                            </span>
-                            <CurrencySymbol className="brightness-0 invert w-3.5 h-3.5 sm:w-5 sm:h-5" />
+                            <div className="flex items-center gap-1">
+                                <span className="text-base sm:text-xl font-black">
+                                    {totalPrice}
+                                </span>
+                                <CurrencySymbol className="brightness-0 invert w-3.5 h-3.5 sm:w-5 sm:h-5" />
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </button>
             </div>
         </div>

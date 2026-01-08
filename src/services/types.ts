@@ -123,22 +123,35 @@ export interface ProductAllergy {
 }
 
 export interface Product {
-    id: number | string;
+    id: number;
     title: string;
-    name?: string; // Fallback for UI
-    price: string | number;
-    sale_price: string | number | null;
-    cover_image_url: string;
-    images?: string[]; // Multiple images for gallery
-    is_available: boolean;
-    type: string;
-    categoryId?: string | number;
-    subCategoryId?: string | number;
+    subtitle?: string;
     description: string;
+    slug: string;
+    cover_image_url: string;
+    image_urls: string[];
+    price: number;
+    sale_price?: number;
+    has_discount: boolean;
+    is_available: boolean;
     calories?: number;
     prepTime?: number;
-    allergies?: ProductAllergy[];
-    varieties?: ProductVariety[];
-    addons?: ProductAddon[];
-    sauces?: ProductSauce[];
+    categories: Array<{ id: number; name: string }>;
+    variants: any[];
+    addons: Array<{
+        id: number;
+        name: string;
+        description: string;
+        input_type: 'boolean' | 'number';
+        min_selected: number;
+        max_selected: number;
+        is_required: boolean;
+        items: Array<{
+            id: number;
+            title: string;
+            extra_price: number;
+            max_quantity?: number;
+            multiply_price_by_quantity: boolean;
+        }>;
+    }>;
 }

@@ -29,16 +29,9 @@ export const storeService = {
     /**
      * List products with filtering and pagination.
      */
-    async getProducts(params?: {
-        search?: string;
-        category_id?: number | string;
-        is_featured?: boolean | string;
-        is_latest?: boolean | string;
-        page?: number;
-        per_page?: number;
-        sort?: string;
-        order?: 'asc' | 'desc';
-    }): Promise<{ data: Product[]; meta: PaginationMeta }> {
+    async getProducts(
+        params: Record<string, any> = {},
+    ): Promise<{ data: Product[]; meta: PaginationMeta }> {
         const response = await fetchLiberoFull<Product[]>('/store/products', {
             params,
             next: { revalidate: 60 }, // Cache products for 1 minute
@@ -50,7 +43,7 @@ export const storeService = {
                 current_page: 1,
                 last_page: 1,
                 per_page: params?.per_page || 10,
-                total: response.data.length,
+                total: response.data?.length || 0,
             },
         };
     },
@@ -61,5 +54,29 @@ export const storeService = {
     getProduct: (id: string) =>
         fetchLibero<Product>(`/store/products/${id}`, {
             next: { revalidate: 60 },
+        }),
+
+    /**
+     * Get a single product by Slug.
+     */
+    getProductBySlug: (slug: string) =>
+        fetchLibero<Product>(`/store/products/${slug}`, {
+            next: { revalidate: 60 },
+        }),
+
+    /**
+     * Get category by ID.
+     */
+    getCategory: (id: string) =>
+        fetchLibero<Category>(`/store/categories/${id}`, {
+            next: { revalidate: 3600 },
+        }),
+
+    /**
+     * Get category by Slug.
+     */
+    getCategoryBySlug: (slug: string) =>
+        fetchLibero<Category>(`/store/categories/${slug}`, {
+            next: { revalidate: 3600 },
         }),
 };

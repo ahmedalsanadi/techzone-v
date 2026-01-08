@@ -11,111 +11,75 @@ import { notFound } from 'next/navigation';
 
 interface Props {
     params: Promise<{ slug: string; locale: string }>;
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { slug, locale } = await params;
-    
+
     try {
         const categories = await storeService.getCategories(true);
-        const category = categories.find(cat => cat.slug === slug);
-        
+        const category = categories.find((cat) => cat.slug === slug);
+
         if (!category) {
-            return {
-                title: 'Category Not Found',
-            };
+            return { title: 'Category Not Found' };
         }
 
-        const title = category.name;
-        const description = category.description || `Browse ${category.name} products at ${siteConfig.name}`;
-
         return {
-            title,
-            description,
-            openGraph: {
-                title,
-                description,
-                type: 'website',
-                images: category.image_url ? [{ url: category.image_url }] : undefined,
-            },
-            twitter: {
-                card: 'summary_large_image',
-                title,
-                description,
-                images: category.image_url ? [category.image_url] : undefined,
-            },
+            title: category.name,
+            description: category.description,
             alternates: {
                 canonical: `/category/${slug}`,
-                languages: {
-                    en: `/en/category/${slug}`,
-                    ar: `/ar/category/${slug}`,
-                },
             },
         };
     } catch (error) {
-        return {
-            title: 'Category Not Found',
-        };
+        return { title: 'Category Not Found' };
     }
 }
 
-export default async function CategoryPage({ params }: Props) {
+export default async function CategoryPage({ params, searchParams }: Props) {
     const { slug, locale } = await params;
-    
+    const filters = await searchParams;
+
     try {
         const categories = await storeService.getCategories(true);
-        const category = categories.find(cat => cat.slug === slug);
-        
+        const category = categories.find((cat) => cat.slug === slug);
+
         if (!category) {
             notFound();
         }
 
         const t = await getTranslations({ locale, namespace: 'Product' });
-        
+
         const breadcrumbItems = [
             { label: t('home'), href: '/' },
             { label: t('products'), href: '/products' },
-            { label: category.name, href: `/category/${slug}`, active: true },
+            { label: category.name, active: true },
         ];
+
+        // Merge category ID with existing search params
+        const mergedFilters = {
+            ...Object.fromEntries(
+                Object.entries(filters).map(([k, v]) => [
+                    k,
+                    typeof v === 'string' ? v : v?.[0],
+                ]),
+            ),
+            category_id: category.id.toString(),
+        };
 
         return (
             <main className="min-h-screen bg-gray-50/30">
                 <div className="container mx-auto px-4 pt-6">
                     <Breadcrumbs items={breadcrumbItems} />
                 </div>
-                
+
                 <Suspense fallback={<div>Loading...</div>}>
-                    <CategoryContent categoryId={category.id} categorySlug={slug} />
+                    <ProductsContent initialFilters={mergedFilters} />
                 </Suspense>
             </main>
         );
     } catch (error) {
         notFound();
     }
-}
-
-async function CategoryContent({ categoryId, categorySlug }: { categoryId: string; categorySlug: string }) {
-    const productsResult = await storeService.getProducts({ category_id: categoryId });
-    
-    const structuredData = generateCollectionStructuredData(
-        productsResult.data,
-        siteConfig.url
-    );
-
-    return (
-        <>
-            {structuredData && (
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify(structuredData),
-                    }}
-                />
-            )}
-            <ProductsContent 
-                initialCategorySlug={categorySlug} 
-                initialCategoryId={categoryId} 
-            />
-        </>
-    );
 }

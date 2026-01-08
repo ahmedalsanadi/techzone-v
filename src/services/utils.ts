@@ -32,25 +32,23 @@ export async function getBaseHeaders(
         headers.set('Content-Type', 'application/json');
     }
 
-    // 1. Determine User Access Token (from session cookie)
+    // Determine the token to use
     let token: string | undefined;
 
     if (typeof window === 'undefined') {
-        // Server-side: Use next/headers
         try {
             const { cookies } = await import('next/headers');
             const cookieStore = await cookies();
             token = cookieStore.get('accessToken')?.value;
         } catch (e) {
-            /* Not in a request context */
+            /* No-op */
         }
     } else {
-        // Client-side: Read from document.cookie
         token = getClientCookie('accessToken');
     }
 
-    // 2. Set Authorization header
-    // Use user accessToken if available, otherwise fall back to store liberoAuthToken
+    // Set Authorization header
+    // We ALWAYS want to include the Libero Auth Token if no user token is present
     if (token) {
         headers.set('Authorization', `Bearer ${token}`);
     } else if (env.liberoAuthToken) {

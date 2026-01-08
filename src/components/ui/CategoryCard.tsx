@@ -36,29 +36,31 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
         return (
             <div
                 onClick={onClick}
-                className="flex flex-col items-center gap-2 cursor-pointer group w-[76px] md:w-[90px] shrink-0">
+                className="flex flex-col items-center gap-3 cursor-pointer group w-[80px] md:w-[100px] shrink-0">
                 <div
-                    className={`w-14 h-14 md:w-16 md:h-16 rounded-full border-2 p-1.5 transition-all flex items-center justify-center overflow-hidden
-                    ${
+                    className={cn(
+                        'w-16 h-16 md:w-20 md:h-20 rounded-full border-2 p-1 transition-all duration-300 flex items-center justify-center overflow-hidden bg-white relative',
                         isActive
-                            ? 'border-[#B44734] bg-white shadow-md scale-105'
-                            : 'border-transparent bg-white/50 group-hover:border-[#B44734]/30'
-                    }`}>
-                    <DynamicImage
-                        src={image || ''}
-                        alt={label}
-                        fill
-                        className="object-cover rounded-full"
-                        fallbackComponent={FallbackIcon}
-                    />
+                            ? 'border-[#B44734] shadow-lg scale-110 z-10'
+                            : 'border-white/50 shadow-sm group-hover:border-[#B44734]/30 group-hover:shadow-md',
+                    )}>
+                    <div className="relative w-full h-full rounded-full overflow-hidden">
+                        <DynamicImage
+                            src={image || ''}
+                            alt={label}
+                            fill
+                            className="object-cover"
+                            fallbackComponent={FallbackIcon}
+                        />
+                    </div>
                 </div>
                 <span
-                    className={`text-[10px] md:text-xs font-bold transition-colors text-center line-clamp-1
-                    ${
+                    className={cn(
+                        'text-[10px] md:text-sm font-bold transition-colors text-center line-clamp-2 px-1',
                         isActive
                             ? 'text-[#B44734]'
-                            : 'text-gray-600 group-hover:text-gray-900'
-                    }`}>
+                            : 'text-gray-600 group-hover:text-gray-900',
+                    )}>
                     {label}
                 </span>
             </div>
@@ -68,36 +70,36 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
     return (
         <div
             onClick={onClick}
-            className="flex flex-col items-center w-[95px] md:w-[125px] group cursor-pointer shrink-0">
+            className="flex flex-col items-center w-[85px] md:w-[110px] group cursor-pointer shrink-0">
             <div
-                className={`w-full aspect-4/5 bg-white border rounded-xl md:rounded-2xl flex flex-col items-center justify-center gap-2 p-2.5 shadow-sm transition-all
-                ${
+                className={cn(
+                    'w-full aspect-4/5 md:aspect-square flex flex-col items-center justify-center gap-2 p-3 transition-all duration-300 rounded-2xl relative',
                     isActive
-                        ? 'border-[#B44734] shadow-md'
-                        : 'border-gray-200/60 group-hover:shadow-md group-hover:border-[#B44734]/20'
-                }`}>
+                        ? 'bg-white border-2 border-[#B44734] shadow-xl -translate-y-1'
+                        : 'bg-white/40 border border-gray-100 group-hover:bg-white group-hover:border-[#B44734]/20 group-hover:shadow-lg',
+                )}>
                 {isMain ? (
-                    <div className="flex flex-col items-center gap-2.5 w-full">
-                        <div className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center">
+                    <div className="flex flex-col items-center gap-2 w-full">
+                        <div className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-[#FEF4F1] rounded-xl group-hover:scale-110 transition-transform">
                             <LayoutGrid
-                                size={32}
+                                size={28}
                                 className="text-[#B44734]"
                                 strokeWidth={1.5}
                             />
                         </div>
                         <span
-                            className={`text-[11px] md:text-sm font-bold transition-colors text-center line-clamp-2
-                            ${
+                            className={cn(
+                                'text-[11px] md:text-xs font-bold transition-colors text-center line-clamp-2 px-1',
                                 isActive
                                     ? 'text-[#B44734]'
-                                    : 'text-gray-800 group-hover:text-[#B44734]'
-                            }`}>
+                                    : 'text-gray-800 group-hover:text-[#B44734]',
+                            )}>
                             {label}
                         </span>
                     </div>
                 ) : (
                     <>
-                        <div className="relative w-10 h-10 md:w-14 md:h-14">
+                        <div className="relative w-10 h-10 md:w-14 md:h-14 transition-transform group-hover:scale-110">
                             <DynamicImage
                                 src={image || ''}
                                 alt={label}
@@ -107,15 +109,19 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                             />
                         </div>
                         <span
-                            className={`text-[11px] md:text-sm font-bold transition-colors leading-tight text-center line-clamp-2
-                            ${
+                            className={cn(
+                                'text-[11px] md:text-xs font-bold transition-colors leading-tight text-center line-clamp-2 px-1',
                                 isActive
                                     ? 'text-[#B44734]'
-                                    : 'text-gray-800 group-hover:text-[#B44734]'
-                            }`}>
+                                    : 'text-gray-800 group-hover:text-[#B44734]',
+                            )}>
                             {label}
                         </span>
                     </>
+                )}
+                {/* Active Indicator Line */}
+                {isActive && (
+                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-[#B44734] rounded-full" />
                 )}
             </div>
         </div>

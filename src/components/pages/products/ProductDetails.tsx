@@ -1,18 +1,15 @@
+// src/components/pages/products/ProductDetails.tsx
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Product } from '@/services/types';
 import ProductGallery from './product-details/ProductGallery';
-import ProductShareActions from './product-details/ProductShareActions';
 import ProductInfo from './product-details/ProductInfo';
-import ProductAllergies from './product-details/ProductAllergies';
 import ProductActionBar from './product-details/ProductActionBar';
-import SizeSelector from './product-details/SizeSelector';
 import AddonSelector from './product-details/AddonSelector';
-import SauceSelector from './product-details/SauceSelector';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import { useCartActions } from '@/hooks/useCartActions';
+import { Product } from '@/services/types';
 
 interface ProductDetailsProps {
     product: Product;
@@ -20,90 +17,69 @@ interface ProductDetailsProps {
 
 export default function ProductDetails({ product }: ProductDetailsProps) {
     const t = useTranslations('Product');
-
-    const varieties = product.varieties || [];
-    const addons = product.addons || [];
-    const sauces = product.sauces || [];
-    const images = product.images || [product.cover_image_url];
-    const name = product.name || product.title;
-
-    const [selectedVarietyId, setSelectedVarietyId] = useState<string>(
-        String(
-            varieties.find((v) => v.isDefault)?.id || varieties[0]?.id || '',
-        ),
-    );
-    const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
-    const [selectedSauces, setSelectedSauces] = useState<
-        Record<string, number>
-    >({});
-    const [quantity, setQuantity] = useState(1);
-
-    const selectedVariety = useMemo(
-        () => varieties.find((v) => String(v.id) === selectedVarietyId)!,
-        [selectedVarietyId, varieties],
-    );
-
-    const calculateTotalPrice = () => {
-        // Fallback for when no variety is selected or exists
-        if (!selectedVariety) return Number(product.price) * quantity;
-
-        let price = selectedVariety.price;
-
-        // Addons
-        selectedAddons.forEach((id) => {
-            const addon = addons.find((a) => String(a.id) === id);
-            if (addon) price += addon.price;
-        });
-
-        // Sauces
-        Object.entries(selectedSauces).forEach(([id, qty]) => {
-            const sauce = sauces.find((s) => String(s.id) === id);
-            if (sauce) price += sauce.price * qty;
-        });
-
-        return price * quantity;
-    };
-
-    const toggleAddon = (id: string) => {
-        setSelectedAddons((prev) =>
-            prev.includes(id)
-                ? prev.filter((item) => item !== id)
-                : [...prev, id],
-        );
-    };
-
-    const updateSauceQuantity = (id: string, delta: number) => {
-        setSelectedSauces((prev) => {
-            const current = prev[id] || 0;
-            const next = Math.max(0, current + delta);
-            if (next === 0) {
-                const { [id]: _, ...rest } = prev;
-                return rest;
-            }
-            return { ...prev, [id]: next };
-        });
-    };
-
     const { addToCart } = useCartActions();
 
-    const handleAddToCart = () => {
-        // Create a unique key for this specific configuration
-        const addonsKey = selectedAddons.sort().join(',');
-        const saucesKey = JSON.stringify(selectedSauces);
-        const uniqueId = `${product.id}-${selectedVarietyId}-${addonsKey}-${saucesKey}`;
+    const [selectedAddons, setSelectedAddons] = useState<
+        Record<number, Record<number, number>>
+    >({});
+    const [quantity, setQuantity] = useState(1);
+    const [notes, setNotes] = useState('');
 
+    const images = [product.cover_image_url, ...product.image_urls];
+    const currentPrice = product.sale_price || product.price;
+
+    const calculateTotalPrice = () => {
+        let totalAddonsPrice = 0;
+
+        Object.entries(selectedAddons).forEach(([addonGroupId, items]) => {
+            const addonGroup = product.addons.find(
+                (a) => a.id === parseInt(addonGroupId),
+            );
+            if (!addonGroup) return;
+
+            Object.entries(items).forEach(([itemId, qty]) => {
+                const item = addonGroup.items.find(
+                    (i) => i.id === parseInt(itemId),
+                );
+                if (!item || qty <= 0) return;
+
+                if (item.multiply_price_by_quantity) {
+                    totalAddonsPrice += item.extra_price * qty;
+                } else {
+                    totalAddonsPrice += item.extra_price;
+                }
+            });
+        });
+
+        return (Number(currentPrice) + totalAddonsPrice) * quantity;
+    };
+
+    const updateAddonSelection = (
+        addonGroupId: number,
+        itemId: number,
+        quantity: number,
+    ) => {
+        setSelectedAddons((prev) => ({
+            ...prev,
+            [addonGroupId]: {
+                ...prev[addonGroupId],
+                [itemId]: quantity,
+            },
+        }));
+    };
+
+    const handleAddToCart = () => {
         addToCart(
             {
-                id: uniqueId,
-                name: name,
-                image: images[0],
+                id: `${product.id}-${Date.now()}`, // Unique ID for this configuration
+                name: product.title,
+                image: product.cover_image_url,
                 price: calculateTotalPrice() / quantity,
-                categoryId: 'detailed',
+                categoryId: product.categories[0]?.id.toString() || '',
                 metadata: {
                     productId: product.id,
-                    variety: selectedVariety,
                     addons: selectedAddons,
-                    sauces: selectedSauces,
+                    notes,
                 },
             },
             quantity,
@@ -111,77 +87,70 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     };
 
     return (
-        <div className="flex flex-col gap-16 pb-24 relative pt-4 px-2 md:px-4">
-            <div className="flex flex-col gap-6">
-                {/* Breadcrumbs */}
-                <Breadcrumbs
-                    items={[
-                        { label: t('home'), href: '/' },
-                        { label: t('products'), href: '/products' },
-                        { label: name },
-                    ]}
-                />
+        <div className="container mx-auto px-4 py-8">
+            <Breadcrumbs
+                items={[
+                    { label: t('home'), href: '/' },
+                    { label: t('products'), href: '/products' },
+                    { label: product.title },
+                ]}
+            />
 
-                {/* Top Section: Info & Image */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-stretch">
-                    {/* Info Column */}
-                    <div className="lg:col-span-7 flex flex-col gap-8 order-2 ">
-                        <ProductShareActions />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-8">
+                {/* Gallery */}
+                <ProductGallery images={images} />
 
-                        <ProductInfo
-                            name={name}
-                            description={product.description}
-                            calories={
-                                selectedVariety?.calories ||
-                                product.calories ||
-                                0
-                            }
-                            prepTime={
-                                selectedVariety?.prepTime ||
-                                product.prepTime ||
-                                0
+                {/* Product Info */}
+                <div className="space-y-6">
+                    <ProductInfo
+                        name={product.title}
+                        subtitle={product.subtitle}
+                        description={product.description}
+                        price={Number(currentPrice)}
+                        originalPrice={
+                            product.has_discount
+                                ? Number(product.price)
+                                : undefined
+                        }
+                        calories={product.calories}
+                        categories={product.categories}
+                    />
+
+                    {/* Addons */}
+                    {product.addons.map((addonGroup) => (
+                        <AddonSelector
+                            key={addonGroup.id}
+                            addonGroup={addonGroup}
+                            selectedItems={selectedAddons[addonGroup.id] || {}}
+                            onUpdateSelection={(itemId, qty) =>
+                                updateAddonSelection(addonGroup.id, itemId, qty)
                             }
                         />
+                    ))}
 
-                        <ProductAllergies allergies={product.allergies || []} />
-
-                        <ProductActionBar
-                            totalPrice={calculateTotalPrice()}
-                            originalPrice={selectedVariety?.originalPrice || 0}
-                            quantity={quantity}
-                            setQuantity={setQuantity}
-                            onAddToCart={handleAddToCart}
+                    {/* Notes */}
+                    <div className="space-y-2">
+                        <label className="block text-sm font-medium">
+                            {t('notes')}
+                        </label>
+                        <textarea
+                            value={notes}
+                            onChange={(e) => setNotes(e.target.value)}
+                            placeholder={t('addNotes')}
+                            rows={3}
+                            className="w-full p-3 border rounded-lg resize-none"
                         />
                     </div>
 
-                    {/* Gallery Column */}
-                    <div className="lg:col-span-5 order-1 ">
-                        <div className="sticky top-24">
-                            <ProductGallery images={images} />
-                        </div>
-                    </div>
+                    {/* Action Bar */}
+                    <ProductActionBar
+                        totalPrice={calculateTotalPrice()}
+                        quantity={quantity}
+                        setQuantity={setQuantity}
+                        onAddToCart={handleAddToCart}
+                        isAvailable={product.is_available}
+                    />
                 </div>
-            </div>
-
-            {/* Customization Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <SizeSelector
-                    varieties={varieties}
-                    selectedVarietyId={selectedVarietyId}
-                    onSelect={setSelectedVarietyId}
-                />
-
-                <AddonSelector
-                    addons={addons}
-                    selectedAddons={selectedAddons}
-                    onToggle={toggleAddon}
-                />
-
-                <SauceSelector
-                    sauces={sauces}
-                    selectedSauces={selectedSauces}
-                    onUpdateQuantity={updateSauceQuantity}
-                />
             </div>
         </div>
     );

@@ -1,3 +1,4 @@
+// src/components/pages/products/product-details/SauceSelector.tsx
 'use client';
 
 import React from 'react';
