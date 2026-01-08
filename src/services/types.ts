@@ -40,7 +40,11 @@ export interface StoreInfo {
     logo_url: string;
     default_language: string;
     default_currency: string;
-    support_channels: Record<string, unknown> | null;
+    support_channels: Array<{
+        type: string;
+        value: string;
+        title: string;
+    }> | null;
     social_channels: SocialChannel[];
     products_type: string;
     store_type: string;

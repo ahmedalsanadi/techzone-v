@@ -186,5 +186,19 @@
     "items_found": "Items found",
     "no_query": "Please enter a search term",
     "no_results": "Sorry, no results found for your query"
+  },
+  "Contact": {
+    "title": "Contact Us",
+    "home": "Home",
+    "support": "Technical Support",
+    "social": "Social Media",
+    "form": {
+      "email": "Email Address",
+      "subject": "Subject",
+      "message": "Write your message here:",
+      "send": "Send",
+      "placeholder_email": "someone@gmail.com",
+      "placeholder_subject": "The problem"
+    }
   }
 }
