@@ -51,11 +51,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     let productRoutes: MetadataRoute.Sitemap = [];
     try {
         const { data: products } = await storeService.getProducts({
-            per_page: 100, // Adjust based on store size
+            per_page: 500, // Fetch more for sitemap indexing
         });
         productRoutes = localizeRoutes(
             products.map((p) => ({
-                path: `/products/${p.id}`,
+                path: `/products/${p.slug || p.id}`,
                 priority: 0.7,
                 changeFrequency: 'weekly',
             })),
@@ -67,11 +67,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // 3. Dynamic Category Routes
     let categoryRoutes: MetadataRoute.Sitemap = [];
     try {
-        const categories = await storeService.getCategories(true);
-        if (categories) {
+        const allCategories = await storeService.getCategories(true);
+
+        // Helper to flatten category tree for sitemap
+        const flattenCategories = (cats: any[]): any[] => {
+            return cats.reduce((acc, cat) => {
+                acc.push(cat);
+                if (cat.children && cat.children.length > 0) {
+                    acc.push(...flattenCategories(cat.children));
+                }
+                return acc;
+            }, []);
+        };
+
+        if (allCategories) {
+            const flattened = flattenCategories(allCategories);
             categoryRoutes = localizeRoutes(
-                categories.map((c) => ({
-                    path: `/products?category_id=${c.id}`,
+                flattened.map((c) => ({
+                    path: `/categories/${c.slug || c.id}`,
                     priority: 0.6,
                     changeFrequency: 'monthly',
                 })),
