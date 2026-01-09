@@ -22,13 +22,18 @@ export async function generateMetadata({
 }
 
 import CategoryContent from '@/components/pages/categories/CategoryContent';
+import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
+import { getQueryClient } from '@/lib/getQueryClient';
 
 export default async function CategoriesPage({
     params,
+    searchParams,
 }: {
     params: Promise<{ locale: string }>;
+    searchParams: Promise<{ page?: string }>;
 }) {
     const { locale } = await params;
+    const { page = '1' } = await searchParams;
     const t = await getTranslations({ locale, namespace: 'Category' });
     const categories = await storeService.getCategories(true);
 
@@ -37,10 +42,16 @@ export default async function CategoriesPage({
         { label: t('categories'), href: '/categories', active: true },
     ];
 
-    // Fetch initial products for "All" or first page
-    const productsResult = await storeService
-        .getProducts({ page: '1' })
-        .catch(() => null);
+    const queryClient = getQueryClient();
+    const filters = {
+        page,
+        per_page: '10',
+    };
+
+    await queryClient.prefetchQuery({
+        queryKey: ['products', filters],
+        queryFn: () => storeService.getProducts(filters),
+    });
 
     return (
         <main className="min-h-screen bg-gray-50/30 py-8">
@@ -48,7 +59,9 @@ export default async function CategoriesPage({
                 <Breadcrumbs items={breadcrumbItems} />
             </div>
 
-            <CategoryContent initialProducts={productsResult} />
+            <HydrationBoundary state={dehydrate(queryClient)}>
+                <CategoryContent />
+            </HydrationBoundary>
         </main>
     );
 }

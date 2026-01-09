@@ -6,6 +6,8 @@ import { storeService } from '@/services/store-service';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import CategoryContent from '@/components/pages/categories/CategoryContent';
 import { notFound } from 'next/navigation';
+import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
+import { getQueryClient } from '@/lib/getQueryClient';
 
 interface Props {
     params: Promise<{ locale: string; slug: string }>;
@@ -57,8 +59,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 }
 
-export default async function CategoryPage({ params }: Props) {
+export default async function CategoryPage({
+    params,
+    searchParams,
+}: {
+    params: Promise<{ locale: string; slug: string }>;
+    searchParams: Promise<{ page?: string }>;
+}) {
     const { locale, slug } = await params;
+    const { page = '1' } = await searchParams;
     const t = await getTranslations({ locale, namespace: 'Category' });
 
     // 1. Fetch the categories tree first (cached)
@@ -66,34 +75,32 @@ export default async function CategoryPage({ params }: Props) {
         .getCategories(true)
         .catch(() => []);
 
-    // 2. Find category in tree first (most reliable as links come from this tree)
+    // 2. Find category in tree first
     let category = findCategory(allCategories, slug);
 
-    // 3. Last resort: Try individual API fetch if not in tree
+    // 3. Fallback fetch
     if (!category) {
         category = await storeService.getCategoryBySlug(slug).catch(() => null);
-
         if (!category && !isNaN(Number(slug))) {
             category = await storeService.getCategory(slug).catch(() => null);
         }
     }
 
-    // 4. If absolutely not found, then 404
-    if (!category) {
-        console.warn(`[Category 404] Could not find category: ${slug}`);
-        return notFound();
-    }
+    if (!category) return notFound();
 
-    // 5. Fetch products (failure here should NOT 404)
-    const productsResult = await storeService
-        .getProducts({
-            category_id: category.id.toString(),
-            page: '1',
-        })
-        .catch((err) => {
-            console.error(`[Products Fetch Error] ${category.name}:`, err);
-            return null;
-        });
+    const queryClient = getQueryClient();
+
+    // 4. Prefetch products for the correct page
+    const filters = {
+        category_id: category.id.toString(),
+        page,
+        per_page: '10',
+    };
+
+    await queryClient.prefetchQuery({
+        queryKey: ['products', filters],
+        queryFn: () => storeService.getProducts(filters),
+    });
 
     const breadcrumbItems = [
         { label: t('home'), href: '/' },
@@ -107,10 +114,9 @@ export default async function CategoryPage({ params }: Props) {
                 <Breadcrumbs items={breadcrumbItems} />
             </div>
 
-            <CategoryContent
-                initialCategory={category}
-                initialProducts={productsResult}
-            />
+            <HydrationBoundary state={dehydrate(queryClient)}>
+                <CategoryContent initialCategory={category} />
+            </HydrationBoundary>
         </main>
     );
 }

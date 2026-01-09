@@ -10,7 +10,6 @@ import ProductsGrid from './ProductsGrid';
 import ProductsSorting from './ProductsSorting';
 import ProductFilters from './ProductFilters';
 
-
 interface ProductsContentProps {
     initialFilters: Record<string, string | undefined>;
 }
@@ -20,7 +19,10 @@ const ProductsContent = ({ initialFilters }: ProductsContentProps) => {
     const router = useRouter();
     const pathname = usePathname();
 
-    const [filters, setFilters] = useState(initialFilters);
+    const [filters, setFilters] = useState<Record<string, string | undefined>>({
+        ...initialFilters,
+        per_page: '10',
+    });
 
     const { data: productsResult, isLoading } = useQuery({
         queryKey: ['products', filters],
@@ -33,11 +35,12 @@ const ProductsContent = ({ initialFilters }: ProductsContentProps) => {
     });
 
     const updateFilters = (newFilters: Record<string, string | undefined>) => {
-        setFilters(newFilters);
+        const filtersWithPerPage = { ...newFilters, per_page: '10' };
+        setFilters(filtersWithPerPage);
 
         // Update URL
         const params = new URLSearchParams();
-        Object.entries(newFilters).forEach(([key, value]) => {
+        Object.entries(filtersWithPerPage).forEach(([key, value]) => {
             if (value) params.set(key, value);
         });
 
@@ -74,7 +77,9 @@ const ProductsContent = ({ initialFilters }: ProductsContentProps) => {
                     <ProductsGrid
                         products={productsResult?.data || []}
                         loading={isLoading}
+                        currentPage={Number(filters.page || '1')}
                         pagination={productsResult?.meta}
+                        variant="compact"
                         onPageChange={(page) =>
                             updateFilters({ ...filters, page: page.toString() })
                         }

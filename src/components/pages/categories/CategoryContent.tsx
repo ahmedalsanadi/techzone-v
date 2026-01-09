@@ -12,26 +12,20 @@ import CategoryTabs from '@/components/pages/products/CategoryTabs';
 import { cn } from '@/lib/utils';
 
 import { useParams, useSearchParams } from 'next/navigation';
-import { useRouter } from '@/i18n/navigation';
+import { useRouter, usePathname } from '@/i18n/navigation';
 import { useStore } from '@/components/providers/StoreProvider';
 
 interface CategoryContentProps {
     initialCategory?: Category;
-    initialProducts?: {
-        data: any[];
-        meta?: any;
-    } | null;
 }
 
-const CategoryContent = ({
-    initialCategory,
-    initialProducts,
-}: CategoryContentProps) => {
+const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
     const t = useTranslations('Category');
     const { categories: allCategories } = useStore();
     const params = useParams();
     const searchParams = useSearchParams();
     const router = useRouter();
+    const pathname = usePathname();
 
     const slug = params.slug as string;
     const page = searchParams.get('page') || '1';
@@ -63,6 +57,7 @@ const CategoryContent = ({
 
     const filters = {
         page,
+        per_page: '10',
     };
 
     const {
@@ -81,7 +76,6 @@ const CategoryContent = ({
                 ...filters,
                 category_id: currentCategory?.id.toString(),
             }),
-        initialData: initialProducts,
         placeholderData: (previousData) => previousData,
         staleTime: 1000 * 60 * 5, // 5 minutes
         retry: 1,
@@ -97,7 +91,9 @@ const CategoryContent = ({
                 else currentParams.delete(k);
             });
         }
-        router.push(`${newPath}?${currentParams.toString()}`);
+        router.push(`${newPath}?${currentParams.toString()}`, {
+            scroll: false,
+        });
     };
 
     const handleMainCategorySelect = (id: string) => {
@@ -119,7 +115,7 @@ const CategoryContent = ({
     };
 
     const handlePageChange = (page: number) => {
-        updateUrl(window.location.pathname, { page: page.toString() });
+        updateUrl(pathname, { page: page.toString() });
     };
 
     return (
@@ -198,6 +194,7 @@ const CategoryContent = ({
                         <ProductsGrid
                             products={productsResult?.data || []}
                             loading={isInternalLoading}
+                            currentPage={Number(page)}
                             pagination={productsResult?.meta}
                             onPageChange={handlePageChange}
                         />
