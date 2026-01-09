@@ -1,7 +1,8 @@
 // src/components/pages/products/ProductsContent.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React, { useMemo, useTransition } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { storeService } from '@/services/store-service';
 import { useTranslations } from 'next-intl';
@@ -9,6 +10,7 @@ import { useRouter, usePathname } from '@/i18n/navigation';
 import ProductsGrid from './ProductsGrid';
 import ProductsSorting from './ProductsSorting';
 import ProductFilters from './ProductFilters';
+import { cn } from '@/lib/utils';
 
 interface ProductsContentProps {
     initialFilters: Record<string, string | undefined>;
@@ -18,13 +20,25 @@ const ProductsContent = ({ initialFilters }: ProductsContentProps) => {
     const t = useTranslations('Product');
     const router = useRouter();
     const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const [isPending, startTransition] = useTransition();
 
-    const [filters, setFilters] = useState<Record<string, string | undefined>>({
-        ...initialFilters,
-        per_page: '10',
-    });
+    // Derive filters from URL searchParams
+    const filters = useMemo(() => {
+        const queryParams: Record<string, string | undefined> = {};
+        searchParams.forEach((value, key) => {
+            queryParams[key] = value;
+        });
+        // Ensure per_page is always set for the query key
+        if (!queryParams.per_page) queryParams.per_page = '10';
+        return queryParams;
+    }, [searchParams]);
 
-    const { data: productsResult, isLoading } = useQuery({
+    const {
+        data: productsResult,
+        isLoading,
+        isFetching,
+    } = useQuery({
         queryKey: ['products', filters],
         queryFn: () => storeService.getProducts(filters),
     });
@@ -35,18 +49,25 @@ const ProductsContent = ({ initialFilters }: ProductsContentProps) => {
     });
 
     const updateFilters = (newFilters: Record<string, string | undefined>) => {
-        const filtersWithPerPage = { ...newFilters, per_page: '10' };
-        setFilters(filtersWithPerPage);
+        const params = new URLSearchParams(searchParams.toString());
 
-        // Update URL
-        const params = new URLSearchParams();
-        Object.entries(filtersWithPerPage).forEach(([key, value]) => {
-            if (value) params.set(key, value);
+        // Merge new filters
+        Object.entries(newFilters).forEach(([key, value]) => {
+            if (value !== undefined && value !== '') {
+                params.set(key, value);
+            } else {
+                params.delete(key);
+            }
         });
 
+        // Always ensure per_page 10
+        params.set('per_page', '10');
+
         const queryString = params.toString();
-        router.replace(`${pathname}${queryString ? `?${queryString}` : ''}`, {
-            scroll: false,
+        const url = `${pathname}${queryString ? `?${queryString}` : ''}`;
+
+        startTransition(() => {
+            router.replace(url, { scroll: false });
         });
     };
 
@@ -74,16 +95,27 @@ const ProductsContent = ({ initialFilters }: ProductsContentProps) => {
                         />
                     </div>
 
-                    <ProductsGrid
-                        products={productsResult?.data || []}
-                        loading={isLoading}
-                        currentPage={Number(filters.page || '1')}
-                        pagination={productsResult?.meta}
-                        variant="compact"
-                        onPageChange={(page) =>
-                            updateFilters({ ...filters, page: page.toString() })
-                        }
-                    />
+                    <div
+                        className={cn(
+                            'transition-opacity duration-200',
+                            isFetching || isPending
+                                ? 'opacity-50 pointer-events-none'
+                                : 'opacity-100',
+                        )}>
+                        <ProductsGrid
+                            products={productsResult?.data || []}
+                            loading={isLoading}
+                            currentPage={Number(filters.page || '1')}
+                            pagination={productsResult?.meta}
+                            variant="compact"
+                            onPageChange={(page) =>
+                                updateFilters({
+                                    ...filters,
+                                    page: page.toString(),
+                                })
+                            }
+                        />
+                    </div>
                 </div>
             </div>
         </div>

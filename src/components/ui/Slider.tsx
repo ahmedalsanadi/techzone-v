@@ -3,27 +3,24 @@
 import * as React from 'react';
 
 interface SliderProps {
-    defaultValue?: number[];
+    value: number[];
     max?: number;
     step?: number;
-    onValueCommit?: (values: number[]) => void;
+    onChange: (values: number[]) => void;
     className?: string;
 }
 
 const Slider = ({
-    defaultValue = [0, 100],
+    value,
     max = 100,
     step = 1,
-    onValueCommit,
+    onChange,
     className,
 }: SliderProps) => {
-    const [values, setValues] = React.useState(defaultValue);
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newValue = parseInt(e.target.value);
-        const newValues = [values[0], newValue];
-        setValues(newValues);
-        onValueCommit?.(newValues);
+        const newValue = parseInt(e.target.value) || 0;
+        const newValues = [value[0] || 0, newValue];
+        onChange(newValues);
     };
 
     return (
@@ -33,7 +30,7 @@ const Slider = ({
                 min={0}
                 max={max}
                 step={step}
-                value={values[1]}
+                value={value[1] ?? 0}
                 onChange={handleChange}
                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
             />

@@ -14,7 +14,7 @@ const Select = ({
     return (
         <div className="relative inline-block w-full">
             <select
-                value={value}
+                value={value ?? ''}
                 onChange={(e) => onValueChange?.(e.target.value)}
                 className="w-full h-10 px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer">
                 {children}

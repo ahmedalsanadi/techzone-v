@@ -21,6 +21,40 @@ const ProductFilters = ({
 }: ProductFiltersProps) => {
     const t = useTranslations('Product');
 
+    const [priceRange, setPriceRange] = React.useState<[number, number]>([
+        parseInt(filters.min_price || '0'),
+        parseInt(filters.max_price || '1000'),
+    ]);
+
+    // Update local state if filters change from outside (navigation/reset/clear)
+    React.useEffect(() => {
+        setPriceRange([
+            parseInt(filters.min_price || '0'),
+            parseInt(filters.max_price || '1000'),
+        ]);
+    }, [filters.min_price, filters.max_price]);
+
+    // Debounce the actual filter update
+    React.useEffect(() => {
+        const timer = setTimeout(() => {
+            const isMinChanged =
+                priceRange[0].toString() !== (filters.min_price || '0');
+            const isMaxChanged =
+                priceRange[1].toString() !== (filters.max_price || '1000');
+
+            if (isMinChanged || isMaxChanged) {
+                onFiltersChange({
+                    ...filters,
+                    min_price: priceRange[0].toString(),
+                    max_price: priceRange[1].toString(),
+                    page: '1',
+                });
+            }
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [priceRange, filters, onFiltersChange]);
+
     const handleCategoryToggle = (categoryId: string) => {
         const currentCategoryIds = filters.category_id
             ? filters.category_id.split(',')
@@ -46,12 +80,7 @@ const ProductFilters = ({
     };
 
     const handlePriceChange = (values: number[]) => {
-        onFiltersChange({
-            ...filters,
-            min_price: values[0]?.toString(),
-            max_price: values[1]?.toString(),
-            page: '1',
-        });
+        setPriceRange([values[0], values[1]]);
     };
 
     const handleFeatureToggle = (key: 'is_featured' | 'is_latest') => {
@@ -99,18 +128,15 @@ const ProductFilters = ({
             <div className="space-y-4">
                 <h3 className="font-semibold text-lg">{t('price_range')}</h3>
                 <Slider
-                    defaultValue={[
-                        parseInt(filters.min_price || '0'),
-                        parseInt(filters.max_price || '1000'),
-                    ]}
+                    value={priceRange}
                     max={1000}
                     step={10}
-                    onValueCommit={handlePriceChange}
+                    onChange={handlePriceChange}
                     className="py-4"
                 />
                 <div className="flex items-center justify-between text-sm text-gray-500">
-                    <span>{filters.min_price || 0} SR</span>
-                    <span>{filters.max_price || 1000} SR</span>
+                    <span>{priceRange[0]} SR</span>
+                    <span>{priceRange[1]} SR</span>
                 </div>
             </div>
 
