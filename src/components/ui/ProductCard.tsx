@@ -34,8 +34,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     return (
         <div
             onClick={onClick}
-            className="bg-white border border-gray-100 rounded-xl overflow-hidden relative group shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full">
-            
+            className="bg-white border border-gray-100 rounded-xl overflow-hidden relative group shadow-sm flex flex-col h-full">
             {/* Wishlist Button */}
             <button
                 onClick={(e) => {
@@ -50,12 +49,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
             {/* Link wrapper for Image and Info */}
             <Link href={href} className="w-full flex flex-col flex-1">
                 {/* Product Image */}
-                <div className="relative w-full aspect-square bg-gray-50">
+                <div className="relative w-full aspect-square bg-gray-50 overflow-hidden">
                     <DynamicImage
                         src={image}
                         alt={name}
                         fill
-                        className="object-cover"
+                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                         sizes="(max-width: 768px) 50vw, 25vw"
                         fallbackComponent={
                             <div className="flex flex-col items-center justify-center gap-2 text-gray-300 h-full w-full">
@@ -70,16 +69,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     <h3 className="text-md font-medium text-gray-900 line-clamp-2 leading-tight mb-3 min-h-10">
                         {name}
                     </h3>
-                    
+
                     {/* Price Section */}
                     <div className="flex items-center justify-start gap-2 mb-3">
-
                         <div className="flex items-center gap-1">
-                             <span className="text-lg font-bold text-gray-900">
+                            <span className="text-lg font-bold text-gray-900">
                                 {price}
                             </span>
                             <CurrencySymbol className="w-3 h-3" />
-                           
                         </div>
                         {oldPrice && (
                             <span className="text-sm text-gray-400 line-through">
