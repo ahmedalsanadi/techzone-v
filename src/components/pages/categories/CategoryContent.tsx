@@ -125,7 +125,7 @@ const CategoryContent = ({
     return (
         <div className="space-y-6">
             {/* Top Level Category Tabs */}
-            <div className="sticky top-0 z-20 bg-gray-50/95 backdrop-blur-sm -mx-4 px-4 py-4 border-b border-gray-100 mb-4 overflow-hidden">
+            <div className="bg-transparent -mx-4 px-4 py-4 border-b border-gray-100 mb-8 overflow-hidden">
                 <CategoryTabs
                     categories={allCategories}
                     activeCategoryId={activePath[0]?.id.toString() || 'all'}
