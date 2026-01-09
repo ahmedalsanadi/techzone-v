@@ -133,7 +133,8 @@
     "notes": "Notes",
     "addNotes": "Add any notes or special instructions...",
     "outOfStock": "Out of Stock",
-    "categories": "Categories"
+    "categories": "Categories",
+    "filters": "Filters"
   },
   "Orders": {
     "title": "My Orders",

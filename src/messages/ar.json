@@ -133,7 +133,8 @@
     "notes": "ملاحظات",
     "addNotes": "أضف أي ملاحظات أو تعليمات خاصة...",
     "outOfStock": "نفذت الكمية",
-    "categories": "الأقسام"
+    "categories": "الأقسام",
+    "filters": "فلاتر"
   },
   "Orders": {
     "title": "طلباتي",

@@ -1,6 +1,8 @@
 'use client';
 
 import * as React from 'react';
+import { ChevronDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const Select = ({
     value,
@@ -12,13 +14,16 @@ const Select = ({
     children: React.ReactNode;
 }) => {
     return (
-        <div className="relative inline-block w-full">
+        <div className="relative w-full group">
             <select
                 value={value ?? ''}
                 onChange={(e) => onValueChange?.(e.target.value)}
-                className="w-full h-10 px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer">
+                className="w-full h-11 px-4 pr-10 text-sm bg-white border border-gray-200 rounded-xl appearance-none transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer hover:border-gray-300">
                 {children}
             </select>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-transform duration-200 group-hover:translate-y-[-40%]">
+                <ChevronDown className="w-4 h-4 text-gray-400" />
+            </div>
         </div>
     );
 };
