@@ -60,9 +60,9 @@ async function ContentDataWrapper({
     // Prefetch initial data
     await Promise.all([
         queryClient.prefetchQuery({
-            queryKey: ['products', { ...searchParams, per_page: '10' }],
+            queryKey: ['products', { ...searchParams, per_page: '8' }],
             queryFn: () =>
-                storeService.getProducts({ ...searchParams, per_page: '10' }),
+                storeService.getProducts({ ...searchParams, per_page: '8' }),
         }),
         queryClient.prefetchQuery({
             queryKey: ['categories'],

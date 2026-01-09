@@ -57,7 +57,7 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
 
     const filters = {
         page,
-        per_page: '10',
+        per_page: '8',
     };
 
     const {
@@ -91,7 +91,11 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
                 else currentParams.delete(k);
             });
         }
-        router.push(`${newPath}?${currentParams.toString()}`, {
+
+        const queryString = currentParams.toString();
+        const url = `${newPath}${queryString ? `?${queryString}` : ''}`;
+
+        router.push(url, {
             scroll: false,
         });
     };
@@ -173,7 +177,7 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
                 {/* Products Grid */}
                 <div
                     className={cn(
-                        'min-h-[400px] transition-opacity duration-300',
+                        'min-h-[600px] flex flex-col transition-opacity duration-300',
                         isFetching && !isInternalLoading
                             ? 'opacity-60'
                             : 'opacity-100',

@@ -45,7 +45,7 @@ export default async function CategoriesPage({
     const queryClient = getQueryClient();
     const filters = {
         page,
-        per_page: '10',
+        per_page: '8',
     };
 
     await queryClient.prefetchQuery({

@@ -43,13 +43,16 @@ export const storeService = {
             next: { revalidate: 60 }, // Cache products for 1 minute
         });
 
+        const per_page = Number(params?.per_page) || 8;
+        const total = response.meta?.total || response.data?.length || 0;
+
         return {
             data: response.data,
             meta: response.meta || {
-                current_page: 1,
-                last_page: 1,
-                per_page: params?.per_page || 10,
-                total: response.data?.length || 0,
+                current_page: Number(params?.page) || 1,
+                last_page: Math.ceil(total / per_page) || 1,
+                per_page: per_page,
+                total: total,
             },
         };
     },

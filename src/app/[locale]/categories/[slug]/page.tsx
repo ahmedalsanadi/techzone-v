@@ -94,7 +94,7 @@ export default async function CategoryPage({
     const filters = {
         category_id: category.id.toString(),
         page,
-        per_page: '10',
+        per_page: '8',
     };
 
     await queryClient.prefetchQuery({

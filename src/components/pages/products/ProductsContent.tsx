@@ -3,7 +3,7 @@
 
 import React, { useMemo, useTransition } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { storeService } from '@/services/store-service';
 import { useTranslations } from 'next-intl';
 import { useRouter, usePathname } from '@/i18n/navigation';
@@ -30,7 +30,7 @@ const ProductsContent = ({ initialFilters }: ProductsContentProps) => {
             queryParams[key] = value;
         });
         // Ensure per_page is always set for the query key
-        if (!queryParams.per_page) queryParams.per_page = '10';
+        if (!queryParams.per_page) queryParams.per_page = '8';
         return queryParams;
     }, [searchParams]);
 
@@ -41,6 +41,7 @@ const ProductsContent = ({ initialFilters }: ProductsContentProps) => {
     } = useQuery({
         queryKey: ['products', filters],
         queryFn: () => storeService.getProducts(filters),
+        placeholderData: keepPreviousData,
     });
 
     const { data: categories = [] } = useQuery({
@@ -51,17 +52,24 @@ const ProductsContent = ({ initialFilters }: ProductsContentProps) => {
     const updateFilters = (newFilters: Record<string, string | undefined>) => {
         const params = new URLSearchParams(searchParams.toString());
 
-        // Merge new filters
-        Object.entries(newFilters).forEach(([key, value]) => {
-            if (value !== undefined && value !== '') {
-                params.set(key, value);
-            } else {
-                params.delete(key);
-            }
-        });
+        if (Object.keys(newFilters).length === 0) {
+            // Clear all filters except per_page
+            Array.from(params.keys()).forEach((key) => {
+                if (key !== 'per_page') params.delete(key);
+            });
+        } else {
+            // Merge new filters
+            Object.entries(newFilters).forEach(([key, value]) => {
+                if (value !== undefined && value !== '') {
+                    params.set(key, value);
+                } else {
+                    params.delete(key);
+                }
+            });
+        }
 
         // Always ensure per_page 10
-        params.set('per_page', '10');
+        params.set('per_page', '8');
 
         const queryString = params.toString();
         const url = `${pathname}${queryString ? `?${queryString}` : ''}`;
@@ -97,7 +105,7 @@ const ProductsContent = ({ initialFilters }: ProductsContentProps) => {
 
                     <div
                         className={cn(
-                            'transition-opacity duration-200',
+                            'transition-opacity duration-200 min-h-[600px] flex flex-col',
                             isFetching || isPending
                                 ? 'opacity-50 pointer-events-none'
                                 : 'opacity-100',

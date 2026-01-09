@@ -31,7 +31,7 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
     const t = useTranslations('Promotions');
     const { addToCart } = useCartActions();
 
-    if (loading) {
+    if (loading && products.length === 0) {
         return (
             <div
                 className={cn(
@@ -40,7 +40,7 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
                         ? 'sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
                         : 'sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5',
                 )}>
-                {Array.from({ length: 10 }).map((_, i) => (
+                {Array.from({ length: 8 }).map((_, i) => (
                     <div
                         key={i}
                         className="bg-white border border-gray-100 rounded-3xl p-4 flex flex-col items-center gap-4 animate-pulse shadow-sm">
@@ -56,51 +56,55 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
 
     if (!loading && products.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center py-20 text-gray-500">
+            <div className="flex-1 flex flex-col items-center justify-center py-20 text-gray-500 min-h-[400px]">
                 <span className="text-lg font-medium">{t('noProducts')}</span>
             </div>
         );
     }
 
     return (
-        <div className="space-y-10">
-            <div
-                className={cn(
-                    'grid grid-cols-1 gap-4 md:gap-6',
-                    variant === 'compact'
-                        ? 'sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-                        : 'sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5',
-                )}>
-                {products.map((product) => (
-                    <ProductCard
-                        key={product.id}
-                        name={product.title}
-                        image={product.cover_image_url || ''}
-                        price={product.price}
-                        oldPrice={product.sale_price}
-                        href={`/products/${product.slug || product.id}`}
-                        addToCartLabel={t('addToCart')}
-                        onAddToCartClick={() => {
-                            addToCart({
-                                id: String(product.id),
-                                name: product.title,
-                                image: product.cover_image_url || '',
-                                price: product.price,
-                                categoryId: String(
-                                    product.categories[0]?.id || '',
-                                ),
-                            });
-                        }}
-                    />
-                ))}
+        <div className="flex-1 flex flex-col justify-between">
+            <div className="space-y-10">
+                <div
+                    className={cn(
+                        'grid grid-cols-1 gap-4 md:gap-6',
+                        variant === 'compact'
+                            ? 'sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+                            : 'sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5',
+                    )}>
+                    {products.map((product) => (
+                        <ProductCard
+                            key={product.id}
+                            name={product.title}
+                            image={product.cover_image_url || ''}
+                            price={product.price}
+                            oldPrice={product.sale_price}
+                            href={`/products/${product.slug || product.id}`}
+                            addToCartLabel={t('addToCart')}
+                            onAddToCartClick={() => {
+                                addToCart({
+                                    id: String(product.id),
+                                    name: product.title,
+                                    image: product.cover_image_url || '',
+                                    price: product.price,
+                                    categoryId: String(
+                                        product.categories[0]?.id || '',
+                                    ),
+                                });
+                            }}
+                        />
+                    ))}
+                </div>
             </div>
 
             {pagination && (
-                <Pagination
-                    currentPage={currentPage || pagination.current_page}
-                    lastPage={pagination.last_page}
-                    onPageChange={(page: number) => onPageChange?.(page)}
-                />
+                <div className="pt-10">
+                    <Pagination
+                        currentPage={currentPage || pagination.current_page}
+                        lastPage={pagination.last_page}
+                        onPageChange={(page: number) => onPageChange?.(page)}
+                    />
+                </div>
             )}
         </div>
     );
