@@ -66,10 +66,7 @@ export default async function CategoryPage({ params }: Props) {
                 <div className="container mx-auto px-4">
                     <Breadcrumbs items={breadcrumbItems} />
 
-                    <CategoryContent
-                        category={category}
-                        allCategories={allCategories}
-                    />
+                    <CategoryContent initialCategory={category} />
                 </div>
             </main>
         );

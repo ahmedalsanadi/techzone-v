@@ -25,7 +25,10 @@ export const storeService = {
     getCategories: cache((tree: boolean = true) =>
         fetchLibero<Category[]>('/store/categories', {
             params: { tree },
-            next: { revalidate: 3600 },
+            next: {
+                revalidate: 3600,
+                tags: ['categories'],
+            },
         }),
     ),
 

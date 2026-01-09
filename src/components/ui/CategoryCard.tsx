@@ -1,8 +1,7 @@
-'use client';
-
 import React from 'react';
-import DynamicImage from './DynamicImage';
+import { Link } from '@/i18n/navigation';
 import { LayoutGrid } from 'lucide-react';
+import DynamicImage from './DynamicImage';
 import { cn } from '@/lib/utils';
 
 interface CategoryCardProps {
@@ -12,6 +11,7 @@ interface CategoryCardProps {
     isActive?: boolean;
     variant?: 'default' | 'circular';
     onClick?: () => void;
+    href?: string;
 }
 
 const CategoryCard: React.FC<CategoryCardProps> = ({
@@ -21,7 +21,9 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
     isActive,
     variant = 'default',
     onClick,
+    href,
 }) => {
+    // ... rest of logic
     // Shared fallback icon
     const FallbackIcon = (
         <LayoutGrid
@@ -32,45 +34,47 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
         />
     );
 
-    if (variant === 'circular') {
-        return (
-            <div
-                onClick={onClick}
-                className="flex flex-col items-center gap-3 cursor-pointer group w-[80px] md:w-[100px] shrink-0">
-                <div
-                    className={cn(
-                        'w-16 h-16 md:w-20 md:h-20 rounded-full border-2 p-1 transition-all duration-300 flex items-center justify-center overflow-hidden bg-white relative',
-                        isActive
-                            ? 'border-[#B44734] shadow-lg scale-110 z-10'
-                            : 'border-white/50 shadow-sm group-hover:border-[#B44734]/30 group-hover:shadow-md',
-                    )}>
-                    <div className="relative w-full h-full rounded-full overflow-hidden">
-                        <DynamicImage
-                            src={image || ''}
-                            alt={label}
-                            fill
-                            className="object-cover"
-                            fallbackComponent={FallbackIcon}
-                        />
-                    </div>
-                </div>
-                <span
-                    className={cn(
-                        'text-[10px] md:text-sm font-bold transition-colors text-center line-clamp-2 px-1',
-                        isActive
-                            ? 'text-[#B44734]'
-                            : 'text-gray-600 group-hover:text-gray-900',
-                    )}>
-                    {label}
-                </span>
-            </div>
-        );
-    }
-
-    return (
+    const content = (
         <div
-            onClick={onClick}
-            className="flex flex-col items-center w-[85px] md:w-[110px] group cursor-pointer shrink-0">
+            className={cn(
+                'flex flex-col items-center gap-3 w-[80px] md:w-[100px] shrink-0',
+                !href && 'cursor-pointer',
+            )}>
+            <div
+                className={cn(
+                    'w-16 h-16 md:w-20 md:h-20 rounded-full border-2 p-1 transition-all duration-300 flex items-center justify-center overflow-hidden bg-white relative',
+                    isActive
+                        ? 'border-[#B44734] shadow-lg scale-110 z-10'
+                        : 'border-white/50 shadow-sm group-hover:border-[#B44734]/30 group-hover:shadow-md',
+                )}>
+                <div className="relative w-full h-full rounded-full overflow-hidden">
+                    <DynamicImage
+                        src={image || ''}
+                        alt={label}
+                        fill
+                        className="object-cover"
+                        fallbackComponent={FallbackIcon}
+                    />
+                </div>
+            </div>
+            <span
+                className={cn(
+                    'text-[10px] md:text-sm font-bold transition-colors text-center line-clamp-2 px-1',
+                    isActive
+                        ? 'text-[#B44734]'
+                        : 'text-gray-600 group-hover:text-gray-900',
+                )}>
+                {label}
+            </span>
+        </div>
+    );
+
+    const defaultContent = (
+        <div
+            className={cn(
+                'flex flex-col items-center w-[85px] md:w-[110px] shrink-0',
+                !href && 'cursor-pointer',
+            )}>
             <div
                 className={cn(
                     'w-full aspect-4/5 md:aspect-square flex flex-col items-center justify-center gap-2 p-3 transition-all duration-300 rounded-2xl relative',
@@ -124,6 +128,22 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                     <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-[#B44734] rounded-full" />
                 )}
             </div>
+        </div>
+    );
+
+    const finalContent = variant === 'circular' ? content : defaultContent;
+
+    if (href) {
+        return (
+            <Link href={href} className="group outline-none">
+                {finalContent}
+            </Link>
+        );
+    }
+
+    return (
+        <div onClick={onClick} className="group outline-none">
+            {finalContent}
         </div>
     );
 };

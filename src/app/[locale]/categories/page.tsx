@@ -43,7 +43,7 @@ export default async function CategoriesPage({
                 <Breadcrumbs items={breadcrumbItems} />
             </div>
 
-            <CategoryContent allCategories={categories} />
+            <CategoryContent />
         </main>
     );
 }

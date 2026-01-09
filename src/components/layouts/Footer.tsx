@@ -1,3 +1,4 @@
+//src/components/layout/Footer.tsx
 import Image from 'next/image';
 import Link from 'next/link';
 import { Phone, Mail } from 'lucide-react';
@@ -17,24 +18,21 @@ import {
     socialLinks,
 } from './footer/FooterData';
 import { useTranslations } from 'next-intl';
-import { useQuery } from '@tanstack/react-query';
-import { storeService } from '@/services/store-service';
+import { useStore } from '@/components/providers/StoreProvider';
 
 const Footer = () => {
     const t = useTranslations('Footer');
+    const { categories } = useStore();
 
-    // Fetch categories for footer
-    const { data: categories } = useQuery({
-        queryKey: ['footer-categories'],
-        queryFn: () => storeService.getCategories(false), // Fetch flat list
-        staleTime: 1000 * 60 * 60, // 1 hour
-    });
+    const footerCategories = categories
+        .filter((cat) => cat.show_in_menu)
+        .slice(0, 5);
 
     const dynamicFooterSections = footerSections.map((section) => {
-        if (section.titleKey === 'sections.categories' && categories) {
+        if (section.titleKey === 'sections.categories') {
             return {
                 ...section,
-                links: categories.slice(0, 5).map((cat: any) => ({
+                links: footerCategories.map((cat: any) => ({
                     label: cat.name,
                     href: `/categories/${cat.slug || cat.id}`,
                 })),

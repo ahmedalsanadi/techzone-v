@@ -7,12 +7,13 @@ import React, {
     useLayoutEffect,
     useEffect,
 } from 'react';
-import { StoreConfig } from '@/services/types';
+import { StoreConfig, Category } from '@/services/types';
 import { useCartStore } from '@/store/useCartStore';
 import { isValidColor } from '@/lib/utils';
 
 interface StoreContextType {
     config: StoreConfig;
+    categories: Category[];
 }
 
 const StoreContext = createContext<StoreContextType | null>(null);
@@ -20,9 +21,11 @@ const StoreContext = createContext<StoreContextType | null>(null);
 export function StoreProvider({
     children,
     config,
+    categories,
 }: {
     children: React.ReactNode;
     config: StoreConfig;
+    categories: Category[];
 }) {
     // Hydrate cart store on mount
     useEffect(() => {
@@ -54,7 +57,7 @@ export function StoreProvider({
     }, [config]);
 
     return (
-        <StoreContext.Provider value={{ config }}>
+        <StoreContext.Provider value={{ config, categories }}>
             {children}
         </StoreContext.Provider>
     );

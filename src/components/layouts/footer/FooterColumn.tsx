@@ -1,3 +1,4 @@
+//src/components/layouts/footer/FooterColumn.tsx
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 

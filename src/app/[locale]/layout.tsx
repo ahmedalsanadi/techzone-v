@@ -14,7 +14,7 @@ import '@/app/globals.css';
 import PageContainer from '@/components/layouts/PageContainer';
 import { ServiceUnavailableFallback } from '@/components/layouts/service-unavailable-fallback';
 import { QueryProvider } from '@/components/providers/QueryProvider';
-import { getStoreConfig } from '@/services/store-config';
+import { getStoreConfig, getStoreCategories } from '@/services/store-config';
 import { StoreProvider } from '@/components/providers/StoreProvider';
 import ToasterContainer from '@/components/layouts/ToasterContainer';
 import { resolveSiteIdentity } from '@/lib/tenant/resolve-site';
@@ -119,7 +119,10 @@ export default async function RootLayout({
     const messages = await getMessages({ locale });
 
     // Tenant config (UI + branding only, NOT metadata)
-    const storeConfig = await getStoreConfig();
+    const [storeConfig, categories] = await Promise.all([
+        getStoreConfig(),
+        getStoreCategories(),
+    ]);
 
     return (
         <html
@@ -156,7 +159,9 @@ export default async function RootLayout({
                         <NextIntlClientProvider
                             locale={locale}
                             messages={messages}>
-                            <StoreProvider config={storeConfig}>
+                            <StoreProvider
+                                config={storeConfig}
+                                categories={categories}>
                                 <QueryProvider>
                                     <PageContainer>{children}</PageContainer>
                                     <ToasterContainer isArabic={isArabic} />

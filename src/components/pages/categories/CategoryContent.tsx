@@ -1,7 +1,7 @@
 // src/components/pages/categories/CategoryContent.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { storeService } from '@/services/store-service';
 import { Category } from '@/services/types';
@@ -12,33 +12,58 @@ import { useTranslations } from 'next-intl';
 import CategoryTabs from '@/components/pages/products/CategoryTabs';
 import { cn } from '@/lib/utils';
 
+import { useParams, useSearchParams } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
+import { useStore } from '@/components/providers/StoreProvider';
+
 interface CategoryContentProps {
-    category?: Category;
-    allCategories: Category[];
+    initialCategory?: Category;
 }
 
-const CategoryContent = ({ category, allCategories }: CategoryContentProps) => {
+const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
     const t = useTranslations('Category');
-    const [activePath, setActivePath] = useState<Category[]>(() => {
-        // Find the full path for the initial category if it's nested
-        if (!category) return [];
+    const { categories: allCategories } = useStore();
+    const params = useParams();
+    const searchParams = useSearchParams();
+    const router = useRouter();
 
-        // This is a simple case, assuming we start with the provided category
-        // In a real app, we might need to find all parents for breadcrumbs
-        return [category];
-    });
+    const slug = params.slug as string;
+    const page = searchParams.get('page') || '1';
+    const sort = searchParams.get('sort') || undefined;
+    const order = searchParams.get('order') || undefined;
 
-    const [filters, setFilters] = useState({
-        sort: undefined as string | undefined,
-        order: undefined as string | undefined,
-        page: '1',
-    });
+    // Helper to find the current active path from the global tree
+    // This allows us to support multi-level deep linking automatically
+    const getActivePath = (
+        nodes: Category[],
+        targetSlug: string,
+        currentPath: Category[] = [],
+    ): Category[] | null => {
+        for (const node of nodes) {
+            if (node.slug === targetSlug || node.id.toString() === targetSlug) {
+                return [...currentPath, node];
+            }
+            if (node.children?.length) {
+                const found = getActivePath(node.children, targetSlug, [
+                    ...currentPath,
+                    node,
+                ]);
+                if (found) return found;
+            }
+        }
+        return null;
+    };
 
-    // The most specific category currently selected
-    const currentCategory = activePath[activePath.length - 1];
-
-    // Subcategories to show: children of the current category
+    const activePath = getActivePath(allCategories, slug) || [];
+    const currentCategory =
+        activePath[activePath.length - 1] || initialCategory;
     const currentSubCategories = currentCategory?.children || [];
+
+    const filters = {
+        sort,
+        order,
+        page,
+    };
 
     const {
         data: productsResult,
@@ -57,48 +82,57 @@ const CategoryContent = ({ category, allCategories }: CategoryContentProps) => {
         retry: 1,
     });
 
+    const updateUrl = (newPath: string, newParams?: Record<string, string>) => {
+        const currentParams = new URLSearchParams(searchParams.toString());
+        if (newParams) {
+            Object.entries(newParams).forEach(([k, v]) => {
+                if (v) currentParams.set(k, v);
+                else currentParams.delete(k);
+            });
+        }
+        router.push(`${newPath}?${currentParams.toString()}`);
+    };
+
     const handleMainCategorySelect = (id: string) => {
         if (id === 'all') {
-            setActivePath([]);
+            router.push('/categories');
         } else {
-            // Find by ID directly since tabs pass ID as string
             const selected = allCategories.find((c) => c.id.toString() === id);
             if (selected) {
-                setActivePath([selected]);
+                router.push(`/categories/${selected.slug || selected.id}`);
             }
         }
-        setFilters((prev) => ({ ...prev, page: '1' }));
     };
 
     const handleSubCategorySelect = (id: string) => {
-        if (id === 'all_sub') {
-            return;
-        }
-
         const selected = currentSubCategories.find(
             (c) => c.id.toString() === id,
         );
         if (selected) {
-            setActivePath((prev) => [...prev, selected]);
-            setFilters((prev) => ({ ...prev, page: '1' }));
+            router.push(`/categories/${selected.slug || selected.id}`);
         }
     };
 
-    // To go back to a parent level
     const handleLevelReset = (levelIndex: number) => {
-        setActivePath((prev) => prev.slice(0, levelIndex + 1));
-        setFilters((prev) => ({ ...prev, page: '1' }));
+        const target = activePath[levelIndex];
+        if (target) {
+            router.push(`/categories/${target.slug || target.id}`);
+        }
     };
 
     const handleSortChange = (
         sort: string | undefined,
         order: string | undefined,
     ) => {
-        setFilters((prev) => ({ ...prev, sort, order, page: '1' }));
+        updateUrl(window.location.pathname, {
+            sort: sort || '',
+            order: order || '',
+            page: '1',
+        });
     };
 
     const handlePageChange = (page: number) => {
-        setFilters((prev) => ({ ...prev, page: page.toString() }));
+        updateUrl(window.location.pathname, { page: page.toString() });
     };
 
     return (
@@ -125,7 +159,7 @@ const CategoryContent = ({ category, allCategories }: CategoryContentProps) => {
                                         ? 'text-gray-400'
                                         : '',
                                 )}
-                                onClick={() => setActivePath([])}>
+                                onClick={() => router.push('/categories')}>
                                 {t('all_products') || 'المنتجات'}
                             </span>
                             {activePath.map((cat, idx) => (
