@@ -27,12 +27,16 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
 
     if (loading) {
         return (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-                {Array.from({ length: 9 }).map((_, i) => (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+                {Array.from({ length: 10 }).map((_, i) => (
                     <div
                         key={i}
-                        className="bg-gray-100 animate-pulse rounded-3xl aspect-square"
-                    />
+                        className="bg-white border border-gray-100 rounded-3xl p-4 flex flex-col items-center gap-4 animate-pulse shadow-sm">
+                        <div className="w-full aspect-square bg-gray-100 rounded-2xl" />
+                        <div className="w-3/4 h-5 bg-gray-100 rounded-md" />
+                        <div className="w-1/2 h-6 bg-gray-100 rounded-md mt-auto" />
+                        <div className="w-full h-10 bg-gray-50 rounded-xl" />
+                    </div>
                 ))}
             </div>
         );
@@ -48,7 +52,7 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
 
     return (
         <div className="space-y-10">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
                 {products.map((product) => (
                     <ProductCard
                         key={product.id}

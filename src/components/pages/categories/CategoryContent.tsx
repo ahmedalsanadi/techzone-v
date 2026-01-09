@@ -7,7 +7,6 @@ import { storeService } from '@/services/store-service';
 import { Category } from '@/services/types';
 import SubCategorySelection from '@/components/pages/products/SubCategorySelection';
 import ProductsGrid from '@/components/pages/products/ProductsGrid';
-import ProductsSorting from '@/components/pages/products/ProductsSorting';
 import { useTranslations } from 'next-intl';
 import CategoryTabs from '@/components/pages/products/CategoryTabs';
 import { cn } from '@/lib/utils';
@@ -36,8 +35,6 @@ const CategoryContent = ({
 
     const slug = params.slug as string;
     const page = searchParams.get('page') || '1';
-    const sort = searchParams.get('sort') || undefined;
-    const order = searchParams.get('order') || undefined;
 
     const getActivePath = (
         nodes: Category[],
@@ -65,8 +62,6 @@ const CategoryContent = ({
     const currentSubCategories = currentCategory?.children || [];
 
     const filters = {
-        sort,
-        order,
         page,
     };
 
@@ -123,17 +118,6 @@ const CategoryContent = ({
         }
     };
 
-    const handleSortChange = (
-        sort: string | undefined,
-        order: string | undefined,
-    ) => {
-        updateUrl(window.location.pathname, {
-            sort: sort || '',
-            order: order || '',
-            page: '1',
-        });
-    };
-
     const handlePageChange = (page: number) => {
         updateUrl(window.location.pathname, { page: page.toString() });
     };
@@ -158,14 +142,6 @@ const CategoryContent = ({
                                 t('all_products') ||
                                 'كل المنتجات'}
                         </h1>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                        <ProductsSorting
-                            sortBy={filters.sort}
-                            order={filters.order}
-                            onSortChange={handleSortChange}
-                        />
                     </div>
                 </div>
 

@@ -39,15 +39,18 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
     const content = (
         <div
             className={cn(
-                'flex flex-col items-center gap-3 w-[80px] md:w-[100px] shrink-0',
+                'flex flex-col items-center gap-2 w-[75px] md:w-[90px] shrink-0 p-2 transition-all duration-300 rounded-[20px]',
+                isActive
+                    ? 'bg-white border-2 border-[#B44734] shadow-md -translate-y-0.5'
+                    : 'hover:bg-white/50',
                 !href && 'cursor-pointer',
             )}>
             <div
                 className={cn(
-                    'w-16 h-16 md:w-20 md:h-20 rounded-full border-2 p-1 transition-all duration-300 flex items-center justify-center overflow-hidden bg-white relative',
+                    'w-14 h-14 md:w-16 md:h-16 rounded-full p-0.5 transition-all duration-300 flex items-center justify-center overflow-hidden bg-white relative',
                     isActive
-                        ? 'border-[#B44734] shadow-lg scale-110 z-10'
-                        : 'border-white/50 shadow-sm group-hover:border-[#B44734]/30 group-hover:shadow-md',
+                        ? 'border-0'
+                        : 'border-2 border-white shadow-sm group-hover:border-[#B44734]/20',
                 )}>
                 <div className="relative w-full h-full rounded-full overflow-hidden">
                     <DynamicImage
@@ -61,7 +64,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
             </div>
             <span
                 className={cn(
-                    'text-[10px] md:text-sm font-bold transition-colors text-center line-clamp-2 px-1',
+                    'text-[10px] md:text-xs font-bold transition-colors text-center line-clamp-1 px-1',
                     isActive
                         ? 'text-[#B44734]'
                         : 'text-gray-600 group-hover:text-gray-900',

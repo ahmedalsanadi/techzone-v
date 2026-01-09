@@ -15,7 +15,6 @@ interface ProductCardProps {
     addToCartLabel?: string;
     href?: string;
     onWishlistClick?: (e: React.MouseEvent) => void;
-
     onAddToCartClick?: (e: React.MouseEvent) => void;
     onClick?: () => void;
 }
@@ -35,7 +34,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
     return (
         <div
             onClick={onClick}
-            className="bg-white border border-gray-100 rounded-xl md:rounded-3xl p-4 md:p-6 relative group shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-500 flex flex-col items-center">
+            className="bg-white border border-gray-100 rounded-xl overflow-hidden relative group shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full">
+            
             {/* Wishlist Button */}
             <button
                 onClick={(e) => {
@@ -43,72 +43,77 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     e.preventDefault();
                     onWishlistClick?.(e);
                 }}
-                className="absolute top-4 right-4 w-9 h-9 md:w-10 md:h-10 bg-white shadow-sm rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:scale-110 transition-all z-20 border border-gray-50 cursor-pointer">
-                <Heart className="w-5 h-5 md:w-6 md:h-6" />
+                className="absolute top-3 left-3 w-8 h-8 bg-white/90 backdrop-blur-sm shadow-sm rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 transition-all z-20 cursor-pointer">
+                <Heart className="w-4 h-4" />
             </button>
 
             {/* Link wrapper for Image and Info */}
-            <Link
-                href={href}
-                className="w-full flex flex-col items-center z-10">
+            <Link href={href} className="w-full flex flex-col flex-1">
                 {/* Product Image */}
-                <div className="relative w-full aspect-square mb-6 group-hover:scale-105 transition-transform duration-500">
+                <div className="relative w-full aspect-square bg-gray-50">
                     <DynamicImage
                         src={image}
                         alt={name}
                         fill
-                        className="object-cover drop-shadow-sm"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover"
+                        sizes="(max-width: 768px) 50vw, 25vw"
                         fallbackComponent={
-                            <div className="flex flex-col items-center justify-center gap-2 text-gray-300">
-                                <ShoppingBasket size={48} strokeWidth={1} />
-                                <span className="text-[10px] font-medium opacity-50 uppercase tracking-wider">
-                                    {name}
-                                </span>
+                            <div className="flex flex-col items-center justify-center gap-2 text-gray-300 h-full w-full">
+                                <ShoppingBasket size={32} strokeWidth={1} />
                             </div>
                         }
                     />
                 </div>
 
                 {/* Product Info */}
-                <div className="w-full text-right space-y-2">
-                    <h3 className="text-lg md:text-xl font-bold text-gray-800 line-clamp-1">
+                <div className="p-4 text-start flex flex-col flex-1">
+                    <h3 className="text-md font-medium text-gray-900 line-clamp-2 leading-tight mb-3 min-h-10">
                         {name}
                     </h3>
-                    <div className="flex items-center justify-between mt-3">
-                        <div className="flex items-center gap-1.5 md:gap-2">
-                            <span className="text-xl md:text-2xl font-black text-gray-900">
+                    
+                    {/* Price Section */}
+                    <div className="flex items-center justify-start gap-2 mb-3">
+
+                        <div className="flex items-center gap-1">
+                             <span className="text-lg font-bold text-gray-900">
                                 {price}
                             </span>
-                            <CurrencySymbol className="md:w-4 md:h-4" />
-                            {oldPrice && (
-                                <span className="text-xs md:text-sm text-gray-400 line-through mr-1">
-                                    {oldPrice}
-                                </span>
-                            )}
+                            <CurrencySymbol className="w-3 h-3" />
+                           
                         </div>
-                        {discountBadge && (
-                            <span className="text-[10px] md:text-xs font-bold text-red-500 bg-red-50 px-2 py-1 rounded-lg shrink-0">
-                                {discountBadge}
+                        {oldPrice && (
+                            <span className="text-sm text-gray-400 line-through">
+                                {oldPrice}
                             </span>
                         )}
                     </div>
+
+                    {/* Discount Badge */}
+                    {discountBadge && (
+                        <div className="mb-3">
+                            <span className="text-xs font-medium text-red-500 bg-red-50 px-2 py-1 rounded">
+                                {discountBadge}
+                            </span>
+                        </div>
+                    )}
                 </div>
             </Link>
 
             {/* Add to Cart Button */}
-            <button
-                onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    onAddToCartClick?.(e);
-                }}
-                className="w-full mt-8 bg-[#FEF4F1] hover:bg-[#FDE7E0] text-[#B44734] font-bold py-3 md:py-4 rounded-xl md:rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-95 border border-[#FDE7E0]/50 shadow-sm z-20 cursor-pointer">
-                <Plus className="w-5 h-5" />
-                <span className="text-sm md:text-base">
-                    {addToCartLabel || 'Add to Cart'}
-                </span>
-            </button>
+            <div className="p-4 pt-0">
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        onAddToCartClick?.(e);
+                    }}
+                    className="w-full bg-[#FEF4F1] hover:bg-[#B44734] hover:text-white text-[#B44734] font-medium py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95 border border-[#B44734]/10 cursor-pointer group/btn">
+                    <Plus className="w-4 h-4 transition-transform group-hover/btn:rotate-90" />
+                    <span className="text-sm">
+                        {addToCartLabel || 'إضافة إلى السلة'}
+                    </span>
+                </button>
+            </div>
         </div>
     );
 };
