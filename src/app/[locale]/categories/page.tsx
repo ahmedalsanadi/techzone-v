@@ -37,13 +37,18 @@ export default async function CategoriesPage({
         { label: t('categories'), href: '/categories', active: true },
     ];
 
+    // Fetch initial products for "All" or first page
+    const productsResult = await storeService
+        .getProducts({ page: '1' })
+        .catch(() => null);
+
     return (
-        <main className="min-h-screen bg-gray-50/30">
-            <div className="container mx-auto px-4 pt-6">
+        <main className="min-h-screen bg-gray-50/30 py-8">
+            <div className="container mx-auto px-4 mb-4">
                 <Breadcrumbs items={breadcrumbItems} />
             </div>
 
-            <CategoryContent />
+            <CategoryContent initialProducts={productsResult} />
         </main>
     );
 }

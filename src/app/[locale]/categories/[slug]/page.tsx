@@ -50,10 +50,13 @@ export default async function CategoryPage({ params }: Props) {
 
         if (!category) notFound();
 
-        // Fetch all categories for the tree/sidebar
-        const allCategories = await storeService
-            .getCategories(true)
-            .catch(() => []);
+        // Fetch initial products for this category to prevent flickers on mount
+        const productsResult = await storeService
+            .getProducts({
+                category_id: category.id.toString(),
+                page: '1',
+            })
+            .catch(() => null);
 
         const breadcrumbItems = [
             { label: t('home'), href: '/' },
@@ -63,11 +66,14 @@ export default async function CategoryPage({ params }: Props) {
 
         return (
             <main className="min-h-screen bg-gray-50/30 py-8">
-                <div className="container mx-auto px-4">
+                <div className="container mx-auto px-4 mb-6">
                     <Breadcrumbs items={breadcrumbItems} />
-
-                    <CategoryContent initialCategory={category} />
                 </div>
+
+                <CategoryContent
+                    initialCategory={category}
+                    initialProducts={productsResult}
+                />
             </main>
         );
     } catch (error) {

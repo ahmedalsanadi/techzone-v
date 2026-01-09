@@ -26,7 +26,8 @@ const CategoryTabs: React.FC<CategoryTabsProps> = ({
                 label={t('all_products') || 'كل المنتجات'}
                 isMain={true}
                 isActive={activeCategoryId === 'all'}
-                onClick={() => onCategorySelect('all')}
+                href="/categories"
+                scroll={false}
             />
 
             {/* Category Tabs */}
@@ -36,7 +37,8 @@ const CategoryTabs: React.FC<CategoryTabsProps> = ({
                     label={cat.name}
                     image={cat.icon_url || cat.image_url}
                     isActive={activeCategoryId === cat.id.toString()}
-                    onClick={() => onCategorySelect(cat.id.toString())}
+                    href={`/categories/${cat.slug || cat.id}`}
+                    scroll={false}
                 />
             ))}
         </div>

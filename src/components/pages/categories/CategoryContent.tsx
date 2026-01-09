@@ -18,9 +18,16 @@ import { useStore } from '@/components/providers/StoreProvider';
 
 interface CategoryContentProps {
     initialCategory?: Category;
+    initialProducts?: {
+        data: any[];
+        meta?: any;
+    } | null;
 }
 
-const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
+const CategoryContent = ({
+    initialCategory,
+    initialProducts,
+}: CategoryContentProps) => {
     const t = useTranslations('Category');
     const { categories: allCategories } = useStore();
     const params = useParams();
@@ -32,8 +39,6 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
     const sort = searchParams.get('sort') || undefined;
     const order = searchParams.get('order') || undefined;
 
-    // Helper to find the current active path from the global tree
-    // This allows us to support multi-level deep linking automatically
     const getActivePath = (
         nodes: Category[],
         targetSlug: string,
@@ -68,6 +73,8 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
     const {
         data: productsResult,
         isLoading,
+        isPlaceholderData,
+        isFetching,
         error,
     } = useQuery({
         queryKey: [
@@ -79,8 +86,13 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
                 ...filters,
                 category_id: currentCategory?.id.toString(),
             }),
+        initialData: initialProducts,
+        placeholderData: (previousData) => previousData,
+        staleTime: 1000 * 60 * 5, // 5 minutes
         retry: 1,
     });
+
+    const isInternalLoading = isLoading && !productsResult;
 
     const updateUrl = (newPath: string, newParams?: Record<string, string>) => {
         const currentParams = new URLSearchParams(searchParams.toString());
@@ -101,15 +113,6 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
             if (selected) {
                 router.push(`/categories/${selected.slug || selected.id}`);
             }
-        }
-    };
-
-    const handleSubCategorySelect = (id: string) => {
-        const selected = currentSubCategories.find(
-            (c) => c.id.toString() === id,
-        );
-        if (selected) {
-            router.push(`/categories/${selected.slug || selected.id}`);
         }
     };
 
@@ -150,37 +153,6 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <div className="space-y-4">
-                        {/* Interactive Path / Breadcrumbs */}
-                        <div className="flex items-center flex-wrap gap-2 text-sm text-[#B44734] font-bold uppercase tracking-wider">
-                            <span
-                                className={cn(
-                                    'cursor-pointer hover:underline transition-colors',
-                                    activePath.length === 0
-                                        ? 'text-gray-400'
-                                        : '',
-                                )}
-                                onClick={() => router.push('/categories')}>
-                                {t('all_products') || 'المنتجات'}
-                            </span>
-                            {activePath.map((cat, idx) => (
-                                <React.Fragment key={cat.id}>
-                                    <span className="text-gray-300 mx-1">
-                                        /
-                                    </span>
-                                    <span
-                                        className={cn(
-                                            'cursor-pointer hover:underline transition-colors',
-                                            idx === activePath.length - 1
-                                                ? 'text-gray-900'
-                                                : '',
-                                        )}
-                                        onClick={() => handleLevelReset(idx)}>
-                                        {cat.name}
-                                    </span>
-                                </React.Fragment>
-                            ))}
-                        </div>
-
                         <h1 className="text-4xl md:text-5xl font-black text-gray-900 leading-tight">
                             {currentCategory?.name ||
                                 t('all_products') ||
@@ -197,25 +169,43 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
                     </div>
                 </div>
 
-                {/* Subcategories drill-down area */}
-                {currentSubCategories.length > 0 && (
-                    <SubCategorySelection
-                        subCategories={currentSubCategories}
-                        activeSubCategoryId="all_sub"
-                        onSubCategorySelect={handleSubCategorySelect}
-                        currentCategoryLabel={currentCategory?.name}
-                        currentCategoryImage={
-                            currentCategory?.icon_url ||
-                            currentCategory?.image_url
-                        }
-                    />
-                )}
+                {/* Recursive Subcategories drill-down area */}
+                {activePath.map((cat: Category, index: number) => {
+                    const subCats = cat.children || [];
+                    if (subCats.length === 0) return null;
+
+                    // The 'active' subcategory for this specific row is the next item in the path
+                    const nextInPath = activePath[index + 1];
+                    const activeSubId = nextInPath?.id.toString() || 'all_sub';
+
+                    return (
+                        <div
+                            key={cat.id}
+                            className="animate-in fade-in slide-in-from-top-2 duration-300">
+                            <SubCategorySelection
+                                subCategories={subCats}
+                                activeSubCategoryId={activeSubId}
+                                parentHref={`/categories/${cat.slug || cat.id}`}
+                                currentCategoryLabel={cat.name}
+                                currentCategoryImage={
+                                    cat.icon_url || cat.image_url
+                                }
+                            />
+                        </div>
+                    );
+                })}
 
                 {/* Vertical Spacing if no subcategories */}
                 {currentSubCategories.length === 0 && <div className="h-4" />}
 
                 {/* Products Grid */}
-                <div className="min-h-[400px]">
+                <div
+                    className={cn(
+                        'min-h-[400px] transition-opacity duration-300',
+                        isFetching && !isInternalLoading
+                            ? 'opacity-60'
+                            : 'opacity-100',
+                    )}>
                     {error ? (
                         <div className="flex flex-col items-center justify-center py-20 text-red-500 bg-red-50 rounded-3xl border border-red-100 italic">
                             <p>
@@ -231,7 +221,7 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
                     ) : (
                         <ProductsGrid
                             products={productsResult?.data || []}
-                            loading={isLoading}
+                            loading={isInternalLoading}
                             pagination={productsResult?.meta}
                             onPageChange={handlePageChange}
                         />

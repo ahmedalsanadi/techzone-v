@@ -12,6 +12,7 @@ interface CategoryCardProps {
     variant?: 'default' | 'circular';
     onClick?: () => void;
     href?: string;
+    scroll?: boolean;
 }
 
 const CategoryCard: React.FC<CategoryCardProps> = ({
@@ -22,6 +23,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
     variant = 'default',
     onClick,
     href,
+    scroll = true,
 }) => {
     // ... rest of logic
     // Shared fallback icon
@@ -135,7 +137,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
 
     if (href) {
         return (
-            <Link href={href} className="group outline-none">
+            <Link href={href} scroll={scroll} className="group outline-none">
                 {finalContent}
             </Link>
         );

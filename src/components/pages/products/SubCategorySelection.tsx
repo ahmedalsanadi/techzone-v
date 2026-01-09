@@ -8,9 +8,10 @@ import CategoryCard from '@/components/ui/CategoryCard';
 interface SubCategorySelectionProps {
     subCategories: Category[];
     activeSubCategoryId: string;
-    onSubCategorySelect: (id: string) => void;
+    onSubCategorySelect?: (id: string) => void;
     currentCategoryLabel?: string;
     currentCategoryImage?: string | null;
+    parentHref?: string;
 }
 
 const SubCategorySelection: React.FC<SubCategorySelectionProps> = ({
@@ -19,6 +20,7 @@ const SubCategorySelection: React.FC<SubCategorySelectionProps> = ({
     onSubCategorySelect,
     currentCategoryLabel,
     currentCategoryImage,
+    parentHref,
 }) => {
     if (subCategories.length === 0) return null;
 
@@ -33,7 +35,8 @@ const SubCategorySelection: React.FC<SubCategorySelectionProps> = ({
                             label={currentCategoryLabel || 'الكل'}
                             image={currentCategoryImage}
                             isActive={activeSubCategoryId === 'all_sub'}
-                            onClick={() => onSubCategorySelect('all_sub')}
+                            href={parentHref}
+                            scroll={false}
                         />
 
                         {subCategories.map((sub) => (
@@ -45,9 +48,8 @@ const SubCategorySelection: React.FC<SubCategorySelectionProps> = ({
                                 isActive={
                                     activeSubCategoryId === sub.id.toString()
                                 }
-                                onClick={() =>
-                                    onSubCategorySelect(sub.id.toString())
-                                }
+                                href={`/categories/${sub.slug || sub.id}`}
+                                scroll={false}
                             />
                         ))}
                     </div>
