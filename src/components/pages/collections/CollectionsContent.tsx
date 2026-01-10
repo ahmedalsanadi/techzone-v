@@ -235,7 +235,6 @@ const CollectionsContent: React.FC<CollectionsContentProps> = ({
                                 loading={isLoadingProducts}
                                 currentPage={Number(productFilters.page || '1')}
                                 pagination={productsResult?.meta}
-                                variant="compact"
                                 onPageChange={updatePage}
                             />
                         </div>
