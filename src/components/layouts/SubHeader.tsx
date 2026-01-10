@@ -67,10 +67,29 @@ export default function SubHeader() {
             <div className="mt-4">
                 {/* Desktop Layout */}
                 <div className="hidden lg:flex bg-white rounded-t-xl h-16 items-center justify-between px-4 shadow-t-sm border-t border-gray-200">
-                    {/* Left: Order Details (when address saved) or Branch (when no address) */}
+                    {/* Left: Branch and Order Type Label - Always in same position */}
+                    <div className="flex items-center gap-4">
+                        <button
+                            onClick={handleBranchClick}
+                            className="flex items-center gap-2 hover:bg-gray-50 p-2 rounded-lg transition-colors duration-200 group"
+                            aria-label={branchName}>
+                            <div className="size-8 rounded-full border border-gray-200 flex items-center justify-center bg-gray-50">
+                                <Building2 className="size-4.5 text-gray-500" />
+                            </div>
+                            <span className="text-gray-900 font-semibold text-sm">
+                                {branchName}
+                            </span>
+                            <ChevronDown className="size-3.5 text-gray-500 group-hover:text-libero-red transition-colors duration-200" />
+                        </button>
+                        <span className="text-gray-900 font-medium text-sm whitespace-nowrap">
+                            {t('selectOrderType')}
+                        </span>
+                    </div>
+
+                    {/* Right: Order Type Buttons (when no address) or Order Details (when address saved) */}
                     <div className="flex items-center gap-4">
                         {activeOrderType === 'delivery' && deliveryAddress ? (
-                            // Show order details on left when address is saved
+                            // Show order details on right when address is saved
                             <>
                                 <div className="flex items-center gap-2 text-sm text-gray-700">
                                     <MapPin className="w-4 h-4 text-libero-red" />
@@ -95,73 +114,30 @@ export default function SubHeader() {
                                 </button>
                             </>
                         ) : (
-                            // Show branch on left when no address saved
-                            <button
-                                onClick={handleBranchClick}
-                                className="flex items-center gap-2 hover:bg-gray-50 p-2 rounded-lg transition-colors duration-200 group"
-                                aria-label={branchName}>
-                                <div className="size-8 rounded-full border border-gray-200 flex items-center justify-center bg-gray-50">
-                                    <Building2 className="size-4.5 text-gray-500" />
-                                </div>
-                                <span className="text-gray-900 font-semibold text-sm">
-                                    {branchName}
-                                </span>
-                                <ChevronDown className="size-3.5 text-gray-500 group-hover:text-libero-red transition-colors duration-200" />
-                            </button>
-                        )}
-                    </div>
-
-                    {/* Right: Order Type Selection or Branch (when address saved) */}
-                    <div className="flex items-center gap-4">
-                        {activeOrderType === 'delivery' && deliveryAddress ? (
-                            // Show branch and order type label on right when address is saved
-                            <>
-                                <span className="text-gray-900 font-medium text-sm whitespace-nowrap">
-                                    {t('selectOrderType')}
-                                </span>
-                                <button
-                                    onClick={handleBranchClick}
-                                    className="flex items-center gap-2 hover:bg-gray-50 p-2 rounded-lg transition-colors duration-200 group"
-                                    aria-label={branchName}>
-                                    <div className="size-8 rounded-full border border-gray-200 flex items-center justify-center bg-gray-50">
-                                        <Building2 className="size-4.5 text-gray-500" />
-                                    </div>
-                                    <span className="text-gray-900 font-semibold text-sm">
-                                        {branchName}
-                                    </span>
-                                    <ChevronDown className="size-3.5 text-gray-500 group-hover:text-libero-red transition-colors duration-200" />
-                                </button>
-                            </>
-                        ) : (
                             // Show order type selection buttons on right when no address saved
-                            <>
-                                <span className="text-gray-900 font-medium text-sm whitespace-nowrap">
-                                    {t('selectOrderType')}
-                                </span>
-                                <div className="flex items-center gap-2">
-                                    {orderTypes.map((type) => (
-                                        <button
-                                            key={type.id}
-                                            onClick={() =>
-                                                handleOrderTypeClick(type.id)
-                                            }
-                                            className={`
-                                                h-10 px-4 rounded-md text-sm font-medium 
-                                                transition-all duration-200 cursor-pointer border
-                                                ${
-                                                    activeOrderType === type.id
-                                                        ? activeStyle
-                                                        : inactiveStyle
-                                                }
-                                            `}
-                                            aria-pressed={
+                            <div className="flex items-center gap-2">
+                                {orderTypes.map((type) => (
+                                    <button
+                                        key={type.id}
+                                        onClick={() =>
+                                            handleOrderTypeClick(type.id)
+                                        }
+                                        className={`
+                                            h-10 px-4 rounded-md text-sm font-medium 
+                                            transition-all duration-200 cursor-pointer border
+                                            ${
                                                 activeOrderType === type.id
-                                            }>
-                                            {type.label}
-                                        </button>
-                                    ))}
-                                </div>
-                            </>
+                                                    ? activeStyle
+                                                    : inactiveStyle
+                                            }
+                                        `}
+                                        aria-pressed={
+                                            activeOrderType === type.id
+                                        }>
+                                        {type.label}
+                                    </button>
+                                ))}
+                            </div>
                         )}
                     </div>
                 </div>
