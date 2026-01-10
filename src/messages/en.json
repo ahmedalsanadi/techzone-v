@@ -23,6 +23,8 @@
     "profile": "Profile",
     "myOrders": "My Orders",
     "wallet": "Wallet",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
     "logout": "Logout"
   },
   "Notifications": {

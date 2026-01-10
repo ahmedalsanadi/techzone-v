@@ -23,6 +23,8 @@
     "profile": "الملف الشخصي",
     "myOrders": "طلباتي",
     "wallet": "المحفظة",
+    "signIn": "تسجيل الدخول",
+    "signUp": "إنشاء حساب",
     "logout": "تسجيل الخروج"
   },
   "Notifications": {

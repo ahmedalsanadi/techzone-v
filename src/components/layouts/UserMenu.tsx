@@ -5,16 +5,17 @@ import {
     ChevronDown,
     Package,
     LogOut,
-    Settings,
     CreditCard,
+    LogIn,
+    UserPlus,
 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-    DropdownMenuLabel,
     DropdownMenuSeparator,
 } from '../ui/DropdownMenu';
 
@@ -102,6 +103,36 @@ const UserMenu = () => {
                         <span className="text-[13px] font-bold text-gray-700">
                             {t('wallet')}
                         </span>
+                    </DropdownMenuItem>
+                </div>
+
+                <DropdownMenuSeparator className="opacity-50" />
+
+                <div className="py-1">
+                    <DropdownMenuItem className="p-0">
+                        <Link
+                            href="/sign-in"
+                            className="py-2.5 px-3 rounded-xl gap-3 cursor-pointer group transition-colors hover:bg-purple-50 text-gray-700 flex items-center w-full">
+                            <div className="size-8 rounded-lg bg-purple-50 flex items-center justify-center text-purple-500 group-hover:bg-purple-500 group-hover:text-white transition-colors">
+                                <LogIn size={18} strokeWidth={2} />
+                            </div>
+                            <span className="text-[13px] font-bold">
+                                {t('signIn')}
+                            </span>
+                        </Link>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem className="p-0">
+                        <Link
+                            href="/sign-up"
+                            className="py-2.5 px-3 rounded-xl gap-3 cursor-pointer group transition-colors hover:bg-indigo-50 text-gray-700 flex items-center w-full">
+                            <div className="size-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-500 group-hover:bg-indigo-500 group-hover:text-white transition-colors">
+                                <UserPlus size={18} strokeWidth={2} />
+                            </div>
+                            <span className="text-[13px] font-bold">
+                                {t('signUp')}
+                            </span>
+                        </Link>
                     </DropdownMenuItem>
                 </div>
 
