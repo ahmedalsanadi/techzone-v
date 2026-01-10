@@ -27,10 +27,9 @@ const SubCategorySelection: React.FC<SubCategorySelectionProps> = ({
     return (
         <div className="w-full mb-6 overflow-hidden">
             <div className="bg-[#FEF4F1]/40 border border-[#B44734]/10 rounded-2xl md:rounded-3xl py-3 md:py-8 px-2 md:px-4">
-                <div className="flex items-center gap-4 md:gap-8 overflow-x-auto scrollbar-hide rtl justify-start lg:justify-center p-2">
+                <div className="flex items-stretch gap-4 md:gap-8 overflow-x-auto scrollbar-hide rtl justify-start lg:justify-center p-2">
                     {/* "All" option for subcategories */}
                     <CategoryCard
-                        variant="circular"
                         label={currentCategoryLabel || 'الكل'}
                         image={currentCategoryImage}
                         isActive={activeSubCategoryId === 'all_sub'}
@@ -41,7 +40,6 @@ const SubCategorySelection: React.FC<SubCategorySelectionProps> = ({
                     {subCategories.map((sub) => (
                         <CategoryCard
                             key={sub.id}
-                            variant="circular"
                             label={sub.name}
                             image={sub.image_url}
                             isActive={activeSubCategoryId === sub.id.toString()}
