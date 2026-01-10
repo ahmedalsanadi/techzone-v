@@ -13,10 +13,10 @@ import ProductFilters from './ProductFilters';
 import { cn } from '@/lib/utils';
 
 interface ProductsContentProps {
-    initialFilters: Record<string, string | undefined>;
+    initialFilters?: Record<string, string | undefined>; // Optional, kept for API compatibility but not used (filters come from searchParams)
 }
 
-const ProductsContent = ({ initialFilters }: ProductsContentProps) => {
+const ProductsContent = ({}: ProductsContentProps) => {
     const t = useTranslations('Product');
     const router = useRouter();
     const pathname = usePathname();
@@ -83,14 +83,16 @@ const ProductsContent = ({ initialFilters }: ProductsContentProps) => {
         <div className="container mx-auto px-4 py-8">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                 {/* Filters Sidebar */}
-                <ProductFilters
-                    categories={categories}
-                    filters={filters}
-                    onFiltersChange={updateFilters}
-                />
+                <div className="lg:sticky lg:top-24 lg:self-start lg:z-10">
+                    <ProductFilters
+                        categories={categories}
+                        filters={filters}
+                        onFiltersChange={updateFilters}
+                    />
+                </div>
 
                 {/* Products Section */}
-                <div className="lg:col-span-3 space-y-6">
+                <div className="lg:col-span-3 space-y-6 relative z-0">
                     <div className="flex items-center justify-between">
                         <h1 className="text-2xl font-bold">{t('products')}</h1>
                         <ProductsSorting
