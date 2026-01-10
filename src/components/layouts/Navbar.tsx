@@ -15,9 +15,10 @@ import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslations } from 'next-intl';
 import { useUiStore } from '@/store/useUiStore';
 import MobileSidebar from './MobileSidebar';
-import LogoImage from '@/components/layouts/LogoImage';
+// import LogoImage from '@/components/layouts/LogoImage';
 import { useStore } from '@/components/providers/StoreProvider';
-import { siteConfig } from '@/config/site';
+// import { siteConfig } from '@/config/site';
+import FastoLogo from './FastoLogo';
 
 export default function Navbar() {
     const pathname = usePathname();
@@ -36,12 +37,17 @@ export default function Navbar() {
                 </button>
 
                 {/*-------- logo----------- */}
-                <LogoImage
+                {/* <LogoImage
                     brandName={config?.store?.name || siteConfig.name}
                     brandLogo={
                         config?.store?.logo_url || '/images/svgs/logo-icon.svg'
                     }
-                />
+                /> */}
+
+                    <FastoLogo
+                        brandName="Fasto"
+                        brandLogo="/images/svgs/logo-icon.svg"
+                    />
             </div>
 
             {/*-------- Navlist----------- */}
