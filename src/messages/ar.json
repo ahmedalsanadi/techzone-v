@@ -33,7 +33,41 @@
     "delivery": "توصيل إلى موقعي",
     "pickup": "استلام من الفرع",
     "dineIn": "تناول داخل الفرع",
-    "defaultBranch": "فرع النخيل"
+    "defaultBranch": "فرع النخيل",
+    "deliveryTo": "توصيل إلى",
+    "noAddressSelected": "لم يتم تحديد عنوان",
+    "edit": "تعديل"
+  },
+  "Order": {
+    "orderType": "نوع الطلب",
+    "selectOrderType": "حدد نوع الطلب",
+    "delivery": "توصيل إلى موقعي",
+    "dineIn": "تناول داخل الفرع",
+    "pickup": "استلام من الفرع",
+    "carPickup": "استلام بسيارة قريباً",
+    "deliveryAddress": "عنوان التوصيل",
+    "addAddress": "إضافة عنوان",
+    "selectOrderTime": "حدد وقت الطلب",
+    "now": "الآن",
+    "later": "لاحقاً",
+    "change": "تغيير",
+    "edit": "تعديل",
+    "save": "حفظ",
+    "close": "إغلاق"
+  },
+  "Address": {
+    "addNewAddress": "إضافة عنوان جديد",
+    "editAddress": "تعديل العنوان",
+    "searchAddress": "البحث عن العنوان",
+    "searchPlaceholder": "حي اليرموك، شارع النجاح ...",
+    "addressDetails": "تفاصيل العنوان",
+    "addressName": "اسم العنوان",
+    "addressNamePlaceholder": "المنزل",
+    "addressNotes": "ملاحظة على العنوان",
+    "addressNotesPlaceholder": "البنى الاحمر، الدور الثاني، شقة رقم 5",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "close": "إغلاق"
   },
   "Footer": {
     "description": "نقدّم في مطعمنا تجربة طعام تجمع بين الجودة العالية والطعم المميّز، باستخدام أفضل المكونات الطازجة وبإشراف فريق متخصّص لضمان أعلى معايير النظافة والجودة.",

@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { StoreConfig, Category } from '@/services/types';
 import { useCartStore } from '@/store/useCartStore';
+import { useOrderStore } from '@/store/useOrderStore';
 import { isValidColor } from '@/lib/utils';
 
 interface StoreContextType {
@@ -27,7 +28,7 @@ export function StoreProvider({
     config: StoreConfig;
     categories: Category[];
 }) {
-    // Hydrate cart store on mount
+    // Hydrate cart store on mount (order store rehydrates automatically)
     useEffect(() => {
         useCartStore.persist.rehydrate();
     }, []);

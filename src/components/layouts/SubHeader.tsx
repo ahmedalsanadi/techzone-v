@@ -1,15 +1,27 @@
 //src/components/layouts/SubHeader.tsx
 'use client';
 
-import { Building2, ChevronDown } from 'lucide-react';
+import { Building2, ChevronDown, MapPin, Clock, Edit } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useBranchStore } from '@/store/useBranchStore';
+import { useOrderStore, getScheduledTimeAsDate } from '@/store/useOrderStore';
+import OrderTypeModal from '@/components/modals/OrderTypeModal';
 
 export default function SubHeader() {
     const t = useTranslations('SubHeader');
-    const [activeType, setActiveType] = useState('delivery');
     const { selectedBranchName, setModalOpen } = useBranchStore();
+    const {
+        orderType,
+        deliveryAddress,
+        scheduledTime: scheduledTimeRaw,
+        orderTime,
+        setOrderType,
+    } = useOrderStore();
+
+    // Convert scheduledTime from string to Date if needed
+    const scheduledTime = getScheduledTimeAsDate(scheduledTimeRaw);
+    const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
 
     // Use persisted name - no fetch needed! Name is always available immediately
     const branchName = selectedBranchName || t('defaultBranch');
@@ -17,6 +29,29 @@ export default function SubHeader() {
     const handleBranchClick = () => {
         setModalOpen(true);
     };
+
+    const handleOrderTypeClick = (type: string) => {
+        if (type === 'delivery') {
+            setIsOrderModalOpen(true);
+        } else {
+            setOrderType(type as 'dineIn' | 'pickup' | 'carPickup');
+        }
+    };
+
+    const formatScheduledTime = (date: Date) => {
+        const day = date.getDate();
+        const month = date.getMonth() + 1;
+        const year = date.getFullYear();
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+        const period = hours >= 12 ? 'م' : 'ص';
+        const displayHours = hours > 12 ? hours - 12 : hours === 0 ? 12 : hours;
+        return `لاحقاً ${day}/${month}/${year}، ${displayHours}:${minutes
+            .toString()
+            .padStart(2, '0')} ${period}`;
+    };
+
+    const activeOrderType = orderType || 'delivery';
 
     const orderTypes = [
         { id: 'dineIn', label: t('dineIn') },
@@ -28,85 +63,191 @@ export default function SubHeader() {
     const inactiveStyle = 'bg-gray-50 text-gray-500 hover:border-gray-200';
 
     return (
-        <div className="mt-4">
-            {/* Desktop Layout - 100% Exact Restoration */}
-            <div className="hidden lg:flex bg-white rounded-t-xl h-16 items-center justify-between px-4 shadow-t-sm border-t border-gray-200">
-                <button
-                    onClick={handleBranchClick}
-                    className="flex items-center gap-2 hover:bg-gray-50 p-2 rounded-lg transition-colors duration-200 group"
-                    aria-label={branchName}>
-                    <div className="size-8 rounded-full border border-gray-200 flex items-center justify-center bg-gray-50">
-                        <Building2 className="size-4.5 text-gray-500" />
-                    </div>
-                    <span className="text-gray-900 font-semibold text-sm">
-                        {branchName}
-                    </span>
-                    <ChevronDown className="size-3.5 text-gray-500 group-hover:text-libero-red transition-colors duration-200" />
-                </button>
-
-                <div className="flex items-center gap-4">
-                    <span className="text-gray-900 font-medium text-sm whitespace-nowrap">
-                        {t('selectOrderType')}
-                    </span>
-                    <div className="flex items-center gap-2">
-                        {orderTypes.map((type) => (
+        <>
+            <div className="mt-4">
+                {/* Desktop Layout */}
+                <div className="hidden lg:flex bg-white rounded-t-xl h-16 items-center justify-between px-4 shadow-t-sm border-t border-gray-200">
+                    {/* Left: Order Details (when address saved) or Branch (when no address) */}
+                    <div className="flex items-center gap-4">
+                        {activeOrderType === 'delivery' && deliveryAddress ? (
+                            // Show order details on left when address is saved
+                            <>
+                                <div className="flex items-center gap-2 text-sm text-gray-700">
+                                    <MapPin className="w-4 h-4 text-libero-red" />
+                                    <span>
+                                        {t('deliveryTo')} {deliveryAddress.name}{' '}
+                                        {deliveryAddress.formatted}
+                                    </span>
+                                </div>
+                                {orderTime === 'later' && scheduledTime && (
+                                    <div className="flex items-center gap-2 text-sm text-gray-700">
+                                        <Clock className="w-4 h-4 text-libero-red" />
+                                        <span>
+                                            {formatScheduledTime(scheduledTime)}
+                                        </span>
+                                    </div>
+                                )}
+                                <button
+                                    onClick={() => setIsOrderModalOpen(true)}
+                                    className="px-3 py-1.5 bg-libero-red/10 text-libero-red text-xs font-medium rounded-lg hover:bg-libero-red/20 transition-colors flex items-center gap-1">
+                                    <Edit className="w-3.5 h-3.5" />
+                                    {t('edit')}
+                                </button>
+                            </>
+                        ) : (
+                            // Show branch on left when no address saved
                             <button
-                                key={type.id}
-                                onClick={() => setActiveType(type.id)}
-                                className={`
-                                    h-10 px-4 rounded-md text-sm font-medium 
-                                    transition-all duration-200 cursor-pointer border
-                                    ${
-                                        activeType === type.id
-                                            ? activeStyle
-                                            : inactiveStyle
-                                    }
-                                `}
-                                aria-pressed={activeType === type.id}>
-                                {type.label}
+                                onClick={handleBranchClick}
+                                className="flex items-center gap-2 hover:bg-gray-50 p-2 rounded-lg transition-colors duration-200 group"
+                                aria-label={branchName}>
+                                <div className="size-8 rounded-full border border-gray-200 flex items-center justify-center bg-gray-50">
+                                    <Building2 className="size-4.5 text-gray-500" />
+                                </div>
+                                <span className="text-gray-900 font-semibold text-sm">
+                                    {branchName}
+                                </span>
+                                <ChevronDown className="size-3.5 text-gray-500 group-hover:text-libero-red transition-colors duration-200" />
                             </button>
-                        ))}
+                        )}
+                    </div>
+
+                    {/* Right: Order Type Selection or Branch (when address saved) */}
+                    <div className="flex items-center gap-4">
+                        {activeOrderType === 'delivery' && deliveryAddress ? (
+                            // Show branch and order type label on right when address is saved
+                            <>
+                                <span className="text-gray-900 font-medium text-sm whitespace-nowrap">
+                                    {t('selectOrderType')}
+                                </span>
+                                <button
+                                    onClick={handleBranchClick}
+                                    className="flex items-center gap-2 hover:bg-gray-50 p-2 rounded-lg transition-colors duration-200 group"
+                                    aria-label={branchName}>
+                                    <div className="size-8 rounded-full border border-gray-200 flex items-center justify-center bg-gray-50">
+                                        <Building2 className="size-4.5 text-gray-500" />
+                                    </div>
+                                    <span className="text-gray-900 font-semibold text-sm">
+                                        {branchName}
+                                    </span>
+                                    <ChevronDown className="size-3.5 text-gray-500 group-hover:text-libero-red transition-colors duration-200" />
+                                </button>
+                            </>
+                        ) : (
+                            // Show order type selection buttons on right when no address saved
+                            <>
+                                <span className="text-gray-900 font-medium text-sm whitespace-nowrap">
+                                    {t('selectOrderType')}
+                                </span>
+                                <div className="flex items-center gap-2">
+                                    {orderTypes.map((type) => (
+                                        <button
+                                            key={type.id}
+                                            onClick={() =>
+                                                handleOrderTypeClick(type.id)
+                                            }
+                                            className={`
+                                                h-10 px-4 rounded-md text-sm font-medium 
+                                                transition-all duration-200 cursor-pointer border
+                                                ${
+                                                    activeOrderType === type.id
+                                                        ? activeStyle
+                                                        : inactiveStyle
+                                                }
+                                            `}
+                                            aria-pressed={
+                                                activeOrderType === type.id
+                                            }>
+                                            {type.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
-            </div>
 
-            {/* Mobile Layout - Premium Redesign (Hidden on Desktop) */}
-            <div className="lg:hidden flex flex-col gap-4">
-                <div className="bg-white rounded-xl h-14 flex items-center px-4 shadow-sm border border-gray-200">
-                    <button
-                        onClick={handleBranchClick}
-                        className="flex items-center gap-2 w-full"
-                        aria-label={branchName}>
-                        <div className="size-8 rounded-full border border-gray-200 flex items-center justify-center bg-gray-50 shrink-0">
-                            <Building2 className="size-4.5 text-gray-500" />
-                        </div>
-                        <span className="text-gray-900 font-semibold text-sm truncate">
-                            {branchName}
-                        </span>
-                        <ChevronDown className="size-3.5 text-gray-500 ml-auto" />
-                    </button>
-                </div>
-
-                <div className="w-full bg-white/10 p-1 rounded-xl border border-white/10 backdrop-blur-sm flex items-center">
-                    {orderTypes.map((type) => (
+                {/* Mobile Layout */}
+                <div className="lg:hidden flex flex-col gap-4">
+                    <div className="bg-white rounded-xl h-14 flex items-center px-4 shadow-sm border border-gray-200">
                         <button
-                            key={type.id}
-                            onClick={() => setActiveType(type.id)}
-                            className={`
-                                flex-1 h-10 rounded-lg text-xs font-bold 
-                                transition-all duration-200 cursor-pointer 
-                                ${
-                                    activeType === type.id
-                                        ? 'bg-white text-libero-red shadow-sm'
-                                        : 'text-white/80 hover:bg-white/5'
-                                }
-                            `}
-                            aria-pressed={activeType === type.id}>
-                            {type.label}
+                            onClick={handleBranchClick}
+                            className="flex items-center gap-2 w-full"
+                            aria-label={branchName}>
+                            <div className="size-8 rounded-full border border-gray-200 flex items-center justify-center bg-gray-50 shrink-0">
+                                <Building2 className="size-4.5 text-gray-500" />
+                            </div>
+                            <span className="text-gray-900 font-semibold text-sm truncate">
+                                {branchName}
+                            </span>
+                            <ChevronDown className="size-3.5 text-gray-500 ml-auto" />
                         </button>
-                    ))}
+                    </div>
+
+                    {/* Order Details on Mobile - Show when address is saved */}
+                    {activeOrderType === 'delivery' && deliveryAddress && (
+                        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200 space-y-2">
+                            <div className="flex items-start gap-2 text-sm text-gray-700">
+                                <MapPin className="w-4 h-4 text-libero-red shrink-0 mt-0.5" />
+                                <div className="flex-1">
+                                    <span className="font-medium">
+                                        {t('deliveryTo')} {deliveryAddress.name}
+                                    </span>
+                                    <p className="text-gray-600 text-xs mt-1">
+                                        {deliveryAddress.formatted}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {orderTime === 'later' && scheduledTime && (
+                                <div className="flex items-center gap-2 text-sm text-gray-700">
+                                    <Clock className="w-4 h-4 text-libero-red" />
+                                    <span>
+                                        {formatScheduledTime(scheduledTime)}
+                                    </span>
+                                </div>
+                            )}
+
+                            <button
+                                onClick={() => setIsOrderModalOpen(true)}
+                                className="w-full mt-2 px-3 py-2 bg-libero-red/10 text-libero-red text-xs font-medium rounded-lg hover:bg-libero-red/20 transition-colors flex items-center justify-center gap-1">
+                                <Edit className="w-3.5 h-3.5" />
+                                {t('edit')}
+                            </button>
+                        </div>
+                    )}
+
+                    {/* Order Type Selection Buttons - Show when no address saved */}
+                    {(!deliveryAddress || activeOrderType !== 'delivery') && (
+                        <div className="w-full bg-white/10 p-1 rounded-xl border border-white/10 backdrop-blur-sm flex items-center">
+                            {orderTypes.map((type) => (
+                                <button
+                                    key={type.id}
+                                    onClick={() =>
+                                        handleOrderTypeClick(type.id)
+                                    }
+                                    className={`
+                                        flex-1 h-10 rounded-lg text-xs font-bold 
+                                        transition-all duration-200 cursor-pointer 
+                                        ${
+                                            activeOrderType === type.id
+                                                ? 'bg-white text-libero-red shadow-sm'
+                                                : 'text-white/80 hover:bg-white/5'
+                                        }
+                                    `}
+                                    aria-pressed={activeOrderType === type.id}>
+                                    {type.label}
+                                </button>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
-        </div>
+
+            {/* Order Type Modal */}
+            <OrderTypeModal
+                isOpen={isOrderModalOpen}
+                onClose={() => setIsOrderModalOpen(false)}
+            />
+        </>
     );
 }

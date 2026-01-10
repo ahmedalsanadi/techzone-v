@@ -33,7 +33,41 @@
     "delivery": "Delivery to my location",
     "pickup": "Pick up from branch",
     "dineIn": "Dine-in",
-    "defaultBranch": "Al-Nakheel Branch"
+    "defaultBranch": "Al-Nakheel Branch",
+    "deliveryTo": "Delivery to",
+    "noAddressSelected": "No address selected",
+    "edit": "Edit"
+  },
+  "Order": {
+    "orderType": "Order Type",
+    "selectOrderType": "Select order type",
+    "delivery": "Deliver to my location",
+    "dineIn": "Dine-in at branch",
+    "pickup": "Pickup from branch",
+    "carPickup": "Car pickup soon",
+    "deliveryAddress": "Delivery Address",
+    "addAddress": "Add Address",
+    "selectOrderTime": "Select order time",
+    "now": "Now",
+    "later": "Later",
+    "change": "Change",
+    "edit": "Edit",
+    "save": "Save",
+    "close": "Close"
+  },
+  "Address": {
+    "addNewAddress": "Add New Address",
+    "editAddress": "Edit Address",
+    "searchAddress": "Search Address",
+    "searchPlaceholder": "Al Yarmouk, Al Najah Street...",
+    "addressDetails": "Address Details",
+    "addressName": "Address Name",
+    "addressNamePlaceholder": "Home",
+    "addressNotes": "Note on Address",
+    "addressNotesPlaceholder": "Red building, second floor, apartment number 5",
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close"
   },
   "Footer": {
     "description": "At our restaurant, we offer a dining experience that combines high quality and distinct taste, using the best fresh ingredients under the supervision of a specialized team to ensure the highest standards of hygiene and quality.",
