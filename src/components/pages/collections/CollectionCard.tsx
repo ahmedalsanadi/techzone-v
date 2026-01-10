@@ -38,7 +38,7 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
             className="group outline-none flex flex-col items-center w-[85px] md:w-[110px] shrink-0 cursor-pointer">
             <div
                 className={cn(
-                    'w-full aspect-4/5 md:aspect-square flex flex-col items-center justify-center gap-2 p-3 transition-all duration-300 rounded-2xl relative',
+                    'w-full h-full aspect-4/5 md:aspect-square flex flex-col items-center justify-center gap-2 p-3 transition-all duration-300 rounded-2xl relative',
                     isSelected
                         ? 'bg-white border-2 border-[#B44734] shadow-xl -translate-y-1'
                         : 'bg-gray-100 border border-gray-200 group-hover:bg-gray-50 group-hover:border-[#B44734]/30 group-hover:shadow-md',

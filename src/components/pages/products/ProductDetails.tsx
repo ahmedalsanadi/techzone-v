@@ -118,6 +118,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 categoryId: product.categories[0]?.id.toString() || '',
                 metadata: {
                     productId: product.id,
+                    productSlug: product.slug, // Store slug for navigation
                     addons: selectedAddons, // Keep IDs for reference
                     addonDetails, // Add names for display
                     notes,

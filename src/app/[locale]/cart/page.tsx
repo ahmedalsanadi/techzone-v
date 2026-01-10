@@ -58,110 +58,221 @@ const CartPage = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                 {/* Items List */}
                 <div className="lg:col-span-2 space-y-4">
-                    {items.map((item) => (
-                        <div
-                            key={item.id}
-                            className="bg-white border border-gray-100 p-4 md:p-6 rounded-3xl flex items-center gap-4 md:gap-6 shadow-sm hover:shadow-md transition-shadow">
-                            <div className="relative w-20 h-20 md:w-28 md:h-28 bg-gray-50 rounded-2xl overflow-hidden shrink-0">
-                                <Image
-                                    src={item.image}
-                                    alt={item.name}
-                                    fill
-                                    className="object-contain p-2"
-                                />
-                            </div>
+                    {items.map((item) => {
+                        const productSlug = item.metadata?.productSlug;
+                        const productUrl = productSlug
+                            ? `/products/${productSlug}`
+                            : null;
 
-                            <div className="flex-1 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                <div className="flex-1">
-                                    <h3 className="font-bold text-gray-900 text-lg md:text-xl">
-                                        {item.name}
-                                    </h3>
-                                    {item.metadata?.variety && (
-                                        <p className="text-sm text-gray-400 font-medium -mt-1">
-                                            {item.metadata.variety.name}
-                                        </p>
-                                    )}
+                        return (
+                            <div
+                                key={item.id}
+                                className="bg-white border border-gray-100 p-4 md:p-6 rounded-3xl flex items-center gap-4 md:gap-6 shadow-sm hover:shadow-md transition-shadow">
+                                {/* Product Image - Clickable */}
+                                {productUrl ? (
+                                    <Link
+                                        href={productUrl}
+                                        className="relative w-20 h-20 md:w-28 md:h-28 bg-gray-50 rounded-2xl overflow-hidden shrink-0 hover:opacity-90 transition-opacity">
+                                        <Image
+                                            src={item.image}
+                                            alt={item.name}
+                                            fill
+                                            className="object-contain p-2"
+                                        />
+                                    </Link>
+                                ) : (
+                                    <div className="relative w-20 h-20 md:w-28 md:h-28 bg-gray-50 rounded-2xl overflow-hidden shrink-0">
+                                        <Image
+                                            src={item.image}
+                                            alt={item.name}
+                                            fill
+                                            className="object-contain p-2"
+                                        />
+                                    </div>
+                                )}
 
-                                    {/* Display Addons */}
-                                    {item.metadata?.addonDetails &&
-                                        item.metadata.addonDetails.length > 0 && (
-                                            <div className="mt-2 space-y-1">
-                                                {item.metadata.addonDetails.map(
-                                                    (addonGroup: any, idx: number) => (
-                                                        <div
-                                                            key={idx}
-                                                            className="text-xs text-gray-600">
-                                                            <span className="font-semibold text-gray-700">
-                                                                {addonGroup.groupName}:
-                                                            </span>{' '}
-                                                            {addonGroup.items
-                                                                .map(
-                                                                    (item: any) =>
-                                                                        `${item.name}${
-                                                                            item.quantity >
-                                                                            1
-                                                                                ? ` (x${item.quantity})`
-                                                                                : ''
-                                                                        }`,
-                                                                )
-                                                                .join(', ')}
-                                                        </div>
-                                                    ),
+                                <div className="flex-1 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                    {/* Product Info - Clickable */}
+                                    {productUrl ? (
+                                        <Link
+                                            href={productUrl}
+                                            className="flex-1 hover:opacity-80 transition-opacity cursor-pointer">
+                                            <h3 className="font-bold text-gray-900 text-lg md:text-xl">
+                                                {item.name}
+                                            </h3>
+                                            {item.metadata?.variety && (
+                                                <p className="text-sm text-gray-400 font-medium -mt-1">
+                                                    {item.metadata.variety.name}
+                                                </p>
+                                            )}
+
+                                            {/* Display Addons */}
+                                            {item.metadata?.addonDetails &&
+                                                item.metadata.addonDetails.length >
+                                                    0 && (
+                                                    <div className="mt-2 space-y-1">
+                                                        {item.metadata.addonDetails.map(
+                                                            (
+                                                                addonGroup: any,
+                                                                idx: number,
+                                                            ) => (
+                                                                <div
+                                                                    key={idx}
+                                                                    className="text-xs text-gray-600">
+                                                                    <span className="font-semibold text-gray-700">
+                                                                        {
+                                                                            addonGroup.groupName
+                                                                        }:
+                                                                    </span>{' '}
+                                                                    {addonGroup.items
+                                                                        .map(
+                                                                            (
+                                                                                item: any,
+                                                                            ) =>
+                                                                                `${item.name}${
+                                                                                    item.quantity >
+                                                                                    1
+                                                                                        ? ` (x${item.quantity})`
+                                                                                        : ''
+                                                                                }`,
+                                                                        )
+                                                                        .join(
+                                                                            ', ',
+                                                                        )}
+                                                                </div>
+                                                            ),
+                                                        )}
+                                                    </div>
                                                 )}
-                                            </div>
-                                        )}
 
-                                    {/* Display Notes */}
-                                    {item.metadata?.notes && (
-                                        <div className="mt-2 text-xs text-gray-500 italic">
-                                            {t('notes')}: {item.metadata.notes}
+                                            {/* Display Notes */}
+                                            {item.metadata?.notes && (
+                                                <div className="mt-2 text-xs text-gray-500 italic">
+                                                    {t('notes')}:{' '}
+                                                    {item.metadata.notes}
+                                                </div>
+                                            )}
+
+                                            <div className="flex items-center gap-1 mt-1 text-[#B44734] font-black">
+                                                <span>
+                                                    {item.price *
+                                                        item.quantity}
+                                                </span>
+                                                <CurrencySymbol className="w-3.5 h-3.5" />
+                                            </div>
+                                        </Link>
+                                    ) : (
+                                        <div className="flex-1">
+                                            <h3 className="font-bold text-gray-900 text-lg md:text-xl">
+                                                {item.name}
+                                            </h3>
+                                            {item.metadata?.variety && (
+                                                <p className="text-sm text-gray-400 font-medium -mt-1">
+                                                    {item.metadata.variety.name}
+                                                </p>
+                                            )}
+
+                                            {/* Display Addons */}
+                                            {item.metadata?.addonDetails &&
+                                                item.metadata.addonDetails.length >
+                                                    0 && (
+                                                    <div className="mt-2 space-y-1">
+                                                        {item.metadata.addonDetails.map(
+                                                            (
+                                                                addonGroup: any,
+                                                                idx: number,
+                                                            ) => (
+                                                                <div
+                                                                    key={idx}
+                                                                    className="text-xs text-gray-600">
+                                                                    <span className="font-semibold text-gray-700">
+                                                                        {
+                                                                            addonGroup.groupName
+                                                                        }:
+                                                                    </span>{' '}
+                                                                    {addonGroup.items
+                                                                        .map(
+                                                                            (
+                                                                                item: any,
+                                                                            ) =>
+                                                                                `${item.name}${
+                                                                                    item.quantity >
+                                                                                    1
+                                                                                        ? ` (x${item.quantity})`
+                                                                                        : ''
+                                                                                }`,
+                                                                        )
+                                                                        .join(
+                                                                            ', ',
+                                                                        )}
+                                                                </div>
+                                                            ),
+                                                        )}
+                                                    </div>
+                                                )}
+
+                                            {/* Display Notes */}
+                                            {item.metadata?.notes && (
+                                                <div className="mt-2 text-xs text-gray-500 italic">
+                                                    {t('notes')}:{' '}
+                                                    {item.metadata.notes}
+                                                </div>
+                                            )}
+
+                                            <div className="flex items-center gap-1 mt-1 text-[#B44734] font-black">
+                                                <span>
+                                                    {item.price *
+                                                        item.quantity}
+                                                </span>
+                                                <CurrencySymbol className="w-3.5 h-3.5" />
+                                            </div>
                                         </div>
                                     )}
 
-                                    <div className="flex items-center gap-1 mt-1 text-[#B44734] font-black">
-                                        <span>
-                                            {item.price * item.quantity}
-                                        </span>
-                                        <CurrencySymbol className="w-3.5 h-3.5" />
-                                    </div>
-                                </div>
+                                    <div
+                                        className="flex items-center gap-4"
+                                        onClick={(e) => e.stopPropagation()}>
+                                        <div className="flex items-center bg-gray-50 rounded-xl border border-gray-100 p-1">
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    updateQuantity(
+                                                        item.id,
+                                                        item.quantity - 1,
+                                                    );
+                                                }}
+                                                className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-[#B44734] transition-colors">
+                                                <Minus size={16} />
+                                            </button>
+                                            <span className="w-10 text-center font-bold text-gray-900">
+                                                {item.quantity}
+                                            </span>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    updateQuantity(
+                                                        item.id,
+                                                        item.quantity + 1,
+                                                    );
+                                                }}
+                                                className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-[#B44734] transition-colors">
+                                                <Plus size={16} />
+                                            </button>
+                                        </div>
 
-                                <div className="flex items-center gap-4">
-                                    <div className="flex items-center bg-gray-50 rounded-xl border border-gray-100 p-1">
                                         <button
-                                            onClick={() =>
-                                                updateQuantity(
-                                                    item.id,
-                                                    item.quantity - 1,
-                                                )
-                                            }
-                                            className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-[#B44734] transition-colors">
-                                            <Minus size={16} />
-                                        </button>
-                                        <span className="w-10 text-center font-bold text-gray-900">
-                                            {item.quantity}
-                                        </span>
-                                        <button
-                                            onClick={() =>
-                                                updateQuantity(
-                                                    item.id,
-                                                    item.quantity + 1,
-                                                )
-                                            }
-                                            className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-[#B44734] transition-colors">
-                                            <Plus size={16} />
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                removeItem(item.id);
+                                            }}
+                                            className="text-gray-300 hover:text-red-500 transition-colors p-2">
+                                            <Trash2 size={20} />
                                         </button>
                                     </div>
-
-                                    <button
-                                        onClick={() => removeItem(item.id)}
-                                        className="text-gray-300 hover:text-red-500 transition-colors p-2">
-                                        <Trash2 size={20} />
-                                    </button>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
 
                 {/* Summary */}

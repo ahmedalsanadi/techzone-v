@@ -283,3 +283,56 @@
 .animate-loading-progress {
     animation: loading-progress 2s ease-in-out infinite;
 }
+
+/* Custom Toaster Styles */
+.toaster [data-sonner-toast] {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+    padding: 16px !important;
+}
+
+.toaster [data-sonner-toast] [data-icon] {
+    margin-top: 2px !important;
+    flex-shrink: 0 !important;
+}
+
+.toaster [data-sonner-toast] [data-content] {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    min-width: 0 !important;
+}
+
+.toaster [data-sonner-toast] [data-title] {
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+    color: #22c55e !important;
+    margin: 0 !important;
+}
+
+.toaster [data-sonner-toast] [data-description] {
+    font-size: 13px !important;
+    line-height: 1.4 !important;
+    color: #22c55e !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+}
+
+.toaster [data-sonner-toast] [data-button] {
+    margin-top: 8px !important;
+    align-self: flex-start !important;
+}
+
+/* RTL Support */
+[dir='rtl'] .toaster [data-sonner-toast] {
+    text-align: right !important;
+}
+
+[dir='ltr'] .toaster [data-sonner-toast] {
+    text-align: left !important;
+}

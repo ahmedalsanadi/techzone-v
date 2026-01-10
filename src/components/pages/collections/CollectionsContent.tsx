@@ -178,7 +178,7 @@ const CollectionsContent: React.FC<CollectionsContentProps> = ({
                 {!collectionsError && (
                     <div>
                         {isLoadingCollections ? (
-                            <div className="flex flex-wrap gap-2 md:gap-3">
+                            <div className="flex flex-wrap items-stretch gap-2 md:gap-3">
                                 {Array.from({ length: 5 }).map((_, i) => (
                                     <div
                                         key={i}
@@ -193,7 +193,7 @@ const CollectionsContent: React.FC<CollectionsContentProps> = ({
                                 </p>
                             </div>
                         ) : (
-                            <div className="flex flex-wrap gap-2 md:gap-3">
+                            <div className="flex flex-wrap items-stretch gap-2 md:gap-3">
                                 {uniqueCollections.map((collection) => (
                                     <CollectionCard
                                         key={collection.id}
