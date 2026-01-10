@@ -1,4 +1,3 @@
-
 //src/services/api.ts
 import { env } from '@/config/env';
 import { ApiResponse } from './types';
@@ -108,16 +107,29 @@ export async function fetchLiberoFull<T>(
         }
 
         return result;
-    } catch (error: any) {
+    } catch (error: unknown) {
         clearTimeout(timeoutId);
         if (error instanceof ApiError) throw error;
-        
-        if (error.name === 'AbortError') {
-            console.error(`[API Timeout] ${endpoint}: Request took too long`);
-            throw new ApiError(504, 'Request timed out - the server is taking too long to respond');
+
+        if (error instanceof Error && error.name === 'AbortError') {
+            // Timeouts are handled gracefully by React Query with retry logic
+            // No need to log to console - React Query will show user-friendly error messages
+            // This keeps console clean for presentations
+            throw new ApiError(
+                504,
+                'Request timed out - the server is taking too long to respond',
+            );
         }
 
-        console.error(`[API Error] ${endpoint}:`, error);
-        throw new ApiError(500, 'Network error or server unavailable');
+        // Only log unexpected errors (not timeouts) in development
+        if (process.env.NODE_ENV === 'development') {
+            console.error(`[API Error] ${endpoint}:`, error);
+        }
+        throw new ApiError(
+            500,
+            error instanceof Error
+                ? error.message
+                : 'Network error or server unavailable',
+        );
     }
 }
