@@ -38,6 +38,9 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
     const [showAddressModal, setShowAddressModal] = useState(false);
     const [editingAddress, setEditingAddress] =
         useState<DeliveryAddress | null>(null);
+    const [showDateTimePicker, setShowDateTimePicker] = useState(false);
+    const [tempDate, setTempDate] = useState('');
+    const [tempTime, setTempTime] = useState('');
     const modalRef = useRef<HTMLDivElement>(null);
     const closeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -97,6 +100,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
         setOrderTime(time);
         if (time === 'now') {
             setScheduledTime(null);
+            setShowDateTimePicker(false);
         } else if (!scheduledTime) {
             // Set default to tomorrow at 4:30 PM
             const tomorrow = new Date();
@@ -104,6 +108,57 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
             tomorrow.setHours(16, 30, 0, 0);
             setScheduledTime(tomorrow);
         }
+    };
+
+    // Initialize temp date/time when opening picker
+    const openDateTimePicker = () => {
+        if (scheduledTime) {
+            const date =
+                scheduledTime instanceof Date
+                    ? scheduledTime
+                    : new Date(scheduledTime);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+
+            setTempDate(`${year}-${month}-${day}`);
+            setTempTime(`${hours}:${minutes}`);
+        } else {
+            // Default to tomorrow at 4:30 PM
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const year = tomorrow.getFullYear();
+            const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
+            const day = String(tomorrow.getDate()).padStart(2, '0');
+
+            setTempDate(`${year}-${month}-${day}`);
+            setTempTime('16:30');
+        }
+        setShowDateTimePicker(true);
+    };
+
+    const handleDateTimeSave = () => {
+        if (tempDate && tempTime) {
+            const [hours, minutes] = tempTime.split(':').map(Number);
+            const selectedDate = new Date(tempDate);
+            selectedDate.setHours(hours, minutes, 0, 0);
+
+            // Ensure the date is in the future
+            const now = new Date();
+            if (selectedDate <= now) {
+                // If selected time is in the past, set to tomorrow at the selected time
+                selectedDate.setDate(selectedDate.getDate() + 1);
+            }
+
+            setScheduledTime(selectedDate);
+            setShowDateTimePicker(false);
+        }
+    };
+
+    const handleDateTimeCancel = () => {
+        setShowDateTimePicker(false);
     };
 
     const formatScheduledTime = (date: Date) => {
@@ -269,21 +324,113 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                             </div>
 
                             {/* Scheduled Time Display */}
-                            {orderTime === 'later' && scheduledTime && (
-                                <div className="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-200 flex items-center gap-3">
-                                    <Clock className="w-5 h-5 text-libero-red shrink-0" />
-                                    <p className="text-sm text-gray-700">
-                                        {formatScheduledTime(scheduledTime)}
-                                    </p>
-                                    <button
-                                        onClick={() => {
-                                            // TODO: Open date/time picker
-                                            console.log('Open date picker');
-                                        }}
-                                        className="ml-auto px-4 py-2 bg-libero-red text-white text-sm font-medium rounded-lg hover:bg-libero-red/90 transition-colors">
-                                        {t('change') || 'Change'}
-                                    </button>
-                                </div>
+                            {orderTime === 'later' && (
+                                <>
+                                    {scheduledTime && !showDateTimePicker && (
+                                        <div className="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-200 flex items-center gap-3">
+                                            <Clock className="w-5 h-5 text-libero-red shrink-0" />
+                                            <p className="text-sm text-gray-700">
+                                                {formatScheduledTime(
+                                                    scheduledTime,
+                                                )}
+                                            </p>
+                                            <button
+                                                onClick={openDateTimePicker}
+                                                className="ml-auto px-4 py-2 bg-libero-red text-white text-sm font-medium rounded-lg hover:bg-libero-red/90 transition-colors">
+                                                {t('change') || 'Change'}
+                                            </button>
+                                        </div>
+                                    )}
+
+                                    {/* Date/Time Picker */}
+                                    {showDateTimePicker && (
+                                        <div className="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-200 space-y-4">
+                                            <div className="flex items-center gap-3 mb-3">
+                                                <Clock className="w-5 h-5 text-libero-red shrink-0" />
+                                                <h4 className="text-sm font-semibold text-gray-900">
+                                                    {t('selectOrderTime') ||
+                                                        'Select Date & Time'}
+                                                </h4>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                                                        {t('date') || 'Date'}
+                                                    </label>
+                                                    <input
+                                                        type="date"
+                                                        value={tempDate}
+                                                        onChange={(e) =>
+                                                            setTempDate(
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                        min={
+                                                            new Date()
+                                                                .toISOString()
+                                                                .split('T')[0]
+                                                        }
+                                                        className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-libero-red focus:border-transparent"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                                                        {t('time') || 'Time'}
+                                                    </label>
+                                                    <input
+                                                        type="time"
+                                                        value={tempTime}
+                                                        onChange={(e) =>
+                                                            setTempTime(
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                        className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-libero-red focus:border-transparent"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center justify-end gap-3 pt-2">
+                                                <button
+                                                    onClick={
+                                                        handleDateTimeCancel
+                                                    }
+                                                    className="px-4 py-2 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-100 transition-colors">
+                                                    {t('cancel') || 'Cancel'}
+                                                </button>
+                                                <button
+                                                    onClick={handleDateTimeSave}
+                                                    disabled={
+                                                        !tempDate || !tempTime
+                                                    }
+                                                    className={cn(
+                                                        'px-4 py-2 text-white text-sm font-medium rounded-lg transition-colors',
+                                                        tempDate && tempTime
+                                                            ? 'bg-libero-red hover:bg-libero-red/90'
+                                                            : 'bg-gray-300 cursor-not-allowed',
+                                                    )}>
+                                                    {t('save') || 'Save'}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {!scheduledTime && !showDateTimePicker && (
+                                        <div className="mt-4 p-4 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+                                            <p className="text-sm text-gray-600 text-center mb-3">
+                                                {t('selectDateTime') ||
+                                                    'Please select a date and time'}
+                                            </p>
+                                            <button
+                                                onClick={openDateTimePicker}
+                                                className="w-full px-4 py-2 bg-libero-red text-white text-sm font-medium rounded-lg hover:bg-libero-red/90 transition-colors">
+                                                {t('selectDateTime') ||
+                                                    'Select Date & Time'}
+                                            </button>
+                                        </div>
+                                    )}
+                                </>
                             )}
                         </div>
                     </div>

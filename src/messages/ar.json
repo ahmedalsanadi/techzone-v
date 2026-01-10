@@ -55,7 +55,11 @@
     "change": "تغيير",
     "edit": "تعديل",
     "save": "حفظ",
-    "close": "إغلاق"
+    "close": "إغلاق",
+    "cancel": "إلغاء",
+    "date": "التاريخ",
+    "time": "الوقت",
+    "selectDateTime": "حدد التاريخ والوقت"
   },
   "Address": {
     "addNewAddress": "إضافة عنوان جديد",

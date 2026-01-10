@@ -55,7 +55,11 @@
     "change": "Change",
     "edit": "Edit",
     "save": "Save",
-    "close": "Close"
+    "close": "Close",
+    "cancel": "Cancel",
+    "date": "Date",
+    "time": "Time",
+    "selectDateTime": "Select Date & Time"
   },
   "Address": {
     "addNewAddress": "Add New Address",
