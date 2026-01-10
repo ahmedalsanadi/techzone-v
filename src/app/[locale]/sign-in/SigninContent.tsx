@@ -1,31 +1,29 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
-import { cn } from '@/lib/utils';
 import { StoreConfig } from '@/services/types';
 import AuthContainer from '@/components/auth/AuthContainer';
+import { useRouter } from '@/i18n/navigation';
 
-interface SignupContentProps {
+interface SigninContentProps {
     config: StoreConfig;
     locale: string;
 }
 
-export default function SignupContent({ config, locale }: SignupContentProps) {
-    const t = useTranslations('Signup');
-    const isArabic = locale === 'ar';
-    const [step, setStep] = useState<'register' | 'otp'>('register');
+export default function SigninContent({ config, locale }: SigninContentProps) {
+    const t = useTranslations('Signin');
+    const router = useRouter();
+    const [step, setStep] = useState<'login' | 'otp'>('login');
     const [formData, setFormData] = useState({
-        name: '',
         phone: '',
-        email: '',
     });
+    const [otp, setOtp] = useState<string[]>(['', '', '', '']);
+    const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-    const primaryColor = config.theme.primary_color || '#B44734';
-
-    const handleRegisterSubmit = (e: React.FormEvent) => {
+    const handleLoginSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setStep('otp');
     };
@@ -35,54 +33,83 @@ export default function SignupContent({ config, locale }: SignupContentProps) {
         // Frontend only logic as requested
     };
 
+    // Auto-focus first OTP input when OTP step is shown
+    useEffect(() => {
+        if (step === 'otp' && otpRefs.current[0]) {
+            otpRefs.current[0]?.focus();
+        }
+    }, [step]);
+
+    const handleOtpChange = (index: number, value: string) => {
+        // Only allow digits
+        if (value && !/^\d$/.test(value)) {
+            return;
+        }
+
+        const newOtp = [...otp];
+        newOtp[index] = value;
+        setOtp(newOtp);
+
+        // Move to next field if value is entered
+        if (value && index < 3) {
+            otpRefs.current[index + 1]?.focus();
+        }
+    };
+
+    const handleOtpKeyDown = (
+        index: number,
+        e: React.KeyboardEvent<HTMLInputElement>,
+    ) => {
+        // Handle backspace
+        if (e.key === 'Backspace' && !otp[index] && index > 0) {
+            otpRefs.current[index - 1]?.focus();
+        }
+    };
+
+    const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        const pastedData = e.clipboardData.getData('text').trim();
+        const digits = pastedData.match(/\d/g) || [];
+
+        if (digits.length > 0) {
+            const newOtp = [...otp];
+            digits.slice(0, 4).forEach((digit, idx) => {
+                if (idx < 4) {
+                    newOtp[idx] = digit;
+                }
+            });
+            setOtp(newOtp);
+
+            // Focus the next empty field or the last field
+            const nextEmptyIndex = newOtp.findIndex((val) => !val);
+            const focusIndex = nextEmptyIndex === -1 ? 3 : nextEmptyIndex;
+            otpRefs.current[focusIndex]?.focus();
+        }
+    };
+
     return (
         <AuthContainer
             config={config}
             locale={locale}
-            title={step === 'register' ? t('title') : t('otpTitle')}
-            onBack={step === 'otp' ? () => setStep('register') : undefined}>
-            {step === 'register' ? (
+            title={step === 'login' ? t('title') : t('otpTitle')}
+            onBack={step === 'otp' ? () => setStep('login') : undefined}>
+            {step === 'login' ? (
                 <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <p className="text-xl font-black text-[#2D3142] text-start">
-                        {t('subtitle')}
-                    </p>
-
-                    <form onSubmit={handleRegisterSubmit} className="space-y-6">
-                        {/* Name Input */}
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold text-gray-400 block text-start">
-                                {t('name')}
-                            </label>
-                            <input
-                                type="text"
-                                required
-                                placeholder="محمد عبدالله"
-                                className="w-full h-16 px-6 rounded-2xl bg-[#F4F7FA] border border-[#E2E8F0] focus:border-[#B44734]/30 focus:ring-4 focus:ring-[#B44734]/5 outline-none transition-all font-bold text-lg text-[#2D3142] text-start"
-                                value={formData.name}
-                                onChange={(e) =>
-                                    setFormData({
-                                        ...formData,
-                                        name: e.target.value,
-                                    })
-                                }
-                            />
-                        </div>
-
+                    <form onSubmit={handleLoginSubmit} className="space-y-6">
                         {/* Phone Input */}
                         <div className="space-y-2">
                             <label className="text-xs font-bold text-gray-400 block text-start">
-                                {t('phone')}{' '}
-                                <span className="text-red-500">*</span>
+                                {t('phone')}
                             </label>
                             <div className="relative group">
-                                <div
-                                    className=
-                                        "absolute top-1/2 -translate-y-1/2 flex items-center gap-3 px-4 h-10 start-0">
+                                <div className="absolute top-1/2 -translate-y-1/2 flex items-center gap-3 px-4 h-10 start-0">
                                     <div className="w-8 h-5 relative rounded-sm overflow-hidden shadow-sm border border-gray-100">
-                                        <img
+                                        <Image
                                             src="https://flagcdn.com/w40/sa.png"
                                             alt="SA"
-                                            className="w-full h-full object-cover"
+                                            width={32}
+                                            height={20}
+                                            className="object-cover"
                                         />
                                     </div>
                                     <span
@@ -95,8 +122,7 @@ export default function SignupContent({ config, locale }: SignupContentProps) {
                                     type="tel"
                                     required
                                     placeholder="50 123 4567"
-                                    className=
-                                        'w-full h-16 rounded-2xl bg-[#DCE2E9] border border-[#E2E8F0] focus:border-[#B44734]/30 focus:ring-4 focus:ring-[#B44734]/5 outline-none transition-all font-bold text-lg text-gray-500 text-start ps-36'
+                                    className="w-full h-16 rounded-2xl bg-[#F4F7FA] border border-[#E2E8F0] focus:border-[#B44734]/30 focus:ring-4 focus:ring-[#B44734]/5 outline-none transition-all font-bold text-lg text-[#2D3142] text-start ps-36"
                                     value={formData.phone}
                                     onChange={(e) =>
                                         setFormData({
@@ -108,33 +134,20 @@ export default function SignupContent({ config, locale }: SignupContentProps) {
                             </div>
                         </div>
 
-                        {/* Email Input */}
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold text-gray-400 block text-start">
-                                {t('email')}
-                            </label>
-                            <input
-                                type="email"
-                                placeholder="someone@gmail.com"
-                                className="w-full h-16 px-6 rounded-2xl bg-[#F4F7FA] border border-[#E2E8F0] focus:border-[#B44734]/30 focus:ring-4 focus:ring-[#B44734]/5 outline-none transition-all font-bold text-lg text-[#2D3142] text-start"
-                                value={formData.email}
-                                onChange={(e) =>
-                                    setFormData({
-                                        ...formData,
-                                        email: e.target.value,
-                                    })
-                                }
-                            />
+                        {/* Terms and Conditions */}
+                        <div className="text-sm text-[#2D3142] text-start">
+                            {t('termsText')}{' '}
+                            <button
+                                type="button"
+                                onClick={() => router.push('/terms')}
+                                className="text-libero-red font-bold hover:underline">
+                                {t('termsLink')}
+                            </button>
                         </div>
 
                         <Button
                             type="submit"
-                            className="w-full h-16 rounded-2xl text-white font-black text-2xl shadow-xl transition-all active:scale-[0.98] mt-6 bg-libero-red shadow-libero-red/20"
-                                // style={{
-                                //     backgroundColor: primaryColor,
-                                //     boxShadow: `0 12px 24px -8px ${primaryColor}88`,
-                                // }} 
-                                >
+                            className="w-full h-16 rounded-2xl text-white font-black text-2xl shadow-xl transition-all active:scale-[0.98] mt-6 bg-libero-red shadow-libero-red/20">
                             {t('submit')}
                         </Button>
                     </form>
@@ -148,19 +161,31 @@ export default function SignupContent({ config, locale }: SignupContentProps) {
                         <p
                             className="text-2xl font-black text-[#2D3142]"
                             dir="ltr">
-                            +96655471****
+                            +966{formData.phone.replace(/\d(?=\d{4})/g, '*')}
                         </p>
                     </div>
 
                     <form onSubmit={handleOtpSubmit} className="space-y-12">
                         {/* OTP Code Inputs */}
                         <div className="flex justify-between gap-4">
-                            {[1, 2, 3, 4].map((i) => (
+                            {[0, 1, 2, 3].map((index) => (
                                 <input
-                                    key={i}
+                                    key={index}
+                                    ref={(el) => {
+                                        otpRefs.current[index] = el;
+                                    }}
                                     type="text"
+                                    inputMode="numeric"
                                     maxLength={1}
                                     placeholder="-"
+                                    value={otp[index]}
+                                    onChange={(e) =>
+                                        handleOtpChange(index, e.target.value)
+                                    }
+                                    onKeyDown={(e) =>
+                                        handleOtpKeyDown(index, e)
+                                    }
+                                    onPaste={handleOtpPaste}
                                     className="w-20 h-20 text-center text-3xl font-black rounded-2xl bg-white border border-[#E2E8F0] focus:border-[#B44734]/30 focus:ring-4 focus:ring-[#B44734]/5 outline-none transition-all shadow-sm text-gray-400 placeholder:text-gray-300"
                                 />
                             ))}
@@ -169,12 +194,7 @@ export default function SignupContent({ config, locale }: SignupContentProps) {
                         <div className="space-y-6">
                             <Button
                                 type="submit"
-                                className="w-full h-16 rounded-2xl text-white font-black text-2xl shadow-xl transition-all active:scale-[0.98] bg-libero-red"
-                                // style={{
-                                //     backgroundColor: primaryColor,
-                                //     boxShadow: `0 12px 24px -8px ${primaryColor}88`,
-                                // }}
-                                >
+                                className="w-full h-16 rounded-2xl text-white font-black text-2xl shadow-xl transition-all active:scale-[0.98] bg-libero-red">
                                 {t('continue')}
                             </Button>
 

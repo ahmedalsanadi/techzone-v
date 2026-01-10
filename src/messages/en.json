@@ -254,6 +254,18 @@
     "timer": "00:30",
     "poweredBy": "Powered by"
   },
+  "Signin": {
+    "title": "Login",
+    "phone": "Phone Number",
+    "termsText": "By clicking login, you agree to",
+    "termsLink": "Terms and Conditions",
+    "submit": "Login",
+    "otpTitle": "Verify Phone Number",
+    "otpSubtitle": "Enter the verification code sent to your phone number:",
+    "continue": "Continue",
+    "resend": "Didn't receive the code?",
+    "timer": "00:30"
+  },
   "Branches": {
     "select_branch": "Select the branch you want",
     "open": "Open",
@@ -294,5 +306,42 @@
     "noCollections": "No collections available at the moment",
     "errorLoadingCollections": "Failed to load collections. Please try again later.",
     "home": "Home"
+  },
+  "Terms": {
+    "title": "Terms and Conditions",
+    "description": "Terms and conditions for using Fasto platform",
+    "lastUpdated": "Last updated: November 25, 2025",
+    "home": "Home",
+    "introduction": "Welcome to Fasto. Please read these terms and conditions carefully before using our services. By using our website or application, you agree to be bound by these terms and conditions.",
+    "sections": {
+      "acceptance": {
+        "title": "Acceptance of Terms",
+        "content": "By using our services, you acknowledge and agree that you have read, understood, and agree to be bound by all the terms and conditions contained in this document. If you do not agree to any of these terms, please do not use our services."
+      },
+      "orders": {
+        "title": "Orders",
+        "content": "All orders are subject to availability and approval. We reserve the right to refuse or cancel any order for any reason. In case of order cancellation after payment, a full refund will be processed within 5-7 business days."
+      },
+      "payment": {
+        "title": "Payment",
+        "content": "We accept all payment methods available on the platform. All transactions are secure and encrypted. Prices displayed include VAT. We reserve the right to change prices at any time without prior notice."
+      },
+      "delivery": {
+        "title": "Delivery",
+        "content": "We provide delivery service to all specified areas. Estimated delivery time ranges from 30-60 minutes depending on location and traffic. Delivery fees may vary by area. Free delivery for orders over 100 Saudi Riyals."
+      },
+      "returns": {
+        "title": "Returns and Exchanges",
+        "content": "Products can be returned or exchanged within 24 hours of receipt provided they are in their original condition. Consumed food products are not returnable. For return inquiries, please contact customer service."
+      },
+      "privacy": {
+        "title": "Privacy",
+        "content": "We are committed to protecting your privacy. All personal data we collect is protected in accordance with the Personal Data Protection Law. We will not share your information with third parties without your explicit consent."
+      }
+    },
+    "contact": {
+      "title": "Contact Us",
+      "content": "If you have any questions about these terms and conditions, please contact us through our contact page or email: contact@fasto.sa"
+    }
   }
 }

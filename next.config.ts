@@ -18,6 +18,10 @@ const nextConfig: NextConfig = {
                 protocol: 'https',
                 hostname: 'dashboard.libro-shop.com',
             },
+            {
+                protocol: 'https',
+                hostname: 'flagcdn.com',
+            },
         ],
     },
 };

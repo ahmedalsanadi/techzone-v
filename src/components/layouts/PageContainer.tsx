@@ -22,7 +22,10 @@ export default function PageContainer({
         setMobileMenuOpen(false);
     }, [pathname, setMobileMenuOpen]);
 
-    const isAuthPage = pathname?.includes('/signup');
+    const isAuthPage =
+        pathname?.includes('/signup') ||
+        pathname?.includes('/signin') ||
+        pathname?.includes('/sign-in');
 
     if (isAuthPage) {
         return (

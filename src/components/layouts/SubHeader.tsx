@@ -115,7 +115,7 @@ export default function SubHeader() {
                             </>
                         ) : (
                             // Show order type selection buttons on right when no address saved
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 flex-row-reverse">
                                 {orderTypes.map((type) => (
                                     <button
                                         key={type.id}
@@ -194,7 +194,7 @@ export default function SubHeader() {
 
                     {/* Order Type Selection Buttons - Show when no address saved */}
                     {(!deliveryAddress || activeOrderType !== 'delivery') && (
-                        <div className="w-full bg-white/10 p-1 rounded-xl border border-white/10 backdrop-blur-sm flex items-center">
+                        <div className="w-full bg-white/10 p-1 rounded-xl border border-white/10 backdrop-blur-sm flex items-center flex-row-reverse">
                             {orderTypes.map((type) => (
                                 <button
                                     key={type.id}

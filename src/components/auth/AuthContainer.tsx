@@ -73,7 +73,8 @@ export default function AuthContainer({
             {/* Right Side - Branding */}
             <div
                 className="hidden lg:flex w-[40%] flex-col items-center justify-center p-12 text-white relative overflow-hidden bg-libero-red"
-                style={{ backgroundColor: primaryColor }}>
+                // style={{ backgroundColor: primaryColor }} 
+                >
                 <div className="relative z-10 flex flex-col items-center">
                     <div className="mb-8">
                         <Image
