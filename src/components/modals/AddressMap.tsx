@@ -4,6 +4,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { DEFAULT_MAP_ZOOM } from '@/config/branches';
 
 // Initialize Leaflet icons
@@ -64,6 +65,21 @@ const ChangeView = ({ center }: { center: [number, number] }) => {
     return null;
 };
 
+// Component to invalidate map size when container becomes visible
+const MapSizeInvalidator = () => {
+    const map = useMap();
+    useEffect(() => {
+        // Invalidate size after a short delay to ensure container is visible
+        const timer = setTimeout(() => {
+            if (map) {
+                map.invalidateSize();
+            }
+        }, 100);
+        return () => clearTimeout(timer);
+    }, [map]);
+    return null;
+};
+
 const AddressMap: React.FC<AddressMapProps> = ({
     center,
     onLocationSelect,
@@ -114,7 +130,8 @@ const AddressMap: React.FC<AddressMapProps> = ({
         <MapContainer
             center={center}
             zoom={DEFAULT_MAP_ZOOM}
-            className="w-full h-full rounded-2xl z-0"
+            className="w-full h-full rounded-2xl"
+            style={{ height: '100%', width: '100%', zIndex: 0 }}
             scrollWheelZoom={true}
             key={`map-${mounted}`}>
             <TileLayer
@@ -122,6 +139,7 @@ const AddressMap: React.FC<AddressMapProps> = ({
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             <ChangeView center={center} />
+            <MapSizeInvalidator />
             <MapClickHandler onLocationSelect={handleLocationSelect} />
             {selectedLocation && (
                 <Marker position={selectedLocation} />

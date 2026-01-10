@@ -90,6 +90,10 @@ const AddressModal: React.FC<AddressModalProps> = ({
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
+            // Trigger map resize after modal is fully rendered
+            setTimeout(() => {
+                window.dispatchEvent(new Event('resize'));
+            }, 300);
         } else {
             document.body.style.overflow = '';
         }
@@ -252,7 +256,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
                             </div>
 
                             {/* Right: Map */}
-                            <div className="h-[400px] lg:h-full min-h-[400px] rounded-2xl overflow-hidden">
+                            <div className="h-[400px] lg:h-[600px] min-h-[400px] rounded-2xl overflow-hidden relative">
                                 <AddressMap
                                     center={selectedLocation || DEFAULT_MAP_CENTER}
                                     onLocationSelect={handleLocationSelect}
