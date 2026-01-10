@@ -249,5 +249,16 @@
       "Friday": "Friday"
     },
     "all_day": "All Day"
+  },
+  "Collections": {
+    "title": "Special Offers & Collections",
+    "description": "Discover our exclusive collections and special offers",
+    "descriptionWithCollection": "Explore {collection} collection - exclusive offers and products",
+    "selectCollection": "Select a Collection",
+    "productsInCollection": "Products in Collection",
+    "selectCollectionToViewProducts": "Select a collection above to view products",
+    "noCollections": "No collections available at the moment",
+    "errorLoadingCollections": "Failed to load collections. Please try again later.",
+    "home": "Home"
   }
 }

@@ -7,6 +7,7 @@ import {
     PaginationMeta,
     Category,
     Branch,
+    Collection,
 } from './types';
 
 /**
@@ -127,4 +128,16 @@ export const storeService = {
     //     }>(`/store/branches/${id}/working-hours`, {
     //         next: { revalidate: 3600 },
     //     }),
+
+    /**
+     * Get all collections/offers.
+     */
+    getCollections: cache(() =>
+        fetchLibero<Collection[]>('/store/collections', {
+            next: {
+                revalidate: 3600, // Cache for 1 hour
+                tags: ['collections'],
+            },
+        }),
+    ),
 };

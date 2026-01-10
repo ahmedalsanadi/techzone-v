@@ -249,5 +249,16 @@
       "Friday": "الجمعة"
     },
     "all_day": "طوال اليوم"
+  },
+  "Collections": {
+    "title": "العروض والمجموعات الخاصة",
+    "description": "اكتشف مجموعاتنا الحصرية والعروض الخاصة",
+    "descriptionWithCollection": "استكشف مجموعة {collection} - عروض ومنتجات حصرية",
+    "selectCollection": "اختر مجموعة",
+    "productsInCollection": "المنتجات في المجموعة",
+    "selectCollectionToViewProducts": "اختر مجموعة أعلاه لعرض المنتجات",
+    "noCollections": "لا توجد مجموعات متاحة في الوقت الحالي",
+    "errorLoadingCollections": "فشل تحميل المجموعات. يرجى المحاولة مرة أخرى لاحقاً.",
+    "home": "الرئيسية"
   }
 }

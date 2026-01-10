@@ -213,3 +213,10 @@ export interface Branch {
     distance?: number; // Optional distance from user
     is_open?: boolean; // Calculated status
 }
+
+export interface Collection {
+    id: number;
+    name: string;
+    description: string;
+    image_url: string | null;
+}
