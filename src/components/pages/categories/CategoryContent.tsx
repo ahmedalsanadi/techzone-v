@@ -135,7 +135,7 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
 
             <div className="container mx-auto px-4 space-y-8 pb-20">
                 {/* Header Section */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                {/* <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <div className="space-y-4">
                         <h1 className="text-4xl md:text-5xl font-black text-gray-900 leading-tight">
                             {currentCategory?.name ||
@@ -143,7 +143,7 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
                                 'كل المنتجات'}
                         </h1>
                     </div>
-                </div>
+                </div> */}
 
                 {/* Recursive Subcategories drill-down area */}
                 {activePath.map((cat: Category, index: number) => {
