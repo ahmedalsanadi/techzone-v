@@ -27,10 +27,13 @@ import WorkingHoursModal from './WorkingHoursModal';
 import { cn } from '@/lib/utils';
 import { useRouter } from '@/i18n/navigation';
 
+// Lazy load map only when needed - don't block modal rendering
 const BranchMap = dynamic(() => import('./BranchMap'), {
     ssr: false,
     loading: () => (
-        <div className="w-full h-full bg-gray-100 animate-pulse rounded-3xl" />
+        <div className="w-full h-full bg-gray-100 animate-pulse rounded-3xl flex items-center justify-center">
+            <div className="text-sm text-gray-400">Loading map...</div>
+        </div>
     ),
 });
 
@@ -51,6 +54,8 @@ const BranchSelectionModal: React.FC = () => {
     const branchListRef = useRef<HTMLDivElement>(null);
 
     // React Query for branches with proper error handling and caching
+    // Prefetched in background by BranchModalInitializer for instant display
+    // Only fetches if data is stale or missing - uses cache otherwise
     const {
         data: branches = [],
         isLoading,
@@ -77,12 +82,19 @@ const BranchSelectionModal: React.FC = () => {
                 throw new Error('Failed to load branches');
             }
         },
-        enabled: isModalOpen, // Only fetch when modal is open
-        staleTime: 5 * 60 * 1000, // 5 minutes
-        retry: 2,
-        retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-        // Increase timeout tolerance for slow networks
-        gcTime: 10 * 60 * 1000, // 10 minutes
+        // Only fetch when modal is open AND data is stale/missing
+        // React Query automatically deduplicates requests
+        enabled: isModalOpen,
+        staleTime: 5 * 60 * 1000, // 5 minutes - data is fresh for 5 min
+        gcTime: 10 * 60 * 1000, // 10 minutes - cache for 10 min
+        retry: 1, // Reduce retries for faster failure
+        retryDelay: 1000, // Faster retry
+        // Use cached data immediately if available (from prefetch)
+        placeholderData: (previousData) => previousData,
+        // Don't refetch on window focus if data is fresh
+        refetchOnWindowFocus: false,
+        // Don't refetch on reconnect if data is fresh
+        refetchOnReconnect: false,
     });
 
     // Focus trap and keyboard navigation
@@ -425,9 +437,11 @@ const BranchSelectionModal: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Map Side */}
+                    {/* Map Side - Only load when branches are ready */}
                     <div className="flex-1 h-1/2 md:h-auto relative p-6">
-                        {!isLoading && !error && branches.length > 0 && (
+                        {branches.length > 0 ? (
+                            // Show map with branches (cached or fresh data)
+                            // Map loads asynchronously, doesn't block modal
                             <BranchMap
                                 branches={branches}
                                 selectedBranchId={selectedBranchForMap}
@@ -441,6 +455,29 @@ const BranchSelectionModal: React.FC = () => {
                                     }
                                 }}
                             />
+                        ) : isLoading ? (
+                            // Show loading state for map while initial fetch
+                            <div className="w-full h-full bg-gray-100 animate-pulse rounded-3xl flex items-center justify-center">
+                                <div className="text-sm text-gray-400">
+                                    Loading map...
+                                </div>
+                            </div>
+                        ) : error ? (
+                            // Show error state for map
+                            <div className="w-full h-full rounded-3xl border border-gray-100 bg-gray-50 flex flex-col items-center justify-center p-8">
+                                <AlertCircle className="w-12 h-12 text-gray-300 mb-4" />
+                                <p className="text-xs text-gray-500 text-center">
+                                    Map unavailable
+                                </p>
+                            </div>
+                        ) : (
+                            // Empty state
+                            <div className="w-full h-full rounded-3xl border border-gray-100 bg-gray-50 flex flex-col items-center justify-center p-8">
+                                <Building2 className="w-12 h-12 text-gray-300 mb-4" />
+                                <p className="text-xs text-gray-500 text-center">
+                                    No branches available
+                                </p>
+                            </div>
                         )}
                     </div>
                 </div>
