@@ -72,7 +72,7 @@ const CartPage = () => {
                             </div>
 
                             <div className="flex-1 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                <div>
+                                <div className="flex-1">
                                     <h3 className="font-bold text-gray-900 text-lg md:text-xl">
                                         {item.name}
                                     </h3>
@@ -81,6 +81,43 @@ const CartPage = () => {
                                             {item.metadata.variety.name}
                                         </p>
                                     )}
+
+                                    {/* Display Addons */}
+                                    {item.metadata?.addonDetails &&
+                                        item.metadata.addonDetails.length > 0 && (
+                                            <div className="mt-2 space-y-1">
+                                                {item.metadata.addonDetails.map(
+                                                    (addonGroup: any, idx: number) => (
+                                                        <div
+                                                            key={idx}
+                                                            className="text-xs text-gray-600">
+                                                            <span className="font-semibold text-gray-700">
+                                                                {addonGroup.groupName}:
+                                                            </span>{' '}
+                                                            {addonGroup.items
+                                                                .map(
+                                                                    (item: any) =>
+                                                                        `${item.name}${
+                                                                            item.quantity >
+                                                                            1
+                                                                                ? ` (x${item.quantity})`
+                                                                                : ''
+                                                                        }`,
+                                                                )
+                                                                .join(', ')}
+                                                        </div>
+                                                    ),
+                                                )}
+                                            </div>
+                                        )}
+
+                                    {/* Display Notes */}
+                                    {item.metadata?.notes && (
+                                        <div className="mt-2 text-xs text-gray-500 italic">
+                                            {t('notes')}: {item.metadata.notes}
+                                        </div>
+                                    )}
+
                                     <div className="flex items-center gap-1 mt-1 text-[#B44734] font-black">
                                         <span>
                                             {item.price * item.quantity}

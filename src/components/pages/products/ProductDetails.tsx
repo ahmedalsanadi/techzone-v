@@ -69,6 +69,46 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     };
 
     const handleAddToCart = () => {
+        // Prepare addon details with names for display in cart
+        const addonDetails: Array<{
+            groupName: string;
+            items: Array<{ name: string; quantity: number; price: number }>;
+        }> = [];
+
+        Object.entries(selectedAddons).forEach(([addonGroupId, items]) => {
+            const addonGroup = product.addons.find(
+                (a) => a.id === parseInt(addonGroupId),
+            );
+            if (!addonGroup) return;
+
+            const selectedItems: Array<{
+                name: string;
+                quantity: number;
+                price: number;
+            }> = [];
+
+            Object.entries(items).forEach(([itemId, qty]) => {
+                if (qty <= 0) return;
+                const item = addonGroup.items.find(
+                    (i) => i.id === parseInt(itemId),
+                );
+                if (!item) return;
+
+                selectedItems.push({
+                    name: item.title,
+                    quantity: qty,
+                    price: item.extra_price,
+                });
+            });
+
+            if (selectedItems.length > 0) {
+                addonDetails.push({
+                    groupName: addonGroup.name,
+                    items: selectedItems,
+                });
+            }
+        });
+
         addToCart(
             {
                 id: `${product.id}-${Date.now()}`, // Unique ID for this configuration
@@ -78,7 +118,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 categoryId: product.categories[0]?.id.toString() || '',
                 metadata: {
                     productId: product.id,
-                    addons: selectedAddons,
+                    addons: selectedAddons, // Keep IDs for reference
+                    addonDetails, // Add names for display
                     notes,
                 },
             },

@@ -210,7 +210,8 @@
     "checkout": "إتمام الطلب",
     "remove": "إزالة",
     "items": "{count} منتجات",
-    "added": "تمت إضافة {name} إلى السلة بنجاح!"
+    "added": "تمت إضافة {name} إلى السلة بنجاح!",
+    "notes": "ملاحظات"
   },
   "Category": {
     "categories": "الأقسام",

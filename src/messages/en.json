@@ -210,7 +210,8 @@
     "checkout": "Checkout",
     "remove": "Remove",
     "items": "{count} items",
-    "added": "{name} has been added to your cart!"
+    "added": "{name} has been added to your cart!",
+    "notes": "Notes"
   },
   "Category": {
     "categories": "Categories",
