@@ -1,4 +1,3 @@
-
 //src/store/useCartStore.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -10,7 +9,7 @@ export interface CartItem {
     price: number;
     quantity: number;
     categoryId: string;
-    metadata?: Record<string, unknown>;
+    metadata?: Record<string, any>;
 }
 
 interface CartStore {
