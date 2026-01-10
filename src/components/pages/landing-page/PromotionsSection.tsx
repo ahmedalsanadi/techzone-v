@@ -4,6 +4,7 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 import ProductCard from '@/components/ui/ProductCard';
 import { useCartActions } from '@/hooks/useCartActions';
+import { Link } from '@/i18n/navigation';
 
 const products = [
     {
@@ -59,9 +60,9 @@ const PromotionsSection = () => {
                 <h2 className="text-3xl font-black text-gray-900 tracking-tight">
                     {t('title')}
                 </h2>
-                <button className="bg-gray-100/80 hover:bg-gray-200 text-gray-600 px-6 py-2 rounded-xl text-sm font-bold transition-all">
+                <Link href="/products" className="bg-gray-100/80 hover:bg-gray-200 text-gray-600 px-6 py-2 rounded-xl text-sm font-bold transition-all inline-block cursor-pointer hover:text-libero-red hover:scale-105">
                     {t('more')}
-                </button>
+                </Link>
             </div>
 
             {/* Products Grid */}
