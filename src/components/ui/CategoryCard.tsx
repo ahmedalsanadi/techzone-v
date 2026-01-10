@@ -3,6 +3,7 @@ import { Link } from '@/i18n/navigation';
 import { LayoutGrid } from 'lucide-react';
 import DynamicImage from './DynamicImage';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 interface CategoryCardProps {
     label: string;
@@ -25,15 +26,16 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
     href,
     scroll = true,
 }) => {
-    // ... rest of logic
-    // Shared fallback icon
+    // Shared fallback image
     const FallbackIcon = (
-        <LayoutGrid
-            className={cn(
-                'w-1/2 h-1/2 opacity-20',
-                isActive ? 'text-[#B44734]' : 'text-gray-400',
-            )}
-        />
+        <div className="relative w-full h-full">
+            <Image
+                src="/images/images/food.png"
+                alt={label}
+                fill
+                className="object-contain opacity-60"
+            />
+        </div>
     );
 
     const content = (

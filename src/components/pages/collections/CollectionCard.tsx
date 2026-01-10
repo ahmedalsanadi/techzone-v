@@ -41,7 +41,7 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
                     'w-full aspect-4/5 md:aspect-square flex flex-col items-center justify-center gap-2 p-3 transition-all duration-300 rounded-2xl relative',
                     isSelected
                         ? 'bg-white border-2 border-[#B44734] shadow-xl -translate-y-1'
-                        : 'bg-white/40 border border-gray-100 group-hover:bg-white group-hover:border-[#B44734]/20 group-hover:shadow-lg',
+                        : 'bg-gray-100 border border-gray-200 group-hover:bg-gray-50 group-hover:border-[#B44734]/30 group-hover:shadow-md',
                 )}>
                 {/* Image/Icon */}
                 <div className="relative w-10 h-10 md:w-14 md:h-14 transition-transform group-hover:scale-110">
@@ -57,11 +57,12 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
                 {/* Text */}
                 <span
                     className={cn(
-                        'text-[11px] md:text-xs font-bold transition-colors leading-tight text-center line-clamp-2 px-1',
+                        'text-[11px] md:text-xs font-bold transition-colors leading-tight text-center line-clamp-1 px-1 truncate w-full',
                         isSelected
                             ? 'text-[#B44734]'
-                            : 'text-gray-800 group-hover:text-[#B44734]',
-                    )}>
+                            : 'text-gray-900 group-hover:text-[#B44734]',
+                    )}
+                    title={collection.name}>
                     {collection.name}
                 </span>
 
