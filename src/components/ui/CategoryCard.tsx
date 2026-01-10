@@ -84,7 +84,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
             )}>
             <div
                 className={cn(
-                    'w-full aspect-4/5 md:aspect-square flex flex-col items-center justify-center gap-2 p-3 transition-all duration-300 rounded-2xl relative',
+                    'w-full h-full aspect-4/5 md:aspect-square flex flex-col items-center justify-center gap-2 p-3 transition-all duration-300 rounded-2xl relative',
                     isActive
                         ? 'bg-white border-2 border-[#B44734] shadow-xl -translate-y-1'
                         : 'bg-white/40 border border-gray-100 group-hover:bg-white group-hover:border-[#B44734]/20 group-hover:shadow-lg',
