@@ -44,4 +44,4 @@ export const DEFAULT_MAP_ZOOM = 13;
  * Zustand persist storage version
  * Increment this when Branch type structure changes to invalidate old persisted data
  */
-export const BRANCH_STORAGE_VERSION = 1;
+export const BRANCH_STORAGE_VERSION = 2; // Incremented to add selectedBranchName

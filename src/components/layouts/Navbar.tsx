@@ -55,6 +55,7 @@ export default function Navbar() {
                     return (
                         <NavItem
                             key={item.id}
+                            id={item.id}
                             label={t(`nav.${item.id}`)}
                             href={item.href}
                             icon={item.icon}

@@ -4,10 +4,19 @@
 import { Building2, ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
+import { useBranchStore } from '@/store/useBranchStore';
 
 export default function SubHeader() {
     const t = useTranslations('SubHeader');
     const [activeType, setActiveType] = useState('delivery');
+    const { selectedBranchName, setModalOpen } = useBranchStore();
+
+    // Use persisted name - no fetch needed! Name is always available immediately
+    const branchName = selectedBranchName || t('defaultBranch');
+
+    const handleBranchClick = () => {
+        setModalOpen(true);
+    };
 
     const orderTypes = [
         { id: 'dineIn', label: t('dineIn') },
@@ -23,13 +32,14 @@ export default function SubHeader() {
             {/* Desktop Layout - 100% Exact Restoration */}
             <div className="hidden lg:flex bg-white rounded-t-xl h-16 items-center justify-between px-4 shadow-t-sm border-t border-gray-200">
                 <button
+                    onClick={handleBranchClick}
                     className="flex items-center gap-2 hover:bg-gray-50 p-2 rounded-lg transition-colors duration-200 group"
-                    aria-label={t('defaultBranch')}>
+                    aria-label={branchName}>
                     <div className="size-8 rounded-full border border-gray-200 flex items-center justify-center bg-gray-50">
                         <Building2 className="size-4.5 text-gray-500" />
                     </div>
                     <span className="text-gray-900 font-semibold text-sm">
-                        {t('defaultBranch')}
+                        {branchName}
                     </span>
                     <ChevronDown className="size-3.5 text-gray-500 group-hover:text-libero-red transition-colors duration-200" />
                 </button>
@@ -64,13 +74,14 @@ export default function SubHeader() {
             <div className="lg:hidden flex flex-col gap-4">
                 <div className="bg-white rounded-xl h-14 flex items-center px-4 shadow-sm border border-gray-200">
                     <button
+                        onClick={handleBranchClick}
                         className="flex items-center gap-2 w-full"
-                        aria-label={t('defaultBranch')}>
+                        aria-label={branchName}>
                         <div className="size-8 rounded-full border border-gray-200 flex items-center justify-center bg-gray-50 shrink-0">
                             <Building2 className="size-4.5 text-gray-500" />
                         </div>
                         <span className="text-gray-900 font-semibold text-sm truncate">
-                            {t('defaultBranch')}
+                            {branchName}
                         </span>
                         <ChevronDown className="size-3.5 text-gray-500 ml-auto" />
                     </button>

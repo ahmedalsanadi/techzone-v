@@ -17,8 +17,6 @@ import { QueryProvider } from '@/components/providers/QueryProvider';
 import { getStoreConfig, getStoreCategories } from '@/services/store-config';
 import { StoreProvider } from '@/components/providers/StoreProvider';
 import ToasterContainer from '@/components/layouts/ToasterContainer';
-import { resolveSiteIdentity } from '@/lib/tenant/resolve-site';
-import { QueryClient, dehydrate } from '@tanstack/react-query';
 import BranchSelectionModal from '@/components/modals/BranchSelectionModal';
 import BranchModalInitializer from '@/components/modals/BranchModalInitializer';
 

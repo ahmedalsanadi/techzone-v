@@ -1,6 +1,9 @@
 //src/components/layouts/NavItem.tsx
+'use client';
+
 import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
+import { useBranchStore } from '@/store/useBranchStore';
 
 interface NavItemProps {
     label: string;
@@ -8,6 +11,7 @@ interface NavItemProps {
     icon: string;
     isActive: boolean;
     alt?: string;
+    id?: string; // Add id to identify branches nav item
 }
 
 export default function NavItem({
@@ -16,7 +20,9 @@ export default function NavItem({
     icon,
     isActive,
     alt,
+    id,
 }: NavItemProps) {
+    const { setModalOpen } = useBranchStore();
     const activeStyles = 'bg-white rounded-lg shadow-xl border border-white/20';
     const inactiveStyles =
         'rounded-lg cursor-pointer hover:bg-white/10 transition-colors group border border-transparent';
@@ -28,9 +34,18 @@ export default function NavItem({
         ? 'invert(32%) sepia(34%) saturate(1476%) hue-rotate(326deg) brightness(89%) contrast(88%)'
         : 'brightness-0 invert';
 
+    // Handle branches click - open modal instead of navigating
+    const handleClick = (e: React.MouseEvent) => {
+        if (id === 'branches') {
+            e.preventDefault();
+            setModalOpen(true);
+        }
+    };
+
     return (
         <Link
             href={href}
+            onClick={handleClick}
             className={`flex gap-2 items-center justify-center py-1.5 px-3 ${
                 isActive ? activeStyles : inactiveStyles
             }`}

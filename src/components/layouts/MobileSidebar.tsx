@@ -87,6 +87,7 @@ export default function MobileSidebar() {
                                     key={item.id}
                                     onClick={() => setMobileMenuOpen(false)}>
                                     <NavItem
+                                        id={item.id}
                                         label={t(`nav.${item.id}`)}
                                         href={item.href}
                                         icon={item.icon}

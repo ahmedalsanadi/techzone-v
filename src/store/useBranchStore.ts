@@ -7,8 +7,9 @@ import { Branch } from '@/services/types';
 import { BRANCH_STORAGE_VERSION } from '@/config/branches';
 
 interface BranchState {
-    selectedBranch: Branch | null;
-    selectedBranchId: number | null; // Persisted - only ID, not full object
+    selectedBranch: Branch | null; // Full object in memory (not persisted)
+    selectedBranchId: number | null; // Persisted
+    selectedBranchName: string | null; // Persisted - for immediate display
     isModalOpen: boolean;
     hasSelectedOnce: boolean;
     setSelectedBranch: (branch: Branch) => void;
@@ -20,6 +21,7 @@ interface BranchState {
 
 interface PersistedState {
     selectedBranchId: number | null;
+    selectedBranchName: string | null; // Store name for immediate display
     hasSelectedOnce: boolean;
     version: number;
 }
@@ -29,12 +31,14 @@ export const useBranchStore = create<BranchState>()(
         (set, get) => ({
             selectedBranch: null,
             selectedBranchId: null,
+            selectedBranchName: null,
             isModalOpen: false,
             hasSelectedOnce: false,
             setSelectedBranch: (branch) =>
                 set({
                     selectedBranch: branch,
                     selectedBranchId: branch.id,
+                    selectedBranchName: branch.name || null,
                     isModalOpen: false,
                     hasSelectedOnce: true,
                 }),
@@ -43,6 +47,7 @@ export const useBranchStore = create<BranchState>()(
                 set({
                     selectedBranch: null,
                     selectedBranchId: null,
+                    selectedBranchName: null,
                     hasSelectedOnce: false,
                     isModalOpen: true,
                 }),
@@ -50,9 +55,16 @@ export const useBranchStore = create<BranchState>()(
                 // Sync the full branch object when fetched from API
                 // This is called after fetching branch by ID from persisted state
                 if (branch && branch.id === get().selectedBranchId) {
-                    set({ selectedBranch: branch });
+                    set({
+                        selectedBranch: branch,
+                        // Update name if it changed (e.g., branch was renamed)
+                        selectedBranchName: branch.name || null,
+                    });
                 } else if (!branch) {
-                    set({ selectedBranch: null });
+                    set({
+                        selectedBranch: null,
+                        selectedBranchName: null,
+                    });
                 }
             },
         }),
@@ -62,6 +74,7 @@ export const useBranchStore = create<BranchState>()(
             storage: createJSONStorage(() => localStorage),
             partialize: (state): PersistedState => ({
                 selectedBranchId: state.selectedBranchId,
+                selectedBranchName: state.selectedBranchName,
                 hasSelectedOnce: state.hasSelectedOnce,
                 version: BRANCH_STORAGE_VERSION,
             }),
@@ -74,18 +87,20 @@ export const useBranchStore = create<BranchState>()(
                     // Version mismatch - reset to defaults
                     return {
                         selectedBranchId: null,
+                        selectedBranchName: null,
                         hasSelectedOnce: false,
                         version: BRANCH_STORAGE_VERSION,
                     };
                 }
                 // Type guard for persisted state
                 const state = persistedState as Partial<PersistedState> & {
-                    selectedBranch?: { id?: number };
+                    selectedBranch?: { id?: number; name?: string };
                 };
                 // Handle legacy format (if selectedBranch was persisted)
                 if (state?.selectedBranch && !state?.selectedBranchId) {
                     return {
                         selectedBranchId: state.selectedBranch?.id || null,
+                        selectedBranchName: state.selectedBranch?.name || null,
                         hasSelectedOnce: state.hasSelectedOnce || false,
                         version: BRANCH_STORAGE_VERSION,
                     };
@@ -93,6 +108,7 @@ export const useBranchStore = create<BranchState>()(
                 // Return valid persisted state or defaults
                 return {
                     selectedBranchId: state?.selectedBranchId ?? null,
+                    selectedBranchName: state?.selectedBranchName ?? null,
                     hasSelectedOnce: state?.hasSelectedOnce ?? false,
                     version: BRANCH_STORAGE_VERSION,
                 };

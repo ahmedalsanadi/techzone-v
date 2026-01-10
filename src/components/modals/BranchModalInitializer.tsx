@@ -16,53 +16,76 @@ import { Branch } from '@/services/types';
  * - Only runs once on initial mount (not on every navigation)
  * - Uses ref to prevent unnecessary re-runs
  * - Prefetches branches in background for instant modal display
+ * - Fetches selected branch data if only ID is stored
  */
 export default function BranchModalInitializer() {
-    const { hasSelectedOnce, setModalOpen } = useBranchStore();
+    const { hasSelectedOnce, setModalOpen, selectedBranchId, selectedBranch } =
+        useBranchStore();
     const queryClient = useQueryClient();
     const hasInitialized = useRef(false);
 
     useEffect(() => {
-        // Only run once on mount, not on every re-render
-        if (hasInitialized.current) return;
-
-        // Prefetch branches in background so modal opens instantly
+        // Prefetch branches in background (only once to avoid duplicate requests)
         // This ensures data is ready when modal opens
-        // Only prefetch if data doesn't exist in cache (avoid duplicate requests)
-        const cachedData = queryClient.getQueryData<Branch[]>([
-            'branches',
-            { type: BRANCH_TYPES.BRANCH },
-        ]);
+        if (!hasInitialized.current) {
+            const cachedData = queryClient.getQueryData<Branch[]>([
+                'branches',
+                { type: BRANCH_TYPES.BRANCH },
+            ]);
 
-        if (!cachedData) {
-            // Only prefetch if not already in cache
-            queryClient.prefetchQuery({
-                queryKey: ['branches', { type: BRANCH_TYPES.BRANCH }],
-                queryFn: async () => {
-                    const data = await storeService.getBranches({
-                        type: BRANCH_TYPES.BRANCH,
+            if (!cachedData) {
+                // Only prefetch if not already in cache
+                queryClient
+                    .prefetchQuery({
+                        queryKey: ['branches', { type: BRANCH_TYPES.BRANCH }],
+                        queryFn: async () => {
+                            const data = await storeService.getBranches({
+                                type: BRANCH_TYPES.BRANCH,
+                            });
+                            // Filter out invalid branches and ensure data structure
+                            return (data || []).filter(
+                                (branch) =>
+                                    branch &&
+                                    branch.id &&
+                                    branch.name &&
+                                    branch.address,
+                            );
+                        },
+                        staleTime: 5 * 60 * 1000, // 5 minutes
+                    })
+                    .catch(() => {
+                        // Silently fail - useQuery will handle retry when modal opens
                     });
-                    // Filter out invalid branches and ensure data structure
-                    return (data || []).filter(
-                        (branch) =>
-                            branch && branch.id && branch.name && branch.address,
-                    );
-                },
-                staleTime: 5 * 60 * 1000, // 5 minutes
-            }).catch(() => {
-                // Silently fail - useQuery will handle retry when modal opens
-                // Don't set empty data in cache, let useQuery handle it
-            });
+            }
+
+            // Prefetch full branch data in background if only ID+name is stored
+            if (selectedBranchId && !selectedBranch) {
+                queryClient
+                    .prefetchQuery({
+                        queryKey: ['branch', selectedBranchId],
+                        queryFn: () => storeService.getBranch(selectedBranchId),
+                        staleTime: 5 * 60 * 1000,
+                    })
+                    .catch(() => {
+                        // Silently fail - name is already available, full object is optional
+                    });
+            }
+
+            hasInitialized.current = true;
         }
 
-        // Trigger modal on first visit if no branch has been selected before
-        if (!hasSelectedOnce) {
+        // Check on EVERY mount (refresh/navigation) if modal should auto-open
+        // Modal should ONLY auto-open if no branch is selected yet
+        // If branch is selected, modal stays closed (user can open manually via navbar/SubHeader)
+        if (!selectedBranchId && !hasSelectedOnce) {
             setModalOpen(true);
+        } else if (selectedBranchId || hasSelectedOnce) {
+            // Ensure modal is closed if branch is already selected
+            // User can still open it manually by clicking navbar item or SubHeader button
+            setModalOpen(false);
         }
-
-        hasInitialized.current = true;
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []); // Empty deps - only run on mount
+    }, [selectedBranchId, hasSelectedOnce]); // Re-run when branch selection changes
 
     return null;
 }
