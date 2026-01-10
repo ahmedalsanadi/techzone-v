@@ -193,6 +193,10 @@
     "home": "Home",
     "support": "Technical Support",
     "social": "Social Media",
+    "branch_not_found": "Branch not found",
+    "branch_not_found_desc": "The requested branch could not be loaded. Please try again or contact the store directly.",
+    "branch_not_found_title": "Branch information not available",
+    "branch_not_found_message": "The requested branch could not be loaded. Showing store contact information instead.",
     "form": {
       "email": "Email Address",
       "subject": "Subject",
@@ -215,5 +219,35 @@
     "resend": "Didn't receive the code?",
     "timer": "00:30",
     "poweredBy": "Powered by"
+  },
+  "Branches": {
+    "select_branch": "Select the branch you want",
+    "open": "Open",
+    "closed": "Closed",
+    "free_delivery": "Free Delivery",
+    "delivery_with_fee": "Delivery with {fee} SAR",
+    "working_hours": "Working Hours",
+    "km": "km",
+    "branch": "Branch",
+    "close_modal": "Close modal",
+    "branch_list": "Branch list",
+    "error_loading_branches": "Failed to load branches",
+    "retry": "Retry",
+    "no_branches_available": "No branches available",
+    "view_working_hours": "View working hours",
+    "contact_branch": "Contact branch",
+    "no_working_hours_available": "Working hours not available",
+    "map_unavailable": "Map unavailable",
+    "map_unavailable_desc": "Branch locations are not available at this time. Please select a branch from the list.",
+    "days": {
+      "Saturday": "Saturday",
+      "Sunday": "Sunday",
+      "Monday": "Monday",
+      "Tuesday": "Tuesday",
+      "Wednesday": "Wednesday",
+      "Thursday": "Thursday",
+      "Friday": "Friday"
+    },
+    "all_day": "All Day"
   }
 }

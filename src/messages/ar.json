@@ -193,6 +193,10 @@
     "home": "الرئيسية",
     "support": "الدعم الفني",
     "social": "التواصل الاجتماعي",
+    "branch_not_found": "الفرع غير موجود",
+    "branch_not_found_desc": "تعذر تحميل الفرع المطلوب. يرجى المحاولة مرة أخرى أو الاتصال بالمتجر مباشرة.",
+    "branch_not_found_title": "معلومات الفرع غير متاحة",
+    "branch_not_found_message": "تعذر تحميل الفرع المطلوب. يتم عرض معلومات الاتصال بالمتجر بدلاً من ذلك.",
     "form": {
       "email": "بريدك الالكتروني",
       "subject": "العنوان",
@@ -215,5 +219,35 @@
     "resend": "لم يصلني الرمز!",
     "timer": "00:30",
     "poweredBy": "يعمل بواسطة"
+  },
+  "Branches": {
+    "select_branch": "اختر الفرع الذي تريده",
+    "open": "مفتوح",
+    "closed": "مغلق",
+    "free_delivery": "توصيل مجاني",
+    "delivery_with_fee": "توصيل بـ {fee} ر.س",
+    "working_hours": "أوقات العمل",
+    "km": "كم",
+    "branch": "فرع",
+    "close_modal": "إغلاق النافذة",
+    "branch_list": "قائمة الفروع",
+    "error_loading_branches": "فشل تحميل الفروع",
+    "retry": "إعادة المحاولة",
+    "no_branches_available": "لا توجد فروع متاحة",
+    "view_working_hours": "عرض أوقات العمل",
+    "contact_branch": "اتصل بالفرع",
+    "no_working_hours_available": "أوقات العمل غير متاحة",
+    "map_unavailable": "الخريطة غير متاحة",
+    "map_unavailable_desc": "مواقع الفروع غير متاحة في الوقت الحالي. يرجى اختيار فرع من القائمة.",
+    "days": {
+      "Saturday": "السبت",
+      "Sunday": "الأحد",
+      "Monday": "الاثنين",
+      "Tuesday": "الثلاثاء",
+      "Wednesday": "الأربعاء",
+      "Thursday": "الخميس",
+      "Friday": "الجمعة"
+    },
+    "all_day": "طوال اليوم"
   }
 }

@@ -1,0 +1,112 @@
+/**
+ * Map utility functions for calculating centers, bounds, etc.
+ */
+
+import { Branch } from '@/services/types';
+import { DEFAULT_MAP_CENTER } from '@/config/branches';
+
+/**
+ * Generate mock coordinates for branches without real coordinates
+ * Uses branch ID to generate consistent fake locations around Riyadh
+ * TODO: Remove this when backend provides real coordinates for all branches
+ */
+export function generateMockCoordinates(
+    branchId: number,
+    baseCenter: [number, number] = DEFAULT_MAP_CENTER,
+): [number, number] {
+    // Generate consistent offsets based on branch ID
+    // Spread branches in a ~5km radius around base center
+    const angle = (branchId * 137.508) % 360; // Golden angle for even distribution
+    const radius = 0.02 + (branchId % 3) * 0.01; // 2-4km radius variation
+    const radians = (angle * Math.PI) / 180;
+
+    const latOffset = radius * Math.cos(radians);
+    const lngOffset = radius * Math.sin(radians);
+
+    return [baseCenter[0] + latOffset, baseCenter[1] + lngOffset];
+}
+
+/**
+ * Get coordinates for a branch (real if available, mock if not)
+ */
+export function getBranchCoordinates(
+    branch: Branch,
+    useMockIfMissing: boolean = true,
+): [number, number] | null {
+    if (
+        branch?.address?.latitude != null &&
+        branch?.address?.longitude != null &&
+        typeof branch.address.latitude === 'number' &&
+        typeof branch.address.longitude === 'number' &&
+        !isNaN(branch.address.latitude) &&
+        !isNaN(branch.address.longitude)
+    ) {
+        // Use real coordinates
+        return [branch.address.latitude, branch.address.longitude];
+    }
+
+    // Use mock coordinates if enabled
+    if (useMockIfMissing && branch?.id) {
+        return generateMockCoordinates(branch.id);
+    }
+
+    return null;
+}
+
+/**
+ * Calculate the center point from an array of branches
+ * Returns the average of all branch coordinates (real or mock)
+ */
+export function calculateBranchesCenter(
+    branches: Branch[],
+    useMockIfMissing: boolean = true,
+): [number, number] {
+    if (!branches || branches.length === 0) {
+        return DEFAULT_MAP_CENTER;
+    }
+
+    // Get all valid coordinates (real or mock)
+    const allCoords: [number, number][] = [];
+    branches.forEach((branch) => {
+        const coords = getBranchCoordinates(branch, useMockIfMissing);
+        if (coords) {
+            allCoords.push(coords);
+        }
+    });
+
+    if (allCoords.length === 0) {
+        return DEFAULT_MAP_CENTER;
+    }
+
+    const totalLat = allCoords.reduce((sum, [lat]) => sum + lat, 0);
+    const totalLng = allCoords.reduce((sum, [, lng]) => sum + lng, 0);
+
+    return [totalLat / allCoords.length, totalLng / allCoords.length];
+}
+
+/**
+ * Get the center for a specific branch or calculate from all branches
+ * Uses mock coordinates if real ones are missing
+ */
+export function getMapCenter(
+    branches: Branch[],
+    selectedBranchId?: number,
+    useMockIfMissing: boolean = true,
+): [number, number] {
+    if (selectedBranchId && branches && branches.length > 0) {
+        const selectedBranch = branches.find(
+            (b) => b && b.id === selectedBranchId,
+        );
+        if (selectedBranch) {
+            const coords = getBranchCoordinates(
+                selectedBranch,
+                useMockIfMissing,
+            );
+            if (coords) {
+                return coords;
+            }
+        }
+    }
+
+    return calculateBranchesCenter(branches, useMockIfMissing);
+}

@@ -1,7 +1,13 @@
 //src/services/store-service.ts
 import { cache } from 'react';
 import { fetchLibero, fetchLiberoFull } from './api';
-import { StoreConfig, Product, PaginationMeta, Category } from './types';
+import {
+    StoreConfig,
+    Product,
+    PaginationMeta,
+    Category,
+    Branch,
+} from './types';
 
 /**
  * Service for store-related data fetching.
@@ -88,4 +94,37 @@ export const storeService = {
         fetchLibero<Category>(`/store/categories/${slug}`, {
             next: { revalidate: 3600 },
         }),
+
+    /**
+     * Get all branches with optional filters.
+     */
+    getBranches: (params: { type?: number; search?: string } = {}) =>
+        fetchLibero<Branch[]>('/store/branches', {
+            params,
+            next: { revalidate: 3600 },
+        }),
+
+    /**
+     * Get a single branch by ID.
+     */
+    getBranch: (id: string | number) =>
+        fetchLibero<Branch>(`/store/branches/${id}`, {
+            next: { revalidate: 3600 },
+        }),
+
+    /**
+     * Get working hours for a branch.
+     * TODO: Uncomment when backend endpoint is ready
+     * Expected endpoint: GET /store/branches/{id}/working-hours
+     */
+    // getBranchWorkingHours: (id: string | number) =>
+    //     fetchLibero<{
+    //         schedule: Array<{
+    //             day: string;
+    //             hours: string[];
+    //             closed?: boolean;
+    //         }>;
+    //     }>(`/store/branches/${id}/working-hours`, {
+    //         next: { revalidate: 3600 },
+    //     }),
 };
