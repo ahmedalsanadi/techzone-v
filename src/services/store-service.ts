@@ -43,7 +43,7 @@ export const storeService = {
      * List products with filtering and pagination.
      */
     async getProducts(
-        params: Record<string, string | number | boolean> = {},
+        params: Record<string, any> = {},
     ): Promise<{ data: Product[]; meta: PaginationMeta }> {
         const response = await fetchLiberoFull<Product[]>('/store/products', {
             params,

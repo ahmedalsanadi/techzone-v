@@ -2,20 +2,21 @@
 'use client';
 
 import React from 'react';
-import { Product, PaginationMeta } from '@/services/types';
+// import { Product, PaginationMeta } from '@/services/types';
 import ProductCard from '@/components/ui/ProductCard';
 import { useTranslations } from 'next-intl';
 import { useCartActions } from '@/hooks/useCartActions';
-import { Button } from '@/components/ui/Button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+// import { Button } from '@/components/ui/Button';
+// import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Pagination from '@/components/ui/Pagination';
 import { cn } from '@/lib/utils';
+import { PaginationMeta, Product } from '@/services/types';
 
 interface ProductsGridProps {
     products: Product[];
     loading?: boolean;
     currentPage?: number;
-    pagination?: any;
+    pagination?: PaginationMeta;
     onPageChange?: (page: number) => void;
     variant?: 'default' | 'compact';
 }

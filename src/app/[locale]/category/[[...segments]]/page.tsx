@@ -89,7 +89,7 @@ export default async function CategoryPage({ params }: Props) {
     const locale = resolvedParams.locale;
     // Handle optional catch-all: segments can be undefined or an array
     const segments = resolvedParams.segments ?? [];
-    // const t = await getTranslations({ locale, namespace: 'Category' });
+    const t = await getTranslations({ locale, namespace: 'Category' });
 
     // Fetch category tree
     const tree = await storeService.getCategories(true);

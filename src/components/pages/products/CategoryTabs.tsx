@@ -15,7 +15,7 @@ interface CategoryTabsProps {
 const CategoryTabs: React.FC<CategoryTabsProps> = ({
     categories,
     activeCategoryId,
-    onCategorySelect,
+    // onCategorySelect,
 }) => {
     const t = useTranslations('Category');
 

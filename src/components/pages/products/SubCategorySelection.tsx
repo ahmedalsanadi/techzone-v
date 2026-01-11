@@ -17,7 +17,7 @@ interface SubCategorySelectionProps {
 const SubCategorySelection: React.FC<SubCategorySelectionProps> = ({
     subCategories,
     activeSubCategoryId,
-    onSubCategorySelect,
+    // onSubCategorySelect,
     currentCategoryLabel,
     currentCategoryImage,
     parentHref,

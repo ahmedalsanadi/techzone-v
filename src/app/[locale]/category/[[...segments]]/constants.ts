@@ -25,5 +25,5 @@ export const TRANSITIONS = {
  */
 export const MIN_HEIGHTS = {
     PRODUCTS_GRID: 600, // Minimum height for products grid in pixels
-    EMPTY_STATE: 200, // Minimum height for empty state
+    EMPTY_STATE: 250, // Minimum height for empty state
 } as const;
