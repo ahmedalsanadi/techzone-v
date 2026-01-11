@@ -36,15 +36,17 @@ function CategoryHierarchy({ tree, categoryPath }: CategoryHierarchyProps) {
             renderedLevels.push(
                 <div
                     key="root"
-                    className="flex justify-center items-stretch gap-3 md:gap-4 overflow-x-auto pb-4 pt-2 scrollbar-hide border-b border-gray-100 mb-4 transition-opacity duration-300">
+                    className="flex items-stretch gap-3 md:gap-4 overflow-x-auto pb-4 pt-2 scrollbar-hide border-b border-gray-100 mb-4 transition-opacity duration-300 justify-start lg:justify-center px-4 -mx-4 md:mx-0"
+                    style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-x' }}>
                     {rootCategories.map((c) => (
-                        <CategoryCard
-                            key={c.id}
-                            label={c.name}
-                            image={c.image_url || c.icon_url}
-                            href={getCategoryUrl(c)}
-                            isActive={c.id.toString() === activeRootId}
-                        />
+                        <div key={c.id} className="shrink-0">
+                            <CategoryCard
+                                label={c.name}
+                                image={c.image_url || c.icon_url}
+                                href={getCategoryUrl(c)}
+                                isActive={c.id.toString() === activeRootId}
+                            />
+                        </div>
                     ))}
                 </div>,
             );
@@ -65,20 +67,22 @@ function CategoryHierarchy({ tree, categoryPath }: CategoryHierarchyProps) {
                 renderedLevels.push(
                     <div
                         key={`level-${index}`}
-                        className="flex justify-center items-stretch gap-3 md:gap-4 overflow-x-auto pb-4 pt-2 scrollbar-hide animate-in fade-in slide-in-from-top-2 duration-300 px-6">
+                        className="flex items-stretch gap-3 md:gap-4 overflow-x-auto pb-4 pt-2 scrollbar-hide animate-in fade-in slide-in-from-top-2 duration-300 justify-start lg:justify-center px-4 -mx-4 md:mx-0"
+                        style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-x' }}>
                         {subCats.map((c) => {
                             const subSlug = c.slug || c.id.toString();
                             const subPath = `${currentPath}/${subSlug}`;
                             const isActive = c.id.toString() === activeSubId;
 
                             return (
-                                <CategoryCard
-                                    key={c.id}
-                                    label={c.name}
-                                    image={c.image_url || c.icon_url}
-                                    href={`/category/${subPath}`}
-                                    isActive={isActive}
-                                />
+                                <div key={c.id} className="shrink-0">
+                                    <CategoryCard
+                                        label={c.name}
+                                        image={c.image_url || c.icon_url}
+                                        href={`/category/${subPath}`}
+                                        isActive={isActive}
+                                    />
+                                </div>
                             );
                         })}
                     </div>,
