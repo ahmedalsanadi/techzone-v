@@ -102,6 +102,7 @@ export const storeService = {
     getBranches: (params: { type?: number; search?: string } = {}) =>
         fetchLibero<Branch[]>('/store/branches', {
             params,
+            isProtected: true,
             next: { revalidate: 3600 },
         }),
 
@@ -110,6 +111,7 @@ export const storeService = {
      */
     getBranch: (id: string | number) =>
         fetchLibero<Branch>(`/store/branches/${id}`, {
+            isProtected: true,
             next: { revalidate: 3600 },
         }),
 

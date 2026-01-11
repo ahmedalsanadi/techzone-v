@@ -218,7 +218,11 @@
     "categories_description": "تصفح جميع أقسام المتجر",
     "explore_categories": "استكشف الأقسام",
     "home": "الرئيسية",
-    "all_products": "كل المنتجات"
+    "all_products": "كل المنتجات",
+    "products": "المنتجات",
+    "items_count": "منتج",
+    "addToCart": "إضافة للسلة",
+    "no_products": "لا توجد منتجات في هذا القسم حالياً"
   },
   "Search": {
     "results_for": "نتائج البحث عن",

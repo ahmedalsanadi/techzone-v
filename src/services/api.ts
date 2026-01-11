@@ -17,21 +17,15 @@ export class ApiError extends Error {
     }
 }
 
-/**
- * Returns the base URL for API requests.
- * Now points directly to the backend since proxy is removed for performance.
- */
 export function getBaseUrl(): string {
     return env.apiUrl;
 }
 
 interface FetchOptions extends RequestInit {
     params?: Record<string, string | number | boolean>;
+    isProtected?: boolean;
 }
 
-/**
- * Core fetch wrapper for the Libero API.
- */
 export async function fetchLibero<T>(
     endpoint: string,
     options: FetchOptions = {},
@@ -40,27 +34,24 @@ export async function fetchLibero<T>(
     return result.data;
 }
 
-/**
- * Fetch wrapper that returns the full ApiResponse structure.
- * Useful when pagination meta is needed.
- */
 export async function fetchLiberoFull<T>(
     endpoint: string,
     options: FetchOptions = {},
 ): Promise<ApiResponse<T>> {
-    const { params, ...init } = options;
+    const { params, isProtected, ...init } = options;
     const baseUrl = getBaseUrl();
 
-    let locale: string | undefined;
-    if (typeof window === 'undefined') {
+    // Determine locale
+    let locale = 'ar';
+    if (typeof window !== 'undefined') {
+        locale = document.documentElement.lang || 'ar';
+    } else {
         try {
             const { getLocale } = await import('next-intl/server');
             locale = await getLocale();
         } catch {
-            /* No-op */
+            /* Default to ar */
         }
-    } else {
-        locale = document.documentElement.lang;
     }
 
     const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
@@ -72,17 +63,21 @@ export async function fetchLiberoFull<T>(
         });
     }
 
+    // Get base headers (X-Store-Key, Accept, etc.)
     const headers = await getBaseHeaders(
         locale,
-        (init.headers as Record<string, string> | undefined)?.['Content-Type'],
+        (init.headers as any)?.['Content-Type'],
+        isProtected,
     );
 
+    // Merge any override headers passed in options
     if (init.headers) {
-        new Headers(init.headers).forEach((v, k) => headers.set(k, v));
+        const overrideHeaders = new Headers(init.headers as any);
+        overrideHeaders.forEach((v, k) => headers.set(k, v));
     }
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
 
     try {
         const response = await fetch(url.toString(), {
@@ -111,25 +106,11 @@ export async function fetchLiberoFull<T>(
         clearTimeout(timeoutId);
         if (error instanceof ApiError) throw error;
 
-        if (error instanceof Error && error.name === 'AbortError') {
-            // Timeouts are handled gracefully by React Query with retry logic
-            // No need to log to console - React Query will show user-friendly error messages
-            // This keeps console clean for presentations
-            throw new ApiError(
-                504,
-                'Request timed out - the server is taking too long to respond',
-            );
-        }
-
-        // Only log unexpected errors (not timeouts) in development
-        if (process.env.NODE_ENV === 'development') {
-            console.error(`[API Error] ${endpoint}:`, error);
-        }
         throw new ApiError(
-            500,
+            error instanceof Error && error.name === 'AbortError' ? 504 : 500,
             error instanceof Error
                 ? error.message
-                : 'Network error or server unavailable',
+                : 'Network error or store unavailable',
         );
     }
 }

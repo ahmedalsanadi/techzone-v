@@ -218,7 +218,11 @@
     "categories_description": "Browse all our store categories",
     "explore_categories": "Explore Categories",
     "home": "Home",
-    "all_products": "All Products"
+    "all_products": "All Products",
+    "products": "Products",
+    "items_count": "items",
+    "addToCart": "Add to Cart",
+    "no_products": "No products found in this category"
   },
   "Search": {
     "results_for": "Results for",
