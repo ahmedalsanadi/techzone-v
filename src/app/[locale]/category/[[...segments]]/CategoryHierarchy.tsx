@@ -37,7 +37,10 @@ function CategoryHierarchy({ tree, categoryPath }: CategoryHierarchyProps) {
                 <div
                     key="root"
                     className="flex items-stretch gap-3 md:gap-4 overflow-x-auto pb-4 pt-2 scrollbar-hide border-b border-gray-100 mb-4 transition-opacity duration-300 justify-start lg:justify-center px-4 -mx-4 md:mx-0"
-                    style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-x' }}>
+                    style={{
+                        WebkitOverflowScrolling: 'touch',
+                        touchAction: 'pan-x',
+                    }}>
                     {rootCategories.map((c) => (
                         <div key={c.id} className="shrink-0">
                             <CategoryCard
@@ -68,7 +71,10 @@ function CategoryHierarchy({ tree, categoryPath }: CategoryHierarchyProps) {
                     <div
                         key={`level-${index}`}
                         className="flex items-stretch gap-3 md:gap-4 overflow-x-auto pb-4 pt-2 scrollbar-hide animate-in fade-in slide-in-from-top-2 duration-300 justify-start lg:justify-center px-4 -mx-4 md:mx-0"
-                        style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-x' }}>
+                        style={{
+                            WebkitOverflowScrolling: 'touch',
+                            touchAction: 'pan-x',
+                        }}>
                         {subCats.map((c) => {
                             const subSlug = c.slug || c.id.toString();
                             const subPath = `${currentPath}/${subSlug}`;
