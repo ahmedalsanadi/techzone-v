@@ -1,11 +1,10 @@
 // src/app/[locale]/category/[[...segments]]/CategoryHierarchy.tsx
 'use client';
 
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import CategoryCard from '@/components/ui/CategoryCard';
 import type { Category } from '@/services/types';
 import { getRootCategories, getCategoryUrl } from './utils';
-import { TRANSITIONS } from './constants';
 
 interface CategoryHierarchyProps {
     tree: Category[];
@@ -14,33 +13,15 @@ interface CategoryHierarchyProps {
 
 /**
  * Renders hierarchical category navigation showing all parent levels.
- * Optimized with memoization and smooth transitions.
+ * Optimized with memoization and smooth transitions using key-based remounting.
+ * The key prop triggers React to remount the component, which naturally triggers CSS animations.
  */
 function CategoryHierarchy({ tree, categoryPath }: CategoryHierarchyProps) {
-    const [isVisible, setIsVisible] = useState(true);
-    const [prevCategoryPath, setPrevCategoryPath] =
-        useState<Category[]>(categoryPath);
-
-    // Detect category path changes for smooth transitions
-    useEffect(() => {
-        const pathChanged =
-            prevCategoryPath.length !== categoryPath.length ||
-            prevCategoryPath.some(
-                (cat, idx) => cat.id !== categoryPath[idx]?.id,
-            );
-
-        if (pathChanged) {
-            setTimeout(() => {
-                setIsVisible(false);
-            }, 0);
-            const timer = setTimeout(() => {
-                setIsVisible(true);
-                setPrevCategoryPath(categoryPath);
-            }, 50); // Brief delay for fade-out
-
-            return () => clearTimeout(timer);
-        }
-    }, [categoryPath, prevCategoryPath]);
+    // Generate a unique key for the current path to trigger animations on change
+    const pathKey = useMemo(
+        () => categoryPath.map((c) => c.id).join('-') || 'root',
+        [categoryPath],
+    );
 
     // Memoize root categories - they don't change
     const rootCategories = useMemo(() => getRootCategories(tree), [tree]);
@@ -55,7 +36,7 @@ function CategoryHierarchy({ tree, categoryPath }: CategoryHierarchyProps) {
             renderedLevels.push(
                 <div
                     key="root"
-                    className="flex flex-wrap justify-center items-stretch gap-3 md:gap-4 overflow-x-auto pt-2 pb-4 scrollbar-hide border-b border-gray-100 mb-4 transition-opacity duration-300">
+                    className="flex flex-wrap items-stretch gap-3 md:gap-4 overflow-x-auto pb-4 scrollbar-hide border-b border-gray-100 mb-4 transition-opacity duration-300">
                     {rootCategories.map((c) => (
                         <CategoryCard
                             key={c.id}
@@ -84,7 +65,7 @@ function CategoryHierarchy({ tree, categoryPath }: CategoryHierarchyProps) {
                 renderedLevels.push(
                     <div
                         key={`level-${index}`}
-                        className="flex flex-wrap justify-center items-stretch gap-3 md:gap-4 overflow-x-auto pt-2 pb-4 scrollbar-hide animate-in fade-in slide-in-from-top-2 duration-300">
+                        className="flex flex-wrap items-stretch gap-3 md:gap-4 overflow-x-auto pb-4 scrollbar-hide animate-in fade-in slide-in-from-top-2 duration-300">
                         {subCats.map((c) => {
                             const subSlug = c.slug || c.id.toString();
                             const subPath = `${currentPath}/${subSlug}`;
@@ -108,16 +89,11 @@ function CategoryHierarchy({ tree, categoryPath }: CategoryHierarchyProps) {
         return renderedLevels;
     }, [rootCategories, categoryPath]);
 
+    // Use key prop to trigger remount and animation when path changes
     return (
         <div
-            className={`transition-all ${
-                isVisible
-                    ? 'opacity-100 translate-y-0'
-                    : 'opacity-0 translate-y-2'
-            }`}
-            style={{
-                transitionDuration: `${TRANSITIONS.CATEGORY_SLIDE_DURATION}ms`,
-            }}>
+            key={pathKey}
+            className="animate-in fade-in slide-in-from-top-2 duration-300">
             {levels}
         </div>
     );

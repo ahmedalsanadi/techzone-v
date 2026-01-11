@@ -47,9 +47,9 @@ const buildBreadcrumbs = (
 };
 
 export default function CategoryPageClient({
-    locale,
+    // locale,
     initialTree,
-    initialCategoryPath,
+    // initialCategoryPath,
     initialProducts,
     segments: initialSegments,
 }: CategoryPageClientProps) {

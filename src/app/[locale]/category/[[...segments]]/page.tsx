@@ -4,7 +4,11 @@ import type { Metadata } from 'next';
 import { storeService } from '@/services/store-service';
 import { getTranslations } from 'next-intl/server';
 import CategoryPageClient from './CategoryPageClient';
-import { findCategoryByPath, buildCategoryPath, getRootCategories } from './utils';
+import {
+    findCategoryByPath,
+    buildCategoryPath,
+    getRootCategories,
+} from './utils';
 
 interface Props {
     params: Promise<{ locale: string; segments?: string[] }>;
@@ -85,11 +89,11 @@ export default async function CategoryPage({ params }: Props) {
     const locale = resolvedParams.locale;
     // Handle optional catch-all: segments can be undefined or an array
     const segments = resolvedParams.segments ?? [];
-    const t = await getTranslations({ locale, namespace: 'Category' });
+    // const t = await getTranslations({ locale, namespace: 'Category' });
 
     // Fetch category tree
     const tree = await storeService.getCategories(true);
-    
+
     // Build the full path from root to current category
     const categoryPath = buildCategoryPath(tree, segments);
     const currentCategory = categoryPath[categoryPath.length - 1] || null;
