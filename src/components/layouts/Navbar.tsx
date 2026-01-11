@@ -16,7 +16,7 @@ import { useTranslations } from 'next-intl';
 import { useUiStore } from '@/store/useUiStore';
 import MobileSidebar from './MobileSidebar';
 // import LogoImage from '@/components/layouts/LogoImage';
-import { useStore } from '@/components/providers/StoreProvider';
+// import { useStore } from '@/components/providers/StoreProvider';
 // import { siteConfig } from '@/config/site';
 import FastoLogo from './FastoLogo';
 
@@ -24,7 +24,7 @@ export default function Navbar() {
     const pathname = usePathname();
     const t = useTranslations('Navbar');
     const { toggleMobileMenu } = useUiStore();
-    const { config } = useStore();
+    // const { config } = useStore();
 
     return (
         <div className="flex items-center justify-between">

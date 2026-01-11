@@ -8,12 +8,13 @@ import CategoryContent from '@/components/pages/categories/CategoryContent';
 import { notFound } from 'next/navigation';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { getQueryClient } from '@/lib/getQueryClient';
+import { Category } from '@/services/types';
 
 interface Props {
     params: Promise<{ locale: string; slug: string }>;
 }
 
-const findCategory = (nodes: any[], slug: string): any | null => {
+const findCategory = (nodes: Category[], slug: string): Category | null => {
     for (const node of nodes) {
         if (node.slug === slug || node.id.toString() === slug) return node;
         if (node.children?.length) {

@@ -4,8 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import { Metadata } from 'next';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import { storeService } from '@/services/store-service';
-import CategoryCard from '@/components/ui/CategoryCard';
-import { Link } from '@/i18n/navigation';
+// import { Link } from '@/i18n/navigation';
 
 export async function generateMetadata({
     params,
@@ -35,7 +34,7 @@ export default async function CategoriesPage({
     const { locale } = await params;
     const { page = '1' } = await searchParams;
     const t = await getTranslations({ locale, namespace: 'Category' });
-    const categories = await storeService.getCategories(true);
+    // const categories = await storeService.getCategories(true);
 
     const breadcrumbItems = [
         { label: t('home'), href: '/' },

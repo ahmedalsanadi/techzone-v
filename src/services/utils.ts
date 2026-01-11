@@ -32,6 +32,7 @@ export async function getBaseHeaders(
                 token = cookieStore.get('accessToken')?.value;
             } catch (e) {
                 /* No-op */
+                console.error(e);
             }
         } else {
             const value = `; ${document.cookie}`;

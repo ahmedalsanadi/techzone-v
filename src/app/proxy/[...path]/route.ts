@@ -47,6 +47,7 @@ async function handleRequest(
             },
         });
     } catch (error) {
+        console.error(error);
         return NextResponse.json(
             { message: 'Internal Server Error' },
             { status: 500 },
@@ -54,13 +55,13 @@ async function handleRequest(
     }
 }
 
-export const GET = (req: NextRequest, { params }: any) =>
+export const GET = (req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) =>
     handleRequest(req, params, 'GET');
-export const POST = (req: NextRequest, { params }: any) =>
+export const POST = (req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) =>
     handleRequest(req, params, 'POST');
-export const PUT = (req: NextRequest, { params }: any) =>
+export const PUT = (req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) =>
     handleRequest(req, params, 'PUT');
-export const PATCH = (req: NextRequest, { params }: any) =>
+export const PATCH = (req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) =>
     handleRequest(req, params, 'PATCH');
-export const DELETE = (req: NextRequest, { params }: any) =>
+export const DELETE = (req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) =>
     handleRequest(req, params, 'DELETE');

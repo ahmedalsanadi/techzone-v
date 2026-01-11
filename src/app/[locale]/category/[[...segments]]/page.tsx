@@ -7,7 +7,7 @@ import CategoryPageClient from './CategoryPageClient';
 import {
     findCategoryByPath,
     buildCategoryPath,
-    getRootCategories,
+    // getRootCategories,
 } from './utils';
 
 interface Props {

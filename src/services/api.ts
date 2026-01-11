@@ -66,13 +66,13 @@ export async function fetchLiberoFull<T>(
     // Get base headers (X-Store-Key, Accept, etc.)
     const headers = await getBaseHeaders(
         locale,
-        (init.headers as any)?.['Content-Type'],
+        (init.headers as Record<string, string>)?.['Content-Type'],
         isProtected,
     );
 
     // Merge any override headers passed in options
     if (init.headers) {
-        const overrideHeaders = new Headers(init.headers as any);
+        const overrideHeaders = new Headers(init.headers as Record<string, string>);
         overrideHeaders.forEach((v, k) => headers.set(k, v));
     }
 

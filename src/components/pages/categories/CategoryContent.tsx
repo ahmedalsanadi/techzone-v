@@ -7,7 +7,7 @@ import { storeService } from '@/services/store-service';
 import { Category } from '@/services/types';
 import SubCategorySelection from '@/components/pages/products/SubCategorySelection';
 import ProductsGrid from '@/components/pages/products/ProductsGrid';
-import { useTranslations } from 'next-intl';
+// import { useTranslations } from 'next-intl';
 import CategoryTabs from '@/components/pages/products/CategoryTabs';
 import { cn } from '@/lib/utils';
 
@@ -20,7 +20,7 @@ interface CategoryContentProps {
 }
 
 const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
-    const t = useTranslations('Category');
+    // const t = useTranslations('Category');
     const { categories: allCategories } = useStore();
     const params = useParams();
     const searchParams = useSearchParams();
@@ -63,7 +63,7 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
     const {
         data: productsResult,
         isLoading,
-        isPlaceholderData,
+        // isPlaceholderData,
         isFetching,
         error,
     } = useQuery({
@@ -111,12 +111,12 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
         }
     };
 
-    const handleLevelReset = (levelIndex: number) => {
-        const target = activePath[levelIndex];
-        if (target) {
-            router.push(`/categories/${target.slug || target.id}`);
-        }
-    };
+    // const handleLevelReset = (levelIndex: number) => {
+    //     const target = activePath[levelIndex];
+    //     if (target) {
+    //         router.push(`/categories/${target.slug || target.id}`);
+    //     }
+    // };
 
     const handlePageChange = (page: number) => {
         updateUrl(pathname, { page: page.toString() });
