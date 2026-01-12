@@ -48,6 +48,19 @@ export interface StoreInfo {
     social_channels: SocialChannel[];
     products_type: string;
     store_type: string;
+    phone?: string;
+    email?: string;
+    address?: {
+        street: string;
+        city: string;
+        country: string;
+    };
+    social?: {
+        facebook?: string;
+        instagram?: string;
+        twitter?: string;
+    };
+    cuisine_type?: string;
 }
 
 export interface StoreFeatures {
@@ -129,6 +142,7 @@ export interface ProductAllergy {
 export interface Product {
     id: number;
     title: string;
+    name?: string;
     subtitle?: string;
     description: string;
     slug: string;
@@ -140,8 +154,10 @@ export interface Product {
     is_available: boolean;
     calories?: number;
     prepTime?: number;
+    rating?: number;
+    review_count?: number;
     categories?: Array<{ id: number; name: string }>;
-    variants?: any[];
+    variants?: unknown[];
     addons?: Array<{
         id: number;
         name: string;

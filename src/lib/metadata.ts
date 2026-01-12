@@ -1,10 +1,13 @@
-// src/lib/metadata.ts
 import { siteConfig } from '@/config/site';
+import { Product, StoreConfig } from '@/services/types';
 
 /**
  * Generates Product Structured Data with correct Schema.org enumerations
  */
-export function generateProductStructuredData(product: any, siteUrl: string) {
+export function generateProductStructuredData(
+    product: Product,
+    siteUrl: string,
+) {
     if (!product) return null;
 
     return {
@@ -54,7 +57,7 @@ export function generateProductStructuredData(product: any, siteUrl: string) {
  * Generates Collection/ItemList Structured Data
  */
 export function generateCollectionStructuredData(
-    products: any[],
+    products: Product[],
     siteUrl: string,
     categoryName?: string,
 ) {
@@ -91,7 +94,7 @@ export function generateCollectionStructuredData(
  * Generates Organization Structured Data for the main site
  */
 export function generateOrganizationStructuredData(
-    storeConfig: any,
+    storeConfig: StoreConfig,
     siteUrl: string,
 ) {
     if (!storeConfig) return null;

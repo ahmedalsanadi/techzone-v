@@ -22,7 +22,7 @@ export function getBaseUrl(): string {
 }
 
 interface FetchOptions extends RequestInit {
-    params?: Record<string, string | number | boolean>;
+    params?: Record<string, string | number | boolean | undefined>;
     isProtected?: boolean;
 }
 
@@ -72,7 +72,9 @@ export async function fetchLiberoFull<T>(
 
     // Merge any override headers passed in options
     if (init.headers) {
-        const overrideHeaders = new Headers(init.headers as Record<string, string>);
+        const overrideHeaders = new Headers(
+            init.headers as Record<string, string>,
+        );
         overrideHeaders.forEach((v, k) => headers.set(k, v));
     }
 
