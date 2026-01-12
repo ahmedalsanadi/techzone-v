@@ -36,7 +36,10 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
         currentPath: Category[] = [],
     ): Category[] | null => {
         for (const node of nodes) {
-            if (node.slug === targetSlug || node.id.toString() === targetSlug) {
+            if (
+                node.slug === targetSlug ||
+                node.id?.toString() === targetSlug
+            ) {
                 return [...currentPath, node];
             }
             if (node.children?.length) {
@@ -128,7 +131,7 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
             <div className="bg-transparent -mx-4 px-4 py-4 border-b border-gray-100 mb-8 overflow-hidden">
                 <CategoryTabs
                     categories={allCategories}
-                    activeCategoryId={activePath[0]?.id.toString() || 'all'}
+                    activeCategoryId={activePath[0]?.id?.toString() || 'all'}
                     onCategorySelect={handleMainCategorySelect}
                 />
             </div>
@@ -152,7 +155,7 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
 
                     // The 'active' subcategory for this specific row is the next item in the path
                     const nextInPath = activePath[index + 1];
-                    const activeSubId = nextInPath?.id.toString() || 'all_sub';
+                    const activeSubId = nextInPath?.id?.toString() || 'all_sub';
 
                     return (
                         <div

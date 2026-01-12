@@ -89,7 +89,7 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
                                     image: product.cover_image_url || '',
                                     price: product.price,
                                     categoryId: String(
-                                        product.categories[0]?.id || '',
+                                        product.categories?.[0]?.id || '',
                                     ),
                                 });
                             }}

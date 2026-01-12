@@ -25,14 +25,14 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     const [quantity, setQuantity] = useState(1);
     const [notes, setNotes] = useState('');
 
-    const images = [product.cover_image_url, ...product.image_urls];
+    const images = [product.cover_image_url, ...(product.image_urls || [])];
     const currentPrice = product.sale_price || product.price;
 
     const calculateTotalPrice = () => {
         let totalAddonsPrice = 0;
 
         Object.entries(selectedAddons).forEach(([addonGroupId, items]) => {
-            const addonGroup = product.addons.find(
+            const addonGroup = (product.addons || []).find(
                 (a) => a.id === parseInt(addonGroupId),
             );
             if (!addonGroup) return;
@@ -76,7 +76,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         }> = [];
 
         Object.entries(selectedAddons).forEach(([addonGroupId, items]) => {
-            const addonGroup = product.addons.find(
+            const addonGroup = (product.addons || []).find(
                 (a) => a.id === parseInt(addonGroupId),
             );
             if (!addonGroup) return;
@@ -115,7 +115,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 name: product.title,
                 image: product.cover_image_url,
                 price: calculateTotalPrice() / quantity,
-                categoryId: product.categories[0]?.id.toString() || '',
+                categoryId: product.categories?.[0]?.id?.toString() || '',
                 metadata: {
                     productId: product.id,
                     productSlug: product.slug, // Store slug for navigation
@@ -159,7 +159,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                     />
 
                     {/* Addons */}
-                    {product.addons.map((addonGroup) => (
+                    {(product.addons || []).map((addonGroup) => (
                         <AddonSelector
                             key={addonGroup.id}
                             addonGroup={addonGroup}

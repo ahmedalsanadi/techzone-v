@@ -7,6 +7,7 @@ import ProductCard from '@/components/ui/ProductCard';
 import type { Product } from '@/services/types';
 import { TRANSITIONS, MIN_HEIGHTS } from './constants';
 import ProductsSkeleton from './ProductsSkeleton';
+import { useCartActions } from '@/hooks/useCartActions';
 
 interface ProductsSectionProps {
     products: Product[];
@@ -25,6 +26,7 @@ export default function ProductsSection({
     isFetching,
 }: ProductsSectionProps) {
     const t = useTranslations('Category');
+    const { addToCart } = useCartActions();
 
     // Generate a unique key from products to trigger animations on change
     const productsKey = useMemo(
@@ -84,6 +86,17 @@ export default function ProductsSection({
                                     oldPrice={p.sale_price}
                                     href={`/products/${p.id}`}
                                     addToCartLabel={t('addToCart')}
+                                    onAddToCartClick={() => {
+                                        addToCart({
+                                            id: String(p.id),
+                                            name: p.title,
+                                            image: p.cover_image_url,
+                                            price: p.price,
+                                            categoryId: String(
+                                                p.categories?.[0]?.id || '',
+                                            ),
+                                        });
+                                    }}
                                 />
                             </div>
                         ))}

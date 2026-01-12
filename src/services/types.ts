@@ -133,16 +133,16 @@ export interface Product {
     description: string;
     slug: string;
     cover_image_url: string;
-    image_urls: string[];
+    image_urls?: string[];
     price: number;
     sale_price?: number;
     has_discount: boolean;
     is_available: boolean;
     calories?: number;
     prepTime?: number;
-    categories: Array<{ id: number; name: string }>;
-    variants: any[];
-    addons: Array<{
+    categories?: Array<{ id: number; name: string }>;
+    variants?: any[];
+    addons?: Array<{
         id: number;
         name: string;
         description: string;
