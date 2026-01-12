@@ -11,6 +11,7 @@ interface CategoryCardProps {
     isMain?: boolean;
     isActive?: boolean;
     variant?: 'default' | 'circular';
+    priority?: boolean;
     onClick?: () => void;
     href?: string;
     scroll?: boolean;
@@ -22,6 +23,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
     isMain,
     isActive,
     variant = 'default',
+    priority = false,
     onClick,
     href,
     scroll = true,
@@ -59,7 +61,9 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                         src={image || ''}
                         alt={label}
                         fill
+                        priority={priority}
                         className="object-cover"
+                        sizes="(max-width: 768px) 56px, 64px"
                         fallbackComponent={FallbackIcon}
                     />
                 </div>
@@ -115,7 +119,9 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                                 src={image || ''}
                                 alt={label}
                                 fill
+                                priority={priority}
                                 className="object-contain"
+                                sizes="(max-width: 768px) 40px, 56px"
                                 fallbackComponent={FallbackIcon}
                             />
                         </div>

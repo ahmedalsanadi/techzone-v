@@ -20,20 +20,22 @@ export default function DynamicImage({
     fallbackComponent,
     containerClassName,
     className, // This will be applied directly to the Image component
+    priority,
+    loading: loadingProp,
     ...props
 }: DynamicImageProps) {
     const [error, setError] = useState(false);
-    const [loading, setLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
 
     // Reset state when src changes
     useEffect(() => {
         setError(false);
-        setLoading(true);
+        setIsLoading(true);
     }, [src]);
 
     // Handle initial loading state for cached images
     const handleLoadingComplete = () => {
-        setLoading(false);
+        setIsLoading(false);
     };
 
     if (error || !src) {
@@ -56,23 +58,26 @@ export default function DynamicImage({
                 'relative overflow-hidden w-full h-full',
                 containerClassName,
             )}>
-            {loading && (
+            {isLoading && (
                 <div className="absolute inset-0 bg-gray-100 animate-pulse z-10" />
             )}
             <Image
                 {...props}
-                unoptimized
                 src={src}
                 alt={alt}
+                priority={priority}
+                // Only set loading if priority is not set (priority takes precedence)
+                // When priority is true, Next.js Image automatically handles it and loading should not be set
+                {...(priority ? {} : { loading: loadingProp || 'lazy' })}
                 className={cn(
                     'transition-all duration-500 ease-in-out',
-                    loading ? 'blur-lg scale-[1.02]' : 'blur-0 scale-100',
+                    isLoading ? 'blur-lg scale-[1.02]' : 'blur-0 scale-100',
                     className,
                 )}
                 onLoad={handleLoadingComplete}
                 onError={() => {
                     setError(true);
-                    setLoading(false);
+                    setIsLoading(false);
                 }}
             />
         </div>

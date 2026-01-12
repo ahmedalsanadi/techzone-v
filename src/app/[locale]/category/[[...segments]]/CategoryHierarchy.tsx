@@ -41,13 +41,14 @@ function CategoryHierarchy({ tree, categoryPath }: CategoryHierarchyProps) {
                         WebkitOverflowScrolling: 'touch',
                         touchAction: 'pan-x',
                     }}>
-                    {rootCategories.map((c) => (
+                    {rootCategories.map((c, idx) => (
                         <div key={c.id} className="shrink-0">
                             <CategoryCard
                                 label={c.name}
                                 image={c.image_url || c.icon_url}
                                 href={getCategoryUrl(c)}
                                 isActive={c.id.toString() === activeRootId}
+                                priority={idx < 5} // First 5 categories get priority
                             />
                         </div>
                     ))}

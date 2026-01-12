@@ -67,39 +67,45 @@ export default function ProductsSection({
                 }}>
                 {hasProducts ? (
                     <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-6">
-                        {products.map((p, index) => (
-                            <div
-                                key={p.id}
-                                className="animate-in fade-in slide-in-from-bottom-4"
-                                style={{
-                                    animationDelay: `${Math.min(
-                                        index * 50,
-                                        300,
-                                    )}ms`,
-                                    animationDuration: `${TRANSITIONS.PRODUCT_FADE_DURATION}ms`,
-                                    animationFillMode: 'both',
-                                }}>
-                                <ProductCard
-                                    name={p.title}
-                                    image={p.cover_image_url}
-                                    price={p.price}
-                                    oldPrice={p.sale_price}
-                                    href={`/products/${p.id}`}
-                                    addToCartLabel={t('addToCart')}
-                                    onAddToCartClick={() => {
-                                        addToCart({
-                                            id: String(p.id),
-                                            name: p.title,
-                                            image: p.cover_image_url,
-                                            price: p.price,
-                                            categoryId: String(
-                                                p.categories?.[0]?.id || '',
-                                            ),
-                                        });
-                                    }}
-                                />
-                            </div>
-                        ))}
+                        {products.map((p, index) => {
+                            // First 4 products (above fold) get priority loading
+                            const isAboveFold = index < 4;
+
+                            return (
+                                <div
+                                    key={p.id}
+                                    className="animate-in fade-in slide-in-from-bottom-4"
+                                    style={{
+                                        animationDelay: `${Math.min(
+                                            index * 50,
+                                            300,
+                                        )}ms`,
+                                        animationDuration: `${TRANSITIONS.PRODUCT_FADE_DURATION}ms`,
+                                        animationFillMode: 'both',
+                                    }}>
+                                    <ProductCard
+                                        name={p.title}
+                                        image={p.cover_image_url}
+                                        price={p.price}
+                                        oldPrice={p.sale_price}
+                                        href={`/products/${p.id}`}
+                                        addToCartLabel={t('addToCart')}
+                                        priority={isAboveFold}
+                                        onAddToCartClick={() => {
+                                            addToCart({
+                                                id: String(p.id),
+                                                name: p.title,
+                                                image: p.cover_image_url,
+                                                price: p.price,
+                                                categoryId: String(
+                                                    p.categories?.[0]?.id || '',
+                                                ),
+                                            });
+                                        }}
+                                    />
+                                </div>
+                            );
+                        })}
                     </div>
                 ) : (
                     <div

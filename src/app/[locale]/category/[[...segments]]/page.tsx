@@ -34,6 +34,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
                 url: `/${locale}/category`,
                 type: 'website',
             },
+            other: {
+                'x-robots-tag': 'index, follow',
+            },
         };
     }
 
@@ -69,6 +72,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
                     {
                         url: category.image_url,
                         alt: category.name,
+                        width: 1200,
+                        height: 630,
                     },
                 ],
             }),
@@ -80,6 +85,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             ...(category.image_url && {
                 images: [category.image_url],
             }),
+        },
+        other: {
+            'x-robots-tag': 'index, follow',
         },
     };
 }
@@ -104,9 +112,11 @@ export default async function CategoryPage({ params }: Props) {
     }
 
     // Get products for the current category, or all products if no category selected
+    // Limit initial load to improve performance
     const categoryId = currentCategory?.id;
     const { data: products } = await storeService.getProducts({
         ...(categoryId ? { category_id: categoryId.toString() } : {}),
+        per_page: 20, // Limit initial load for better performance
     });
 
     return (

@@ -15,6 +15,7 @@ interface ProductCardProps {
     discountBadge?: string;
     addToCartLabel?: string;
     href?: string;
+    priority?: boolean;
     onWishlistClick?: (e: React.MouseEvent) => void;
     onAddToCartClick?: (e: React.MouseEvent) => void;
     onClick?: () => void;
@@ -28,6 +29,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     discountBadge,
     addToCartLabel,
     href = '#',
+    priority = false,
     onWishlistClick,
     onAddToCartClick,
     onClick,
@@ -55,8 +57,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
                         src={image}
                         alt={name}
                         fill
+                        priority={priority}
                         className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                        sizes="(max-width: 768px) 50vw, 25vw"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 33vw, 20vw"
                         fallbackComponent={
                             <div className="flex flex-col items-center justify-center gap-2 text-gray-300 h-full w-full">
                                 <ShoppingBasket size={32} strokeWidth={1} />
