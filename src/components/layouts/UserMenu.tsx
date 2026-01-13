@@ -18,10 +18,26 @@ import {
     DropdownMenuTrigger,
     DropdownMenuSeparator,
 } from '../ui/DropdownMenu';
+import { useRouter } from '@/i18n/navigation';
+import { useAuthStore } from '@/store/useAuthStore';
+import { authService } from '@/services/auth-service';
 
 const UserMenu = () => {
     const t = useTranslations('UserMenu');
     const locale = useLocale();
+    const router = useRouter();
+    const { user, isAuthenticated, logout: clearAuth } = useAuthStore();
+
+    const handleLogout = async () => {
+        try {
+            await authService.logout();
+        } catch (error) {
+            console.error('Logout error:', error);
+        } finally {
+            clearAuth();
+            router.refresh();
+        }
+    };
 
     return (
         <DropdownMenu dir={locale === 'ar' ? 'rtl' : 'ltr'}>
@@ -44,7 +60,7 @@ const UserMenu = () => {
                         </div>
                     </div>
                     <span className="text-libero-red font-bold text-[13px] whitespace-nowrap hidden lg:inline mx-1">
-                        {t('username')}
+                        {isAuthenticated ? user?.name : t('guest')}
                     </span>
                     <ChevronDown
                         size={14}
@@ -67,87 +83,90 @@ const UserMenu = () => {
                     </div>
                     <div className="flex flex-col">
                         <span className="text-sm font-black text-gray-900 leading-tight">
-                            {t('username')}
+                            {isAuthenticated ? user?.name : t('guest')}
                         </span>
                         <span className="text-[11px] text-gray-400 font-medium">
-                            fahad.abdullah@example.com
+                            {isAuthenticated ? user?.email : t('guestSubtitle')}
                         </span>
                     </div>
                 </div>
 
                 <DropdownMenuSeparator className="opacity-50" />
 
-                <div className="py-1">
-                    <DropdownMenuItem className="py-2.5 px-3 rounded-xl gap-3 cursor-pointer group transition-colors hover:bg-gray-50">
-                        <div className="size-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors">
-                            <User size={18} strokeWidth={2} />
+                {isAuthenticated ? (
+                    <>
+                        <div className="py-1">
+                            <DropdownMenuItem asChild>
+                                <Link
+                                    href="/profile"
+                                    className="py-2.5 px-3 rounded-xl gap-3 cursor-pointer group transition-colors hover:bg-gray-50 flex items-center">
+                                    <div className="size-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors">
+                                        <User size={18} strokeWidth={2} />
+                                    </div>
+                                    <span className="text-[13px] font-bold text-gray-700">
+                                        {t('profile')}
+                                    </span>
+                                </Link>
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem asChild>
+                                <Link
+                                    href="/my-orders"
+                                    className="py-2.5 px-3 rounded-xl gap-3 cursor-pointer group transition-colors hover:bg-gray-50 flex items-center">
+                                    <div className="size-8 rounded-lg bg-orange-50 flex items-center justify-center text-orange-500 group-hover:bg-orange-500 group-hover:text-white transition-colors">
+                                        <Package size={18} strokeWidth={2} />
+                                    </div>
+                                    <span className="text-[13px] font-bold text-gray-700">
+                                        {t('myOrders')}
+                                    </span>
+                                </Link>
+                            </DropdownMenuItem>
                         </div>
-                        <span className="text-[13px] font-bold text-gray-700">
-                            {t('profile')}
-                        </span>
-                    </DropdownMenuItem>
 
-                    <DropdownMenuItem className="py-2.5 px-3 rounded-xl gap-3 cursor-pointer group transition-colors hover:bg-gray-50">
-                        <div className="size-8 rounded-lg bg-orange-50 flex items-center justify-center text-orange-500 group-hover:bg-orange-500 group-hover:text-white transition-colors">
-                            <Package size={18} strokeWidth={2} />
+                        <DropdownMenuSeparator className="opacity-50" />
+
+                        <div className="pt-1">
+                            <DropdownMenuItem
+                                onClick={handleLogout}
+                                className="py-2.5 px-3 rounded-xl gap-3 cursor-pointer group transition-colors hover:bg-red-50 text-red-600 focus:text-red-600">
+                                <div className="size-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500 group-hover:bg-red-500 group-hover:text-white transition-colors">
+                                    <LogOut size={18} strokeWidth={2} />
+                                </div>
+                                <span className="text-[13px] font-bold">
+                                    {t('logout')}
+                                </span>
+                            </DropdownMenuItem>
                         </div>
-                        <span className="text-[13px] font-bold text-gray-700">
-                            {t('myOrders')}
-                        </span>
-                    </DropdownMenuItem>
+                    </>
+                ) : (
+                    <div className="py-1">
+                        <DropdownMenuItem asChild>
+                            <Link
+                                href="/sign-in"
+                                className="py-2.5 px-3 rounded-xl gap-3 cursor-pointer group transition-colors hover:bg-purple-50 text-gray-700 flex items-center w-full">
+                                <div className="size-8 rounded-lg bg-purple-50 flex items-center justify-center text-purple-500 group-hover:bg-purple-500 group-hover:text-white transition-colors">
+                                    <LogIn size={18} strokeWidth={2} />
+                                </div>
+                                <span className="text-[13px] font-bold bottom-1 relative">
+                                    {t('signIn')}
+                                </span>
+                            </Link>
+                        </DropdownMenuItem>
 
-                    <DropdownMenuItem className="py-2.5 px-3 rounded-xl gap-3 cursor-pointer group transition-colors hover:bg-gray-50">
-                        <div className="size-8 rounded-lg bg-green-50 flex items-center justify-center text-green-500 group-hover:bg-green-500 group-hover:text-white transition-colors">
-                            <CreditCard size={18} strokeWidth={2} />
-                        </div>
-                        <span className="text-[13px] font-bold text-gray-700">
-                            {t('wallet')}
-                        </span>
-                    </DropdownMenuItem>
-                </div>
-
-                <DropdownMenuSeparator className="opacity-50" />
-
-                <div className="py-1">
-                    <DropdownMenuItem className="p-0">
-                        <Link
-                            href="/sign-in"
-                            className="py-2.5 px-3 rounded-xl gap-3 cursor-pointer group transition-colors hover:bg-purple-50 text-gray-700 flex items-center w-full">
-                            <div className="size-8 rounded-lg bg-purple-50 flex items-center justify-center text-purple-500 group-hover:bg-purple-500 group-hover:text-white transition-colors">
-                                <LogIn size={18} strokeWidth={2} />
-                            </div>
-                            <span className="text-[13px] font-bold">
-                                {t('signIn')}
-                            </span>
-                        </Link>
-                    </DropdownMenuItem>
-
-                    <DropdownMenuItem className="p-0">
-                        <Link
-                            href="/sign-up"
-                            className="py-2.5 px-3 rounded-xl gap-3 cursor-pointer group transition-colors hover:bg-indigo-50 text-gray-700 flex items-center w-full">
-                            <div className="size-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-500 group-hover:bg-indigo-500 group-hover:text-white transition-colors">
-                                <UserPlus size={18} strokeWidth={2} />
-                            </div>
-                            <span className="text-[13px] font-bold">
-                                {t('signUp')}
-                            </span>
-                        </Link>
-                    </DropdownMenuItem>
-                </div>
-
-                <DropdownMenuSeparator className="opacity-50" />
-
-                <div className="pt-1">
-                    <DropdownMenuItem className="py-2.5 px-3 rounded-xl gap-3 cursor-pointer group transition-colors hover:bg-red-50 text-red-600 focus:text-red-600">
-                        <div className="size-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500 group-hover:bg-red-500 group-hover:text-white transition-colors">
-                            <LogOut size={18} strokeWidth={2} />
-                        </div>
-                        <span className="text-[13px] font-bold">
-                            {t('logout')}
-                        </span>
-                    </DropdownMenuItem>
-                </div>
+                        <DropdownMenuItem asChild>
+                            <Link
+                                href="/sign-up"
+                                className="py-2.5 px-3 rounded-xl gap-3 cursor-pointer group transition-colors hover:bg-indigo-50 text-gray-700 flex items-center w-full">
+                                <div className="size-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-500 group-hover:bg-indigo-500 group-hover:text-white transition-colors">
+                                    <UserPlus size={18} strokeWidth={2} />
+                                </div>
+                                <span className="text-[13px] font-bold bottom-1 relative">
+                                    {t('signUp')}
+                                </span>
+                            </Link>
+                        </DropdownMenuItem>
+                    </div>
+                )}
             </DropdownMenuContent>
         </DropdownMenu>
     );

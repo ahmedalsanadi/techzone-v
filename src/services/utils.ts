@@ -22,6 +22,7 @@ export async function getBaseHeaders(
     }
 
     // Only inject Authorization if the route is protected
+    // Customer token comes from cookies (set by auth service after login)
     if (isProtected) {
         let token: string | undefined;
 
@@ -40,10 +41,9 @@ export async function getBaseHeaders(
             if (parts.length === 2) token = parts.pop()?.split(';').shift();
         }
 
-        // Use user token if available, otherwise fallback to system token
-        const finalToken = token || env.liberoAuthToken;
-        if (finalToken) {
-            headers.set('Authorization', `Bearer ${finalToken}`);
+        // Only use customer token from cookies (no fallback)
+        if (token) {
+            headers.set('Authorization', `Bearer ${token}`);
         }
     }
 

@@ -15,6 +15,7 @@ interface PhoneInputProps {
     inputClassName?: string;
     countryCode?: string;
     flagUrl?: string;
+    disabled?: boolean;
 }
 
 export default function PhoneInput({
@@ -28,6 +29,7 @@ export default function PhoneInput({
     inputClassName = '',
     countryCode = '+966',
     flagUrl = 'https://flagcdn.com/w40/sa.png',
+    disabled = false,
 }: PhoneInputProps) {
     return (
         <div className={cn('space-y-2', className)}>
@@ -60,8 +62,10 @@ export default function PhoneInput({
                     type="tel"
                     required={required}
                     placeholder={placeholder}
+                    disabled={disabled}
                     className={cn(
                         'w-full h-16 rounded-2xl border border-[#E2E8F0] focus:border-[#B44734]/30 focus:ring-4 focus:ring-[#B44734]/5 outline-none transition-all font-bold text-lg text-[#2D3142] text-start ps-36',
+                        disabled ? 'opacity-50 cursor-not-allowed' : '',
                         inputClassName,
                     )}
                     value={value}

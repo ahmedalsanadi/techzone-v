@@ -10,10 +10,6 @@ export const env = {
         process.env.NEXT_PUBLIC_LIBERO_API_KEY ||
         process.env.LIBERO_API_KEY ||
         '',
-    liberoAuthToken:
-        process.env.NEXT_PUBLIC_LIBERO_AUTH_TOKEN ||
-        process.env.LIBERO_AUTH_TOKEN ||
-        '',
 
     // URLs
     apiUrl:

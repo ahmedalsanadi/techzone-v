@@ -78,8 +78,11 @@ export async function fetchLiberoFull<T>(
         overrideHeaders.forEach((v, k) => headers.set(k, v));
     }
 
+    // Increased timeout for slower backends or cold starts
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+    console.log(`[API] ${init.method || 'GET'} ${path}`);
 
     try {
         const response = await fetch(url.toString(), {
@@ -93,12 +96,30 @@ export async function fetchLiberoFull<T>(
             return { success: true, message: '', data: {} as T };
         }
 
-        const result: ApiResponse<T> = await response.json();
+        const contentType = response.headers.get('Content-Type');
+        let result: any;
+
+        if (contentType?.includes('application/json')) {
+            result = await response.json();
+        } else {
+            // Fallback for non-JSON responses (like HTML error pages)
+            const text = await response.text();
+            result = {
+                success: response.ok,
+                message: text || response.statusText,
+                data: null,
+            };
+        }
 
         if (!response.ok || !result.success) {
+            console.error(`[API Error] ${init.method || 'GET'} ${path}:`, {
+                status: response.status,
+                message: result.message || 'Unknown Error',
+            });
+
             throw new ApiError(
                 response.status,
-                result.message || 'API Request Failed',
+                result.message || 'Request Failed',
                 result.data,
             );
         }

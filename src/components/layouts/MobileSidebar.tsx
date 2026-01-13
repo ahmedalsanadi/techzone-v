@@ -13,6 +13,8 @@ import LanguageSwitcher from './LanguageSwitcher';
 import LogoImage from '@/components/layouts/LogoImage';
 import { useStore } from '@/components/providers/StoreProvider';
 import { siteConfig } from '@/config/site';
+import { useAuthStore } from '@/store/useAuthStore';
+import { LogOut, LogIn } from 'lucide-react';
 
 export default function MobileSidebar() {
     const { isMobileMenuOpen, setMobileMenuOpen } = useUiStore();
@@ -21,7 +23,12 @@ export default function MobileSidebar() {
     const locale = useLocale();
     const isArabic = locale === 'ar';
     const { config } = useStore();
+    const { isAuthenticated, user, logout } = useAuthStore();
 
+    const handleLogout = () => {
+        logout();
+        setMobileMenuOpen(false);
+    };
     if (!isMobileMenuOpen) return null;
 
     return (
@@ -101,8 +108,24 @@ export default function MobileSidebar() {
                 </div>
 
                 {/* Bottom Footer or secondary links could go here if needed */}
-                <div className="p-6 mt-auto border-t border-white/10">
-                    <p className="text-white/40 text-[10px] text-center">
+                <div className="p-4 border-t border-white/10 mt-auto">
+                    {isAuthenticated ? (
+                        <button
+                            onClick={handleLogout}
+                            className="w-full flex items-center gap-3 px-4 py-3 text-white hover:bg-white/10 rounded-xl transition-colors font-bold text-sm">
+                            <LogOut size={20} />
+                            {user?.name} - تسجيل الخروج
+                        </button>
+                    ) : (
+                        <Link
+                            href="/sign-in"
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="w-full flex items-center gap-3 px-4 py-3 text-white hover:bg-white/10 rounded-xl transition-colors font-bold text-sm">
+                            <LogIn size={20} />
+                            تسجيل الدخول
+                        </Link>
+                    )}
+                    <p className="text-white/40 text-[10px] text-center mt-4">
                         © {new Date().getFullYear()}{' '}
                         {config?.store?.name || siteConfig.name} Store
                     </p>

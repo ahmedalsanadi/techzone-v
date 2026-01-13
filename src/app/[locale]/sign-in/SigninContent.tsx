@@ -8,6 +8,10 @@ import AuthContainer from '@/components/auth/AuthContainer';
 import { useRouter } from '@/i18n/navigation';
 import PhoneInput from '@/components/ui/PhoneInput';
 import OtpStep from '@/components/ui/OtpStep';
+import { authService } from '@/services/auth-service';
+import { toast } from 'sonner';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useSearchParams } from 'next/navigation';
 
 interface SigninContentProps {
     config: StoreConfig;
@@ -17,20 +21,52 @@ interface SigninContentProps {
 export default function SigninContent({ config, locale }: SigninContentProps) {
     const t = useTranslations('Signin');
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const setAuth = useAuthStore((state) => state.setAuth);
+
+    const [loading, setLoading] = useState(false);
     const [step, setStep] = useState<'login' | 'otp'>('login');
+    const [isNewUser, setIsNewUser] = useState(false);
     const [formData, setFormData] = useState({
         phone: '',
     });
     const [otp, setOtp] = useState('');
 
-    const handleLoginSubmit = (e: React.FormEvent) => {
+    const handleLoginSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setStep('otp');
+        setLoading(true);
+        try {
+            const response = await authService.sendOtp(formData.phone);
+            setIsNewUser(response.is_new_user);
+            setStep('otp');
+            toast.success(t('otpSent') || 'تم إرسال رمز التحقق بنجاح');
+        } catch (error: any) {
+            toast.error(error.message || 'Error sending OTP');
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const handleOtpSubmit = (e: React.FormEvent) => {
+    const handleOtpSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Frontend only logic as requested
+        setLoading(true);
+        try {
+            const response = await authService.login(formData.phone, otp);
+            setAuth(response.customer, response.token);
+
+            toast.success(t('loginSuccess') || 'تم تسجيل الدخول بنجاح');
+
+            if (isNewUser) {
+                router.replace('/sign-up');
+            } else {
+                const redirectTo = searchParams.get('redirect') || '/';
+                router.replace(redirectTo as any);
+            }
+        } catch (error: any) {
+            toast.error(error.message || 'Invalid OTP');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const maskedPhone = `+966${formData.phone.replace(/\d(?=\d{4})/g, '*')}`;
@@ -59,7 +95,7 @@ export default function SigninContent({ config, locale }: SigninContentProps) {
                             {t('termsText')}{' '}
                             <button
                                 type="button"
-                                onClick={() => router.push('/terms')}
+                                onClick={() => router.push('/terms' as any)}
                                 className="text-libero-red font-bold hover:underline">
                                 {t('termsLink')}
                             </button>
@@ -67,8 +103,13 @@ export default function SigninContent({ config, locale }: SigninContentProps) {
 
                         <Button
                             type="submit"
+                            disabled={loading}
                             className="w-full h-16 rounded-2xl text-white font-black text-2xl shadow-xl transition-all active:scale-[0.98] mt-6 bg-libero-red shadow-libero-red/20">
-                            {t('submit')}
+                            {loading ? (
+                                <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                                t('submit')
+                            )}
                         </Button>
                     </form>
                 </div>
@@ -82,6 +123,7 @@ export default function SigninContent({ config, locale }: SigninContentProps) {
                     continueLabel={t('continue')}
                     resendLabel={t('resend')}
                     timer="00:30"
+                    loading={loading}
                 />
             )}
         </AuthContainer>

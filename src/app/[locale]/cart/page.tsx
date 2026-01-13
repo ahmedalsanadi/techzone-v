@@ -7,11 +7,13 @@ import { useCartStore } from '@/store/useCartStore';
 import { Link, useRouter } from '@/i18n/navigation';
 import { Trash2, Plus, Minus, ShoppingBag, ArrowRight } from 'lucide-react';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const CartPage = () => {
     const t = useTranslations('Cart');
     const { items, updateQuantity, removeItem, getTotalPrice, getTotalItems } =
         useCartStore();
+    const { isAuthenticated } = useAuthStore();
     const router = useRouter();
     const [isMounted, setIsMounted] = useState(false);
 
@@ -20,6 +22,9 @@ const CartPage = () => {
         setIsMounted(true);
     }, []);
 
+    const handleCheckout = () => {
+        router.push('/checkout' as any);
+    };
     if (!isMounted) return null;
 
     if (items.length === 0) {
@@ -108,8 +113,8 @@ const CartPage = () => {
 
                                             {/* Display Addons */}
                                             {item.metadata?.addonDetails &&
-                                                item.metadata.addonDetails.length >
-                                                    0 && (
+                                                item.metadata.addonDetails
+                                                    .length > 0 && (
                                                     <div className="mt-2 space-y-1">
                                                         {item.metadata.addonDetails.map(
                                                             (
@@ -122,14 +127,17 @@ const CartPage = () => {
                                                                     <span className="font-semibold text-gray-700">
                                                                         {
                                                                             addonGroup.groupName
-                                                                        }:
+                                                                        }
+                                                                        :
                                                                     </span>{' '}
                                                                     {addonGroup.items
                                                                         .map(
                                                                             (
                                                                                 item: any,
                                                                             ) =>
-                                                                                `${item.name}${
+                                                                                `${
+                                                                                    item.name
+                                                                                }${
                                                                                     item.quantity >
                                                                                     1
                                                                                         ? ` (x${item.quantity})`
@@ -155,8 +163,7 @@ const CartPage = () => {
 
                                             <div className="flex items-center gap-1 mt-1 text-[#B44734] font-black">
                                                 <span>
-                                                    {item.price *
-                                                        item.quantity}
+                                                    {item.price * item.quantity}
                                                 </span>
                                                 <CurrencySymbol className="w-3.5 h-3.5" />
                                             </div>
@@ -174,8 +181,8 @@ const CartPage = () => {
 
                                             {/* Display Addons */}
                                             {item.metadata?.addonDetails &&
-                                                item.metadata.addonDetails.length >
-                                                    0 && (
+                                                item.metadata.addonDetails
+                                                    .length > 0 && (
                                                     <div className="mt-2 space-y-1">
                                                         {item.metadata.addonDetails.map(
                                                             (
@@ -188,14 +195,17 @@ const CartPage = () => {
                                                                     <span className="font-semibold text-gray-700">
                                                                         {
                                                                             addonGroup.groupName
-                                                                        }:
+                                                                        }
+                                                                        :
                                                                     </span>{' '}
                                                                     {addonGroup.items
                                                                         .map(
                                                                             (
                                                                                 item: any,
                                                                             ) =>
-                                                                                `${item.name}${
+                                                                                `${
+                                                                                    item.name
+                                                                                }${
                                                                                     item.quantity >
                                                                                     1
                                                                                         ? ` (x${item.quantity})`
@@ -221,8 +231,7 @@ const CartPage = () => {
 
                                             <div className="flex items-center gap-1 mt-1 text-[#B44734] font-black">
                                                 <span>
-                                                    {item.price *
-                                                        item.quantity}
+                                                    {item.price * item.quantity}
                                                 </span>
                                                 <CurrencySymbol className="w-3.5 h-3.5" />
                                             </div>
@@ -312,7 +321,9 @@ const CartPage = () => {
                             </div>
                         </div>
 
-                        <button className="w-full bg-[#B44734] text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 active:scale-95">
+                        <button
+                            onClick={handleCheckout}
+                            className="w-full bg-[#B44734] text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 active:scale-95">
                             {t('checkout')}
                             <ArrowRight size={20} className="rtl:rotate-180" />
                         </button>

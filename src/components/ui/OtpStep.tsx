@@ -15,6 +15,7 @@ interface OtpStepProps {
     timer?: string;
     onResend?: () => void;
     autoFocus?: boolean;
+    loading?: boolean;
 }
 
 export default function OtpStep({
@@ -28,6 +29,7 @@ export default function OtpStep({
     timer,
     onResend,
     autoFocus = true,
+    loading = false,
 }: OtpStepProps) {
     return (
         <div className="space-y-12 animate-in fade-in slide-in-from-right-4 duration-500">
@@ -50,8 +52,13 @@ export default function OtpStep({
                 <div className="space-y-6">
                     <Button
                         type="submit"
-                        className="w-full h-16 rounded-2xl text-white font-black text-2xl shadow-xl transition-all active:scale-[0.98] bg-libero-red">
-                        {continueLabel}
+                        disabled={loading}
+                        className="w-full h-16 rounded-2xl text-white font-black text-2xl shadow-xl transition-all active:scale-[0.98] bg-libero-red shadow-libero-red/20">
+                        {loading ? (
+                            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                            continueLabel
+                        )}
                     </Button>
 
                     {timer && (

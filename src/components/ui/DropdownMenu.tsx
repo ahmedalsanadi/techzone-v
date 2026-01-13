@@ -298,7 +298,7 @@ const DropdownMenuContent = React.forwardRef<
                     side === 'top' && 'slide-in-from-bottom-2',
                     side === 'left' && 'slide-in-from-right-2',
                     side === 'right' && 'slide-in-from-left-2',
-                    'min-w-[8rem] overflow-hidden rounded-md border p-1 shadow-md',
+                    'min-w-32 overflow-hidden rounded-md border p-1 shadow-md',
                     className,
                 )}
                 onClick={(e) => e.stopPropagation()}
@@ -331,6 +331,7 @@ interface DropdownMenuItemProps extends React.HTMLAttributes<HTMLDivElement> {
     inset?: boolean;
     variant?: 'default' | 'destructive';
     disabled?: boolean;
+    asChild?: boolean;
 }
 
 const DropdownMenuItem = React.forwardRef<
@@ -338,7 +339,15 @@ const DropdownMenuItem = React.forwardRef<
     DropdownMenuItemProps
 >(
     (
-        { className, inset, variant = 'default', disabled, children, ...props },
+        {
+            className,
+            inset,
+            variant = 'default',
+            disabled,
+            asChild,
+            children,
+            ...props
+        },
         ref,
     ) => {
         const { setOpen } = React.useContext(DropdownContext);
@@ -349,30 +358,43 @@ const DropdownMenuItem = React.forwardRef<
             setOpen(false);
         };
 
-        return (
-            <div
-                ref={ref}
-                data-slot="dropdown-menu-item"
-                data-inset={inset}
-                data-variant={variant}
-                data-disabled={disabled}
-                onClick={handleClick}
-                className={cn(
-                    'relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none',
-                    'focus:bg-accent focus:text-accent-foreground',
-                    variant === 'destructive' &&
-                        'text-destructive focus:bg-destructive/10 dark:focus:bg-destructive/20 focus:text-destructive',
-                    inset && 'pl-8',
-                    disabled && 'pointer-events-none opacity-50',
-                    '[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4',
-                    '[&_svg:not([class*="text-"])]:text-muted-foreground',
-                    variant === 'destructive' && '[&_svg]:text-destructive!',
-                    className,
-                )}
-                {...props}>
-                {children}
-            </div>
-        );
+        const baseProps = {
+            ref,
+            'data-slot': 'dropdown-menu-item',
+            'data-inset': inset,
+            'data-variant': variant,
+            'data-disabled': disabled,
+            onClick: handleClick,
+            className: cn(
+                'relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none',
+                'focus:bg-accent focus:text-accent-foreground',
+                variant === 'destructive' &&
+                    'text-destructive focus:bg-destructive/10 dark:focus:bg-destructive/20 focus:text-destructive',
+                inset && 'pl-8',
+                disabled && 'pointer-events-none opacity-50',
+                '[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4',
+                '[&_svg:not([class*="text-"])]:text-muted-foreground',
+                variant === 'destructive' && '[&_svg]:text-destructive!',
+                className,
+            ),
+            ...props,
+        };
+
+        if (asChild && React.isValidElement(children)) {
+            const child = children as React.ReactElement<
+                React.HTMLAttributes<HTMLDivElement>
+            >;
+            return React.cloneElement(child, {
+                ...baseProps,
+                className: cn(baseProps.className, child.props.className),
+                onClick: (e: React.MouseEvent<HTMLDivElement>) => {
+                    child.props.onClick?.(e);
+                    handleClick(e);
+                },
+            });
+        }
+
+        return <div {...baseProps}>{children}</div>;
     },
 );
 

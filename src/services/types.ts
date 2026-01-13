@@ -236,3 +236,45 @@ export interface Collection {
     description: string;
     image_url: string | null;
 }
+
+export interface Customer {
+    id: number;
+    name: string;
+    phone: string;
+    email: string;
+}
+
+export interface CustomerProfile {
+    id: number;
+    first_name: string;
+    middle_name: string;
+    last_name: string;
+    full_name: string;
+    phone: string;
+    email: string;
+    is_profile_complete: boolean;
+    is_phone_verified: boolean;
+    is_email_verified: boolean;
+    points: number;
+    total_orders: number;
+    total_spent: number;
+    address: string | null;
+    last_login_at: string;
+    created_at: string;
+}
+
+export interface AuthResponse {
+    customer: Customer;
+    token: string;
+    store: {
+        id: number;
+        name: string;
+        slug: string;
+        store_key: string;
+        logo_url: string;
+    };
+}
+
+export interface SendOtpResponse {
+    is_new_user: boolean;
+}

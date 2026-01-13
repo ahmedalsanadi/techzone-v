@@ -1,7 +1,17 @@
 // src/app/proxy/[...path]/route.ts
+// Next.js 16 proxy route for API requests
 import { NextRequest, NextResponse } from 'next/server';
 import { getBaseHeaders } from '@/services/utils';
 import { env } from '@/config/env';
+
+// Protected API endpoints that require customer authentication
+const protectedEndpoints = [
+    '/auth/store/me',
+    '/auth/store/logout',
+    '/store/cart',
+    '/store/orders',
+    '/store/wishlist',
+];
 
 async function handleRequest(
     request: NextRequest,
@@ -12,9 +22,26 @@ async function handleRequest(
     const backendPath = `/${path.join('/')}`;
     const searchParams = request.nextUrl.searchParams.toString();
 
+    // Determine if this endpoint requires authentication
+    const isProtected = protectedEndpoints.some((endpoint) =>
+        backendPath.startsWith(endpoint),
+    );
+
+    // Get customer token from cookies
+    const token = request.cookies.get('accessToken')?.value;
+
+    // If protected endpoint and no token, return 401
+    if (isProtected && !token) {
+        return NextResponse.json(
+            { success: false, message: 'Unauthorized' },
+            { status: 401 },
+        );
+    }
+
     const headers = await getBaseHeaders(
         request.headers.get('Accept-Language') || 'ar',
         request.headers.get('Content-Type'),
+        isProtected,
     );
 
     let body: BodyInit | undefined;
@@ -27,11 +54,18 @@ async function handleRequest(
     }
 
     try {
-        const response = await fetch(
-            `${env.apiUrl}${backendPath}${
-                searchParams ? `?${searchParams}` : ''
-            }`,
-            { method, headers, body },
+        const targetUrl = `${env.apiUrl}${backendPath}${
+            searchParams ? `?${searchParams}` : ''
+        }`;
+
+        console.log(`[Proxy] ${method} -> ${targetUrl}`);
+
+        const response = await fetch(targetUrl, { method, headers, body });
+
+        console.log(
+            `[Proxy Response] ${
+                response.status
+            } <- ${targetUrl} (${response.headers.get('Content-Type')})`,
         );
 
         if (response.status === 204 || response.status === 304) {
@@ -47,7 +81,7 @@ async function handleRequest(
             },
         });
     } catch (error) {
-        console.error(error);
+        console.error(`[Proxy Error] ${method} ${backendPath}:`, error);
         return NextResponse.json(
             { message: 'Internal Server Error' },
             { status: 500 },

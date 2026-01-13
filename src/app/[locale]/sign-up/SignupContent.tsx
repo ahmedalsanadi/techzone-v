@@ -1,12 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 import { StoreConfig } from '@/services/types';
 import AuthContainer from '@/components/auth/AuthContainer';
 import PhoneInput from '@/components/ui/PhoneInput';
-import OtpStep from '@/components/ui/OtpStep';
+import { useRouter } from '@/i18n/navigation';
+import { useAuthStore } from '@/store/useAuthStore';
+import { storeService } from '@/services/store-service';
+import { toast } from 'sonner';
 
 interface SignupContentProps {
     config: StoreConfig;
@@ -15,113 +18,159 @@ interface SignupContentProps {
 
 export default function SignupContent({ config, locale }: SignupContentProps) {
     const t = useTranslations('Signup');
-    const [step, setStep] = useState<'register' | 'otp'>('register');
+    const router = useRouter();
+    const { user, updateUser } = useAuthStore();
+    const [loading, setLoading] = useState(false);
+
     const [formData, setFormData] = useState({
-        name: '',
-        phone: '',
-        email: '',
+        first_name: '',
+        middle_name: '',
+        last_name: '',
+        phone: user?.phone || '',
+        email: user?.email || '',
     });
-    const [otp, setOtp] = useState('');
 
-    const handleRegisterSubmit = (e: React.FormEvent) => {
+    useEffect(() => {
+        if (user) {
+            setFormData((prev) => ({
+                ...prev,
+                phone: user.phone || '',
+                email: user.email || '',
+            }));
+        }
+    }, [user]);
+
+    const handleRegisterSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setStep('otp');
-    };
+        setLoading(true);
+        try {
+            const updatedProfile = await storeService.updateProfile({
+                first_name: formData.first_name,
+                middle_name: formData.middle_name,
+                last_name: formData.last_name,
+                email: formData.email,
+            });
 
-    const handleOtpSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        // Frontend only logic as requested
-    };
+            // Update local store user info
+            updateUser({
+                name: updatedProfile.full_name,
+                email: updatedProfile.email,
+            });
 
-    const maskedPhone = `+966${formData.phone.replace(/\d(?=\d{4})/g, '*')}`;
+            toast.success(t('profileUpdated') || 'تم تحديث الملف الشخصي بنجاح');
+            router.replace('/');
+        } catch (error: any) {
+            toast.error(error.message || 'Error updating profile');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
-        <AuthContainer
-            config={config}
-            locale={locale}
-            title={step === 'register' ? t('title') : t('otpTitle')}
-            onBack={step === 'otp' ? () => setStep('register') : undefined}>
-            {step === 'register' ? (
-                <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <p className="text-xl font-black text-[#2D3142] text-start">
-                        {t('subtitle')}
-                    </p>
+        <AuthContainer config={config} locale={locale} title={t('title')}>
+            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <p className="text-xl font-black text-[#2D3142] text-start">
+                    {t('subtitle')}
+                </p>
 
-                    <form onSubmit={handleRegisterSubmit} className="space-y-6">
-                        {/* Name Input */}
+                <form onSubmit={handleRegisterSubmit} className="space-y-6">
+                    {/* First Name Input */}
+                    <div className="space-y-2">
+                        <label className="text-xs font-bold text-gray-400 block text-start">
+                            {t('firstName') || 'الاسم الأول'}
+                        </label>
+                        <input
+                            type="text"
+                            required
+                            placeholder="احمد"
+                            className="w-full h-16 px-6 rounded-2xl bg-[#F4F7FA] border border-[#E2E8F0] focus:border-[#B44734]/30 focus:ring-4 focus:ring-[#B44734]/5 outline-none transition-all font-bold text-lg text-[#2D3142] text-start"
+                            value={formData.first_name}
+                            onChange={(e) =>
+                                setFormData({
+                                    ...formData,
+                                    first_name: e.target.value,
+                                })
+                            }
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        {/* Middle Name */}
                         <div className="space-y-2">
                             <label className="text-xs font-bold text-gray-400 block text-start">
-                                {t('name')}
+                                {t('middleName') || 'اسم الأب'}
                             </label>
                             <input
                                 type="text"
-                                required
-                                placeholder="محمد عبدالله"
                                 className="w-full h-16 px-6 rounded-2xl bg-[#F4F7FA] border border-[#E2E8F0] focus:border-[#B44734]/30 focus:ring-4 focus:ring-[#B44734]/5 outline-none transition-all font-bold text-lg text-[#2D3142] text-start"
-                                value={formData.name}
+                                value={formData.middle_name}
                                 onChange={(e) =>
                                     setFormData({
                                         ...formData,
-                                        name: e.target.value,
+                                        middle_name: e.target.value,
                                     })
                                 }
                             />
                         </div>
-
-                        <PhoneInput
-                            label={t('phone')}
-                            value={formData.phone}
-                            onChange={(value) =>
-                                setFormData({ ...formData, phone: value })
-                            }
-                            required
-                            showRequiredIndicator
-                            inputClassName="bg-[#DCE2E9] text-gray-500"
-                        />
-
-                        {/* Email Input */}
+                        {/* Last Name */}
                         <div className="space-y-2">
                             <label className="text-xs font-bold text-gray-400 block text-start">
-                                {t('email')}
+                                {t('lastName') || 'اللقب'}
                             </label>
                             <input
-                                type="email"
-                                placeholder="someone@gmail.com"
+                                type="text"
                                 className="w-full h-16 px-6 rounded-2xl bg-[#F4F7FA] border border-[#E2E8F0] focus:border-[#B44734]/30 focus:ring-4 focus:ring-[#B44734]/5 outline-none transition-all font-bold text-lg text-[#2D3142] text-start"
-                                value={formData.email}
+                                value={formData.last_name}
                                 onChange={(e) =>
                                     setFormData({
                                         ...formData,
-                                        email: e.target.value,
+                                        last_name: e.target.value,
                                     })
                                 }
                             />
                         </div>
+                    </div>
 
-                        <Button
-                            type="submit"
-                            className="w-full h-16 rounded-2xl text-white font-black text-2xl shadow-xl transition-all active:scale-[0.98] mt-6 bg-libero-red shadow-libero-red/20"
-                            // style={{
-                            //     backgroundColor: primaryColor,
-                            //     boxShadow: `0 12px 24px -8px ${primaryColor}88`,
-                            // }}
-                        >
-                            {t('submit')}
-                        </Button>
-                    </form>
-                </div>
-            ) : (
-                <OtpStep
-                    otp={otp}
-                    onOtpChange={setOtp}
-                    onSubmit={handleOtpSubmit}
-                    maskedPhone={maskedPhone}
-                    subtitle={t('otpSubtitle')}
-                    continueLabel={t('continue')}
-                    resendLabel={t('resend')}
-                    timer="00:30"
-                />
-            )}
+                    <PhoneInput
+                        label={t('phone')}
+                        value={formData.phone}
+                        onChange={() => {}} // Phone is fixed after OTP
+                        required
+                        disabled
+                        inputClassName="bg-gray-100 text-gray-400"
+                    />
+
+                    {/* Email Input */}
+                    <div className="space-y-2">
+                        <label className="text-xs font-bold text-gray-400 block text-start">
+                            {t('email')}
+                        </label>
+                        <input
+                            type="email"
+                            placeholder="someone@gmail.com"
+                            className="w-full h-16 px-6 rounded-2xl bg-[#F4F7FA] border border-[#E2E8F0] focus:border-[#B44734]/30 focus:ring-4 focus:ring-[#B44734]/5 outline-none transition-all font-bold text-lg text-[#2D3142] text-start"
+                            value={formData.email}
+                            onChange={(e) =>
+                                setFormData({
+                                    ...formData,
+                                    email: e.target.value,
+                                })
+                            }
+                        />
+                    </div>
+
+                    <Button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full h-16 rounded-2xl text-white font-black text-2xl shadow-xl transition-all active:scale-[0.98] mt-6 bg-libero-red shadow-libero-red/20">
+                        {loading ? (
+                            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                            t('submit')
+                        )}
+                    </Button>
+                </form>
+            </div>
         </AuthContainer>
     );
 }

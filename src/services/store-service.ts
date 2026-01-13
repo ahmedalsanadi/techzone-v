@@ -8,6 +8,7 @@ import {
     Category,
     Branch,
     Collection,
+    CustomerProfile,
 } from './types';
 
 /**
@@ -102,7 +103,7 @@ export const storeService = {
     getBranches: (params: { type?: number; search?: string } = {}) =>
         fetchLibero<Branch[]>('/store/branches', {
             params,
-            isProtected: true,
+            // isProtected: true,
             next: { revalidate: 3600 },
         }),
 
@@ -111,7 +112,7 @@ export const storeService = {
      */
     getBranch: (id: string | number) =>
         fetchLibero<Branch>(`/store/branches/${id}`, {
-            isProtected: true,
+            // isProtected: true,
             next: { revalidate: 3600 },
         }),
 
@@ -142,4 +143,22 @@ export const storeService = {
             },
         }),
     ),
+
+    /**
+     * Get customer profile.
+     */
+    getProfile: () =>
+        fetchLibero<CustomerProfile>('/store/profile', {
+            isProtected: true,
+        }),
+
+    /**
+     * Update customer profile.
+     */
+    updateProfile: (data: Partial<CustomerProfile>) =>
+        fetchLibero<CustomerProfile>('/store/profile/update', {
+            method: 'POST',
+            body: JSON.stringify(data),
+            isProtected: true,
+        }),
 };
