@@ -69,6 +69,7 @@ const BranchSelectionModal: React.FC = () => {
                 const data = await storeService.getBranches({
                     type: BRANCH_TYPES.BRANCH,
                 });
+                console.log('data', data);
                 // Filter out invalid branches and ensure data structure
                 return (data || []).filter(
                     (branch) =>
@@ -77,6 +78,7 @@ const BranchSelectionModal: React.FC = () => {
             } catch (err) {
                 // Handle timeout and other errors gracefully
                 if (err instanceof Error) {
+                    console.error('Failed to load branches:', err);
                     throw err;
                 }
                 throw new Error('Failed to load branches');

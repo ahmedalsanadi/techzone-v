@@ -3,6 +3,7 @@ import { env } from '@/config/env';
 
 /**
  * Standardize header construction for both server-side and client-side requests.
+ * Note: X-Store-Key is only added on server-side. On client-side, the proxy will inject it.
  */
 export async function getBaseHeaders(
     locale?: string,
@@ -12,20 +13,27 @@ export async function getBaseHeaders(
     const headers = new Headers({
         Accept: 'application/json',
         'Accept-Language': locale || 'ar',
-        'X-Store-Key': env.liberoApiKey,
     });
+
+    // Only add X-Store-Key on server-side
+    // On client-side, the proxy will inject it from server env (not exposed to browser)
+    if (typeof window === 'undefined') {
+        headers.set('X-Store-Key', env.liberoApiKey);
+    }
+
+
 
     if (contentType && !contentType.includes('multipart/form-data')) {
         headers.set('Content-Type', contentType);
     } else if (!contentType || contentType === 'application/json') {
         headers.set('Content-Type', 'application/json');
     }
-
+    console.log('headers after contentType is set ', headers);
     // Only inject Authorization if the route is protected
     // Customer token comes from cookies (set by auth service after login)
     if (isProtected) {
         let token: string | undefined;
-
+        console.log('isProtected', isProtected);
         if (typeof window === 'undefined') {
             try {
                 const { cookies } = await import('next/headers');

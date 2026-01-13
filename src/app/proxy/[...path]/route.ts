@@ -8,9 +8,10 @@ import { env } from '@/config/env';
 const protectedEndpoints = [
     '/auth/store/me',
     '/auth/store/logout',
-    '/store/cart',
     '/store/orders',
     '/store/wishlist',
+    '/store/profile',
+    '/store/profile/update',
 ];
 
 async function handleRequest(
@@ -38,11 +39,17 @@ async function handleRequest(
         );
     }
 
+    // Get headers from client request (Accept-Language, Content-Type, etc.)
+    // But we'll inject X-Store-Key from server env (not from client)
     const headers = await getBaseHeaders(
         request.headers.get('Accept-Language') || 'ar',
         request.headers.get('Content-Type'),
         isProtected,
     );
+
+    // Always inject X-Store-Key from server-side env (never from client)
+    // This ensures the API key is never exposed in browser devtools
+    headers.set('X-Store-Key', env.liberoApiKey);
 
     let body: BodyInit | undefined;
     if (!['GET', 'HEAD'].includes(method)) {
@@ -89,13 +96,23 @@ async function handleRequest(
     }
 }
 
-export const GET = (req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) =>
-    handleRequest(req, params, 'GET');
-export const POST = (req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) =>
-    handleRequest(req, params, 'POST');
-export const PUT = (req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) =>
-    handleRequest(req, params, 'PUT');
-export const PATCH = (req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) =>
-    handleRequest(req, params, 'PATCH');
-export const DELETE = (req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) =>
-    handleRequest(req, params, 'DELETE');
+export const GET = (
+    req: NextRequest,
+    { params }: { params: Promise<{ path: string[] }> },
+) => handleRequest(req, params, 'GET');
+export const POST = (
+    req: NextRequest,
+    { params }: { params: Promise<{ path: string[] }> },
+) => handleRequest(req, params, 'POST');
+export const PUT = (
+    req: NextRequest,
+    { params }: { params: Promise<{ path: string[] }> },
+) => handleRequest(req, params, 'PUT');
+export const PATCH = (
+    req: NextRequest,
+    { params }: { params: Promise<{ path: string[] }> },
+) => handleRequest(req, params, 'PATCH');
+export const DELETE = (
+    req: NextRequest,
+    { params }: { params: Promise<{ path: string[] }> },
+) => handleRequest(req, params, 'DELETE');

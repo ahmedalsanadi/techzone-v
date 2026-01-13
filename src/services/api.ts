@@ -18,6 +18,11 @@ export class ApiError extends Error {
 }
 
 export function getBaseUrl(): string {
+    // On client-side, use proxy to hide API key from browser devtools
+    // On server-side, use direct API URL
+    if (typeof window !== 'undefined') {
+        return '/proxy';
+    }
     return env.apiUrl;
 }
 
@@ -31,6 +36,7 @@ export async function fetchLibero<T>(
     options: FetchOptions = {},
 ): Promise<T> {
     const result = await fetchLiberoFull<T>(endpoint, options);
+    console.log('result', result);
     return result.data;
 }
 
@@ -55,7 +61,16 @@ export async function fetchLiberoFull<T>(
     }
 
     const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-    const url = new URL(`${baseUrl}${path}`);
+    
+    // Handle relative URLs (proxy) vs absolute URLs (direct API)
+    let url: URL;
+    if (baseUrl.startsWith('/')) {
+        // Relative URL (proxy) - construct relative path
+        url = new URL(`${baseUrl}${path}`, typeof window !== 'undefined' ? window.location.origin : 'http://localhost');
+    } else {
+        // Absolute URL (direct API)
+        url = new URL(`${baseUrl}${path}`);
+    }
 
     if (params) {
         Object.entries(params).forEach(([k, v]) => {
@@ -78,6 +93,7 @@ export async function fetchLiberoFull<T>(
         overrideHeaders.forEach((v, k) => headers.set(k, v));
     }
 
+    console.log('headers after override headers are set ', headers);
     // Increased timeout for slower backends or cold starts
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 30000);
