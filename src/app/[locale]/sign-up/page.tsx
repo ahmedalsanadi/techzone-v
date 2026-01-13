@@ -1,34 +1,21 @@
-// src/app/[locale]/signup/page.tsx
-import React from 'react';
-import { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
-import { getStoreConfig } from '@/services/store-config';
-import SignupContent from './SignupContent';
-
-export async function generateMetadata({
-    params,
-}: {
-    params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
-    const { locale } = await params;
-    const t = await getTranslations({ locale, namespace: 'Signup' });
-
-    return {
-        title: t('title'),
-    };
-}
+// src/app/[locale]/sign-up/page.tsx
+// Redirect to unified auth page
+import { redirect } from '@/i18n/navigation';
 
 export default async function SignupPage({
     params,
+    searchParams,
 }: {
     params: Promise<{ locale: string }>;
+    searchParams: Promise<{ redirect?: string }>;
 }) {
-    const { locale } = await params;
-    const config = await getStoreConfig();
-
-    if (!config) {
-        return null; // Handle error or redirect
+    const { redirect: redirectTo } = await searchParams;
+    
+    // Redirect to unified auth page with signup step
+    // next-intl redirect automatically handles locale prefix
+    if (redirectTo) {
+        redirect(`/auth?step=signup&redirect=${encodeURIComponent(redirectTo)}` as any);
+    } else {
+        redirect('/auth?step=signup' as any);
     }
-
-    return <SignupContent config={config} locale={locale} />;
 }

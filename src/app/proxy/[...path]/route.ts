@@ -65,15 +65,19 @@ async function handleRequest(
             searchParams ? `?${searchParams}` : ''
         }`;
 
-        console.log(`[Proxy] ${method} -> ${targetUrl}`);
+        if (env.isDev) {
+            console.log(`[Proxy] ${method} -> ${targetUrl}`);
+        }
 
         const response = await fetch(targetUrl, { method, headers, body });
 
-        console.log(
-            `[Proxy Response] ${
-                response.status
-            } <- ${targetUrl} (${response.headers.get('Content-Type')})`,
-        );
+        if (env.isDev) {
+            console.log(
+                `[Proxy Response] ${
+                    response.status
+                } <- ${targetUrl} (${response.headers.get('Content-Type')})`,
+            );
+        }
 
         if (response.status === 204 || response.status === 304) {
             return new NextResponse(null, { status: response.status });

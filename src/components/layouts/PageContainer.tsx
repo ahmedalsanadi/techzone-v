@@ -24,7 +24,8 @@ export default function PageContainer({
 
     const isAuthPage =
         pathname?.includes('/sign-up') ||
-        pathname?.includes('/sign-in');
+        pathname?.includes('/sign-in') ||
+        pathname?.includes('/auth');
 
     if (isAuthPage) {
         return (

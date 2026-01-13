@@ -1,34 +1,21 @@
-// src/app/[locale]/signin/page.tsx
-import React from 'react';
-import { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
-import { getStoreConfig } from '@/services/store-config';
-import SigninContent from './SigninContent';
-
-export async function generateMetadata({
-    params,
-}: {
-    params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
-    const { locale } = await params;
-    const t = await getTranslations({ locale, namespace: 'Signin' });
-
-    return {
-        title: t('title'),
-    };
-}
+// src/app/[locale]/sign-in/page.tsx
+// Redirect to unified auth page
+import { redirect } from '@/i18n/navigation';
 
 export default async function SigninPage({
     params,
+    searchParams,
 }: {
     params: Promise<{ locale: string }>;
+    searchParams: Promise<{ redirect?: string }>;
 }) {
-    const { locale } = await params;
-    const config = await getStoreConfig();
-
-    if (!config) {
-        return null; // Handle error or redirect
+    const { redirect: redirectTo } = await searchParams;
+    
+    // Redirect to unified auth page
+    // next-intl redirect automatically handles locale prefix
+    if (redirectTo) {
+        redirect(`/auth?redirect=${encodeURIComponent(redirectTo)}` as any);
+    } else {
+        redirect('/auth' as any);
     }
-
-    return <SigninContent config={config} locale={locale} />;
 }

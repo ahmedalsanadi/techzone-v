@@ -242,6 +242,7 @@ export interface Customer {
     name: string;
     phone: string;
     email: string;
+    is_profile_complete?: boolean;
 }
 
 export interface CustomerProfile {

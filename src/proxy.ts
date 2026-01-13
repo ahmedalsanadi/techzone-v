@@ -25,16 +25,21 @@ export default async function proxy(request: NextRequest) {
         );
     });
 
-    // Redirect to sign-in if protected route and no token
-    if (isProtected && !token) {
+    // Skip auth check for auth pages themselves
+    const isAuthPage = pathname.includes('/sign-in') || 
+                       pathname.includes('/sign-up') || 
+                       pathname.includes('/auth');
+
+    // Redirect to auth if protected route and no token
+    if (isProtected && !token && !isAuthPage) {
         // Get locale from pathname or default to ar
         const segments = pathname.split('/');
         const locale =
             segments[1] === 'en' || segments[1] === 'ar' ? segments[1] : 'ar';
 
-        const signInUrl = new URL(`/${locale}/sign-in`, request.url);
-        signInUrl.searchParams.set('redirect', pathname);
-        return NextResponse.redirect(signInUrl);
+        const authUrl = new URL(`/${locale}/auth`, request.url);
+        authUrl.searchParams.set('redirect', pathname);
+        return NextResponse.redirect(authUrl);
     }
 
     // Handle i18n routing
@@ -43,7 +48,7 @@ export default async function proxy(request: NextRequest) {
 
 export const config = {
     // Match all pathnames except for
-    // - … if they start with `/api`, `/_next` or `/_vercel`
+    // - … if they start with `/api`, `/proxy`, `/_next` or `/_vercel`
     // - … the ones containing a dot (e.g. `favicon.ico`)
-    matcher: ['/((?!api|_next|_vercel|.*\\..*).*)'],
+    matcher: ['/((?!api|proxy|_next|_vercel|.*\\..*).*)'],
 };

@@ -25,8 +25,16 @@ export default function MobileSidebar() {
     const { config } = useStore();
     const { isAuthenticated, user, logout } = useAuthStore();
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        // Always clear local state first
         logout();
+        // Try to logout on server if authenticated (but don't block)
+        if (isAuthenticated) {
+            const { authService } = await import('@/services/auth-service');
+            authService.logout().catch(() => {
+                // Ignore errors - we've already cleared local state
+            });
+        }
         setMobileMenuOpen(false);
     };
     if (!isMobileMenuOpen) return null;

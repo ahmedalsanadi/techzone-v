@@ -21,19 +21,16 @@ export async function getBaseHeaders(
         headers.set('X-Store-Key', env.liberoApiKey);
     }
 
-
-
     if (contentType && !contentType.includes('multipart/form-data')) {
         headers.set('Content-Type', contentType);
     } else if (!contentType || contentType === 'application/json') {
         headers.set('Content-Type', 'application/json');
     }
-    console.log('headers after contentType is set ', headers);
+
     // Only inject Authorization if the route is protected
     // Customer token comes from cookies (set by auth service after login)
     if (isProtected) {
         let token: string | undefined;
-        console.log('isProtected', isProtected);
         if (typeof window === 'undefined') {
             try {
                 const { cookies } = await import('next/headers');
