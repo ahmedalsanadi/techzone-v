@@ -9,6 +9,7 @@ import CurrencySymbol from '@/components/ui/CurrencySymbol';
 import { cn } from '@/lib/utils';
 
 import { Order } from '@/lib/mock-data';
+import { Link } from '@/i18n/navigation';
 
 interface OrderCardProps {
     order: Order;
@@ -115,9 +116,12 @@ export default function OrderCard({ order }: OrderCardProps) {
                 {order.status === 'delivered' ? (
                     <>
                         <Button
+                            asChild
                             variant="secondary"
                             className="flex-1 bg-[#F1F3F5] text-gray-600 hover:bg-gray-200 border-none font-bold h-11 rounded-xl">
-                            {t('details')}
+                            <Link href={`/my-orders/${order.id}`}>
+                                {t('details')}
+                            </Link>
                         </Button>
                         <Button className="flex-1 bg-[#B44B3A] hover:bg-[#A04234] text-white border-none font-bold h-11 rounded-xl shadow-lg shadow-[#B44B3A]/20">
                             {t('reorder')}
@@ -130,8 +134,12 @@ export default function OrderCard({ order }: OrderCardProps) {
                             className="flex-1 bg-[#F1F3F5] text-gray-600 hover:bg-gray-200 border-none font-bold h-11 rounded-xl">
                             {t('reportProblem')}
                         </Button>
-                        <Button className="flex-1 bg-[#FDE8E4] text-[#B44B3A] hover:bg-[#FCD8D2] border-none font-bold h-11 rounded-xl">
-                            {t('details')}
+                        <Button
+                            asChild
+                            className="flex-1 bg-[#FDE8E4] text-[#B44B3A] hover:bg-[#FCD8D2] border-none font-bold h-11 rounded-xl">
+                            <Link href={`/my-orders/${order.id}`}>
+                                {t('details')}
+                            </Link>
                         </Button>
                     </>
                 )}
