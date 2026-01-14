@@ -2,7 +2,7 @@ import React from 'react';
 import { getTranslations } from 'next-intl/server';
 import OrderCard from './OrderCard';
 import SubHeaderManager from '@/components/layouts/SubHeaderManager';
-import { Order } from '@/lib/mock-data';
+import { Order } from '../services/order-services';
 
 interface MyOrdersViewProps {
     orders: Order[];

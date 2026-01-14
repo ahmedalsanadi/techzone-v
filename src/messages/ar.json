@@ -181,6 +181,7 @@
   "Orders": {
     "title": "طلباتي",
     "orderNumber": "طلب رقم #{number}",
+    "orderNumberTitle": "طلب رقم #{number}",
     "branch": "فرع {name}",
     "createdAt": "تم انشاء الطلب في {date}, {time}",
     "deliveryTo": "توصيل إلى {location}",
@@ -188,9 +189,46 @@
     "details": "التفاصيل",
     "reorder": "إعادة الطلب",
     "reportProblem": "الإبلاغ عن مشكلة",
+    "navigation": {
+      "home": "الرئيسية",
+      "myOrders": "طلباتي"
+    },
+    "actions": {
+      "rateOrder": "تقييم الطلب",
+      "cancelOrder": "إلغاء الطلب",
+      "reorder": "إعادة الطلب",
+      "reportProblem": "الإبلاغ عن مشكلة"
+    },
+    "courier": {
+      "title": "طلبك في طريقه إليك!",
+      "subtitle": "تم تسليم هذا الطلب للمندوب محمد ليقوم بإيصاله لك.",
+      "actions": {
+        "track": "تتبع المندوب",
+        "message": "راسل المندوب",
+        "call": "اتصل بالمندوب"
+      }
+    },
     "status": {
       "delivered": "تم التوصيل",
-      "waiting": "في انتظار الموعد"
+      "waiting": "في انتظار الموعد",
+      "preparing": "قيد التحضير",
+      "with_courier": "مع المندوب",
+      "cancelled": "ملغي",
+      "timelineTitle": "تتبع حالة الطلب"
+    },
+    "summary": {
+      "title": "تفاصيل الطلب",
+      "orderNumber": "رقم الطلب",
+      "createdAt": "تاريخ انشاء الطلب",
+      "deliveryMethod": "طريقة الطلب",
+      "address": "العنوان",
+      "deliveryTime": "موعد الطلب",
+      "totalAmount": "قيمة الطلب",
+      "paymentMethod": "طريقة الدفع"
+    },
+    "products": {
+      "title": "المنتجات",
+      "unit": "منتج"
     }
   },
   "NotFound": {

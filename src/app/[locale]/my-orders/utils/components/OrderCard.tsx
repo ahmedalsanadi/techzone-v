@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/Badge';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
 import { cn } from '@/lib/utils';
 
-import { Order } from '@/lib/mock-data';
+import { Order } from '../services/order-services';
 import { Link } from '@/i18n/navigation';
 
 interface OrderCardProps {
@@ -29,9 +29,24 @@ export default function OrderCard({ order }: OrderCardProps) {
             text: 'text-[#FBC02D]',
             label: t('status.waiting'),
         },
+        preparing: {
+            bg: 'bg-[#E3F2FD]',
+            text: 'text-[#1976D2]',
+            label: t('status.preparing') || 'Preparing',
+        },
+        with_courier: {
+            bg: 'bg-[#E8F5E9]',
+            text: 'text-[#2E7D32]',
+            label: t('status.with_courier') || 'With Courier',
+        },
+        cancelled: {
+            bg: 'bg-red-50',
+            text: 'text-red-600',
+            label: t('status.cancelled') || 'Cancelled',
+        },
     };
 
-    const currentStatus = statusConfig[order.status];
+    const currentStatus = statusConfig[order.status] || statusConfig.waiting;
 
     return (
         <div className="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col gap-5 shadow-sm hover:shadow-md transition-all duration-300 ">

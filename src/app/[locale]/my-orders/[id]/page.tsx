@@ -1,5 +1,4 @@
-//src/app/[locale]/my-orders/[id]/page.tsx
-
+// src/app/[locale]/my-orders/[id]/page.tsx
 import { notFound } from 'next/navigation';
 import { getOrderById } from '../utils/services/order-services';
 import OrderDetailsView from '../utils/components/OrderDetailsView';
@@ -9,7 +8,7 @@ export default async function OrderPage({
 }: {
     params: Promise<{ locale: string; id: string }>;
 }) {
-    const { locale, id } = await params;
+    const {id } = await params;
 
     // Simulate fetching orders from an API
     const order = await getOrderById(id);

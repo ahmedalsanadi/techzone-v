@@ -181,6 +181,7 @@
   "Orders": {
     "title": "My Orders",
     "orderNumber": "Order #{number}",
+    "orderNumberTitle": "Order #{number}",
     "branch": "{name} Branch",
     "createdAt": "Order created on {date}, {time}",
     "deliveryTo": "Delivery to {location}",
@@ -188,9 +189,46 @@
     "details": "Details",
     "reorder": "Reorder",
     "reportProblem": "Report a Problem",
+    "navigation": {
+      "home": "Home",
+      "myOrders": "My Orders"
+    },
+    "actions": {
+      "rateOrder": "Rate Order",
+      "cancelOrder": "Cancel Order",
+      "reorder": "Reorder",
+      "reportProblem": "Report Problem"
+    },
+    "courier": {
+      "title": "Your order is on its way!",
+      "subtitle": "This order has been handed over to courier Mohamed to deliver it to you.",
+      "actions": {
+        "track": "Track Courier",
+        "message": "Message Courier",
+        "call": "Call Courier"
+      }
+    },
     "status": {
       "delivered": "Delivered",
-      "waiting": "Waiting"
+      "waiting": "Waiting",
+      "preparing": "Preparing",
+      "with_courier": "With Courier",
+      "cancelled": "Cancelled",
+      "timelineTitle": "Track Order Status"
+    },
+    "summary": {
+      "title": "Order Details",
+      "orderNumber": "Order Number",
+      "createdAt": "Order Created At",
+      "deliveryMethod": "Order Method",
+      "address": "Address",
+      "deliveryTime": "Order Time",
+      "totalAmount": "Order Total",
+      "paymentMethod": "Payment Method"
+    },
+    "products": {
+      "title": "Products",
+      "unit": "products"
     }
   },
   "NotFound": {
