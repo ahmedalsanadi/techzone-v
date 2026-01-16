@@ -26,9 +26,7 @@ export default async function proxy(request: NextRequest) {
     });
 
     // Skip auth check for auth pages themselves
-    const isAuthPage = pathname.includes('/sign-in') || 
-                       pathname.includes('/sign-up') || 
-                       pathname.includes('/auth');
+    const isAuthPage = pathname.includes('/auth');
 
     // Redirect to auth if protected route and no token
     if (isProtected && !token && !isAuthPage) {

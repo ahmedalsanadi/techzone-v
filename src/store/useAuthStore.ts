@@ -25,11 +25,13 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: false,
             isProfileComplete: false,
             setAuth: (user, token) => {
-                // Set cookie for server routing / middleware
+                // Set cookies for server routing / middleware
                 if (typeof window !== 'undefined') {
-                    document.cookie = `accessToken=${token}; path=/; max-age=${
-                        60 * 60 * 24 * 7
-                    }; SameSite=Lax`;
+                    const maxAge = 60 * 60 * 24 * 7; // 7 days
+                    const isComplete = user.is_profile_complete ?? false;
+                    
+                    document.cookie = `accessToken=${token}; path=/; max-age=${maxAge}; SameSite=Lax`;
+                    document.cookie = `isProfileComplete=${isComplete}; path=/; max-age=${maxAge}; SameSite=Lax`;
                 }
                 set({ 
                     user, 
@@ -39,6 +41,12 @@ export const useAuthStore = create<AuthState>()(
                 });
             },
             setProfile: (profile) => {
+                // Update profile completion cookie
+                if (typeof window !== 'undefined') {
+                    const maxAge = 60 * 60 * 24 * 7; // 7 days
+                    const isComplete = profile.is_profile_complete ?? false;
+                    document.cookie = `isProfileComplete=${isComplete}; path=/; max-age=${maxAge}; SameSite=Lax`;
+                }
                 set({ 
                     profile,
                     isProfileComplete: profile.is_profile_complete ?? false,
@@ -49,10 +57,11 @@ export const useAuthStore = create<AuthState>()(
                 });
             },
             logout: () => {
-                // Clear cookie
+                // Clear cookies
                 if (typeof window !== 'undefined') {
-                    document.cookie =
-                        'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+                    const expireDate = 'Thu, 01 Jan 1970 00:00:00 GMT';
+                    document.cookie = `accessToken=; path=/; expires=${expireDate}`;
+                    document.cookie = `isProfileComplete=; path=/; expires=${expireDate}`;
                 }
                 set({ 
                     user: null, 

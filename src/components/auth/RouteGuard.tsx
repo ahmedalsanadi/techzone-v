@@ -32,9 +32,7 @@ export default function RouteGuard({
     useEffect(() => {
         const checkAccess = async () => {
             // Check if this is an auth page
-            const isAuthPage = pathname?.includes('/auth') || 
-                             pathname?.includes('/sign-in') || 
-                             pathname?.includes('/sign-up');
+            const isAuthPage = pathname?.includes('/auth');
 
             // If user is authenticated and profile is complete, redirect from auth pages
             if (isAuthPage && isAuthenticated && checkProfileComplete()) {
