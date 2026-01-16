@@ -1,7 +1,8 @@
 //src/store/useAuthStore.ts
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { Customer, CustomerProfile } from '@/services/types';
+import type { Customer, CustomerProfile } from '@/types/auth';
+import { authCookies } from '@/lib/auth';
 
 interface AuthState {
     user: Customer | null;
@@ -26,43 +27,32 @@ export const useAuthStore = create<AuthState>()(
             isProfileComplete: false,
             setAuth: (user, token) => {
                 // Set cookies for server routing / middleware
-                if (typeof window !== 'undefined') {
-                    const maxAge = 60 * 60 * 24 * 7; // 7 days
-                    const isComplete = user.is_profile_complete ?? false;
-                    
-                    document.cookie = `accessToken=${token}; path=/; max-age=${maxAge}; SameSite=Lax`;
-                    document.cookie = `isProfileComplete=${isComplete}; path=/; max-age=${maxAge}; SameSite=Lax`;
-                }
+                authCookies.setAccessToken(token);
+                // Note: Customer from login doesn't have is_profile_complete
+                // Profile completion will be set when profile is loaded
                 set({ 
                     user, 
                     token, 
                     isAuthenticated: true,
-                    isProfileComplete: user.is_profile_complete ?? false,
+                    isProfileComplete: false, // Will be updated when profile is loaded
                 });
             },
             setProfile: (profile) => {
                 // Update profile completion cookie
-                if (typeof window !== 'undefined') {
-                    const maxAge = 60 * 60 * 24 * 7; // 7 days
-                    const isComplete = profile.is_profile_complete ?? false;
-                    document.cookie = `isProfileComplete=${isComplete}; path=/; max-age=${maxAge}; SameSite=Lax`;
-                }
+                authCookies.setProfileComplete(profile.is_profile_complete);
                 set({ 
                     profile,
-                    isProfileComplete: profile.is_profile_complete ?? false,
+                    isProfileComplete: profile.is_profile_complete,
                     user: get().user ? {
                         ...get().user!,
-                        is_profile_complete: profile.is_profile_complete,
+                        // Note: Customer type doesn't have is_profile_complete,
+                        // but we keep it in state for convenience
                     } : null,
                 });
             },
             logout: () => {
                 // Clear cookies
-                if (typeof window !== 'undefined') {
-                    const expireDate = 'Thu, 01 Jan 1970 00:00:00 GMT';
-                    document.cookie = `accessToken=; path=/; expires=${expireDate}`;
-                    document.cookie = `isProfileComplete=; path=/; expires=${expireDate}`;
-                }
+                authCookies.clearAll();
                 set({ 
                     user: null, 
                     profile: null,
@@ -78,9 +68,10 @@ export const useAuthStore = create<AuthState>()(
             },
             checkProfileComplete: () => {
                 const state = get();
+                // Check profile completion from profile data or state flag
+                // Note: Customer type doesn't have is_profile_complete field
                 return state.isProfileComplete || 
-                       (state.profile?.is_profile_complete ?? false) ||
-                       (state.user?.is_profile_complete ?? false);
+                       (state.profile?.is_profile_complete ?? false);
             },
         }),
         {

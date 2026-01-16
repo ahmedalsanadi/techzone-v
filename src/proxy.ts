@@ -3,8 +3,7 @@
 import createMiddleware from 'next-intl/middleware';
 import { routing } from './i18n/routing';
 import { NextRequest, NextResponse } from 'next/server';
-
-const protectedRoutes = ['/my-orders', '/payment', '/profile', '/checkout'];
+import { PROTECTED_ROUTES, AUTH_COOKIES } from '@/lib/auth';
 const intlMiddleware = createMiddleware(routing);
 
 /**
@@ -13,11 +12,11 @@ const intlMiddleware = createMiddleware(routing);
  */
 export default async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
-    const token = request.cookies.get('accessToken')?.value;
+    const token = request.cookies.get(AUTH_COOKIES.ACCESS_TOKEN)?.value;
 
     // Check if the current route is protected
     // We check both with and without locale prefix
-    const isProtected = protectedRoutes.some((route) => {
+    const isProtected = PROTECTED_ROUTES.some((route) => {
         return (
             pathname === route ||
             pathname.startsWith(`${route}/`) ||

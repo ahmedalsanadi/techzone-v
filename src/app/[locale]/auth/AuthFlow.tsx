@@ -15,8 +15,9 @@ import { toast } from 'sonner';
 import { useAuthStore } from '@/store/useAuthStore';
 import { normalizeRedirectPath } from '@/lib/utils/redirect';
 import { env } from '@/config/env';
-
-type AuthStep = 'phone' | 'otp' | 'signup';
+import type { AuthStep, ProfileUpdateRequest } from '@/types/auth';
+import { authStorage, getInitialAuthStep } from '@/lib/auth';
+import { formatMaskedPhone } from '@/lib/auth/utils';
 
 interface AuthFlowProps {
     config: StoreConfig;
@@ -34,7 +35,6 @@ export default function AuthFlow({
     const t = useTranslations('Auth');
     const router = useRouter();
     const searchParams = useSearchParams();
-    console.log('searchParams in AuthFlow componets is' + searchParams);
     const {
         user,
         token,
@@ -45,55 +45,17 @@ export default function AuthFlow({
     } = useAuthStore();
 
     // State management - restore from sessionStorage on page refresh
-    const [step, setStep] = useState<AuthStep>(() => {
-        // On page refresh, try to restore step from sessionStorage
-        if (typeof window !== 'undefined') {
-            const storedStep = sessionStorage.getItem(
-                'auth_step',
-            ) as AuthStep | null;
-            const storedIsNewUser =
-                sessionStorage.getItem('auth_is_new_user') === 'true';
-            const storedPhone = sessionStorage.getItem('auth_phone');
-
-            // If we have stored state, validate and use it
-            if (storedStep && storedPhone) {
-                // Validate stored step makes sense
-                if (storedStep === 'otp' && storedPhone) {
-                    return 'otp';
-                }
-                if (storedStep === 'signup' && storedIsNewUser && storedPhone) {
-                    return 'signup';
-                }
-            }
-        }
-
-        // Determine initial step based on URL params first, then auth state
-        if (initialStep === 'signup') return 'signup';
-        if (initialStep === 'otp') return 'otp';
-        // Only check auth state if no initial step specified
-        if (!initialStep && isAuthenticated && !checkProfileComplete())
-            return 'signup';
-        return 'phone';
-    });
+    const [step, setStep] = useState<AuthStep>(() =>
+        getInitialAuthStep(initialStep, isAuthenticated, checkProfileComplete),
+    );
 
     const [loading, setLoading] = useState(false);
     // Persist is_new_user flag in sessionStorage to survive navigation
-    const [isNewUser, setIsNewUser] = useState(() => {
-        if (typeof window !== 'undefined') {
-            const stored = sessionStorage.getItem('auth_is_new_user');
-            return stored === 'true';
-        }
-        return false;
-    });
+    const [isNewUser, setIsNewUser] = useState(() => authStorage.getIsNewUser());
     // Persist phone in sessionStorage to survive navigation
-    const [phone, setPhone] = useState(() => {
-        if (typeof window !== 'undefined') {
-            return sessionStorage.getItem('auth_phone') || '';
-        }
-        return '';
-    });
+    const [phone, setPhone] = useState(() => authStorage.getPhone() || '');
     const [otp, setOtp] = useState('');
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<ProfileUpdateRequest>({
         first_name: '',
         middle_name: '',
         last_name: '',
@@ -102,24 +64,13 @@ export default function AuthFlow({
 
     // Persist phone to sessionStorage when it changes
     useEffect(() => {
-        if (typeof window !== 'undefined' && phone) {
-            sessionStorage.setItem('auth_phone', phone);
-        } else if (typeof window !== 'undefined' && !phone) {
-            sessionStorage.removeItem('auth_phone');
-        }
+        authStorage.setPhone(phone);
     }, [phone]);
 
     // Persist is_new_user flag and current step to sessionStorage when they change
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            if (isNewUser) {
-                sessionStorage.setItem('auth_is_new_user', 'true');
-            } else {
-                sessionStorage.removeItem('auth_is_new_user');
-            }
-            // Persist current step for page refresh handling
-            sessionStorage.setItem('auth_step', step);
-        }
+        authStorage.setIsNewUser(isNewUser);
+        authStorage.setStep(step);
     }, [isNewUser, step]);
 
     // Validate current step based on auth state and is_new_user flag
@@ -322,10 +273,8 @@ export default function AuthFlow({
 
             // Clear phone from sessionStorage after successful login
             // Keep is_new_user flag if user needs to complete profile
-            if (typeof window !== 'undefined') {
-                sessionStorage.removeItem('auth_phone');
-                // Don't clear auth_step yet - will be cleared after signup or redirect
-            }
+            authStorage.setPhone('');
+            // Don't clear auth_step yet - will be cleared after signup or redirect
 
             toast.success(t('loginSuccess') || 'تم تسجيل الدخول بنجاح');
 
@@ -336,10 +285,7 @@ export default function AuthFlow({
                     redirectTo || searchParams.get('redirect'),
                 );
                 // Clear auth-related sessionStorage since we're done with auth flow
-                if (typeof window !== 'undefined') {
-                    sessionStorage.removeItem('auth_is_new_user');
-                    sessionStorage.removeItem('auth_step');
-                }
+                authStorage.clearAuthFlow();
                 setIsNewUser(false);
                 router.replace(redirectPath as any);
             }
@@ -378,12 +324,14 @@ export default function AuthFlow({
 
         setLoading(true);
         try {
-            const updatedProfile = await storeService.updateProfile({
+            const updatePayload: ProfileUpdateRequest = {
                 first_name: formData.first_name,
-                middle_name: formData.middle_name,
-                last_name: formData.last_name,
-                email: formData.email,
-            });
+                ...(formData.middle_name && { middle_name: formData.middle_name }),
+                ...(formData.last_name && { last_name: formData.last_name }),
+                ...(formData.email && { email: formData.email }),
+            };
+            
+            const updatedProfile = await storeService.updateProfile(updatePayload);
 
             setProfile(updatedProfile);
 
@@ -419,10 +367,7 @@ export default function AuthFlow({
                     t('unauthorizedError') ||
                     'انتهت صلاحية الجلسة. يرجى تسجيل الدخول مرة أخرى';
                 // If unauthorized, redirect to phone step
-                if (typeof window !== 'undefined') {
-                    sessionStorage.removeItem('auth_phone');
-                    sessionStorage.removeItem('auth_is_new_user');
-                }
+                authStorage.clearAll();
                 setIsNewUser(false);
                 setStep('phone');
             }
@@ -453,8 +398,8 @@ export default function AuthFlow({
             if (!isAuthenticated || !isNewUser) {
                 setStep('phone');
                 // Clear is_new_user flag if going back from signup when not authenticated
-                if (!isAuthenticated && typeof window !== 'undefined') {
-                    sessionStorage.removeItem('auth_is_new_user');
+                if (!isAuthenticated) {
+                    authStorage.setIsNewUser(false);
                     setIsNewUser(false);
                 }
             }
@@ -497,9 +442,7 @@ export default function AuthFlow({
         }
     };
 
-    const maskedPhone = phone
-        ? `+966${phone.replace(/\d(?=\d{4})/g, '*')}`
-        : '';
+    const maskedPhone = formatMaskedPhone(phone);
 
     // Render based on current step
     if (step === 'phone') {
@@ -608,7 +551,7 @@ export default function AuthFlow({
                             <input
                                 type="text"
                                 className="w-full h-16 px-6 rounded-2xl bg-[#F4F7FA] border border-[#E2E8F0] focus:border-[#B44734]/30 focus:ring-4 focus:ring-[#B44734]/5 outline-none transition-all font-bold text-lg text-[#2D3142] text-start"
-                                value={formData.middle_name}
+                                value={formData.middle_name || ''}
                                 onChange={(e) =>
                                     setFormData({
                                         ...formData,

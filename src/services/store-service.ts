@@ -8,8 +8,8 @@ import {
     Category,
     Branch,
     Collection,
-    CustomerProfile,
 } from './types';
+import type { CustomerProfile, ProfileUpdateRequest } from '@/types/auth';
 
 /**
  * Service for store-related data fetching.
@@ -155,7 +155,7 @@ export const storeService = {
     /**
      * Update customer profile.
      */
-    updateProfile: (data: Partial<CustomerProfile>) =>
+    updateProfile: (data: ProfileUpdateRequest) =>
         fetchLibero<CustomerProfile>('/store/profile/update', {
             method: 'POST',
             body: JSON.stringify(data),

@@ -1,5 +1,6 @@
 //src/services/utils.ts
 import { env } from '@/config/env';
+import { AUTH_COOKIES } from '@/lib/auth/constants';
 
 /**
  * Standardize header construction for both server-side and client-side requests.
@@ -42,25 +43,28 @@ export async function getBaseHeaders(
             }
         } else {
             // Read token from cookies on client-side
-            // Try multiple methods to ensure we get the token
+            // Use the same logic as authCookies.getAccessToken() but inline to avoid circular deps
             try {
                 // Method 1: Direct cookie parsing
                 const value = `; ${document.cookie}`;
-                const parts = value.split(`; accessToken=`);
+                const parts = value.split(`; ${AUTH_COOKIES.ACCESS_TOKEN}=`);
                 if (parts.length === 2) {
-                    token = parts.pop()?.split(';').shift()?.trim();
+                    token =
+                        parts.pop()?.split(';').shift()?.trim() || undefined;
                 }
 
-                // Method 2: If Method 1 didn't work, try using cookie string directly
+                // Method 2: Regex match if Method 1 didn't work
                 if (!token) {
-                    const cookieMatch =
-                        document.cookie.match(/accessToken=([^;]+)/);
+                    const cookieMatch = document.cookie.match(
+                        new RegExp(
+                            `(?:^|; )${AUTH_COOKIES.ACCESS_TOKEN}=([^;]*)`,
+                        ),
+                    );
                     if (cookieMatch && cookieMatch[1]) {
                         token = cookieMatch[1].trim();
                     }
                 }
             } catch (e) {
-                // If cookie reading fails, token remains undefined
                 if (env.isDev) {
                     console.warn('Failed to read accessToken from cookies:', e);
                 }

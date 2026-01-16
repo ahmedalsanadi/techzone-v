@@ -3,16 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getBaseHeaders } from '@/services/utils';
 import { env } from '@/config/env';
-
-// Protected API endpoints that require customer authentication
-const protectedEndpoints = [
-    '/auth/store/me',
-    '/auth/store/logout',
-    '/store/orders',
-    '/store/wishlist',
-    '/store/profile',
-    '/store/profile/update',
-];
+import { PROTECTED_API_ENDPOINTS, AUTH_COOKIES } from '@/lib/auth';
 
 async function handleRequest(
     request: NextRequest,
@@ -24,12 +15,12 @@ async function handleRequest(
     const searchParams = request.nextUrl.searchParams.toString();
 
     // Determine if this endpoint requires authentication
-    const isProtected = protectedEndpoints.some((endpoint) =>
+    const isProtected = PROTECTED_API_ENDPOINTS.some((endpoint) =>
         backendPath.startsWith(endpoint),
     );
 
     // Get customer token from cookies
-    const token = request.cookies.get('accessToken')?.value;
+    const token = request.cookies.get(AUTH_COOKIES.ACCESS_TOKEN)?.value;
 
     // If protected endpoint and no token, return 401
     if (isProtected && !token) {

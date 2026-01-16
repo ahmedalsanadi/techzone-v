@@ -1,6 +1,10 @@
 //src/services/auth-service.ts
 import { fetchLibero, fetchLiberoFull } from './api';
-import { AuthResponse, Customer, SendOtpResponse, ApiResponse } from './types';
+import type {
+    AuthResponse,
+    Customer,
+    SendOtpResponse,
+} from '@/types/auth';
 
 /**
  * Service for customer authentication.
@@ -65,20 +69,21 @@ export const authService = {
      */
     async logout(): Promise<void> {
         try {
-            const response = await fetchLiberoFull<null>('/auth/store/logout', {
+            await fetchLiberoFull<null>('/auth/store/logout', {
                 method: 'POST',
                 isProtected: true,
             });
             // Logout successful - response.data is null, which is expected
             // No need to return anything
-        } catch (error: any) {
+        } catch (error: unknown) {
             // Even if logout fails on server, we still want to clear local state
             // This ensures user can logout even if API call fails
             // Only log in dev mode to avoid console noise
             if (process.env.NODE_ENV === 'development') {
+                const errorMessage = error instanceof Error ? error.message : String(error);
                 console.warn(
                     'Logout API call failed, but clearing local state:',
-                    error?.message || error,
+                    errorMessage,
                 );
             }
             // Don't rethrow - we want logout to succeed locally even if API fails
