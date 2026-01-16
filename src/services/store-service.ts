@@ -146,6 +146,29 @@ export const storeService = {
 
     /**
      * Get customer profile.
+     * {
+     * 
+    "success": true,
+    "message": "تم جلب الملف الشخصي بنجاح",
+    "data": {
+        "id": 12,
+        "first_name": "احمد",
+        "middle_name": null,
+        "last_name": "علي",
+        "full_name": "احمد  علي",
+        "phone": "0501234561",
+        "email": "ahmed2@example.com",
+        "is_profile_complete": true,
+        "is_phone_verified": true,
+        "is_email_verified": false,
+        "points": 0,
+        "total_orders": 0,
+        "total_spent": 0,
+        "address": null,
+        "last_login_at": "2026-01-16T21:28:22.000000Z",
+        "created_at": "2026-01-16T21:27:06.000000Z"
+    }
+}
      */
     getProfile: () =>
         fetchLibero<CustomerProfile>('/store/profile', {
@@ -154,6 +177,9 @@ export const storeService = {
 
     /**
      * Update customer profile.
+     * {
+     * 
+     * }
      */
     updateProfile: (data: ProfileUpdateRequest) =>
         fetchLibero<CustomerProfile>('/store/profile/update', {

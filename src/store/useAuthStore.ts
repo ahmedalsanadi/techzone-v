@@ -40,14 +40,29 @@ export const useAuthStore = create<AuthState>()(
             setProfile: (profile) => {
                 // Update profile completion cookie
                 authCookies.setProfileComplete(profile.is_profile_complete);
+                
+                // Update user object with profile data (name, email, etc.)
+                // This ensures UserMenu displays the correct name after signup
+                const currentUser = get().user;
+                const updatedUser: Customer = currentUser
+                    ? {
+                          ...currentUser,
+                          name: profile.full_name, // Use full_name from profile
+                          email: profile.email, // Update email if changed
+                          phone: profile.phone, // Update phone if changed
+                      }
+                    : {
+                          // If no user object exists, create one from profile
+                          id: profile.id,
+                          name: profile.full_name,
+                          email: profile.email,
+                          phone: profile.phone,
+                      };
+                
                 set({ 
                     profile,
                     isProfileComplete: profile.is_profile_complete,
-                    user: get().user ? {
-                        ...get().user!,
-                        // Note: Customer type doesn't have is_profile_complete,
-                        // but we keep it in state for convenience
-                    } : null,
+                    user: updatedUser,
                 });
             },
             logout: () => {

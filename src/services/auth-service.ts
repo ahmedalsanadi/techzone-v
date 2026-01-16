@@ -12,6 +12,13 @@ import type {
 export const authService = {
     /**
      * Send OTP to customer phone.
+     * {
+     * "success": true,
+    "message": "تم إرسال رمز التحقق بنجاح",
+    "data": {
+        "is_new_user": true
+    }
+}   
      */
     async sendOtp(phone: string): Promise<SendOtpResponse> {
         const response = await fetchLiberoFull<SendOtpResponse>(
@@ -34,6 +41,24 @@ export const authService = {
 
     /**
      * Login with phone and OTP.
+     * {
+     * "success": true,
+    "message": "تم تسجيل الدخول بنجاح",
+    "data": {
+        "customer": {
+            "id": 12,
+            "name": "احمد  علي",
+            "phone": "0501234561",
+            "email": "ahmed2@example.com"
+        },
+        "token": "1234567890",
+        "store": {
+            "id": 1,
+            "name": "المتجر",
+            "slug": "store",
+            "logo_url": "https://example.com/logo.png"
+        }
+    }
      */
     async login(phone: string, otp: string): Promise<AuthResponse> {
         const response = await fetchLiberoFull<AuthResponse>(
@@ -56,7 +81,18 @@ export const authService = {
 
     /**
      * Get current customer data.
+     * {
+    "success": true,
+    "message": "تم جلب بيانات العميل بنجاح",
+    "data": {
+        "id": 12,
+        "name": "احمد  علي",
+        "phone": "0501234561",
+        "email": "ahmed2@example.com"
+    }
+}
      */
+
     getMe: () =>
         fetchLibero<Customer>('/auth/store/me', {
             isProtected: true,
