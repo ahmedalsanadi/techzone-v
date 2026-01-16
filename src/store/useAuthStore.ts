@@ -30,9 +30,9 @@ export const useAuthStore = create<AuthState>()(
                 authCookies.setAccessToken(token);
                 // Note: Customer from login doesn't have is_profile_complete
                 // Profile completion will be set when profile is loaded
-                set({ 
-                    user, 
-                    token, 
+                set({
+                    user,
+                    token,
                     isAuthenticated: true,
                     isProfileComplete: false, // Will be updated when profile is loaded
                 });
@@ -40,7 +40,7 @@ export const useAuthStore = create<AuthState>()(
             setProfile: (profile) => {
                 // Update profile completion cookie
                 authCookies.setProfileComplete(profile.is_profile_complete);
-                
+
                 // Update user object with profile data (name, email, etc.)
                 // This ensures UserMenu displays the correct name after signup
                 const currentUser = get().user;
@@ -58,8 +58,8 @@ export const useAuthStore = create<AuthState>()(
                           email: profile.email,
                           phone: profile.phone,
                       };
-                
-                set({ 
+
+                set({
                     profile,
                     isProfileComplete: profile.is_profile_complete,
                     user: updatedUser,
@@ -68,10 +68,10 @@ export const useAuthStore = create<AuthState>()(
             logout: () => {
                 // Clear cookies
                 authCookies.clearAll();
-                set({ 
-                    user: null, 
+                set({
+                    user: null,
                     profile: null,
-                    token: null, 
+                    token: null,
                     isAuthenticated: false,
                     isProfileComplete: false,
                 });
@@ -85,8 +85,10 @@ export const useAuthStore = create<AuthState>()(
                 const state = get();
                 // Check profile completion from profile data or state flag
                 // Note: Customer type doesn't have is_profile_complete field
-                return state.isProfileComplete || 
-                       (state.profile?.is_profile_complete ?? false);
+                return (
+                    state.isProfileComplete ||
+                    (state.profile?.is_profile_complete ?? false)
+                );
             },
         }),
         {
