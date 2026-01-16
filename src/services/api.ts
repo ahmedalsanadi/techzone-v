@@ -129,24 +129,37 @@ export async function fetchLiberoFull<T>(
         // Check if response is JSON
         if (contentType?.includes('application/json')) {
             try {
-                result = (await response.json()) as ApiResponse<T>;
-            } catch {
-                // If JSON parsing fails, clone and read as text
-                // Note: We clone here because response body might be partially consumed
+                const jsonData = await response.json();
+                result = jsonData as ApiResponse<T>;
+                
+                // Validate result structure
+                if (!result || typeof result !== 'object') {
+                    throw new ApiError(
+                        response.status,
+                        'Invalid response structure from server',
+                        { received: jsonData },
+                    );
+                }
+            } catch (parseError) {
+                // If JSON parsing fails, try to read as text for debugging
+                if (parseError instanceof ApiError) {
+                    throw parseError;
+                }
+                
                 try {
                     const clonedResponse = response.clone();
                     const text = await clonedResponse.text();
                     throw new ApiError(
                         response.status,
                         'Invalid JSON response from server',
-                        { raw: text.substring(0, 200) },
+                        { raw: text.substring(0, 200), parseError: parseError instanceof Error ? parseError.message : String(parseError) },
                     );
                 } catch (cloneError) {
                     // If clone also fails, throw generic error
                     throw new ApiError(
                         response.status,
                         'Invalid JSON response from server',
-                        { raw: 'Unable to read response body' },
+                        { raw: 'Unable to read response body', parseError: parseError instanceof Error ? parseError.message : String(parseError) },
                     );
                 }
             }
@@ -188,19 +201,27 @@ export async function fetchLiberoFull<T>(
         }
 
         // Check if API response indicates failure
+        // Note: result.data can be null (e.g., logout endpoint), which is valid
         if (!response.ok || !result || !result.success) {
+            const errorMessage = result?.message || `Request failed with status ${response.status}`;
+            
             if (env.isDev) {
                 console.error(`[API Error] ${init.method || 'GET'} ${path}:`, {
                     status: response.status,
-                    message: result.message || 'Unknown Error',
+                    statusText: response.statusText,
+                    message: errorMessage,
                     contentType,
+                    hasResult: !!result,
+                    resultSuccess: result?.success,
+                    resultMessage: result?.message,
+                    url: url.toString(),
                 });
             }
 
             throw new ApiError(
                 response.status,
-                result.message || 'Request Failed',
-                result.data,
+                errorMessage,
+                result?.data,
             );
         }
 

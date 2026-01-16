@@ -41,9 +41,30 @@ export async function getBaseHeaders(
                 console.error(e);
             }
         } else {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; accessToken=`);
-            if (parts.length === 2) token = parts.pop()?.split(';').shift();
+            // Read token from cookies on client-side
+            // Try multiple methods to ensure we get the token
+            try {
+                // Method 1: Direct cookie parsing
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; accessToken=`);
+                if (parts.length === 2) {
+                    token = parts.pop()?.split(';').shift()?.trim();
+                }
+
+                // Method 2: If Method 1 didn't work, try using cookie string directly
+                if (!token) {
+                    const cookieMatch =
+                        document.cookie.match(/accessToken=([^;]+)/);
+                    if (cookieMatch && cookieMatch[1]) {
+                        token = cookieMatch[1].trim();
+                    }
+                }
+            } catch (e) {
+                // If cookie reading fails, token remains undefined
+                if (env.isDev) {
+                    console.warn('Failed to read accessToken from cookies:', e);
+                }
+            }
         }
 
         // Only use customer token from cookies (no fallback)

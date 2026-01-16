@@ -29,19 +29,21 @@ const UserMenu = () => {
     const { user, isAuthenticated, logout: clearAuth } = useAuthStore();
 
     const handleLogout = async () => {
-        // Always clear local state first
-        clearAuth();
-        router.refresh();
-        
-        // Try to logout on server (but don't block if it fails)
-        if (isAuthenticated) {
-            try {
-                await authService.logout();
-            } catch (error) {
-                // Ignore errors - we've already cleared local state
-                console.warn('Logout API call failed, but local state cleared:', error);
-            }
+        // CRITICAL: Call logout API FIRST while token is still in cookies
+        // Then clear local state after the API call completes
+        // This ensures the Authorization header can be set properly
+        try {
+            await authService.logout();
+        } catch (error) {
+            // Error already handled in authService.logout()
+            // Continue to clear local state even if API call fails
         }
+        
+        // Clear local state after API call (cookies will be cleared here)
+        clearAuth();
+        
+        // Refresh router to update any server-side state
+        router.refresh();
     };
 
     return (

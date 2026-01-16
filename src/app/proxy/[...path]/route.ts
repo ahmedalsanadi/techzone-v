@@ -51,6 +51,12 @@ async function handleRequest(
     // This ensures the API key is never exposed in browser devtools
     headers.set('X-Store-Key', env.liberoApiKey);
 
+    // CRITICAL: For protected endpoints, ensure Authorization header is set
+    // Use the token we already read from cookies (more reliable than getBaseHeaders reading it again)
+    if (isProtected && token) {
+        headers.set('Authorization', `Bearer ${token}`);
+    }
+
     let body: BodyInit | undefined;
     if (!['GET', 'HEAD'].includes(method)) {
         try {
@@ -66,7 +72,11 @@ async function handleRequest(
         }`;
 
         if (env.isDev) {
-            console.log(`[Proxy] ${method} -> ${targetUrl}`);
+            console.log(`[Proxy] ${method} -> ${targetUrl}`, {
+                hasToken: !!token,
+                isProtected,
+                authHeader: headers.get('Authorization') ? 'present' : 'missing',
+            });
         }
 
         const response = await fetch(targetUrl, { method, headers, body });
