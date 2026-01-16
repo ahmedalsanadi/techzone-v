@@ -242,7 +242,8 @@ export interface Customer {
     name: string;
     phone: string;
     email: string;
-    is_profile_complete?: boolean;
+    // Note: is_profile_complete is NOT returned by login endpoint
+    // Use CustomerProfile.is_profile_complete for profile completion status
 }
 
 export interface CustomerProfile {

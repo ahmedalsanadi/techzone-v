@@ -28,6 +28,9 @@ export default async function proxy(request: NextRequest) {
     // Skip auth check for auth pages themselves
     const isAuthPage = pathname.includes('/auth');
 
+    // Check profile completion status from cookie
+    const isProfileComplete = request.cookies.get('isProfileComplete')?.value === 'true';
+
     // Redirect to auth if protected route and no token
     if (isProtected && !token && !isAuthPage) {
         // Get locale from pathname or default to ar
@@ -36,6 +39,19 @@ export default async function proxy(request: NextRequest) {
             segments[1] === 'en' || segments[1] === 'ar' ? segments[1] : 'ar';
 
         const authUrl = new URL(`/${locale}/auth`, request.url);
+        authUrl.searchParams.set('redirect', pathname);
+        return NextResponse.redirect(authUrl);
+    }
+
+    // If user is authenticated but profile is incomplete, redirect to signup step
+    if (isProtected && token && !isProfileComplete && !isAuthPage) {
+        // Get locale from pathname or default to ar
+        const segments = pathname.split('/');
+        const locale =
+            segments[1] === 'en' || segments[1] === 'ar' ? segments[1] : 'ar';
+
+        const authUrl = new URL(`/${locale}/auth`, request.url);
+        authUrl.searchParams.set('step', 'signup');
         authUrl.searchParams.set('redirect', pathname);
         return NextResponse.redirect(authUrl);
     }
