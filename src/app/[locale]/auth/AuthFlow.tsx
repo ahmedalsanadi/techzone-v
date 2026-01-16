@@ -25,21 +25,36 @@ interface AuthFlowProps {
     redirectTo?: string;
 }
 
-export default function AuthFlow({ config, locale, initialStep, redirectTo }: AuthFlowProps) {
+export default function AuthFlow({
+    config,
+    locale,
+    initialStep,
+    redirectTo,
+}: AuthFlowProps) {
     const t = useTranslations('Auth');
     const router = useRouter();
     const searchParams = useSearchParams();
-    console.log('searchParams in AuthFlow componets is'+searchParams)
-    const { user, token, isAuthenticated, setAuth, setProfile, checkProfileComplete } = useAuthStore();
+    console.log('searchParams in AuthFlow componets is' + searchParams);
+    const {
+        user,
+        token,
+        isAuthenticated,
+        setAuth,
+        setProfile,
+        checkProfileComplete,
+    } = useAuthStore();
 
     // State management - restore from sessionStorage on page refresh
     const [step, setStep] = useState<AuthStep>(() => {
         // On page refresh, try to restore step from sessionStorage
         if (typeof window !== 'undefined') {
-            const storedStep = sessionStorage.getItem('auth_step') as AuthStep | null;
-            const storedIsNewUser = sessionStorage.getItem('auth_is_new_user') === 'true';
+            const storedStep = sessionStorage.getItem(
+                'auth_step',
+            ) as AuthStep | null;
+            const storedIsNewUser =
+                sessionStorage.getItem('auth_is_new_user') === 'true';
             const storedPhone = sessionStorage.getItem('auth_phone');
-            
+
             // If we have stored state, validate and use it
             if (storedStep && storedPhone) {
                 // Validate stored step makes sense
@@ -51,15 +66,16 @@ export default function AuthFlow({ config, locale, initialStep, redirectTo }: Au
                 }
             }
         }
-        
+
         // Determine initial step based on URL params first, then auth state
         if (initialStep === 'signup') return 'signup';
         if (initialStep === 'otp') return 'otp';
         // Only check auth state if no initial step specified
-        if (!initialStep && isAuthenticated && !checkProfileComplete()) return 'signup';
+        if (!initialStep && isAuthenticated && !checkProfileComplete())
+            return 'signup';
         return 'phone';
     });
-    
+
     const [loading, setLoading] = useState(false);
     // Persist is_new_user flag in sessionStorage to survive navigation
     const [isNewUser, setIsNewUser] = useState(() => {
@@ -117,15 +133,27 @@ export default function AuthFlow({ config, locale, initialStep, redirectTo }: Au
 
         // If user is authenticated and profile is complete, redirect away from auth pages
         // BUT: Don't redirect if user is on signup step or is a new user
-        if (isAuthenticated && checkProfileComplete() && step !== 'signup' && !isNewUser) {
-            const redirectPath = normalizeRedirectPath(redirectTo || searchParams.get('redirect'));
+        if (
+            isAuthenticated &&
+            checkProfileComplete() &&
+            step !== 'signup' &&
+            !isNewUser
+        ) {
+            const redirectPath = normalizeRedirectPath(
+                redirectTo || searchParams.get('redirect'),
+            );
             router.replace(redirectPath as any);
             return;
         }
 
         // If user is authenticated but profile incomplete, go to signup
         // Only if they are a new user (is_new_user = true)
-        if (isAuthenticated && !checkProfileComplete() && isNewUser && step !== 'signup') {
+        if (
+            isAuthenticated &&
+            !checkProfileComplete() &&
+            isNewUser &&
+            step !== 'signup'
+        ) {
             setStep('signup');
             return;
         }
@@ -134,7 +162,9 @@ export default function AuthFlow({ config, locale, initialStep, redirectTo }: Au
         // This prevents manual navigation to signup when is_new_user = false
         if (isAuthenticated && !isNewUser && step === 'signup') {
             // Redirect to home or the redirect path
-            const redirectPath = normalizeRedirectPath(redirectTo || searchParams.get('redirect'));
+            const redirectPath = normalizeRedirectPath(
+                redirectTo || searchParams.get('redirect'),
+            );
             router.replace(redirectPath as any);
             return;
         }
@@ -158,7 +188,16 @@ export default function AuthFlow({ config, locale, initialStep, redirectTo }: Au
             setStep('phone');
             return;
         }
-    }, [isAuthenticated, checkProfileComplete, step, phone, isNewUser, redirectTo, searchParams, router]);
+    }, [
+        isAuthenticated,
+        checkProfileComplete,
+        step,
+        phone,
+        isNewUser,
+        redirectTo,
+        searchParams,
+        router,
+    ]);
 
     // Load user profile if authenticated
     // IMPORTANT: Don't load profile if user is on signup step (new user flow)
@@ -168,15 +207,17 @@ export default function AuthFlow({ config, locale, initialStep, redirectTo }: Au
         if (step === 'signup' && isNewUser) {
             return;
         }
-        
+
         try {
             const profile = await storeService.getProfile();
             setProfile(profile);
             if (profile.is_profile_complete) {
-                const redirectPath = normalizeRedirectPath(redirectTo || searchParams.get('redirect'));
+                const redirectPath = normalizeRedirectPath(
+                    redirectTo || searchParams.get('redirect'),
+                );
                 router.replace(redirectPath as any);
             } else {
-                setFormData(prev => ({
+                setFormData((prev) => ({
                     ...prev,
                     email: profile.email || prev.email,
                 }));
@@ -195,15 +236,28 @@ export default function AuthFlow({ config, locale, initialStep, redirectTo }: Au
         // 3. Profile is not complete
         // 4. User is NOT on signup step (new users need to complete signup first)
         // 5. User is NOT a new user (new users must complete signup before loading profile)
-        if (isAuthenticated && token && !checkProfileComplete() && step !== 'signup' && !isNewUser) {
+        if (
+            isAuthenticated &&
+            token &&
+            !checkProfileComplete() &&
+            step !== 'signup' &&
+            !isNewUser
+        ) {
             loadProfile();
         }
-    }, [isAuthenticated, token, checkProfileComplete, loadProfile, step, isNewUser]);
+    }, [
+        isAuthenticated,
+        token,
+        checkProfileComplete,
+        loadProfile,
+        step,
+        isNewUser,
+    ]);
 
     // Step 1: Send OTP
     const handlePhoneSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (!phone || phone.length < 9) {
             toast.error(t('invalidPhone') || 'رقم الهاتف غير صحيح');
             return;
@@ -219,15 +273,19 @@ export default function AuthFlow({ config, locale, initialStep, redirectTo }: Au
         } catch (error: any) {
             // Handle different error types
             let message = t('otpError') || 'فشل إرسال رمز التحقق';
-            
+
             if (error?.message) {
                 message = error.message;
             } else if (error?.status === 504 || error?.name === 'AbortError') {
-                message = t('networkError') || 'خطأ في الاتصال. يرجى المحاولة مرة أخرى';
+                message =
+                    t('networkError') ||
+                    'خطأ في الاتصال. يرجى المحاولة مرة أخرى';
             } else if (error?.status === 401 || error?.status === 403) {
-                message = t('unauthorizedError') || 'غير مصرح. يرجى المحاولة مرة أخرى';
+                message =
+                    t('unauthorizedError') ||
+                    'غير مصرح. يرجى المحاولة مرة أخرى';
             }
-            
+
             toast.error(message);
             // Don't change step on error, let user try again
         } finally {
@@ -238,7 +296,7 @@ export default function AuthFlow({ config, locale, initialStep, redirectTo }: Au
     // Step 2: Verify OTP
     const handleOtpSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (!otp || otp.length < 4) {
             toast.error(t('invalidOtp') || 'رمز التحقق غير صحيح');
             return;
@@ -247,7 +305,7 @@ export default function AuthFlow({ config, locale, initialStep, redirectTo }: Au
         setLoading(true);
         try {
             const response = await authService.login(phone, otp);
-            
+
             // Flow based on is_new_user flag:
             // - If is_new_user = true: Must complete profile (go to signup step)
             // - If is_new_user = false: Skip signup, redirect directly
@@ -261,7 +319,7 @@ export default function AuthFlow({ config, locale, initialStep, redirectTo }: Au
                 // For existing users: setAuth immediately, then redirect
                 setAuth(response.customer, response.token);
             }
-            
+
             // Clear phone from sessionStorage after successful login
             // Keep is_new_user flag if user needs to complete profile
             if (typeof window !== 'undefined') {
@@ -274,7 +332,9 @@ export default function AuthFlow({ config, locale, initialStep, redirectTo }: Au
             // Handle redirect for existing users (new users stay on signup step)
             if (!isNewUser) {
                 // Existing user: Skip signup, redirect to intended destination or home
-                const redirectPath = normalizeRedirectPath(redirectTo || searchParams.get('redirect'));
+                const redirectPath = normalizeRedirectPath(
+                    redirectTo || searchParams.get('redirect'),
+                );
                 // Clear auth-related sessionStorage since we're done with auth flow
                 if (typeof window !== 'undefined') {
                     sessionStorage.removeItem('auth_is_new_user');
@@ -288,15 +348,17 @@ export default function AuthFlow({ config, locale, initialStep, redirectTo }: Au
         } catch (error: any) {
             // Handle different error types for OTP verification
             let message = t('otpInvalid') || 'رمز التحقق غير صحيح';
-            
+
             if (error?.message) {
                 message = error.message;
             } else if (error?.status === 504 || error?.name === 'AbortError') {
-                message = t('networkError') || 'خطأ في الاتصال. يرجى المحاولة مرة أخرى';
+                message =
+                    t('networkError') ||
+                    'خطأ في الاتصال. يرجى المحاولة مرة أخرى';
             } else if (error?.status === 401 || error?.status === 403) {
                 message = t('otpInvalid') || 'رمز التحقق غير صحيح';
             }
-            
+
             toast.error(message);
             // Clear OTP on error to allow retry
             setOtp('');
@@ -308,7 +370,7 @@ export default function AuthFlow({ config, locale, initialStep, redirectTo }: Au
     // Step 3: Complete Profile
     const handleSignupSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (!formData.first_name.trim()) {
             toast.error(t('firstNameRequired') || 'الاسم الأول مطلوب');
             return;
@@ -324,32 +386,38 @@ export default function AuthFlow({ config, locale, initialStep, redirectTo }: Au
             });
 
             setProfile(updatedProfile);
-            
+
             // Clear all auth-related sessionStorage after successful profile completion
             if (typeof window !== 'undefined') {
                 sessionStorage.removeItem('auth_phone');
                 sessionStorage.removeItem('auth_is_new_user');
                 sessionStorage.removeItem('auth_step');
             }
-            
+
             // Clear is_new_user flag since profile is now complete
             setIsNewUser(false);
-            
+
             toast.success(t('profileUpdated') || 'تم تحديث الملف الشخصي بنجاح');
-            
+
             // Redirect to intended destination or home
-            const redirectPath = normalizeRedirectPath(redirectTo || searchParams.get('redirect'));
+            const redirectPath = normalizeRedirectPath(
+                redirectTo || searchParams.get('redirect'),
+            );
             router.replace(redirectPath as any);
         } catch (error: any) {
             // Handle different error types for profile update
             let message = t('profileError') || 'فشل تحديث الملف الشخصي';
-            
+
             if (error?.message) {
                 message = error.message;
             } else if (error?.status === 504 || error?.name === 'AbortError') {
-                message = t('networkError') || 'خطأ في الاتصال. يرجى المحاولة مرة أخرى';
+                message =
+                    t('networkError') ||
+                    'خطأ في الاتصال. يرجى المحاولة مرة أخرى';
             } else if (error?.status === 401 || error?.status === 403) {
-                message = t('unauthorizedError') || 'انتهت صلاحية الجلسة. يرجى تسجيل الدخول مرة أخرى';
+                message =
+                    t('unauthorizedError') ||
+                    'انتهت صلاحية الجلسة. يرجى تسجيل الدخول مرة أخرى';
                 // If unauthorized, redirect to phone step
                 if (typeof window !== 'undefined') {
                     sessionStorage.removeItem('auth_phone');
@@ -358,7 +426,7 @@ export default function AuthFlow({ config, locale, initialStep, redirectTo }: Au
                 setIsNewUser(false);
                 setStep('phone');
             }
-            
+
             toast.error(message);
         } finally {
             setLoading(false);
@@ -375,7 +443,10 @@ export default function AuthFlow({ config, locale, initialStep, redirectTo }: Au
             // If user is authenticated and is_new_user, they can't go back from signup
             // They must complete it or logout
             if (isAuthenticated && isNewUser) {
-                toast.info(t('completeProfileRequired') || 'يجب إكمال الملف الشخصي للمتابعة');
+                toast.info(
+                    t('completeProfileRequired') ||
+                        'يجب إكمال الملف الشخصي للمتابعة',
+                );
                 return;
             }
             // If not authenticated or not a new user, allow going back
@@ -407,22 +478,28 @@ export default function AuthFlow({ config, locale, initialStep, redirectTo }: Au
         } catch (error: any) {
             // Handle different error types for resend OTP
             let message = t('otpError') || 'فشل إرسال رمز التحقق';
-            
+
             if (error?.message) {
                 message = error.message;
             } else if (error?.status === 504 || error?.name === 'AbortError') {
-                message = t('networkError') || 'خطأ في الاتصال. يرجى المحاولة مرة أخرى';
+                message =
+                    t('networkError') ||
+                    'خطأ في الاتصال. يرجى المحاولة مرة أخرى';
             } else if (error?.status === 401 || error?.status === 403) {
-                message = t('unauthorizedError') || 'غير مصرح. يرجى المحاولة مرة أخرى';
+                message =
+                    t('unauthorizedError') ||
+                    'غير مصرح. يرجى المحاولة مرة أخرى';
             }
-            
+
             toast.error(message);
         } finally {
             setLoading(false);
         }
     };
 
-    const maskedPhone = phone ? `+966${phone.replace(/\d(?=\d{4})/g, '*')}` : '';
+    const maskedPhone = phone
+        ? `+966${phone.replace(/\d(?=\d{4})/g, '*')}`
+        : '';
 
     // Render based on current step
     if (step === 'phone') {
@@ -515,7 +592,10 @@ export default function AuthFlow({ config, locale, initialStep, redirectTo }: Au
                             className="w-full h-16 px-6 rounded-2xl bg-[#F4F7FA] border border-[#E2E8F0] focus:border-[#B44734]/30 focus:ring-4 focus:ring-[#B44734]/5 outline-none transition-all font-bold text-lg text-[#2D3142] text-start"
                             value={formData.first_name}
                             onChange={(e) =>
-                                setFormData({ ...formData, first_name: e.target.value })
+                                setFormData({
+                                    ...formData,
+                                    first_name: e.target.value,
+                                })
                             }
                         />
                     </div>
@@ -530,7 +610,10 @@ export default function AuthFlow({ config, locale, initialStep, redirectTo }: Au
                                 className="w-full h-16 px-6 rounded-2xl bg-[#F4F7FA] border border-[#E2E8F0] focus:border-[#B44734]/30 focus:ring-4 focus:ring-[#B44734]/5 outline-none transition-all font-bold text-lg text-[#2D3142] text-start"
                                 value={formData.middle_name}
                                 onChange={(e) =>
-                                    setFormData({ ...formData, middle_name: e.target.value })
+                                    setFormData({
+                                        ...formData,
+                                        middle_name: e.target.value,
+                                    })
                                 }
                             />
                         </div>
@@ -543,7 +626,10 @@ export default function AuthFlow({ config, locale, initialStep, redirectTo }: Au
                                 className="w-full h-16 px-6 rounded-2xl bg-[#F4F7FA] border border-[#E2E8F0] focus:border-[#B44734]/30 focus:ring-4 focus:ring-[#B44734]/5 outline-none transition-all font-bold text-lg text-[#2D3142] text-start"
                                 value={formData.last_name}
                                 onChange={(e) =>
-                                    setFormData({ ...formData, last_name: e.target.value })
+                                    setFormData({
+                                        ...formData,
+                                        last_name: e.target.value,
+                                    })
                                 }
                             />
                         </div>
@@ -568,7 +654,10 @@ export default function AuthFlow({ config, locale, initialStep, redirectTo }: Au
                             className="w-full h-16 px-6 rounded-2xl bg-[#F4F7FA] border border-[#E2E8F0] focus:border-[#B44734]/30 focus:ring-4 focus:ring-[#B44734]/5 outline-none transition-all font-bold text-lg text-[#2D3142] text-start"
                             value={formData.email}
                             onChange={(e) =>
-                                setFormData({ ...formData, email: e.target.value })
+                                setFormData({
+                                    ...formData,
+                                    email: e.target.value,
+                                })
                             }
                         />
                     </div>
