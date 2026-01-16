@@ -1,3 +1,4 @@
+// src/components/layouts/SubHeaderManager.tsx
 'use client';
 
 import { useEffect } from 'react';

@@ -8,7 +8,8 @@ import { Badge } from '@/components/ui/Badge';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
 import { cn } from '@/lib/utils';
 
-import { Order } from '@/lib/mock-data';
+import { Order } from '../services/order-services';
+import { Link } from '@/i18n/navigation';
 
 interface OrderCardProps {
     order: Order;
@@ -28,9 +29,24 @@ export default function OrderCard({ order }: OrderCardProps) {
             text: 'text-[#FBC02D]',
             label: t('status.waiting'),
         },
+        preparing: {
+            bg: 'bg-[#E3F2FD]',
+            text: 'text-[#1976D2]',
+            label: t('status.preparing') || 'Preparing',
+        },
+        with_courier: {
+            bg: 'bg-[#E8F5E9]',
+            text: 'text-[#2E7D32]',
+            label: t('status.with_courier') || 'With Courier',
+        },
+        cancelled: {
+            bg: 'bg-red-50',
+            text: 'text-red-600',
+            label: t('status.cancelled') || 'Cancelled',
+        },
     };
 
-    const currentStatus = statusConfig[order.status];
+    const currentStatus = statusConfig[order.status] || statusConfig.waiting;
 
     return (
         <div className="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col gap-5 shadow-sm hover:shadow-md transition-all duration-300 ">
@@ -115,9 +131,12 @@ export default function OrderCard({ order }: OrderCardProps) {
                 {order.status === 'delivered' ? (
                     <>
                         <Button
+                            asChild
                             variant="secondary"
                             className="flex-1 bg-[#F1F3F5] text-gray-600 hover:bg-gray-200 border-none font-bold h-11 rounded-xl">
-                            {t('details')}
+                            <Link href={`/my-orders/${order.id}`}>
+                                {t('details')}
+                            </Link>
                         </Button>
                         <Button className="flex-1 bg-[#B44B3A] hover:bg-[#A04234] text-white border-none font-bold h-11 rounded-xl shadow-lg shadow-[#B44B3A]/20">
                             {t('reorder')}
@@ -130,8 +149,12 @@ export default function OrderCard({ order }: OrderCardProps) {
                             className="flex-1 bg-[#F1F3F5] text-gray-600 hover:bg-gray-200 border-none font-bold h-11 rounded-xl">
                             {t('reportProblem')}
                         </Button>
-                        <Button className="flex-1 bg-[#FDE8E4] text-[#B44B3A] hover:bg-[#FCD8D2] border-none font-bold h-11 rounded-xl">
-                            {t('details')}
+                        <Button
+                            asChild
+                            className="flex-1 bg-[#FDE8E4] text-[#B44B3A] hover:bg-[#FCD8D2] border-none font-bold h-11 rounded-xl">
+                            <Link href={`/my-orders/${order.id}`}>
+                                {t('details')}
+                            </Link>
                         </Button>
                     </>
                 )}

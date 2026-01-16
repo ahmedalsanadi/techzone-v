@@ -1,10 +1,11 @@
-import React from 'react';
-import MyOrdersIndex from '@/components/pages/orders/MyOrdersIndex';
-import { getOrders } from '@/lib/mock-data';
+
+import MyOrdersView from './utils/components/MyOrdersView';
+import { getOrders } from './utils/services/order-services';
+
 
 export default async function MyOrdersPage() {
     // Simulate fetching orders from an API
     const orders = await getOrders();
 
-    return <MyOrdersIndex orders={orders} />;
+    return <MyOrdersView orders={orders} />;
 }
