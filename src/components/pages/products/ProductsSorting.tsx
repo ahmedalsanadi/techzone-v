@@ -1,3 +1,4 @@
+// src/components/pages/products/ProductsSorting.tsx
 'use client';
 
 import React from 'react';

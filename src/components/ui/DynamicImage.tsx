@@ -1,3 +1,4 @@
+// src/components/ui/DynamicImage.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';

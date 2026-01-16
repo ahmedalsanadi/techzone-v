@@ -2,12 +2,8 @@
 'use client';
 
 import React from 'react';
-// import { Product, PaginationMeta } from '@/services/types';
 import ProductCard from '@/components/ui/ProductCard';
 import { useTranslations } from 'next-intl';
-import { useCartActions } from '@/hooks/useCartActions';
-// import { Button } from '@/components/ui/Button';
-// import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Pagination from '@/components/ui/Pagination';
 import { cn } from '@/lib/utils';
 import { PaginationMeta, Product } from '@/services/types';
@@ -18,6 +14,7 @@ interface ProductsGridProps {
     currentPage?: number;
     pagination?: PaginationMeta;
     onPageChange?: (page: number) => void;
+    onAddToCart?: (product: Product) => void;
     variant?: 'default' | 'compact';
 }
 
@@ -27,12 +24,13 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
     currentPage,
     pagination,
     onPageChange,
+    onAddToCart,
     variant = 'default',
 }) => {
     const t = useTranslations('Promotions');
-    const { addToCart } = useCartActions();
 
     if (loading && products.length === 0) {
+        // ... skeleton remains same
         return (
             <div
                 className={cn(
@@ -82,17 +80,7 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
                             oldPrice={product.sale_price}
                             href={`/products/${product.slug || product.id}`}
                             addToCartLabel={t('addToCart')}
-                            onAddToCartClick={() => {
-                                addToCart({
-                                    id: String(product.id),
-                                    name: product.title,
-                                    image: product.cover_image_url || '',
-                                    price: product.price,
-                                    categoryId: String(
-                                        product.categories?.[0]?.id || '',
-                                    ),
-                                });
-                            }}
+                            onAddToCartClick={() => onAddToCart?.(product)}
                         />
                     ))}
                 </div>

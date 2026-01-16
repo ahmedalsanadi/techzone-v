@@ -1,5 +1,3 @@
-//src/services/store-service.ts
-import { cache } from 'react';
 import { fetchLibero, fetchLiberoFull } from './api';
 import {
     StoreConfig,
@@ -18,19 +16,18 @@ export const storeService = {
     /**
      * Get store configuration including theme and home sections.
      */
-    getConfig: cache(() =>
+    getConfig: () =>
         fetchLibero<StoreConfig>('/store/config', {
             next: {
                 revalidate: 3600,
                 tags: ['store-config'],
             },
         }),
-    ),
 
     /**
      * Get all categories with optional tree structure.
      */
-    getCategories: cache((tree: boolean = true) =>
+    getCategories: (tree: boolean = true) =>
         fetchLibero<Category[]>('/store/categories', {
             params: { tree },
             next: {
@@ -38,7 +35,6 @@ export const storeService = {
                 tags: ['categories'],
             },
         }),
-    ),
 
     /**
      * List products with filtering and pagination.
@@ -135,14 +131,13 @@ export const storeService = {
     /**
      * Get all collections/offers.
      */
-    getCollections: cache(() =>
+    getCollections: () =>
         fetchLibero<Collection[]>('/store/collections', {
             next: {
                 revalidate: 3600, // Cache for 1 hour
                 tags: ['collections'],
             },
         }),
-    ),
 
     /**
      * Get customer profile.
