@@ -4,6 +4,9 @@ import { storeService } from '@/services/store-service';
 import ProfileView from './ProfileView';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
+// Mark this route as dynamic since it uses cookies for authentication
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata({
     params,
 }: {

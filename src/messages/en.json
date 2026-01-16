@@ -356,6 +356,11 @@
     "errorLoadingCollections": "Failed to load collections. Please try again later.",
     "home": "Home"
   },
+  "Payment": {
+    "title": "Payment",
+    "home": "Home",
+    "payment": "Payment"
+  },
   "Profile": {
     "title": "Profile",
     "description": "View and update your profile",
