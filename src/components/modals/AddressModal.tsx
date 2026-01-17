@@ -207,7 +207,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                     {/* Selected Address Display */}
                                     {formattedAddress && (
                                         <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200 flex items-start gap-3">
-                                            <MapPin className="w-5 h-5 text-libero-red flex-shrink-0 mt-0.5" />
+                                            <MapPin className="w-5 h-5 text-libero-red shrink-0 mt-0.5" />
                                             <p className="text-sm text-gray-700 flex-1">
                                                 {formattedAddress}
                                             </p>
