@@ -4,7 +4,7 @@
 import { useEffect, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useBranchStore } from '@/store/useBranchStore';
-import { storeService } from '@/services/store-service';
+import { branchService } from '@/services/branch-service';
 import { BRANCH_TYPES } from '@/lib/branches';
 import type { Branch } from '@/types/branches';
 
@@ -38,13 +38,10 @@ export default function BranchModalInitializer() {
                 queryClient
                     .prefetchQuery({
                         queryKey: ['branches', { type: BRANCH_TYPES.BRANCH }],
-                        queryFn: async () => {
-                            const data = await storeService.getBranches({
+                        queryFn: () =>
+                            branchService.getBranches({
                                 type: BRANCH_TYPES.BRANCH,
-                            });
-                            // Data is already validated and filtered in storeService.getBranches
-                            return data || [];
-                        },
+                            }),
                         staleTime: 5 * 60 * 1000, // 5 minutes
                     })
                     .catch(() => {
@@ -57,7 +54,8 @@ export default function BranchModalInitializer() {
                 queryClient
                     .prefetchQuery({
                         queryKey: ['branch', selectedBranchId],
-                        queryFn: () => storeService.getBranch(selectedBranchId),
+                        queryFn: () =>
+                            branchService.getBranch(selectedBranchId),
                         staleTime: 5 * 60 * 1000,
                     })
                     .catch(() => {

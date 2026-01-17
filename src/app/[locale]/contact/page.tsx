@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
-import { storeService } from '@/services/store-service';
+import { branchService } from '@/services/branch-service';
 import type { Branch } from '@/types/branches';
 import BranchErrorHandler from '@/components/pages/contact/BranchErrorHandler';
 import { redirect } from '@/i18n/navigation';
@@ -61,7 +61,7 @@ export default async function ContactPage({
         }
 
         try {
-            branch = await storeService.getBranch(branchIdNum);
+            branch = await branchService.getBranch(branchIdNum);
             // If branch is null or undefined, treat as error
             if (!branch) {
                 branchFetchError = true;

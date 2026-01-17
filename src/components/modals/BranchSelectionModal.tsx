@@ -20,7 +20,7 @@ import { useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
 import type { Branch } from '@/types/branches';
 import { useBranchStore } from '@/store/useBranchStore';
-import { storeService } from '@/services/store-service';
+import { branchService } from '@/services/branch-service';
 import { BRANCH_TYPES, calculateBranchIsOpen } from '@/lib/branches';
 import dynamic from 'next/dynamic';
 import WorkingHoursModal from './WorkingHoursModal';
@@ -66,18 +66,10 @@ const BranchSelectionModal: React.FC = () => {
         queryKey: ['branches', { type: BRANCH_TYPES.BRANCH }],
         queryFn: async () => {
             try {
-                const data = await storeService.getBranches({
+                // branchService.getBranches already validates and filters branches
+                return await branchService.getBranches({
                     type: BRANCH_TYPES.BRANCH,
                 });
-                // Filter out invalid branches and ensure data structure
-                return (data || []).filter(
-                    (branch) =>
-                        branch &&
-                        branch.id &&
-                        branch.name &&
-                        branch.address &&
-                        branch.working_hours, // Ensure working_hours exists
-                );
             } catch (err) {
                 // Handle timeout and other errors gracefully
                 if (err instanceof Error) {
