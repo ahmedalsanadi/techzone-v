@@ -3,12 +3,9 @@
 import React, { useCallback, useEffect, useRef, useMemo } from 'react';
 import { X, Clock, AlertCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Branch } from '@/services/types';
+import type { Branch, WorkingHoursSchedule } from '@/types/branches';
 import { cn } from '@/lib/utils';
-import {
-    formatWorkingHoursDays,
-    type WorkingHoursSchedule,
-} from '@/lib/branch-utils';
+import { formatWorkingHoursDays } from '@/lib/branches';
 
 interface WorkingHoursModalProps {
     branch: Branch;

@@ -5,7 +5,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { DEFAULT_MAP_ZOOM } from '@/config/branches';
+import { DEFAULT_MAP_ZOOM } from '@/lib/branches';
 
 // Initialize Leaflet icons
 const createDefaultIcon = () => {

@@ -18,6 +18,7 @@ import {
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 import { storeService } from '@/services/store-service';
+import type { Branch } from '@/types/branches';
 import BranchErrorHandler from '@/components/pages/contact/BranchErrorHandler';
 import { redirect } from '@/i18n/navigation';
 

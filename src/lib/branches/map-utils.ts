@@ -1,14 +1,18 @@
 /**
- * Map utility functions for calculating centers, bounds, etc.
+ * Map utility functions for branch locations
+ * Handles coordinate calculations, map centering, and mock coordinates
  */
 
-import { Branch } from '@/services/types';
-import { DEFAULT_MAP_CENTER } from '@/config/branches';
+import type { Branch } from '@/types/branches';
+import { DEFAULT_MAP_CENTER } from './constants';
 
 /**
  * Generate mock coordinates for branches without real coordinates
  * Uses branch ID to generate consistent fake locations around Riyadh
  * TODO: Remove this when backend provides real coordinates for all branches
+ * @param branchId - Branch ID
+ * @param baseCenter - Base center coordinates (defaults to Riyadh)
+ * @returns Mock coordinates [latitude, longitude]
  */
 export function generateMockCoordinates(
     branchId: number,
@@ -28,6 +32,9 @@ export function generateMockCoordinates(
 
 /**
  * Get coordinates for a branch (real if available, mock if not)
+ * @param branch - Branch object
+ * @param useMockIfMissing - Whether to use mock coordinates if real ones are missing
+ * @returns Coordinates [latitude, longitude] or null
  */
 export function getBranchCoordinates(
     branch: Branch,
@@ -56,6 +63,9 @@ export function getBranchCoordinates(
 /**
  * Calculate the center point from an array of branches
  * Returns the average of all branch coordinates (real or mock)
+ * @param branches - Array of branch objects
+ * @param useMockIfMissing - Whether to use mock coordinates if real ones are missing
+ * @returns Center coordinates [latitude, longitude]
  */
 export function calculateBranchesCenter(
     branches: Branch[],
@@ -87,6 +97,10 @@ export function calculateBranchesCenter(
 /**
  * Get the center for a specific branch or calculate from all branches
  * Uses mock coordinates if real ones are missing
+ * @param branches - Array of branch objects
+ * @param selectedBranchId - Optional selected branch ID to center on
+ * @param useMockIfMissing - Whether to use mock coordinates if real ones are missing
+ * @returns Center coordinates [latitude, longitude]
  */
 export function getMapCenter(
     branches: Branch[],

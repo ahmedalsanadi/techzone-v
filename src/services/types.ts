@@ -176,85 +176,19 @@ export interface Product {
     }>;
 }
 
-export interface BranchSupportChannel {
-    type: string;
-    title: string;
-    value: string;
-    status: boolean;
-}
-
-export interface BranchAddress {
-    id: number;
-    street: string;
-    building: string;
-    unit: string | null;
-    floor: string | null;
-    postal_code: string | null;
-    description: string;
-    latitude: number | null;
-    longitude: number | null;
-    formatted: string;
-}
-
-/**
- * Working hours time slot
- */
-export interface WorkingHoursTimeSlot {
-    from: string; // Format: "HH:mm" (e.g., "09:00")
-    to: string; // Format: "HH:mm" (e.g., "22:00")
-}
-
-/**
- * Branch working hours structure matching API response
- */
-export interface BranchWorkingHours {
-    id: number;
-    name: string;
-    description: string;
-    days: {
-        saturday: WorkingHoursTimeSlot[];
-        sunday: WorkingHoursTimeSlot[];
-        monday: WorkingHoursTimeSlot[];
-        tuesday: WorkingHoursTimeSlot[];
-        wednesday: WorkingHoursTimeSlot[];
-        thursday: WorkingHoursTimeSlot[];
-        friday: WorkingHoursTimeSlot[];
-    };
-    is_active: boolean;
-    created_at: string;
-    updated_at: string;
-}
-
-export interface Branch {
-    id: number;
-    name: string;
-    type: number;
-    type_label: string;
-    description: string;
-    image_url: string | null;
-    status: number;
-    status_label: string;
-    support_channels: BranchSupportChannel[] | null;
-    address: BranchAddress;
-    working_hours: BranchWorkingHours;
-    services: {
-        shipping_enabled: boolean;
-        pickup_enabled: boolean;
-        dine_in_enabled: boolean;
-        online_payment_enabled: boolean;
-        cash_on_delivery_enabled: boolean;
-        order_scheduling_enabled: boolean;
-    };
-    settings: {
-        preparation_time: number;
-        tax_percentage: number;
-        cash_on_delivery_fee: number;
-        dine_in_session_duration: number;
-        auto_accept_orders: boolean;
-    };
-    distance?: number; // Optional distance from user
-    is_open?: boolean; // Calculated status
-}
+// Branch-related types have been moved to @/types/branches
+// Re-export for backward compatibility (will be removed in future)
+export type {
+    Branch,
+    BranchSupportChannel,
+    BranchAddress,
+    BranchServices,
+    BranchSettings,
+    BranchWorkingHours,
+    BranchWorkingHoursDays,
+    WorkingHoursTimeSlot,
+    WorkingHoursSchedule,
+} from '@/types/branches';
 
 export interface Collection {
     id: number;

@@ -2,7 +2,12 @@
  * Branch utility functions for calculating status, formatting data, etc.
  */
 
-import { Branch, BranchWorkingHours, WorkingHoursTimeSlot } from '@/services/types';
+import type {
+    Branch,
+    BranchWorkingHours,
+    WorkingHoursTimeSlot,
+    WorkingHoursSchedule,
+} from '@/types/branches';
 
 /**
  * Day name mapping for JavaScript Date.getDay()
@@ -118,15 +123,6 @@ function formatTimeRange(from: string, to: string): string {
     };
 
     return `${formatTime(fromHours, fromMinutes)} - ${formatTime(toHours, toMinutes)}`;
-}
-
-/**
- * Working hours schedule item for display in modal
- */
-export interface WorkingHoursSchedule {
-    day: string;
-    hours: string[];
-    closed?: boolean;
 }
 
 /**

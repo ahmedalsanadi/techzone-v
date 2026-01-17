@@ -5,9 +5,12 @@ import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Branch } from '@/services/types';
-import { getMapCenter, getBranchCoordinates } from '@/lib/map-utils';
-import { DEFAULT_MAP_ZOOM } from '@/config/branches';
+import type { Branch } from '@/types/branches';
+import {
+    getMapCenter,
+    getBranchCoordinates,
+    DEFAULT_MAP_ZOOM,
+} from '@/lib/branches';
 import { useTranslations } from 'next-intl';
 
 // Initialize Leaflet icons using local assets (no external CDN dependency)

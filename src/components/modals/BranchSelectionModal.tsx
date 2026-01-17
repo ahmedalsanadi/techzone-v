@@ -18,15 +18,14 @@ import {
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
-import { Branch } from '@/services/types';
+import type { Branch } from '@/types/branches';
 import { useBranchStore } from '@/store/useBranchStore';
 import { storeService } from '@/services/store-service';
-import { BRANCH_TYPES } from '@/config/branches';
+import { BRANCH_TYPES, calculateBranchIsOpen } from '@/lib/branches';
 import dynamic from 'next/dynamic';
 import WorkingHoursModal from './WorkingHoursModal';
 import { cn } from '@/lib/utils';
 import { useRouter } from '@/i18n/navigation';
-import { calculateBranchIsOpen } from '@/lib/branch-utils';
 
 // Lazy load map only when needed - don't block modal rendering
 const BranchMap = dynamic(() => import('./BranchMap'), {

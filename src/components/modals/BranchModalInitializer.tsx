@@ -5,8 +5,8 @@ import { useEffect, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useBranchStore } from '@/store/useBranchStore';
 import { storeService } from '@/services/store-service';
-import { BRANCH_TYPES } from '@/config/branches';
-import { Branch } from '@/services/types';
+import { BRANCH_TYPES } from '@/lib/branches';
+import type { Branch } from '@/types/branches';
 
 /**
  * BranchModalInitializer - Optimized to run only once on mount

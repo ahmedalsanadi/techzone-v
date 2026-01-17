@@ -1,5 +1,5 @@
 /**
- * Branch-related constants and types
+ * Branch-related constants
  */
 
 /**

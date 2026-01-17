@@ -3,8 +3,8 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { Branch } from '@/services/types';
-import { BRANCH_STORAGE_VERSION } from '@/config/branches';
+import type { Branch } from '@/types/branches';
+import { BRANCH_STORAGE_VERSION } from '@/lib/branches';
 
 interface BranchState {
     selectedBranch: Branch | null; // Full object in memory (not persisted)

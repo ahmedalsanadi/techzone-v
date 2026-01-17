@@ -5,7 +5,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { X, MapPin, Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { DeliveryAddress } from '@/store/useOrderStore';
-import { DEFAULT_MAP_CENTER } from '@/config/branches';
+import { DEFAULT_MAP_CENTER } from '@/lib/branches';
 import { cn } from '@/lib/utils';
 import dynamic from 'next/dynamic';
 

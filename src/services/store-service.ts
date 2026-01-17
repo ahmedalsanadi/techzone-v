@@ -4,9 +4,9 @@ import {
     Product,
     PaginationMeta,
     Category,
-    Branch,
     Collection,
 } from './types';
+import type { Branch } from '@/types/branches';
 import type { CustomerProfile, ProfileUpdateRequest } from '@/types/auth';
 
 /**
@@ -155,7 +155,10 @@ export const storeService = {
                 !branch.working_hours
             ) {
                 if (process.env.NODE_ENV === 'development') {
-                    console.warn('getBranch: Invalid branch structure:', branch);
+                    console.warn(
+                        'getBranch: Invalid branch structure:',
+                        branch,
+                    );
                 }
                 throw new Error('Invalid branch data structure');
             }
@@ -232,7 +235,7 @@ export const storeService = {
     /**
      * Update customer profile.
      * {
-     * 
+     *
      * }
      */
     updateProfile: (data: ProfileUpdateRequest) =>
