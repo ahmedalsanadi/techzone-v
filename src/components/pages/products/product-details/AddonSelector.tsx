@@ -64,16 +64,6 @@ export default function AddonSelector({
         return selectedCount < addonGroup.max_selected;
     };
 
-    // Check if we can deselect an item
-    const canDeselect = (itemId: number): boolean => {
-        const currentQty = selectedItems[itemId] || 0;
-        if (currentQty === 0) return false;
-        
-        // Check if deselecting would violate min_selected
-        const newCount = selectedCount - (addonGroup.input_type === 'boolean' ? 1 : currentQty);
-        return newCount >= addonGroup.min_selected;
-    };
-
     // Check if we can increment an item's quantity
     const canIncrement = (item: AddonItem, currentQty: number): boolean => {
         // Check max_quantity for number input type
@@ -102,8 +92,7 @@ export default function AddonSelector({
         if (isSingleSelection) {
             // Radio button behavior: deselect all others first
             if (currentQty > 0) {
-                // Deselecting
-                if (!canDeselect(itemId)) return;
+                // Deselecting - always allowed (validation checked when adding to cart)
                 onUpdateSelection(itemId, 0);
             } else {
                 // Selecting: deselect all others if max_selected is 1
@@ -117,11 +106,10 @@ export default function AddonSelector({
         } else {
             // Checkbox behavior
             if (currentQty > 0) {
-                // Deselecting
-                if (!canDeselect(itemId)) return;
+                // Deselecting - always allowed (validation checked when adding to cart)
                 onUpdateSelection(itemId, 0);
             } else {
-                // Selecting
+                // Selecting - enforce max_selected constraint
                 if (!canSelectMore()) return;
                 onUpdateSelection(itemId, 1);
             }
@@ -135,16 +123,15 @@ export default function AddonSelector({
         const currentQty = selectedItems[itemId] || 0;
 
         if (delta > 0) {
-            // Incrementing
+            // Incrementing - enforce max_selected and max_quantity constraints
             if (!canIncrement(item, currentQty)) return;
             const newQty = item.max_quantity !== null 
                 ? Math.min(currentQty + delta, item.max_quantity)
                 : currentQty + delta;
             onUpdateSelection(itemId, newQty);
         } else {
-            // Decrementing
+            // Decrementing - always allow (validation will check min_selected when adding to cart)
             const newQty = Math.max(0, currentQty + delta);
-            if (newQty === 0 && !canDeselect(itemId)) return;
             onUpdateSelection(itemId, newQty);
         }
     };
@@ -201,7 +188,7 @@ export default function AddonSelector({
                     const isSelected = quantity > 0;
                     const isDisabled = hasReachedMax && !isSelected && addonGroup.input_type === 'boolean';
                     const canIncrementItem = canIncrement(item, quantity);
-                    const canDecrementItem = quantity > 0 && canDeselect(item.id);
+                    const canDecrementItem = quantity > 0; // Always allow decrementing (validation checked when adding to cart)
 
                     return (
                         <div
