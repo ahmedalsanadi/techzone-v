@@ -1,7 +1,7 @@
 // src/components/pages/products/ProductDetails.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import ProductGallery from './product-details/ProductGallery';
 import ProductInfo from './product-details/ProductInfo';
@@ -10,6 +10,7 @@ import AddonSelector from './product-details/AddonSelector';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import { useCartActions } from '@/hooks/useCartActions';
 import { Product } from '@/services/types';
+import { toast } from 'sonner';
 
 interface ProductDetailsProps {
     product: Product;
@@ -19,14 +20,82 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     const t = useTranslations('Product');
     const { addToCart } = useCartActions();
 
+    // Initialize addons with default values
+    const initializeAddons = useMemo((): Record<number, Record<number, number>> => {
+        const initial: Record<number, Record<number, number>> = {};
+        
+        (product.addons || []).forEach((addonGroup) => {
+            initial[addonGroup.id] = {};
+            addonGroup.items.forEach((item) => {
+                if (item.default_value > 0) {
+                    initial[addonGroup.id][item.id] = item.default_value;
+                }
+            });
+        });
+
+        return initial;
+    }, [product.addons]);
+
     const [selectedAddons, setSelectedAddons] = useState<
         Record<number, Record<number, number>>
-    >({});
+    >(initializeAddons);
     const [quantity, setQuantity] = useState(1);
     const [notes, setNotes] = useState('');
 
+    // Re-initialize when product changes
+    useEffect(() => {
+        setSelectedAddons(initializeAddons);
+    }, [initializeAddons]);
+
     const images = [product.cover_image_url, ...(product.image_urls || [])];
     const currentPrice = product.sale_price || product.price;
+
+    // Validate addon constraints
+    const validateAddons = useCallback((): { isValid: boolean; errors: string[] } => {
+        const errors: string[] = [];
+
+        (product.addons || []).forEach((addonGroup) => {
+            // Calculate selected count for this addon group
+            const items = selectedAddons[addonGroup.id] || {};
+            let selectedCount: number;
+            
+            if (addonGroup.input_type === 'boolean') {
+                // Count items with quantity > 0
+                selectedCount = Object.values(items).filter((qty) => qty > 0).length;
+            } else {
+                // Sum all quantities for number input type
+                selectedCount = Object.values(items).reduce((sum, qty) => sum + qty, 0);
+            }
+
+            // Check required groups
+            if (addonGroup.is_required && selectedCount < addonGroup.min_selected) {
+                errors.push(
+                    `${addonGroup.name}: ${t('minSelectionRequired', { count: addonGroup.min_selected }) || `Please select at least ${addonGroup.min_selected} item(s)`}`
+                );
+            }
+
+            // Check min_selected constraint
+            if (selectedCount < addonGroup.min_selected) {
+                errors.push(
+                    `${addonGroup.name}: ${t('minSelectionRequired', { count: addonGroup.min_selected }) || `Minimum ${addonGroup.min_selected} selection(s) required`}`
+                );
+            }
+
+            // Check max_selected constraint
+            if (addonGroup.max_selected !== null && selectedCount > addonGroup.max_selected) {
+                errors.push(
+                    `${addonGroup.name}: ${t('maxSelectionExceeded') || `Maximum ${addonGroup.max_selected} selection(s) allowed`}`
+                );
+            }
+        });
+
+        return {
+            isValid: errors.length === 0,
+            errors,
+        };
+    }, [selectedAddons, product.addons, t]);
+
+    const validation = useMemo(() => validateAddons(), [validateAddons]);
 
     const calculateTotalPrice = () => {
         let totalAddonsPrice = 0;
@@ -69,6 +138,20 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     };
 
     const handleAddToCart = () => {
+        // Validate before adding to cart
+        const validationResult = validateAddons();
+        if (!validationResult.isValid) {
+            toast.error(
+                validationResult.errors[0] || t('validationError') || 'Please fix the selection errors',
+                {
+                    description: validationResult.errors.length > 1 
+                        ? `${validationResult.errors.length - 1} more error(s)`
+                        : undefined,
+                }
+            );
+            return;
+        }
+
         // Prepare addon details with names for display in cart
         const addonDetails: Array<{
             groupName: string;
@@ -190,7 +273,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                         quantity={quantity}
                         setQuantity={setQuantity}
                         onAddToCart={handleAddToCart}
-                        isAvailable={product.is_available}
+                        isAvailable={product.is_available && validation.isValid}
                     />
                 </div>
             </div>

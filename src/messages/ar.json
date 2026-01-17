@@ -188,7 +188,14 @@
     "addNotes": "أضف أي ملاحظات أو تعليمات خاصة...",
     "outOfStock": "نفذت الكمية",
     "categories": "الأقسام",
-    "filters": "فلاتر"
+    "filters": "فلاتر",
+    "selected": "محدد",
+    "minRequired": "الحد الأدنى",
+    "minSelectionRequired": "يرجى تحديد {count} عنصر على الأقل",
+    "maxSelectionExceeded": "تم تجاوز الحد الأقصى للمحددات",
+    "perQuantity": "لكل كمية",
+    "maxQuantity": "الحد الأقصى",
+    "validationError": "خطأ في التحقق"
   },
   "Orders": {
     "title": "طلباتي",

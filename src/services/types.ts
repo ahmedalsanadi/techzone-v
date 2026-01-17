@@ -161,17 +161,20 @@ export interface Product {
     addons?: Array<{
         id: number;
         name: string;
-        description: string;
+        description: string | null;
         input_type: 'boolean' | 'number';
         min_selected: number;
-        max_selected: number;
+        max_selected: number | null;
         is_required: boolean;
         items: Array<{
             id: number;
             title: string;
+            description: string | null;
             extra_price: number;
-            max_quantity?: number;
+            max_quantity: number | null;
+            default_value: number;
             multiply_price_by_quantity: boolean;
+            is_required: boolean;
         }>;
     }>;
 }

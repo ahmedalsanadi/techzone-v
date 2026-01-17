@@ -188,7 +188,14 @@
     "addNotes": "Add any notes or special instructions...",
     "outOfStock": "Out of Stock",
     "categories": "Categories",
-    "filters": "Filters"
+    "filters": "Filters",
+    "selected": "selected",
+    "minRequired": "Minimum",
+    "minSelectionRequired": "Please select at least {count} item(s)",
+    "maxSelectionExceeded": "Maximum selections exceeded",
+    "perQuantity": "per quantity",
+    "maxQuantity": "Max",
+    "validationError": "Validation error"
   },
   "Orders": {
     "title": "My Orders",
