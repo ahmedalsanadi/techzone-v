@@ -141,6 +141,18 @@
     "previous": "Previous",
     "next": "Next"
   },
+  "FeaturedProducts": {
+    "title": "Featured Products",
+    "more": "More",
+    "addToCart": "Add to Cart",
+    "save": "Save {amount}"
+  },
+  "NewArrivals": {
+    "title": "New Arrivals",
+    "more": "More",
+    "addToCart": "Add to Cart",
+    "save": "Save {amount}"
+  },
   "Product": {
     "calories": "Calories",
     "prepTime": "min",

@@ -141,6 +141,18 @@
     "previous": "السابق",
     "next": "التالي"
   },
+  "FeaturedProducts": {
+    "title": "المنتجات المميزة",
+    "more": "المزيد",
+    "addToCart": "اضافة إلى السلة",
+    "save": "وفر {amount}"
+  },
+  "NewArrivals": {
+    "title": "المنتجات الجديدة",
+    "more": "المزيد",
+    "addToCart": "اضافة إلى السلة",
+    "save": "وفر {amount}"
+  },
   "Product": {
     "calories": "سعرة حرارية",
     "prepTime": "دقيقة",
