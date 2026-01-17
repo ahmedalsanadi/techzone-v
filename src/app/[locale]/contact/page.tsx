@@ -41,10 +41,16 @@ export default async function ContactPage({
     const breadcrumbItems = getContactBreadcrumbs(t, branch, branch_id);
 
     // Support channels: branch channels first, then store channels
+    // Map store channels to BranchSupportChannel format (add status property)
     const displayChannels =
         branch?.support_channels && branch.support_channels.length > 0
             ? branch.support_channels
-            : store?.support_channels;
+            : store?.support_channels?.map((channel) => ({
+                  type: channel.type,
+                  title: channel.title,
+                  value: channel.value,
+                  status: true, // Store channels are always active
+              })) || null;
 
     return (
         <main className="min-h-screen bg-gray-50/30 py-8">
