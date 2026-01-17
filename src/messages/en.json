@@ -476,5 +476,10 @@
       "title": "Contact Us",
       "content": "If you have any questions about these terms and conditions, please contact us through our contact page or email: contact@fasto.sa"
     }
+  },
+  "ServiceUnavailableFallback": {
+    "storeUnavailable": "Store Unavailable",
+    "description": "We&apos;re sorry, but the store you&apos;re looking for is currently unavailable or doesn&apos;t exist.",
+    "tryAgain": "Try Again"
   }
 }

@@ -1,7 +1,10 @@
 // src/components/layouts/service-unavailable-fallback.tsx
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import React from 'react';
 
 export function ServiceUnavailableFallback() {
+    const t = useTranslations('ServiceUnavailableFallback');
     return (
         <div className="flex min-h-screen flex-col items-center justify-center bg-white p-4 text-center">
             <div className="max-w-md space-y-6">
@@ -21,18 +24,18 @@ export function ServiceUnavailableFallback() {
                     </svg>
                 </div>
                 <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                    Store Unavailable
+                    {t('storeUnavailable')}
                 </h1>
                 <p className="text-lg text-gray-600">
-                    We're sorry, but the store you're looking for is currently unavailable or doesn't exist.
+                    {t('description')}
                 </p>
                 <div className="pt-4">
-                    <a
+                    <Link
                         href="/"
                         className="inline-flex items-center justify-center rounded-full bg-black px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-800"
                     >
-                        Try Refreshing
-                    </a>
+                        {t('tryAgain')}
+                    </Link>
                 </div>
             </div>
         </div>

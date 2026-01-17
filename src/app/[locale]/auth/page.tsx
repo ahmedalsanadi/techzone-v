@@ -2,7 +2,7 @@
 import React from 'react';
 import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { getStoreConfig } from '@/services/store-config';
+import { getServerStoreConfig } from '@/lib/server/store-config';
 import AuthFlow from './AuthFlow';
 
 export async function generateMetadata({
@@ -27,7 +27,8 @@ export default async function AuthPage({
 }) {
     const { locale } = await params;
     const { step, redirect } = await searchParams;
-    const config = await getStoreConfig();
+    // Use shared server context to avoid duplicate API calls
+    const config = await getServerStoreConfig();
 
     if (!config) {
         return null;
