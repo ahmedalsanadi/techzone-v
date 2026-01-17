@@ -14,7 +14,8 @@ import '@/app/globals.css';
 import PageContainer from '@/components/layouts/PageContainer';
 import { ServiceUnavailableFallback } from '@/components/layouts/service-unavailable-fallback';
 import { QueryProvider } from '@/components/providers/QueryProvider';
-import { getStoreConfig, getStoreCategories } from '@/services/store-config';
+import { getStoreCategories } from '@/services/store-config';
+import { getServerStoreConfig } from '@/lib/server/store-config';
 import { StoreProvider } from '@/components/providers/StoreProvider';
 import ToasterContainer from '@/components/layouts/ToasterContainer';
 import BranchSelectionModal from '@/components/modals/BranchSelectionModal';
@@ -119,8 +120,9 @@ export default async function RootLayout({
     const messages = await getMessages({ locale });
 
     // Tenant config (UI + branding only, NOT metadata)
+    // Using shared server context ensures single fetch per request
     const [storeConfig, categories] = await Promise.all([
-        getStoreConfig(),
+        getServerStoreConfig(),
         getStoreCategories(),
     ]);
 

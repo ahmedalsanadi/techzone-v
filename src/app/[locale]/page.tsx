@@ -1,80 +1,120 @@
 import LandingPage from '@/components/pages/landing-page/LandingPage';
+import { getServerStoreConfig } from '@/lib/server/store-config';
 import { storeService } from '@/services/store-service';
-import { Product } from '@/services/types';
+import { Product, HomeSections } from '@/services/types';
 
+/**
+ * Server component that fetches products based on enabled sections.
+ * Receives home_sections from layout via shared server context.
+ */
 export default async function HomePage() {
-    // Fetch all product sections in parallel
-    // LandingPage (client) will read config from context and only render enabled sections
-    const fetchPromises = [
-        // Featured Products
-        storeService.getProducts({
-            is_featured: true,
-            per_page: 8,
-        }),
-        // New Arrivals
-        storeService.getProducts({
-            is_latest: true,
-            per_page: 8,
-            sort: 'created_at',
-            order: 'desc',
-        }),
-        // Offers - filter products with discounts
-        storeService
-            .getProducts({
-                per_page: 8,
-            })
-            .then((result) => {
-                // Filter products that have discounts (sale_price)
-                return {
-                    data: result.data.filter(
-                        (product) =>
-                            product.sale_price &&
-                            product.sale_price < product.price,
-                    ),
-                };
-            }),
-    ];
+    // Get config from shared server context (deduplicated with layout fetch)
+    const config = await getServerStoreConfig();
+    const homeSections = config?.home_sections;
 
-    // Fetch all sections in parallel
+    // If no config, return empty (layout handles ServiceUnavailableFallback)
+    if (!homeSections) {
+        return (
+            <LandingPage
+                featuredProducts={[]}
+                offersProducts={[]}
+                newArrivalsProducts={[]}
+            />
+        );
+    }
+
+    // Section fetchers map - only fetch what's enabled
+    const sectionFetchers: Array<{
+        key: keyof Pick<
+            HomeSections,
+            'show_featured_products' | 'show_new_arrivals' | 'show_offers'
+        >;
+        fetcher: () => Promise<{ data: Product[] }>;
+    }> = [];
+
+    // Featured Products
+    if (homeSections.show_featured_products) {
+        sectionFetchers.push({
+            key: 'show_featured_products',
+            fetcher: () =>
+                storeService.getProducts({
+                    is_featured: true,
+                    per_page: 8,
+                }),
+        });
+    }
+
+    // New Arrivals
+    if (homeSections.show_new_arrivals) {
+        sectionFetchers.push({
+            key: 'show_new_arrivals',
+            fetcher: () =>
+                storeService.getProducts({
+                    is_latest: true,
+                    per_page: 8,
+                    sort: 'created_at',
+                    order: 'desc',
+                }),
+        });
+    }
+
+    // Offers - filter products with discounts
+    // ⚠️ TEMPORARY: Client-side filtering until backend supports is_on_sale filter
+    // TODO: Replace with backend filter (is_on_sale=true) when available
+    // This affects: pagination accuracy, cache efficiency, and total counts
+    if (homeSections.show_offers) {
+        sectionFetchers.push({
+            key: 'show_offers',
+            fetcher: () =>
+                storeService
+                    .getProducts({
+                        per_page: 8,
+                    })
+                    .then((result) => {
+                        // Filter products that have discounts (sale_price)
+                        return {
+                            data: result.data.filter(
+                                (product) =>
+                                    product.sale_price &&
+                                    product.sale_price < product.price,
+                            ),
+                        };
+                    }),
+        });
+    }
+
+    // Fetch only enabled sections in parallel
     let featuredProducts: Product[] = [];
     let newArrivalsProducts: Product[] = [];
     let offersProducts: Product[] = [];
 
-    try {
-        const results = await Promise.allSettled(fetchPromises);
-
-        // Featured Products
-        if (results[0].status === 'fulfilled') {
-            featuredProducts = (results[0].value.data || []) as Product[];
-        } else {
-            console.error(
-                '[HomePage] Failed to fetch featured products:',
-                results[0].reason,
+    if (sectionFetchers.length > 0) {
+        try {
+            const results = await Promise.allSettled(
+                sectionFetchers.map((f) => f.fetcher()),
             );
-        }
 
-        // New Arrivals
-        if (results[1].status === 'fulfilled') {
-            newArrivalsProducts = (results[1].value.data || []) as Product[];
-        } else {
-            console.error(
-                '[HomePage] Failed to fetch new arrivals:',
-                results[1].reason,
-            );
+            results.forEach((result, index) => {
+                const section = sectionFetchers[index];
+                if (result.status === 'fulfilled') {
+                    const products = (result.value.data || []) as Product[];
+                    if (section.key === 'show_featured_products') {
+                        featuredProducts = products;
+                    } else if (section.key === 'show_new_arrivals') {
+                        newArrivalsProducts = products;
+                    } else if (section.key === 'show_offers') {
+                        offersProducts = products;
+                    }
+                } else {
+                    console.error(
+                        `[HomePage] Failed to fetch ${section.key}:`,
+                        result.reason,
+                    );
+                }
+            });
+        } catch (error) {
+            console.error('[HomePage] Error fetching products:', error);
         }
-
-        // Offers
-        if (results[2].status === 'fulfilled') {
-            offersProducts = (results[2].value.data || []) as Product[];
-        } else {
-            console.error(
-                '[HomePage] Failed to fetch offers:',
-                results[2].reason,
-            );
-        }
-    } catch (error) {
-        // Log error but continue rendering
-        console.error('[HomePage] Error fetching products:', error);
     }
 
     return (

@@ -1,3 +1,4 @@
+//src/components/pages/landing-page/ProductSection.tsx
 'use client';
 
 import React from 'react';
@@ -29,7 +30,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
     }
 
     return (
-        <section className="mt-12 mb-16" dir="rtl">
+        <section className="mt-12 mb-16">
             {/* Section Header */}
             <div className="flex items-center justify-between mb-8">
                 <h2 className="text-3xl font-black text-gray-900 tracking-tight">

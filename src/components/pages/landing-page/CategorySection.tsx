@@ -1,3 +1,4 @@
+//src/components/pages/landing-page/CategorySection.tsx
 'use client';
 
 import React from 'react';
