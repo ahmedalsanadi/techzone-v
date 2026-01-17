@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
                 },
             },
         };
-    } catch (error) {
+    } catch {
         return { title: 'Product Not Found' };
     }
 }
@@ -48,32 +48,33 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ProductPage({ params }: Props) {
     const { slug } = await params;
 
+    let product;
     try {
-        const product = await storeService.getProductBySlug(slug);
-
-        if (!product) {
-            notFound();
-        }
-
-        const structuredData = generateProductStructuredData(
-            product,
-            siteConfig.url,
-        );
-
-        return (
-            <div className="py-8">
-                {structuredData && (
-                    <script
-                        type="application/ld+json"
-                        dangerouslySetInnerHTML={{
-                            __html: JSON.stringify(structuredData),
-                        }}
-                    />
-                )}
-                <ProductDetails product={product} />
-            </div>
-        );
-    } catch (error) {
+        product = await storeService.getProductBySlug(slug);
+    } catch {
         notFound();
     }
+
+    if (!product) {
+        notFound();
+    }
+
+    const structuredData = generateProductStructuredData(
+        product,
+        siteConfig.url,
+    );
+
+    return (
+        <div className="py-8">
+            {structuredData && (
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify(structuredData),
+                    }}
+                />
+            )}
+            <ProductDetails product={product} />
+        </div>
+    );
 }
