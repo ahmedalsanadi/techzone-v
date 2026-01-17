@@ -2,10 +2,10 @@
  * Branch list component with all states
  */
 
-import React, { useRef } from 'react';
 import type { Branch } from '@/types/branches';
 import { BranchListItem } from './BranchListItem';
 import { LoadingState, ErrorState, EmptyState } from './BranchListStates';
+import { useTranslations } from 'next-intl';
 
 interface BranchListProps {
     branches: Branch[];

@@ -148,7 +148,7 @@ const WorkingHoursModal: React.FC<WorkingHoursModalProps> = ({
                                     <span className="font-bold text-gray-700">
                                         {t(`days.${item.day}`) || item.day}
                                     </span>
-                                    <div className="flex gap-2 flex-wrap justify-end">
+                                    <div dir="ltr" className="flex gap-2 flex-wrap justify-end">
                                         {item.hours.map((h, i) => (
                                             <span
                                                 key={i}

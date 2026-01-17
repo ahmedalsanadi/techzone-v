@@ -45,8 +45,8 @@ const BranchSelectionModal: React.FC = () => {
         itemCount: branches.length,
         focusedIndex: focusedBranchIndex,
         onFocusChange: setFocusedBranchIndex,
-        listRef: branchListRef,
-        closeButtonRef,
+        listRef: branchListRef as React.RefObject<HTMLElement>,
+        closeButtonRef: closeButtonRef as React.RefObject<HTMLButtonElement>,
     });
 
     if (!isModalOpen) return null;
@@ -101,7 +101,7 @@ const BranchSelectionModal: React.FC = () => {
                             onBranchSelect={handleBranchSelect}
                             onWorkingHoursClick={handleWorkingHoursClick}
                             onContactClick={handleContactClick}
-                            listRef={branchListRef}
+                            listRef={branchListRef as React.RefObject<HTMLDivElement>}
                         />
                     </div>
 
