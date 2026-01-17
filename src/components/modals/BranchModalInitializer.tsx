@@ -42,14 +42,8 @@ export default function BranchModalInitializer() {
                             const data = await storeService.getBranches({
                                 type: BRANCH_TYPES.BRANCH,
                             });
-                            // Filter out invalid branches and ensure data structure
-                            return (data || []).filter(
-                                (branch) =>
-                                    branch &&
-                                    branch.id &&
-                                    branch.name &&
-                                    branch.address,
-                            );
+                            // Data is already validated and filtered in storeService.getBranches
+                            return data || [];
                         },
                         staleTime: 5 * 60 * 1000, // 5 minutes
                     })

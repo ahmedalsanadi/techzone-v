@@ -196,6 +196,35 @@ export interface BranchAddress {
     formatted: string;
 }
 
+/**
+ * Working hours time slot
+ */
+export interface WorkingHoursTimeSlot {
+    from: string; // Format: "HH:mm" (e.g., "09:00")
+    to: string; // Format: "HH:mm" (e.g., "22:00")
+}
+
+/**
+ * Branch working hours structure matching API response
+ */
+export interface BranchWorkingHours {
+    id: number;
+    name: string;
+    description: string;
+    days: {
+        saturday: WorkingHoursTimeSlot[];
+        sunday: WorkingHoursTimeSlot[];
+        monday: WorkingHoursTimeSlot[];
+        tuesday: WorkingHoursTimeSlot[];
+        wednesday: WorkingHoursTimeSlot[];
+        thursday: WorkingHoursTimeSlot[];
+        friday: WorkingHoursTimeSlot[];
+    };
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
 export interface Branch {
     id: number;
     name: string;
@@ -207,10 +236,7 @@ export interface Branch {
     status_label: string;
     support_channels: BranchSupportChannel[] | null;
     address: BranchAddress;
-    working_hours: {
-        id: number;
-        name: string;
-    };
+    working_hours: BranchWorkingHours;
     services: {
         shipping_enabled: boolean;
         pickup_enabled: boolean;

@@ -26,6 +26,7 @@ import dynamic from 'next/dynamic';
 import WorkingHoursModal from './WorkingHoursModal';
 import { cn } from '@/lib/utils';
 import { useRouter } from '@/i18n/navigation';
+import { calculateBranchIsOpen } from '@/lib/branch-utils';
 
 // Lazy load map only when needed - don't block modal rendering
 const BranchMap = dynamic(() => import('./BranchMap'), {
@@ -57,7 +58,7 @@ const BranchSelectionModal: React.FC = () => {
     // Prefetched in background by BranchModalInitializer for instant display
     // Only fetches if data is stale or missing - uses cache otherwise
     const {
-        data: branches = [],
+        data: rawBranches = [],
         isLoading,
         error,
         refetch,
@@ -69,11 +70,14 @@ const BranchSelectionModal: React.FC = () => {
                 const data = await storeService.getBranches({
                     type: BRANCH_TYPES.BRANCH,
                 });
-                console.log('data', data);
                 // Filter out invalid branches and ensure data structure
                 return (data || []).filter(
                     (branch) =>
-                        branch && branch.id && branch.name && branch.address,
+                        branch &&
+                        branch.id &&
+                        branch.name &&
+                        branch.address &&
+                        branch.working_hours, // Ensure working_hours exists
                 );
             } catch (err) {
                 // Handle timeout and other errors gracefully
@@ -98,6 +102,14 @@ const BranchSelectionModal: React.FC = () => {
         // Don't refetch on reconnect if data is fresh
         refetchOnReconnect: false,
     });
+
+    // Calculate is_open for each branch and enhance branch objects
+    const branches = useMemo(() => {
+        return rawBranches.map((branch) => ({
+            ...branch,
+            is_open: calculateBranchIsOpen(branch),
+        }));
+    }, [rawBranches]);
 
     // Focus trap and keyboard navigation
     useEffect(() => {
@@ -321,10 +333,9 @@ const BranchSelectionModal: React.FC = () => {
                                         aria-label={`${
                                             branch.name || 'Branch'
                                         }, ${
-                                            branch.status_label ||
-                                            (branch.status === 1
+                                            branch.is_open
                                                 ? t('open')
-                                                : t('closed'))
+                                                : t('closed')
                                         }`}>
                                         <div className="flex items-start justify-between">
                                             <div className="flex gap-4">
@@ -348,18 +359,13 @@ const BranchSelectionModal: React.FC = () => {
                                                         <span
                                                             className={cn(
                                                                 'text-[10px] font-black uppercase tracking-wider',
-                                                                branch.status ===
-                                                                    1
+                                                                branch.is_open
                                                                     ? 'text-green-500'
                                                                     : 'text-gray-400',
                                                             )}>
-                                                            {branch.status_label ||
-                                                                (branch.status ===
-                                                                1
-                                                                    ? t('open')
-                                                                    : t(
-                                                                          'closed',
-                                                                      ))}
+                                                            {branch.is_open
+                                                                ? t('open')
+                                                                : t('closed')}
                                                         </span>
                                                         <span
                                                             className="w-1 h-1 rounded-full bg-gray-200"

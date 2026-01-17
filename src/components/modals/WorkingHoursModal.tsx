@@ -1,52 +1,19 @@
 'use client';
 
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useMemo } from 'react';
 import { X, Clock, AlertCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Branch } from '@/services/types';
 import { cn } from '@/lib/utils';
+import {
+    formatWorkingHoursDays,
+    type WorkingHoursSchedule,
+} from '@/lib/branch-utils';
 
 interface WorkingHoursModalProps {
     branch: Branch;
     onClose: () => void;
 }
-
-interface WorkingHoursSchedule {
-    day: string;
-    hours: string[];
-    closed?: boolean;
-}
-
-/**
- * TODO: Replace this mock data with actual API call when endpoint is ready
- *
- * Expected API endpoint: GET /store/branches/{branchId}/working-hours
- * Expected response structure:
- * {
- *   "success": true,
- *   "data": {
- *     "schedule": [
- *       { "day": "Saturday", "hours": ["8 am - 1 pm", "4 pm - 11 pm"] },
- *       ...
- *     ]
- *   }
- * }
- *
- * To integrate:
- * 1. Add endpoint to store-service.ts: getBranchWorkingHours(branchId)
- * 2. Use React Query: useQuery(['working-hours', branchId], ...)
- * 3. Replace mockSchedule with API data
- * 4. Add loading and error states
- */
-const getMockWorkingHours = (): WorkingHoursSchedule[] => [
-    { day: 'Saturday', hours: ['8 am - 1 pm', '4 pm - 11 pm'] },
-    { day: 'Sunday', hours: ['8 am - 1 pm', '4 pm - 11 pm'] },
-    { day: 'Monday', hours: ['8 am - 1 pm', '4 pm - 11 pm'] },
-    { day: 'Tuesday', hours: ['8 am - 1 pm', '4 pm - 11 pm'] },
-    { day: 'Wednesday', hours: ['8 am - 1 pm', '4 pm - 11 pm'] },
-    { day: 'Thursday', hours: ['All Day'] },
-    { day: 'Friday', hours: ['Closed'], closed: true },
-];
 
 const WorkingHoursModal: React.FC<WorkingHoursModalProps> = ({
     branch,
@@ -56,12 +23,22 @@ const WorkingHoursModal: React.FC<WorkingHoursModalProps> = ({
     const modalRef = useRef<HTMLDivElement>(null);
     const closeButtonRef = useRef<HTMLButtonElement>(null);
 
-    // TODO: Replace with React Query when API is ready
-    // const { data: schedule, isLoading, error } = useQuery({
-    //     queryKey: ['working-hours', branch.id],
-    //     queryFn: () => storeService.getBranchWorkingHours(branch.id),
-    // });
-    const schedule = getMockWorkingHours();
+    // Convert branch working hours to display format
+    const schedule = useMemo<WorkingHoursSchedule[]>(() => {
+        if (!branch.working_hours) {
+            return [];
+        }
+
+        try {
+            return formatWorkingHoursDays(branch.working_hours);
+        } catch (error) {
+            // Handle invalid working hours data gracefully
+            if (process.env.NODE_ENV === 'development') {
+                console.warn('Invalid working hours data for branch:', branch.id, error);
+            }
+            return [];
+        }
+    }, [branch.working_hours, branch.id]);
 
     // Keyboard navigation
     useEffect(() => {
@@ -169,7 +146,7 @@ const WorkingHoursModal: React.FC<WorkingHoursModalProps> = ({
                         ) : (
                             schedule.map((item, idx) => (
                                 <div
-                                    key={idx}
+                                    key={`${item.day}-${idx}`}
                                     className="flex items-center justify-between py-3 px-4 rounded-2xl bg-gray-50/50 hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100">
                                     <span className="font-bold text-gray-700">
                                         {t(`days.${item.day}`) || item.day}
@@ -182,14 +159,10 @@ const WorkingHoursModal: React.FC<WorkingHoursModalProps> = ({
                                                     'px-3 py-1 rounded-full text-xs font-bold border',
                                                     item.closed
                                                         ? 'bg-gray-100 text-gray-400 border-gray-200'
-                                                        : h === 'All Day'
-                                                        ? 'bg-red-50 text-red-500 border-red-100'
                                                         : 'bg-red-50 text-red-500 border-red-100',
                                                 )}>
                                                 {h === 'Closed'
                                                     ? t('closed')
-                                                    : h === 'All Day'
-                                                    ? t('all_day')
                                                     : h}
                                             </span>
                                         ))}
