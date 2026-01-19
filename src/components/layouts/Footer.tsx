@@ -8,6 +8,7 @@ import FooterColumn from './footer/FooterColumn';
 import AppBadge from './footer/AppBadge';
 import PaymentBadge from './footer/PaymentBadge';
 
+
 // Import data
 import {
     footerSections,
@@ -22,7 +23,7 @@ import { useStore } from '@/components/providers/StoreProvider';
 
 const Footer = () => {
     const t = useTranslations('Footer');
-    const { categories } = useStore();
+    const { categories , config} = useStore();
 
     const footerCategories = categories
         .filter((cat) => cat.show_in_menu)
@@ -50,14 +51,14 @@ const Footer = () => {
                     <div className="flex flex-col items-center lg:items-start text-center  ">
                         <div className="flex flex-col items-center lg:items-start mb-6">
                             <Image
-                                src="/images/logo/fasto-logo.svg"
-                                alt="Fasto Logo"
+                                src={config?.store?.logo_url}
+                                alt={config?.store?.name}
                                 width={90}
                                 height={70}
                                 className="object-contain"
                             />
                             <h3 className="text-2xl text-libero-red font-semibold">
-                                Fasto
+                                {config?.store?.name}
                             </h3>
                         </div>
                         <p className="text-gray-600 text-[14px] leading-relaxed font-medium max-w-sm">

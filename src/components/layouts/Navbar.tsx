@@ -16,15 +16,16 @@ import { useTranslations } from 'next-intl';
 import { useUiStore } from '@/store/useUiStore';
 import MobileSidebar from './MobileSidebar';
 // import LogoImage from '@/components/layouts/LogoImage';
-// import { useStore } from '@/components/providers/StoreProvider';
+import { useStore } from '@/components/providers/StoreProvider';
 // import { siteConfig } from '@/config/site';
-import FastoLogo from './FastoLogo';
+// import FastoLogo from './FastoLogo';
+import LogoImage from './LogoImage';
 
 export default function Navbar() {
     const pathname = usePathname();
     const t = useTranslations('Navbar');
     const { toggleMobileMenu } = useUiStore();
-    // const { config } = useStore();
+    const { config } = useStore();
 
     return (
         <div className="flex items-center justify-between">
@@ -37,17 +38,17 @@ export default function Navbar() {
                 </button>
 
                 {/*-------- logo----------- */}
-                {/* <LogoImage
-                    brandName={config?.store?.name || siteConfig.name}
+                <LogoImage
+                    brandName={config?.store?.name}
                     brandLogo={
                         config?.store?.logo_url || '/images/svgs/logo-icon.svg'
                     }
-                /> */}
+                />
 
-                    <FastoLogo
+                    {/* <FastoLogo
                         brandName="Fasto"
                         brandLogo="/images/svgs/logo-icon.svg"
-                    />
+                    /> */}
             </div>
 
             {/*-------- Navlist----------- */}

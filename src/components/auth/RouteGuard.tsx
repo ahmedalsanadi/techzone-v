@@ -5,7 +5,6 @@ import { useRouter, usePathname } from '@/i18n/navigation';
 import { useAuthStore } from '@/store/useAuthStore';
 import { storeService } from '@/services/store-service';
 import { toast } from 'sonner';
-import { normalizeRedirectPath } from '@/lib/utils/redirect';
 
 interface RouteGuardProps {
     children: React.ReactNode;

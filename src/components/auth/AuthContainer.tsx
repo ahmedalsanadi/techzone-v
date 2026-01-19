@@ -2,8 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { ChevronRight, ChevronLeft } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { ChevronLeft } from 'lucide-react';
 import { StoreConfig } from '@/services/types';
 
 interface AuthContainerProps {
@@ -22,7 +21,6 @@ export default function AuthContainer({
     children,
 }: AuthContainerProps) {
     const isArabic = locale === 'ar';
-    const primaryColor = config.theme.primary_color || '#B44734';
     const secondaryColor = config.theme.secondary_color || '#FFC107';
 
     return (

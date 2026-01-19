@@ -17,10 +17,11 @@ export const storeService = {
      */
     getConfig: () =>
         fetchLibero<StoreConfig>('/store/config', {
-            next: {
-                revalidate: 3600,
-                tags: ['store-config'],
-            },
+            // next: {
+            //     revalidate: 3600, // Cache for 1 hour
+            //     tags: ['store-config'],
+            // },
+            next: { revalidate: 0 }, // No cache
         }),
 
     /**
@@ -30,7 +31,7 @@ export const storeService = {
         fetchLibero<Category[]>('/store/categories', {
             params: { tree },
             next: {
-                revalidate: 3600,
+                revalidate: 3600, // Cache for 1 hour
                 tags: ['categories'],
             },
         }),
@@ -43,7 +44,7 @@ export const storeService = {
     ): Promise<{ data: Product[]; meta: PaginationMeta }> {
         const response = await fetchLiberoFull<Product[]>('/store/products', {
             params,
-            next: { revalidate: 60 }, // Cache products for 1 minute
+            next: { revalidate: 300 }, // Cache products for 5 minutes
         });
 
         const per_page = Number(params?.per_page) || 8;
@@ -65,7 +66,7 @@ export const storeService = {
      */
     getProduct: (id: string) =>
         fetchLibero<Product>(`/store/products/${id}`, {
-            next: { revalidate: 60 },
+            next: { revalidate: 300 }, // Cache product for 5 minutes
         }),
 
     /**
@@ -73,7 +74,7 @@ export const storeService = {
      */
     getProductBySlug: (slug: string) =>
         fetchLibero<Product>(`/store/products/${slug}`, {
-            next: { revalidate: 60 },
+            next: { revalidate: 300 }, // Cache product for 5 minutes
         }),
 
     /**
@@ -81,7 +82,7 @@ export const storeService = {
      */
     getCategory: (id: string) =>
         fetchLibero<Category>(`/store/categories/${id}`, {
-            next: { revalidate: 3600 },
+            next: { revalidate: 3600 }, // Cache category for 1 hour
         }),
 
     /**
@@ -89,7 +90,7 @@ export const storeService = {
      */
     getCategoryBySlug: (slug: string) =>
         fetchLibero<Category>(`/store/categories/${slug}`, {
-            next: { revalidate: 3600 },
+            next: { revalidate: 3600 }, // Cache category for 1 hour
         }),
 
     /**
@@ -98,7 +99,7 @@ export const storeService = {
     getCollections: () =>
         fetchLibero<Collection[]>('/store/collections', {
             next: {
-                revalidate: 3600, // Cache for 1 hour
+                revalidate: 3600, // Cache collections for 1 hour
                 tags: ['collections'],
             },
         }),
