@@ -217,7 +217,7 @@ const BranchSelectionModal: React.FC = () => {
                             <button
                                 ref={closeButtonRef}
                                 onClick={() => setModalOpen(false)}
-                                className="w-10 h-10 flex items-center justify-center rounded-2xl bg-gray-50 text-gray-400 hover:bg-gray-100 transition-all focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                                className="w-10 h-10 flex items-center justify-center rounded-2xl bg-gray-50 text-gray-400 hover:bg-gray-100 transition-all focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-2"
                                 aria-label={t('close_modal') || 'Close modal'}>
                                 <ChevronRight size={20} />
                             </button>
@@ -269,7 +269,7 @@ const BranchSelectionModal: React.FC = () => {
                                         </p>
                                         <button
                                             onClick={() => refetch()}
-                                            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                                            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-theme-primary text-white text-sm font-medium hover:bg-theme-primary-hover transition-colors focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-2"
                                             aria-label={t('retry') || 'Retry'}>
                                             <RefreshCw size={16} />
                                             {t('retry') || 'Retry'}
@@ -312,9 +312,9 @@ const BranchSelectionModal: React.FC = () => {
                                             }
                                         }}
                                         className={cn(
-                                            'group p-5 rounded-3xl border transition-all duration-300 cursor-pointer relative focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2',
+                                            'group p-5 rounded-3xl border transition-all duration-300 cursor-pointer relative focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-2',
                                             hoveredBranchId === branch.id
-                                                ? 'border-red-100 bg-red-50/30 shadow-lg shadow-red-500/5 -translate-x-1'
+                                                ? 'border-theme-primary/20 bg-theme-primary/5 shadow-lg shadow-theme-primary/5 -translate-x-1'
                                                 : 'border-gray-50 bg-white hover:border-gray-200',
                                         )}
                                         role="option"
@@ -335,7 +335,7 @@ const BranchSelectionModal: React.FC = () => {
                                                         'w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300',
                                                         hoveredBranchId ===
                                                             branch.id
-                                                            ? 'bg-red-500 text-white'
+                                                            ? 'bg-theme-primary text-white'
                                                             : 'bg-gray-50 text-gray-400 group-hover:bg-gray-100',
                                                     )}
                                                     aria-hidden="true">
@@ -363,7 +363,7 @@ const BranchSelectionModal: React.FC = () => {
                                                             aria-hidden="true"
                                                         />
                                                         {branch.services && (
-                                                            <span className="text-xs text-red-500 bg-red-50 px-2 py-0.5 rounded-full font-bold">
+                                                            <span className="text-xs text-theme-primary bg-theme-primary/10 px-2 py-0.5 rounded-full font-bold">
                                                                 {branch.services
                                                                     .shipping_enabled
                                                                     ? t(
@@ -390,7 +390,7 @@ const BranchSelectionModal: React.FC = () => {
                                                                 branch,
                                                             )
                                                         }
-                                                        className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-red-50 hover:text-red-500 transition-all focus:outline-none focus:ring-2 focus:ring-red-500"
+                                                        className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-theme-primary/10 hover:text-theme-primary transition-all focus:outline-none focus:ring-2 focus:ring-theme-primary"
                                                         aria-label={`${
                                                             t(
                                                                 'view_working_hours',
@@ -412,7 +412,7 @@ const BranchSelectionModal: React.FC = () => {
                                                                 branch.id,
                                                             )
                                                         }
-                                                        className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-red-50 hover:text-red-500 transition-all focus:outline-none focus:ring-2 focus:ring-red-500"
+                                                        className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-theme-primary/10 hover:text-theme-primary transition-all focus:outline-none focus:ring-2 focus:ring-theme-primary"
                                                         aria-label={`${
                                                             t(
                                                                 'contact_branch',
