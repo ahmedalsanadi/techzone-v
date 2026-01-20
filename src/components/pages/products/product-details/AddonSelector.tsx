@@ -213,7 +213,7 @@ export default function AddonSelector({
                                         {item.description}
                                     </p>
                                 )}
-                                <div className="flex items-center gap-1 text-sm font-bold text-[#B44734] mt-1">
+                                <div className="flex items-center gap-1 text-sm font-bold text-theme-primary mt-1">
                                     <span>+ {item.extra_price}</span>
                                     <CurrencySymbol className="w-3.5 h-3.5" />
                                     {item.multiply_price_by_quantity && addonGroup.input_type === 'number' && (
@@ -260,7 +260,7 @@ export default function AddonSelector({
                                     className={cn(
                                         "w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all",
                                         isSelected
-                                            ? 'bg-[#B44734] border-[#B44734] text-white'
+                                            ? 'bg-theme-primary border-theme-primary text-white'
                                             : 'border-gray-200 hover:border-gray-300',
                                         isDisabled && "opacity-50 cursor-not-allowed"
                                     )}>
