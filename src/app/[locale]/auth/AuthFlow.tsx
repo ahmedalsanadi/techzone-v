@@ -16,8 +16,8 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { normalizeRedirectPath } from '@/lib/utils/redirect';
 import { env } from '@/config/env';
 import type { AuthStep, ProfileUpdateRequest } from '@/types/auth';
-import { authStorage, getInitialAuthStep } from '@/lib/auth';
-import { formatMaskedPhone } from '@/lib/auth/utils';
+import { authStorage } from '@/lib/auth';
+import { formatMaskedPhone, validateStoredStep } from '@/lib/auth/utils';
 
 interface AuthFlowProps {
     config: StoreConfig;
@@ -45,15 +45,51 @@ export default function AuthFlow({
     } = useAuthStore();
 
     // State management - restore from sessionStorage on page refresh
-    const [step, setStep] = useState<AuthStep>(() =>
-        getInitialAuthStep(initialStep, isAuthenticated, checkProfileComplete),
-    );
+    // Initialize with server-safe value to prevent hydration mismatch
+    // Don't access sessionStorage during initial render
+    const [step, setStep] = useState<AuthStep>(() => {
+        // Use URL params or auth state (server-safe)
+        if (initialStep === 'signup') return 'signup';
+        if (initialStep === 'otp') return 'otp';
+        if (!initialStep && isAuthenticated && !checkProfileComplete?.()) {
+            return 'signup';
+        }
+        return 'phone';
+    });
+
+    // Update step from sessionStorage after hydration (client-side only)
+    // This runs after the initial render to avoid hydration mismatch
+    useEffect(() => {
+        const storedStep = authStorage.getStep();
+        const storedIsNewUser = authStorage.getIsNewUser();
+        const storedPhone = authStorage.getPhone();
+
+        if (storedStep && storedPhone) {
+            const validatedStep = validateStoredStep(
+                storedStep,
+                storedIsNewUser,
+                storedPhone,
+            );
+            if (validatedStep && validatedStep !== step) {
+                setStep(validatedStep);
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // Only run once on mount
 
     const [loading, setLoading] = useState(false);
     // Persist is_new_user flag in sessionStorage to survive navigation
-    const [isNewUser, setIsNewUser] = useState(() => authStorage.getIsNewUser());
+    // Initialize with false on server to prevent hydration mismatch
+    const [isNewUser, setIsNewUser] = useState(() => {
+        if (typeof window === 'undefined') return false;
+        return authStorage.getIsNewUser();
+    });
     // Persist phone in sessionStorage to survive navigation
-    const [phone, setPhone] = useState(() => authStorage.getPhone() || '');
+    // Initialize with empty string on server to prevent hydration mismatch
+    const [phone, setPhone] = useState(() => {
+        if (typeof window === 'undefined') return '';
+        return authStorage.getPhone() || '';
+    });
     const [otp, setOtp] = useState('');
     const [formData, setFormData] = useState<ProfileUpdateRequest>({
         first_name: '',
