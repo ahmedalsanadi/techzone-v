@@ -60,7 +60,7 @@ export function OrderProductsCard({ items }: OrderProductsCardProps) {
 
                                 {/* Price Column (Top Left of Text) */}
                                 <div className="flex flex-col items-end shrink-0">
-                                    <div className="flex items-center gap-1 font-black text-[#B44B3A] text-xl">
+                                    <div className="flex items-center gap-1 font-black text-theme-primary text-xl">
                                         <span>{item.price}</span>
                                         <CurrencySymbol className="w-4 h-4" />
                                     </div>

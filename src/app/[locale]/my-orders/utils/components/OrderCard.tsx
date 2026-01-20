@@ -138,7 +138,7 @@ export default function OrderCard({ order }: OrderCardProps) {
                                 {t('details')}
                             </Link>
                         </Button>
-                        <Button className="flex-1 bg-[#B44B3A] hover:bg-[#A04234] text-white border-none font-bold h-11 rounded-xl shadow-lg shadow-[#B44B3A]/20">
+                        <Button className="flex-1 bg-theme-primary hover:bg-theme-primary-hover text-white border-none font-bold h-11 rounded-xl shadow-lg shadow-theme-primary/20">
                             {t('reorder')}
                         </Button>
                     </>
@@ -151,7 +151,7 @@ export default function OrderCard({ order }: OrderCardProps) {
                         </Button>
                         <Button
                             asChild
-                            className="flex-1 bg-[#FDE8E4] text-[#B44B3A] hover:bg-[#FCD8D2] border-none font-bold h-11 rounded-xl">
+                            className="flex-1 bg-theme-primary-light text-theme-primary hover:bg-theme-primary-lighter border-none font-bold h-11 rounded-xl">
                             <Link href={`/my-orders/${order.id}`}>
                                 {t('details')}
                             </Link>
