@@ -53,10 +53,10 @@ export default function ProductInfo({
 
             <div className="flex items-center gap-4">
                 <div className="flex items-baseline gap-1.5">
-                    <span className="text-3xl font-black text-[#B44734]">
+                    <span className="text-3xl font-black text-theme-primary">
                         {price}
                     </span>
-                    <CurrencySymbol className="w-5 h-5 text-[#B44734]" />
+                    <CurrencySymbol className="w-5 h-5 text-theme-primary" />
                 </div>
 
                 {originalPrice && originalPrice > price && (

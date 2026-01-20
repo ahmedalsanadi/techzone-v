@@ -29,11 +29,11 @@ const VarietyItem = React.memo(
                     className={cn(
                         'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all',
                         isSelected
-                            ? 'border-libero-red bg-white'
+                            ? 'border-theme-primary bg-white'
                             : 'border-gray-200 group-hover:border-gray-300',
                     )}>
                     {isSelected && (
-                        <div className="w-2.5 h-2.5 rounded-full bg-libero-red shadow-[0_0_8px_rgba(180,75,58,0.3)]" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-theme-primary shadow-theme-primary/30" />
                     )}
                 </div>
                 <div className="flex flex-col gap-0.5">
