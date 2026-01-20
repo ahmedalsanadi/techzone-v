@@ -57,7 +57,7 @@ const Footer = () => {
                                 height={70}
                                 className="object-contain"
                             />
-                            <h3 className="text-2xl text-libero-red font-semibold">
+                            <h3 className="text-2xl text-theme-primary font-semibold">
                                 {config?.store?.name}
                             </h3>
                         </div>
@@ -84,14 +84,14 @@ const Footer = () => {
                         <ul className="space-y-4 lg:space-y-6">
                             <li className="flex items-center gap-2 text-gray-600 font-bold text-md justify-center lg:justify-start">
                                 <Phone
-                                    className="w-5 h-5 text-[#B44734]"
+                                    className="w-5 h-5 text-theme-primary"
                                     strokeWidth={2.5}
                                 />
                                 <span dir="ltr">+966 55 123 9876</span>
                             </li>
                             <li className="flex items-center gap-2 text-gray-600 font-bold text-md justify-center lg:justify-start">
                                 <Mail
-                                    className="w-5 h-5 text-[#B44734]"
+                                    className="w-5 h-5 text-theme-primary"
                                     strokeWidth={2.5}
                                 />
                                 <span>contact@Fasto.sa</span>
@@ -119,7 +119,7 @@ const Footer = () => {
             </div>
 
             {/* Middle Section: Partners & Payment Strip */}
-            <div className="bg-libero-red py-8 lg:py-4 border-b border-[#FFB800]/30 relative">
+            <div className="bg-theme-primary py-8 lg:py-4 border-b border-theme-secondary/30 relative">
                 <div className="container mx-auto px-4 ">
                     <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12">
                         {/* Section: Delivery & Partners */}
@@ -165,7 +165,7 @@ const Footer = () => {
             </div>
 
             {/* Bottom Bar: Socials, Powered By & Copyright */}
-            <div className="bg-libero-red p-6 lg:p-4">
+            <div className="bg-theme-primary p-6 lg:p-4">
                 <div className="container mx-auto flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-10">
                     {/* Copyright Left */}
                     <div className="text-white/90 text-sm font-bold text-center   order-3 lg:order-1">
@@ -192,7 +192,7 @@ const Footer = () => {
                             <Link
                                 key={idx}
                                 href={social.href}
-                                className="text-white/90 hover:text-[#FFB800] transition-colors drop-shadow-sm scale-110 lg:scale-100">
+                                className="text-white/90 hover:text-theme-secondary transition-colors drop-shadow-sm scale-110 lg:scale-100">
                                 <social.icon className="w-5 h-5" />
                             </Link>
                         ))}
