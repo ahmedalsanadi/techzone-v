@@ -88,7 +88,7 @@ export default function ProductsSection({
                                         image={p.cover_image_url}
                                         price={p.price}
                                         oldPrice={p.sale_price}
-                                        href={`/products/${p.id}`}
+                                        href={`/products/${p.slug}`}
                                         addToCartLabel={t('addToCart')}
                                         priority={isAboveFold}
                                         onAddToCartClick={() => {
@@ -100,6 +100,9 @@ export default function ProductsSection({
                                                 categoryId: String(
                                                     p.categories?.[0]?.id || '',
                                                 ),
+                                                metadata: {
+                                                    productSlug: p.slug,
+                                                },
                                             });
                                         }}
                                     />

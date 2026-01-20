@@ -57,7 +57,7 @@ export function getCategoryUrl(
     category: Category,
     basePath: string = '',
 ): string {
-    const slug = category.slug || category.id.toString();
+    const slug = category.slug;
     return basePath ? `/category/${basePath}/${slug}` : `/category/${slug}`;
 }
 

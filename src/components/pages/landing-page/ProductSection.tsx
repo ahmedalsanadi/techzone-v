@@ -65,10 +65,8 @@ const ProductSection: React.FC<ProductSectionProps> = ({
                     const displayPrice = product.sale_price || product.price;
                     const oldPrice = hasDiscount ? product.price : undefined;
 
-                    // Generate product href (prefer slug, fallback to id)
-                    const productHref = `/products/${
-                        product.slug || product.id
-                    }`;
+                    // Generate product href
+                    const productHref = `/products/${product.slug}`;
 
                     // Get category ID for cart (use first category if available)
                     const categoryId =
@@ -99,6 +97,9 @@ const ProductSection: React.FC<ProductSectionProps> = ({
                                     image: product.cover_image_url,
                                     price: displayPrice,
                                     categoryId,
+                                    metadata: {
+                                        productSlug: product.slug,
+                                    },
                                 });
                             }}
                         />

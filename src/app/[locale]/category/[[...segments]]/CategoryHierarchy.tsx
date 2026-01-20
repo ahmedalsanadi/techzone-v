@@ -32,7 +32,7 @@ function CategoryHierarchy({ tree, categoryPath }: CategoryHierarchyProps) {
 
         // Level 1: Always show root categories at the top
         if (rootCategories.length > 0) {
-            const activeRootId = categoryPath[0]?.id.toString();
+            const activeRootId = categoryPath[0]?.slug;
             renderedLevels.push(
                 <div
                     key="root"
@@ -47,7 +47,7 @@ function CategoryHierarchy({ tree, categoryPath }: CategoryHierarchyProps) {
                                 label={c.name}
                                 image={c.image_url || c.icon_url}
                                 href={getCategoryUrl(c)}
-                                isActive={c.id.toString() === activeRootId}
+                                isActive={c.slug === activeRootId}
                                 priority={idx < 5} // First 5 categories get priority
                             />
                         </div>
@@ -62,11 +62,11 @@ function CategoryHierarchy({ tree, categoryPath }: CategoryHierarchyProps) {
             if (subCats.length > 0) {
                 const currentPath = categoryPath
                     .slice(0, index + 1)
-                    .map((c) => c.slug || c.id.toString())
+                    .map((c) => c.slug)
                     .join('/');
 
                 const nextCategoryInPath = categoryPath[index + 1];
-                const activeSubId = nextCategoryInPath?.id.toString();
+                const activeSubId = nextCategoryInPath?.slug;
 
                 renderedLevels.push(
                     <div
@@ -77,9 +77,9 @@ function CategoryHierarchy({ tree, categoryPath }: CategoryHierarchyProps) {
                             touchAction: 'pan-x',
                         }}>
                         {subCats.map((c) => {
-                            const subSlug = c.slug || c.id.toString();
+                            const subSlug = c.slug;
                             const subPath = `${currentPath}/${subSlug}`;
-                            const isActive = c.id.toString() === activeSubId;
+                            const isActive = c.slug === activeSubId;
 
                             return (
                                 <div key={c.id} className="shrink-0">

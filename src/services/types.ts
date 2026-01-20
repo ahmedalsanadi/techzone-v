@@ -94,7 +94,7 @@ export interface CheckoutSettings {
 export interface Category {
     id: number | string;
     name: string;
-    slug: string | null;
+    slug: string;
     description?: string;
     image_url?: string | null;
     icon_url?: string | null;

@@ -9,6 +9,7 @@ import { Link } from '@/i18n/navigation';
 const products = [
     {
         id: 1,
+        slug: 'classic-burger', // Realistic mock slug
         nameKey: 'dishName',
         image: '/images/images/dish.png',
         price: 230,
@@ -17,6 +18,7 @@ const products = [
     },
     {
         id: 2,
+        slug: 'cheeseburger',
         nameKey: 'dishName',
         image: '/images/images/dish.png',
         price: 230,
@@ -25,6 +27,7 @@ const products = [
     },
     {
         id: 3,
+        slug: 'chicken-burger',
         nameKey: 'dishName',
         image: '/images/images/dish.png',
         price: 230,
@@ -33,6 +36,7 @@ const products = [
     },
     {
         id: 4,
+        slug: 'veggie-burger',
         nameKey: 'dishName',
         image: '/images/images/dish.png',
         price: 230,
@@ -41,6 +45,7 @@ const products = [
     },
     {
         id: 5,
+        slug: 'double-burger',
         nameKey: 'dishName',
         image: '/images/images/dish.png',
         price: 230,
@@ -60,7 +65,9 @@ const PromotionsSection = () => {
                 <h2 className="text-3xl font-black text-gray-900 tracking-tight">
                     {t('title')}
                 </h2>
-                <Link href="/products" className="bg-gray-100/80 hover:bg-gray-200 text-gray-600 px-6 py-2 rounded-xl text-sm font-bold transition-all inline-block cursor-pointer hover:text-libero-red hover:scale-105">
+                <Link
+                    href="/products"
+                    className="bg-gray-100/80 hover:bg-gray-200 text-gray-600 px-6 py-2 rounded-xl text-sm font-bold transition-all inline-block cursor-pointer hover:text-libero-red hover:scale-105">
                     {t('more')}
                 </Link>
             </div>
@@ -74,7 +81,7 @@ const PromotionsSection = () => {
                         image={product.image}
                         price={product.price}
                         oldPrice={product.oldPrice}
-                        href={`/products/${product.id}`}
+                        href={`/products/${product.slug}`}
                         discountBadge={t('save', {
                             amount: product.discountAmount,
                         })}
@@ -87,6 +94,9 @@ const PromotionsSection = () => {
                                 image: product.image,
                                 price: product.price,
                                 categoryId: 'promo', // Placeholder
+                                metadata: {
+                                    productSlug: product.slug,
+                                },
                             });
                         }}
                     />

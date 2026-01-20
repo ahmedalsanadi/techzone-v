@@ -70,6 +70,9 @@ export function ProductsMainSection({
                             categoryId: String(
                                 product.categories?.[0]?.id || '',
                             ),
+                            metadata: {
+                                productSlug: product.slug,
+                            },
                         });
                     }}
                 />
