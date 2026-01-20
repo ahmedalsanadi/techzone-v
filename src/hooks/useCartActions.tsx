@@ -20,7 +20,7 @@ export const useCartActions = () => {
         addItem(item, quantity);
 
         toast.success(t('added', { name: item.name }), {
-            icon: <ShoppingCart size={18} className="text-[#B44734]" />,
+            icon: <ShoppingCart size={18} className="text-theme-primary" />,
             description: t('viewCart'),
             action: {
                 label: t('viewCart'),

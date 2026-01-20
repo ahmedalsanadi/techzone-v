@@ -45,7 +45,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
             className={cn(
                 'flex flex-col items-center gap-2 w-[75px] md:w-[90px] shrink-0 p-2 transition-all duration-300 rounded-[20px]',
                 isActive
-                    ? 'bg-white border-2 border-[#B44734] shadow-md -translate-y-0.5'
+                    ? 'bg-white border-2 border-theme-primary shadow-md -translate-y-0.5'
                     : 'hover:bg-white/50',
                 !href && 'cursor-pointer',
             )}>
@@ -54,7 +54,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                     'w-14 h-14 md:w-16 md:h-16 rounded-full p-0.5 transition-all duration-300 flex items-center justify-center overflow-hidden bg-white relative',
                     isActive
                         ? 'border-0'
-                        : 'border-2 border-white shadow-sm group-hover:border-[#B44734]/20',
+                        : 'border-2 border-white shadow-sm group-hover:border-theme-primary-border',
                 )}>
                 <div className="relative w-full h-full rounded-full overflow-hidden">
                     <DynamicImage
@@ -72,7 +72,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                 className={cn(
                     'text-[10px] md:text-xs font-bold transition-colors text-center line-clamp-1 px-1',
                     isActive
-                        ? 'text-[#B44734]'
+                        ? 'text-theme-primary'
                         : 'text-gray-600 group-hover:text-gray-900',
                 )}>
                 {label}
@@ -90,15 +90,15 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                 className={cn(
                     'w-full h-full aspect-4/5 md:aspect-square flex flex-col items-center justify-center gap-2 p-3 transition-all duration-300 rounded-2xl relative',
                     isActive
-                        ? 'bg-white border-2 border-[#B44734] shadow-xl -translate-y-1'
-                        : 'bg-white/40 border border-gray-100 group-hover:bg-white group-hover:border-[#B44734]/20 group-hover:shadow-lg',
+                        ? 'bg-white border-2 border-theme-primary shadow-xl -translate-y-1'
+                        : 'bg-white/40 border border-gray-100 group-hover:bg-white group-hover:border-theme-primary-border group-hover:shadow-lg',
                 )}>
                 {isMain ? (
                     <div className="flex flex-col items-center gap-2 w-full">
-                        <div className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-[#FEF4F1] rounded-xl group-hover:scale-110 transition-transform">
+                        <div className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-theme-primary-light rounded-xl group-hover:scale-110 transition-transform">
                             <LayoutGrid
                                 size={28}
-                                className="text-[#B44734]"
+                                className="text-theme-primary"
                                 strokeWidth={1.5}
                             />
                         </div>
@@ -106,8 +106,8 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                             className={cn(
                                 'text-[11px] md:text-xs font-bold transition-colors text-center line-clamp-2 px-1',
                                 isActive
-                                    ? 'text-[#B44734]'
-                                    : 'text-gray-800 group-hover:text-[#B44734]',
+                                    ? 'text-theme-primary'
+                                    : 'text-gray-800 group-hover:text-theme-primary',
                             )}>
                             {label}
                         </span>
@@ -129,8 +129,8 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                             className={cn(
                                 'text-[11px] md:text-xs font-bold transition-colors leading-tight text-center line-clamp-2 px-1',
                                 isActive
-                                    ? 'text-[#B44734]'
-                                    : 'text-gray-800 group-hover:text-[#B44734]',
+                                    ? 'text-theme-primary'
+                                    : 'text-gray-800 group-hover:text-theme-primary',
                             )}>
                             {label}
                         </span>
@@ -138,7 +138,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                 )}
                 {/* Active Indicator Line */}
                 {isActive && (
-                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-[#B44734] rounded-full" />
+                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-theme-primary rounded-full" />
                 )}
             </div>
         </div>
