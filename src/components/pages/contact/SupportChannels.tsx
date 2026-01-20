@@ -33,21 +33,21 @@ export const SupportChannels: React.FC<SupportChannelsProps> = ({
                     <div
                         key={idx}
                         className="flex items-center justify-start gap-4 group cursor-pointer">
-                        <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center shadow-sm border border-gray-100 group-hover:border-[#B44734]/20 transition-all">
+                        <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center shadow-sm border border-gray-100 group-hover:border-theme-primary-border transition-all">
                             {channel.type === 'email' ? (
                                 <Mail
                                     size={20}
-                                    className="text-gray-400 group-hover:text-[#B44734]"
+                                    className="text-gray-400 group-hover:text-theme-primary"
                                 />
                             ) : (
                                 <Phone
                                     size={20}
-                                    className="text-gray-400 group-hover:text-[#B44734]"
+                                    className="text-gray-400 group-hover:text-theme-primary"
                                 />
                             )}
                         </div>
                         <span
-                            className="text-gray-600 font-medium group-hover:text-[#B44734] transition-colors"
+                            className="text-gray-600 font-medium group-hover:text-theme-primary transition-colors"
                             dir={channel.type === 'phone' ? 'ltr' : undefined}>
                             {channel.value}
                         </span>
