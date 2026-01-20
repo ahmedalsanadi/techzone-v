@@ -12,5 +12,6 @@ export type {
     AuthStoreInfo,
     AuthResponse,
     SendOtpResponse,
+    ResendOtpResponse,
     ProfileUpdateRequest,
 } from './auth.types';

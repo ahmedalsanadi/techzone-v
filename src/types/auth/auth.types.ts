@@ -34,6 +34,16 @@ export interface AuthResponse {
  */
 export interface SendOtpResponse {
     is_new_user: boolean;
+    temp_token: string;
+    masked_phone: string;
+    expires_in: number; // in seconds (300 = 5 minutes)
+}
+
+/**
+ * Response from resend OTP endpoint (/auth/store/resend-otp)
+ */
+export interface ResendOtpResponse {
+    masked_phone: string;
 }
 
 /**

@@ -63,15 +63,33 @@ export default function AuthFlow({
         const storedStep = authStorage.getStep();
         const storedIsNewUser = authStorage.getIsNewUser();
         const storedPhone = authStorage.getPhone();
+        const storedTempToken = authStorage.getTempToken();
 
         if (storedStep && storedPhone) {
             const validatedStep = validateStoredStep(
                 storedStep,
                 storedIsNewUser,
                 storedPhone,
+                storedTempToken,
             );
             if (validatedStep && validatedStep !== step) {
                 setStep(validatedStep);
+                // Restore temp_token and masked_phone if going to OTP step
+                if (validatedStep === 'otp' && storedTempToken) {
+                    setTempToken(storedTempToken);
+                    const storedMaskedPhone = authStorage.getMaskedPhone();
+                    if (storedMaskedPhone) {
+                        setMaskedPhone(storedMaskedPhone);
+                    }
+                    const storedExpiresAt = authStorage.getOtpExpiresAt();
+                    if (storedExpiresAt && !authStorage.isOtpExpired()) {
+                        setOtpExpiresAt(storedExpiresAt);
+                    } else if (storedExpiresAt && authStorage.isOtpExpired()) {
+                        // If expired, clear it
+                        setOtpExpiresAt(null);
+                        authStorage.setOtpExpiresAt(0);
+                    }
+                }
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -90,6 +108,21 @@ export default function AuthFlow({
         if (typeof window === 'undefined') return '';
         return authStorage.getPhone() || '';
     });
+    // Persist temp_token in sessionStorage
+    const [tempToken, setTempToken] = useState(() => {
+        if (typeof window === 'undefined') return null;
+        return authStorage.getTempToken();
+    });
+    // Persist masked_phone in sessionStorage
+    const [maskedPhone, setMaskedPhone] = useState(() => {
+        if (typeof window === 'undefined') return '';
+        return authStorage.getMaskedPhone() || '';
+    });
+    // OTP timer state
+    const [otpExpiresAt, setOtpExpiresAt] = useState(() => {
+        if (typeof window === 'undefined') return null;
+        return authStorage.getOtpExpiresAt();
+    });
     const [otp, setOtp] = useState('');
     const [formData, setFormData] = useState<ProfileUpdateRequest>({
         first_name: '',
@@ -103,11 +136,74 @@ export default function AuthFlow({
         authStorage.setPhone(phone);
     }, [phone]);
 
+    // Persist temp_token to sessionStorage when it changes
+    useEffect(() => {
+        if (tempToken) {
+            authStorage.setTempToken(tempToken);
+        } else {
+            authStorage.setTempToken('');
+        }
+    }, [tempToken]);
+
+    // Persist masked_phone to sessionStorage when it changes
+    useEffect(() => {
+        if (maskedPhone) {
+            authStorage.setMaskedPhone(maskedPhone);
+        } else {
+            authStorage.setMaskedPhone('');
+        }
+    }, [maskedPhone]);
+
+    // Persist OTP expiration to sessionStorage when it changes
+    useEffect(() => {
+        if (otpExpiresAt) {
+            authStorage.setOtpExpiresAt((otpExpiresAt - Date.now()) / 1000);
+        }
+    }, [otpExpiresAt]);
+
     // Persist is_new_user flag and current step to sessionStorage when they change
     useEffect(() => {
         authStorage.setIsNewUser(isNewUser);
         authStorage.setStep(step);
     }, [isNewUser, step]);
+
+    // OTP Timer effect
+    const [timer, setTimer] = useState<string>('');
+    useEffect(() => {
+        if (!otpExpiresAt || step !== 'otp') {
+            setTimer('');
+            return;
+        }
+
+        const updateTimer = () => {
+            const now = Date.now();
+            const remaining = Math.max(0, Math.floor((otpExpiresAt - now) / 1000));
+            
+            if (remaining <= 0) {
+                setTimer('');
+                setOtpExpiresAt(null);
+                authStorage.setOtpExpiresAt(0);
+                return;
+            }
+
+            const minutes = Math.floor(remaining / 60);
+            const seconds = remaining % 60;
+            setTimer(`${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+        };
+
+        updateTimer();
+        const interval = setInterval(updateTimer, 1000);
+
+        return () => clearInterval(interval);
+    }, [otpExpiresAt, step]);
+
+    // Check if OTP is expired on mount/step change
+    useEffect(() => {
+        if (step === 'otp' && otpExpiresAt && Date.now() >= otpExpiresAt) {
+            setOtpExpiresAt(null);
+            setTimer('');
+        }
+    }, [step, otpExpiresAt]);
 
     // Validate current step based on auth state and is_new_user flag
     useEffect(() => {
@@ -253,8 +349,14 @@ export default function AuthFlow({
         setLoading(true);
         try {
             const response = await authService.sendOtp(phone);
-            // Persist is_new_user flag from API response
+            // Persist data from API response
             setIsNewUser(response.is_new_user);
+            setTempToken(response.temp_token);
+            setMaskedPhone(response.masked_phone);
+            // Set expiration timestamp
+            const expiresAt = Date.now() + response.expires_in * 1000;
+            setOtpExpiresAt(expiresAt);
+            authStorage.setOtpExpiresAt(response.expires_in);
             setStep('otp');
             toast.success(t('otpSent') || 'تم إرسال رمز التحقق بنجاح');
         } catch (error: any) {
@@ -263,6 +365,12 @@ export default function AuthFlow({
 
             if (error?.message) {
                 message = error.message;
+            } else if (error?.status === 429) {
+                // Too many requests
+                message =
+                    error?.message ||
+                    t('tooManyRequests') ||
+                    'طلبات كثيرة جداً. يرجى المحاولة لاحقاً.';
             } else if (error?.status === 504 || error?.name === 'AbortError') {
                 message =
                     t('networkError') ||
@@ -289,9 +397,15 @@ export default function AuthFlow({
             return;
         }
 
+        if (!tempToken) {
+            toast.error(t('sessionExpired') || 'انتهت صلاحية الجلسة. يرجى المحاولة مرة أخرى');
+            setStep('phone');
+            return;
+        }
+
         setLoading(true);
         try {
-            const response = await authService.login(phone, otp);
+            const response = await authService.login(phone, otp, tempToken);
 
             // Flow based on is_new_user flag:
             // - If is_new_user = true: Must complete profile (go to signup step)
@@ -307,9 +421,12 @@ export default function AuthFlow({
                 setAuth(response.customer, response.token);
             }
 
-            // Clear phone from sessionStorage after successful login
+            // Clear auth flow data from sessionStorage after successful login
             // Keep is_new_user flag if user needs to complete profile
             authStorage.setPhone('');
+            setTempToken(null);
+            setMaskedPhone('');
+            setOtpExpiresAt(null);
             // Don't clear auth_step yet - will be cleared after signup or redirect
 
             toast.success(t('loginSuccess') || 'تم تسجيل الدخول بنجاح');
@@ -333,6 +450,12 @@ export default function AuthFlow({
 
             if (error?.message) {
                 message = error.message;
+            } else if (error?.status === 429) {
+                // Too many requests
+                message =
+                    error?.message ||
+                    t('tooManyRequests') ||
+                    'طلبات كثيرة جداً. يرجى المحاولة لاحقاً.';
             } else if (error?.status === 504 || error?.name === 'AbortError') {
                 message =
                     t('networkError') ||
@@ -372,11 +495,10 @@ export default function AuthFlow({
             setProfile(updatedProfile);
 
             // Clear all auth-related sessionStorage after successful profile completion
-            if (typeof window !== 'undefined') {
-                sessionStorage.removeItem('auth_phone');
-                sessionStorage.removeItem('auth_is_new_user');
-                sessionStorage.removeItem('auth_step');
-            }
+            authStorage.clearAuthFlow();
+            setTempToken(null);
+            setMaskedPhone('');
+            setOtpExpiresAt(null);
 
             // Clear is_new_user flag since profile is now complete
             setIsNewUser(false);
@@ -419,6 +541,12 @@ export default function AuthFlow({
         if (step === 'otp') {
             setStep('phone');
             setOtp('');
+            // Clear temp_token and related data when going back
+            setTempToken(null);
+            setMaskedPhone('');
+            setOtpExpiresAt(null);
+            authStorage.setTempToken('');
+            authStorage.setMaskedPhone('');
             // Keep phone number when going back
         } else if (step === 'signup') {
             // If user is authenticated and is_new_user, they can't go back from signup
@@ -444,16 +572,22 @@ export default function AuthFlow({
 
     // Resend OTP
     const handleResendOtp = async () => {
-        if (!phone) {
+        if (!tempToken) {
+            // If no temp_token, go back to phone step
             setStep('phone');
             return;
         }
 
         setLoading(true);
         try {
-            const response = await authService.sendOtp(phone);
-            // Update is_new_user flag in case it changed (shouldn't, but handle it)
-            setIsNewUser(response.is_new_user);
+            const response = await authService.resendOtp(tempToken);
+            // Update masked phone (might have changed)
+            setMaskedPhone(response.masked_phone);
+            // Reset timer - backend doesn't return expires_in for resend, so reset to 5 minutes
+            const expiresIn = 300; // 5 minutes (300 seconds)
+            const expiresAt = Date.now() + expiresIn * 1000;
+            setOtpExpiresAt(expiresAt);
+            authStorage.setOtpExpiresAt(expiresIn);
             setOtp('');
             toast.success(t('otpResent') || 'تم إعادة إرسال رمز التحقق');
         } catch (error: any) {
@@ -462,6 +596,12 @@ export default function AuthFlow({
 
             if (error?.message) {
                 message = error.message;
+            } else if (error?.status === 429) {
+                // Too many requests
+                message =
+                    error?.message ||
+                    t('tooManyRequests') ||
+                    'طلبات كثيرة جداً. يرجى المحاولة لاحقاً.';
             } else if (error?.status === 504 || error?.name === 'AbortError') {
                 message =
                     t('networkError') ||
@@ -477,8 +617,6 @@ export default function AuthFlow({
             setLoading(false);
         }
     };
-
-    const maskedPhone = formatMaskedPhone(phone);
 
     // Render based on current step
     if (step === 'phone') {
@@ -536,11 +674,11 @@ export default function AuthFlow({
                     onOtpChange={setOtp}
                     onSubmit={handleOtpSubmit}
                     onResend={handleResendOtp}
-                    maskedPhone={maskedPhone}
+                    maskedPhone={maskedPhone || formatMaskedPhone(phone)}
                     subtitle={t('otpSubtitle') || 'أدخل رمز التحقق المرسل إلى'}
                     continueLabel={t('continue') || 'متابعة'}
                     resendLabel={t('resend') || 'إعادة الإرسال'}
-                    timer="00:30"
+                    timer={timer}
                     loading={loading}
                 />
             </AuthContainer>

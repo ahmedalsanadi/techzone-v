@@ -31,6 +31,9 @@ export const AUTH_STORAGE_KEYS = {
     PHONE: 'auth_phone',
     IS_NEW_USER: 'auth_is_new_user',
     STEP: 'auth_step',
+    TEMP_TOKEN: 'auth_temp_token',
+    MASKED_PHONE: 'auth_masked_phone',
+    OTP_EXPIRES_AT: 'auth_otp_expires_at',
 } as const;
 
 /**

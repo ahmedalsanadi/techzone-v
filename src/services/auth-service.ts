@@ -4,6 +4,7 @@ import type {
     AuthResponse,
     Customer,
     SendOtpResponse,
+    ResendOtpResponse,
 } from '@/types/auth';
 
 /**
@@ -12,13 +13,16 @@ import type {
 export const authService = {
     /**
      * Send OTP to customer phone.
-     * {
-     * "success": true,
-    "message": "تم إرسال رمز التحقق بنجاح",
-    "data": {
-        "is_new_user": true
-    }
-}   
+     * Response: {
+     *   "success": true,
+     *   "message": "تم إرسال رمز التحقق بنجاح",
+     *   "data": {
+     *     "is_new_user": false,
+     *     "temp_token": "hBByX8Ixp4FIzLGY3mgSbAQMkwMV19Fmr9kVABLi9KFykY5MV7kF6H1JkTufefPX",
+     *     "masked_phone": "05******67",
+     *     "expires_in": 300
+     *   }
+     * }
      */
     async sendOtp(phone: string): Promise<SendOtpResponse> {
         const response = await fetchLiberoFull<SendOtpResponse>(
@@ -29,10 +33,16 @@ export const authService = {
             },
         );
 
-        // Ensure data exists and has is_new_user
+        // Ensure data exists and has required fields
         if (!response.data || typeof response.data.is_new_user !== 'boolean') {
             throw new Error(
                 'Invalid response from server: missing is_new_user',
+            );
+        }
+
+        if (!response.data.temp_token || !response.data.masked_phone) {
+            throw new Error(
+                'Invalid response from server: missing temp_token or masked_phone',
             );
         }
 
@@ -40,32 +50,57 @@ export const authService = {
     },
 
     /**
-     * Login with phone and OTP.
-     * {
-     * "success": true,
-    "message": "تم تسجيل الدخول بنجاح",
-    "data": {
-        "customer": {
-            "id": 12,
-            "name": "احمد  علي",
-            "phone": "0501234561",
-            "email": "ahmed2@example.com"
-        },
-        "token": "1234567890",
-        "store": {
-            "id": 1,
-            "name": "المتجر",
-            "slug": "store",
-            "logo_url": "https://example.com/logo.png"
-        }
-    }
+     * Resend OTP using temp_token.
+     * Response: {
+     *   "success": true,
+     *   "message": "تم إرسال رمز التحقق بنجاح",
+     *   "data": {
+     *     "masked_phone": "05******67"
+     *   }
+     * }
      */
-    async login(phone: string, otp: string): Promise<AuthResponse> {
+    async resendOtp(tempToken: string): Promise<ResendOtpResponse> {
+        const response = await fetchLiberoFull<ResendOtpResponse>(
+            '/auth/store/resend-otp',
+            {
+                method: 'POST',
+                body: JSON.stringify({ temp_token: tempToken }),
+            },
+        );
+
+        // Ensure data exists and has masked_phone
+        if (!response.data || !response.data.masked_phone) {
+            throw new Error(
+                'Invalid response from server: missing masked_phone',
+            );
+        }
+
+        return response.data;
+    },
+
+    /**
+     * Login with temp_token and OTP.
+     * Request body: {
+     *   "phone": "0501234567",
+     *   "otp": "0000",
+     *   "temp_token": "{{temp_token}}"
+     * }
+     * Response: {
+     *   "success": true,
+     *   "message": "تم تسجيل الدخول بنجاح",
+     *   "data": {
+     *     "customer": { ... },
+     *     "token": "...",
+     *     "store": { ... }
+     *   }
+     * }
+     */
+    async login(phone: string, otp: string, tempToken: string): Promise<AuthResponse> {
         const response = await fetchLiberoFull<AuthResponse>(
             '/auth/store/login',
             {
                 method: 'POST',
-                body: JSON.stringify({ phone, otp }),
+                body: JSON.stringify({ phone, otp, temp_token: tempToken }),
             },
         );
 

@@ -12,11 +12,13 @@ export function validateStoredStep(
     storedStep: AuthStep | null,
     storedIsNewUser: boolean,
     storedPhone: string | null,
+    storedTempToken?: string | null,
 ): AuthStep | null {
     if (!storedStep || !storedPhone) return null;
 
     // Validate step makes sense with current state
-    if (storedStep === 'otp' && storedPhone) {
+    // For OTP step, we need temp_token
+    if (storedStep === 'otp' && storedPhone && storedTempToken) {
         return 'otp';
     }
 

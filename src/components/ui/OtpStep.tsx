@@ -61,18 +61,25 @@ export default function OtpStep({
                         )}
                     </Button>
 
-                    {timer && (
+                    {(timer || onResend) && (
                         <div className="flex items-center justify-between h-18 px-8 rounded-2xl bg-theme-primary/5">
-                            <span
-                                className="text-theme-primary font-black text-2xl"
-                                dir="ltr">
-                                {timer}
-                            </span>
+                            {timer ? (
+                                <span
+                                    className="text-theme-primary font-black text-2xl"
+                                    dir="ltr">
+                                    {timer}
+                                </span>
+                            ) : (
+                                <span className="text-theme-primary font-black text-2xl opacity-60">
+                                    {resendLabel}
+                                </span>
+                            )}
                             {onResend && (
                                 <button
                                     type="button"
                                     onClick={onResend}
-                                    className="text-theme-primary font-black text-2xl opacity-60 hover:opacity-100 transition-opacity">
+                                    disabled={!!timer}
+                                    className="text-theme-primary font-black text-2xl opacity-60 hover:opacity-100 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed">
                                     {resendLabel}
                                 </button>
                             )}
