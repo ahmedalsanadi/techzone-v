@@ -273,7 +273,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                                 </div>
                                                 <button
                                                     onClick={handleEditAddress}
-                                                    className="px-4 py-2 bg-theme-primary text-white text-sm font-medium rounded-lg hover:bg-theme-primary-hover transition-colors flex items-center gap-2">
+                                                    className="px-4 py-2 bg-theme-primary text-white text-sm font-medium rounded-lg hover:brightness-[0.95] transition-all flex items-center gap-2">
                                                     <Edit className="w-4 h-4" />
                                                     {t('edit') || 'Edit'}
                                                 </button>
@@ -336,7 +336,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                             </p>
                                             <button
                                                 onClick={openDateTimePicker}
-                                                className="ml-auto px-4 py-2 bg-theme-primary text-white text-sm font-medium rounded-lg hover:bg-theme-primary-hover transition-colors">
+                                                className="ml-auto px-4 py-2 bg-theme-primary text-white text-sm font-medium rounded-lg hover:brightness-[0.95] transition-all">
                                                 {t('change') || 'Change'}
                                             </button>
                                         </div>
@@ -407,7 +407,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                                     className={cn(
                                                         'px-4 py-2 text-white text-sm font-medium rounded-lg transition-colors',
                                                         tempDate && tempTime
-                                                            ? 'bg-theme-primary hover:bg-theme-primary-hover'
+                                                            ? 'bg-theme-primary hover:brightness-[0.95]'
                                                             : 'bg-gray-300 cursor-not-allowed',
                                                     )}>
                                                     {t('save') || 'Save'}
@@ -439,7 +439,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                     <div className="p-6 border-t border-gray-100 flex items-center justify-end">
                         <button
                             onClick={handleSave}
-                            className="w-full bg-theme-primary text-white font-semibold py-3 rounded-xl hover:bg-theme-primary-hover transition-colors">
+                            className="w-full bg-theme-primary text-white font-semibold py-3 rounded-xl hover:brightness-[0.95] transition-all">
                             {t('save') || 'Save'}
                         </button>
                     </div>

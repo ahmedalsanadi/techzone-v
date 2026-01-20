@@ -80,7 +80,7 @@ export default function ProductActionBar({
                     onClick={onAddToCart}
                     disabled={!isAvailable}
                     className={cn(
-                        'flex items-center justify-between gap-12 min-w-[200px] bg-theme-primary hover:bg-theme-primary-hover text-white',
+                        'flex items-center justify-between gap-12 min-w-[200px] bg-theme-primary hover:brightness-[0.95] text-white',
                         'px-5 py-2.5 rounded-lg transition-all active:scale-[0.98] shadow-lg shadow-theme-primary/10 group cursor-pointer',
                         'disabled:bg-gray-400 disabled:shadow-none disabled:cursor-not-allowed',
                     )}>

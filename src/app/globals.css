@@ -51,7 +51,7 @@
     /* Dynamic Theme Colors - Fallback values */
     --theme-primary: var(--primary, #B44734);
     --theme-secondary: var(--secondary, #FFB800);
-    --theme-primary-hover: var(--primary-hover, #9a3c2c);
+    --theme-primary-hover: var(--primary-hover, rgba(180, 71, 52, 0.9));
     --theme-primary-light: var(--primary-light, rgba(180, 71, 52, 0.1));
     --theme-primary-lighter: var(--primary-lighter, rgba(180, 71, 52, 0.05));
     --theme-primary-border: var(--primary-border, rgba(180, 71, 52, 0.3));
@@ -140,7 +140,7 @@
     /* Dynamic Theme Colors - Fallback values */
     --theme-primary: var(--primary, #B44734);
     --theme-secondary: var(--secondary, #FFB800);
-    --theme-primary-hover: var(--primary-hover, #9a3c2c);
+    --theme-primary-hover: var(--primary-hover, rgba(180, 71, 52, 0.9));
     --theme-primary-light: var(--primary-light, rgba(180, 71, 52, 0.1));
     --theme-primary-lighter: var(--primary-lighter, rgba(180, 71, 52, 0.05));
     --theme-primary-border: var(--primary-border, rgba(180, 71, 52, 0.3));

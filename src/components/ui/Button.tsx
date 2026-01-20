@@ -46,6 +46,48 @@ const variantStyles: Record<ButtonVariant, string> = {
     link: 'text-slate-950 underline-offset-4 hover:underline focus-visible:ring-gray-400/50',
 };
 
+// Helper function to get variant styles without hover when bg-theme-primary is used
+// This prevents conflicting hover states from variant styles
+function getVariantStylesWithoutHover(
+    variant: ButtonVariant,
+    className?: string,
+): string {
+    const variantStyle = variantStyles[variant];
+    
+    // If className contains bg-theme-primary, remove hover states from variant
+    // tailwind-merge will handle the rest, but this ensures cleaner merging
+    if (className && className.includes('bg-theme-primary')) {
+        // Remove hover:bg-* and hover:text-* from variant styles
+        return variantStyle
+            .split(' ')
+            .filter((cls) => !cls.startsWith('hover:bg-') && !cls.startsWith('hover:text-'))
+            .join(' ');
+    }
+    
+    return variantStyle;
+}
+
+// Helper function to get hover state for theme-primary buttons
+function getThemePrimaryHover(className?: string): string {
+    if (!className || !className.includes('bg-theme-primary')) {
+        return '';
+    }
+
+    // Check if custom className already has a hover state
+    const hasCustomHover = 
+        className.includes('hover:brightness') ||
+        className.includes('hover:bg-theme-primary') ||
+        className.includes('hover:opacity') ||
+        className.includes('hover:bg-');
+    
+    // If no custom hover is provided and bg-theme-primary is present, add brightness hover
+    if (!hasCustomHover) {
+        return 'hover:brightness-[0.95]';
+    }
+    
+    return '';
+}
+
 // Size styles
 const sizeStyles: Record<ButtonSize, string> = {
     default: 'h-9 px-4 py-2 has-[>svg]:px-3',
@@ -78,19 +120,33 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         },
         ref,
     ) => {
+        // Get variant styles (without hover if bg-theme-primary is used)
+        const variantStyle = getVariantStylesWithoutHover(variant, className);
+        
+        // Get hover state for theme-primary buttons (applied last to ensure precedence)
+        const themePrimaryHover = getThemePrimaryHover(className);
+        
         // If asChild is true, we need to clone the element with the appropriate classes
         if (asChild && React.isValidElement(children)) {
             const child = children as React.ReactElement<
                 React.HTMLAttributes<HTMLElement>
             >;
+            const combinedClassName = cn(
+                child.props.className,
+                className,
+            );
+            const childVariantStyle = getVariantStylesWithoutHover(variant, combinedClassName);
+            const childThemeHover = getThemePrimaryHover(combinedClassName);
+            
             return React.cloneElement(child, {
                 className: cn(
                     baseStyles,
-                    variantStyles[variant],
+                    childVariantStyle,
                     sizeStyles[size],
                     svgSizeStyles[size],
                     child.props.className,
                     className,
+                    childThemeHover,
                 ),
                 'data-variant': variant,
                 'data-size': size,
@@ -99,6 +155,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         }
 
         // Regular button element
+        // Order matters: className comes before themePrimaryHover so custom hovers take precedence
+        // but themePrimaryHover is applied last to ensure it overrides variant hover states
         return (
             <button
                 ref={ref}
@@ -106,10 +164,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
                 data-size={size}
                 className={cn(
                     baseStyles,
-                    variantStyles[variant],
+                    variantStyle,
                     sizeStyles[size],
                     svgSizeStyles[size],
                     className,
+                    themePrimaryHover,
                 )}
                 {...props}>
                 {children}

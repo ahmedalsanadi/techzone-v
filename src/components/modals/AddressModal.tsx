@@ -279,7 +279,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
                             className={cn(
                                 'px-6 py-3 font-medium rounded-xl transition-colors',
                                 isValid
-                                    ? 'bg-theme-primary text-white hover:bg-theme-primary-hover'
+                                    ? 'bg-theme-primary text-white hover:brightness-[0.95]'
                                     : 'bg-gray-200 text-gray-400 cursor-not-allowed',
                             )}>
                             {initialAddress

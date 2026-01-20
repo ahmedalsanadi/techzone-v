@@ -138,7 +138,7 @@ export default function OrderCard({ order }: OrderCardProps) {
                                 {t('details')}
                             </Link>
                         </Button>
-                        <Button className="flex-1 bg-theme-primary hover:bg-theme-primary-hover text-white border-none font-bold h-11 rounded-xl shadow-lg shadow-theme-primary/20">
+                        <Button className="flex-1 bg-theme-primary hover:brightness-[0.95] text-white border-none font-bold h-11 rounded-xl shadow-lg shadow-theme-primary/20">
                             {t('reorder')}
                         </Button>
                     </>

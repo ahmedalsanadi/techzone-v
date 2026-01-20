@@ -52,7 +52,7 @@ export const ContactForm: React.FC = () => {
                 <div className="flex justify-end pt-4">
                     <Button
                         type="submit"
-                        className="h-10 px-14 rounded-lg bg-theme-primary hover:bg-theme-primary-hover text-white font-bold text-md shadow-lg shadow-theme-primary/20 transition-all active:scale-95">
+                        className="h-10 px-14 rounded-lg bg-theme-primary hover:brightness-[0.95] text-white font-bold text-md shadow-lg shadow-theme-primary/20 transition-all active:scale-95">
                         {t('form.send')}
                     </Button>
                 </div>

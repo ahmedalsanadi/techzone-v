@@ -467,7 +467,7 @@ export default function AuthFlow({
                             <button
                                 type="button"
                                 onClick={() => router.push('/terms' as any)}
-                                className="text-libero-red font-bold hover:underline">
+                                className="text-theme-primary font-bold hover:underline">
                                 {t('termsLink')}
                             </button>
                         </div>
@@ -475,7 +475,7 @@ export default function AuthFlow({
                         <Button
                             type="submit"
                             disabled={loading || !phone}
-                            className="w-full h-16 rounded-2xl text-white font-black text-2xl shadow-xl transition-all active:scale-[0.98] mt-6 bg-libero-red shadow-libero-red/20">
+                            className="w-full h-16 rounded-2xl text-white font-black text-2xl shadow-xl transition-all active:scale-[0.98] mt-6 bg-theme-primary hover:brightness-[0.95] shadow-theme-primary/20">
                             {loading ? (
                                 <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
                             ) : (

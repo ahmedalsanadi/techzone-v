@@ -120,8 +120,10 @@ export function StoreProvider({
                 updateVar('--theme-primary', primary);
             }
             
-            // Hover state (darken by ~12%)
-            const primaryHover = darkenColor(primary, 0.12);
+            // Hover state (darken by ~4% for conventional, subtle hover)
+            // This creates a subtle darkening that works well with all colors
+            // For buttons, we'll use brightness filter instead for better results
+            const primaryHover = darkenColor(primary, 0.04);
             updateVar('--primary-hover', primaryHover);
             updateVar('--theme-primary-hover', primaryHover);
 

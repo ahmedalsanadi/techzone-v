@@ -123,7 +123,7 @@ const CartDropdown = () => {
 
                             <Link
                                 href="/cart"
-                                className="w-full bg-theme-primary text-white text-center font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all hover:bg-theme-primary-hover active:scale-95 shadow-lg shadow-theme-primary/10">
+                                className="w-full bg-theme-primary text-white text-center font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all hover:brightness-[0.95] active:scale-95 shadow-lg shadow-theme-primary/10">
                                 {t('checkout')}
                                 <ArrowRight
                                     size={18}
