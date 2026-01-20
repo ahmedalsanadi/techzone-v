@@ -20,7 +20,7 @@ const FooterColumn = ({ titleKey, links }: FooterColumnProps) => {
                     <li key={idx}>
                         <Link
                             href={link.href}
-                            className="hover:text-[#B44734] transition-colors">
+                            className="hover:text-theme-primary transition-colors">
                             {link.label ||
                                 (link.labelKey ? t(link.labelKey) : '')}
                         </Link>

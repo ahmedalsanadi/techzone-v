@@ -19,7 +19,7 @@ export default function ToasterContainer({ isArabic }: { isArabic: boolean }) {
                 },
                 actionButtonStyle: {
                     backgroundColor: 'transparent',
-                    color: '#B44734',
+                    color: 'var(--theme-primary, #B44734)',
                     fontWeight: '800',
                     fontSize: '13px',
                     padding: '8px 12px',

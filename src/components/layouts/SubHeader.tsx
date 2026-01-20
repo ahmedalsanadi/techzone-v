@@ -59,7 +59,7 @@ export default function SubHeader() {
         { id: 'delivery', label: t('delivery') },
     ];
 
-    const activeStyle = 'bg-libero-red/5 text-libero-red border-libero-red/20';
+    const activeStyle = 'bg-theme-primary/5 text-theme-primary border-theme-primary-border';
     const inactiveStyle = 'bg-gray-50 text-gray-500 hover:border-gray-200';
 
     return (
@@ -79,7 +79,7 @@ export default function SubHeader() {
                             <span className="text-gray-900 font-semibold text-sm">
                                 {branchName}
                             </span>
-                            <ChevronDown className="size-3.5 text-gray-500 group-hover:text-libero-red transition-colors duration-200" />
+                            <ChevronDown className="size-3.5 text-gray-500 group-hover:text-theme-primary transition-colors duration-200" />
                         </button>
                         <span className="text-gray-900 font-medium text-sm whitespace-nowrap">
                             {t('selectOrderType')}
@@ -92,7 +92,7 @@ export default function SubHeader() {
                             // Show order details on right when address is saved
                             <>
                                 <div className="flex items-center gap-2 text-sm text-gray-700">
-                                    <MapPin className="w-4 h-4 text-libero-red" />
+                                    <MapPin className="w-4 h-4 text-theme-primary" />
                                     <span>
                                         {t('deliveryTo')} {deliveryAddress.name}{' '}
                                         {deliveryAddress.formatted}
@@ -100,7 +100,7 @@ export default function SubHeader() {
                                 </div>
                                 {orderTime === 'later' && scheduledTime && (
                                     <div className="flex items-center gap-2 text-sm text-gray-700">
-                                        <Clock className="w-4 h-4 text-libero-red" />
+                                        <Clock className="w-4 h-4 text-theme-primary" />
                                         <span>
                                             {formatScheduledTime(scheduledTime)}
                                         </span>
@@ -108,7 +108,7 @@ export default function SubHeader() {
                                 )}
                                 <button
                                     onClick={() => setIsOrderModalOpen(true)}
-                                    className="px-3 py-1.5 bg-libero-red/10 text-libero-red text-xs font-medium rounded-lg hover:bg-libero-red/20 transition-colors flex items-center gap-1">
+                                    className="px-3 py-1.5 bg-theme-primary/10 text-theme-primary text-xs font-medium rounded-lg hover:bg-theme-primary/20 transition-colors flex items-center gap-1">
                                     <Edit className="w-3.5 h-3.5" />
                                     {t('edit')}
                                 </button>
@@ -185,7 +185,7 @@ export default function SubHeader() {
 
                             <button
                                 onClick={() => setIsOrderModalOpen(true)}
-                                className="w-full mt-2 px-3 py-2 bg-libero-red/10 text-libero-red text-xs font-medium rounded-lg hover:bg-libero-red/20 transition-colors flex items-center justify-center gap-1">
+                                className="w-full mt-2 px-3 py-2 bg-theme-primary/10 text-theme-primary text-xs font-medium rounded-lg hover:bg-theme-primary/20 transition-colors flex items-center justify-center gap-1">
                                 <Edit className="w-3.5 h-3.5" />
                                 {t('edit')}
                             </button>
@@ -206,7 +206,7 @@ export default function SubHeader() {
                                         transition-all duration-200 cursor-pointer 
                                         ${
                                             activeOrderType === type.id
-                                                ? 'bg-white text-libero-red shadow-sm'
+                                                ? 'bg-white text-theme-primary shadow-sm'
                                                 : 'text-white/80 hover:bg-white/5'
                                         }
                                     `}
