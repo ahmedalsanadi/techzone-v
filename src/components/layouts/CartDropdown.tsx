@@ -84,7 +84,7 @@ const CartDropdown = () => {
                                         <p className="text-xs text-gray-500">
                                             x{item.quantity}
                                         </p>
-                                        <div className="flex items-center gap-1 text-sm font-black text-[#B44734] mt-1">
+                                        <div className="flex items-center gap-1 text-sm font-black text-theme-primary mt-1">
                                             <span>
                                                 {item.price * item.quantity}
                                             </span>
@@ -123,7 +123,7 @@ const CartDropdown = () => {
 
                             <Link
                                 href="/cart"
-                                className="w-full bg-[#B44734] text-white text-center font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all hover:bg-[#9a3c2c] active:scale-95 shadow-lg shadow-red-900/10">
+                                className="w-full bg-theme-primary text-white text-center font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all hover:bg-theme-primary-hover active:scale-95 shadow-lg shadow-theme-primary/10">
                                 {t('checkout')}
                                 <ArrowRight
                                     size={18}
