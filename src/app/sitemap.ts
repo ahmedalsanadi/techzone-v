@@ -55,7 +55,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         });
         productRoutes = localizeRoutes(
             products.map((p) => ({
-                path: `/products/${p.slug || p.id}`,
+                path: `/products/${p.slug}`,
                 priority: 0.7,
                 changeFrequency: 'weekly',
             })),
@@ -84,7 +84,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             const flattened = flattenCategories(allCategories);
             categoryRoutes = localizeRoutes(
                 flattened.map((c) => ({
-                    path: `/categories/${c.slug || c.id}`,
+                    path: `/categories/${c.slug}`,
                     priority: 0.6,
                     changeFrequency: 'monthly',
                 })),

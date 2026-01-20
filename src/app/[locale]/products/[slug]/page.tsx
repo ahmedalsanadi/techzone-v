@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { slug } = await params;
 
     try {
-        const product = await storeService.getProductBySlug(slug);
+        const product = await storeService.getProduct(slug);
 
         if (!product) {
             return { title: 'Product Not Found' };
@@ -50,7 +50,7 @@ export default async function ProductPage({ params }: Props) {
 
     let product;
     try {
-        product = await storeService.getProductBySlug(slug);
+        product = await storeService.getProduct(slug);
     } catch {
         notFound();
     }

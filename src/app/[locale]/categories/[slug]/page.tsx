@@ -16,7 +16,7 @@ interface Props {
 
 const findCategory = (nodes: Category[], slug: string): Category | null => {
     for (const node of nodes) {
-        if (node.slug === slug || node.id.toString() === slug) return node;
+        if (node.slug === slug) return node;
         if (node.children?.length) {
             const found = findCategory(node.children, slug);
             if (found) return found;
@@ -39,14 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
         // Fallback to individual fetch
         if (!category) {
-            category = await storeService
-                .getCategoryBySlug(slug)
-                .catch(() => null);
-            if (!category && !isNaN(Number(slug))) {
-                category = await storeService
-                    .getCategory(slug)
-                    .catch(() => null);
-            }
+            category = await storeService.getCategory(slug).catch(() => null);
         }
 
         if (!category) return { title: 'Category Not Found' };
@@ -81,10 +74,7 @@ export default async function CategoryPage({
 
     // 3. Fallback fetch
     if (!category) {
-        category = await storeService.getCategoryBySlug(slug).catch(() => null);
-        if (!category && !isNaN(Number(slug))) {
-            category = await storeService.getCategory(slug).catch(() => null);
-        }
+        category = await storeService.getCategory(slug).catch(() => null);
     }
 
     if (!category) return notFound();

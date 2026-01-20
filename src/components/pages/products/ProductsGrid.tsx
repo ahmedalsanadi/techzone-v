@@ -78,7 +78,7 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
                             image={product.cover_image_url || ''}
                             price={product.price}
                             oldPrice={product.sale_price}
-                            href={`/products/${product.slug || product.id}`}
+                            href={`/products/${product.slug}`}
                             addToCartLabel={t('addToCart')}
                             onAddToCartClick={() => onAddToCart?.(product)}
                         />

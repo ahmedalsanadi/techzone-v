@@ -62,33 +62,17 @@ export const storeService = {
     },
 
     /**
-     * Get a single product by ID.
-     */
-    getProduct: (id: string) =>
-        fetchLibero<Product>(`/store/products/${id}`, {
-            next: { revalidate: 300 }, // Cache product for 5 minutes
-        }),
-
-    /**
      * Get a single product by Slug.
      */
-    getProductBySlug: (slug: string) =>
+    getProduct: (slug: string) =>
         fetchLibero<Product>(`/store/products/${slug}`, {
             next: { revalidate: 300 }, // Cache product for 5 minutes
         }),
 
     /**
-     * Get category by ID.
-     */
-    getCategory: (id: string) =>
-        fetchLibero<Category>(`/store/categories/${id}`, {
-            next: { revalidate: 3600 }, // Cache category for 1 hour
-        }),
-
-    /**
      * Get category by Slug.
      */
-    getCategoryBySlug: (slug: string) =>
+    getCategory: (slug: string) =>
         fetchLibero<Category>(`/store/categories/${slug}`, {
             next: { revalidate: 3600 }, // Cache category for 1 hour
         }),

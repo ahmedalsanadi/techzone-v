@@ -23,7 +23,7 @@ export function generateProductStructuredData(
         },
         offers: {
             '@type': 'Offer',
-            url: `${siteUrl}/products/${product.slug || product.id}`,
+            url: `${siteUrl}/products/${product.slug}`,
             priceCurrency: 'SAR',
             price: product.price,
             // Use correct Schema.org enumeration URLs
@@ -71,7 +71,7 @@ export function generateCollectionStructuredData(
         itemListElement: products.slice(0, 20).map((product, index) => ({
             '@type': 'ListItem',
             position: index + 1,
-            url: `${siteUrl}/products/${product.slug || product.id}`,
+            url: `${siteUrl}/products/${product.slug}`,
             item: {
                 '@type': 'Product',
                 name: product.name || product.title,
