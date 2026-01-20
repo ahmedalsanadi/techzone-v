@@ -45,7 +45,7 @@ const Footer = () => {
     return (
         <footer className="w-full flex flex-col">
             {/* Top Section: Links & Apps */}
-            <div className="bg-[#FAF4F0] py-12 md:py-18 px-4">
+            <div className="bg-theme-primary-tint py-12 md:py-18 px-4">
                 <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-10 lg:gap-8">
                     {/* Logo & Info */}
                     <div className="flex flex-col items-center lg:items-start text-center  ">

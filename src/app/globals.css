@@ -263,6 +263,12 @@
     }
 }
 
+/* Dynamic Theme Background Utilities */
+/* White background with 10% primary color overlay */
+.bg-theme-primary-tint {
+    background-color: var(--theme-primary-tint, rgba(180, 71, 52, 0.1));
+}
+
 /* Custom Swiper Styles */
 .hero-swiper .swiper-pagination {
     bottom: 2rem !important;

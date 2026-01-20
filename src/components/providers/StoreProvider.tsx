@@ -61,6 +61,22 @@ function colorWithOpacity(hex: string, opacity: number): string {
     return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity})`;
 }
 
+/**
+ * Blends white with a color at a given percentage
+ * Used for creating tinted backgrounds (white + X% primary color)
+ */
+function blendWithWhite(hex: string, percentage: number): string {
+    const rgb = hexToRgb(hex);
+    if (!rgb) return hex;
+    
+    // Blend: result = white * (1 - percentage) + color * percentage
+    const r = Math.round(255 * (1 - percentage) + rgb.r * percentage);
+    const g = Math.round(255 * (1 - percentage) + rgb.g * percentage);
+    const b = Math.round(255 * (1 - percentage) + rgb.b * percentage);
+    
+    return `rgb(${r}, ${g}, ${b})`;
+}
+
 export function StoreProvider({
     children,
     config,
@@ -113,6 +129,11 @@ export function StoreProvider({
             updateVar('--primary-light', colorWithOpacity(primary, 0.1));
             updateVar('--primary-lighter', colorWithOpacity(primary, 0.05));
             updateVar('--primary-border', colorWithOpacity(primary, 0.3));
+            
+            // Tinted background: white blended with 10% primary color
+            // This creates the effect: white background with 10% primary overlay
+            const tintedBg = blendWithWhite(primary, 0.1);
+            updateVar('--theme-primary-tint', tintedBg);
 
             // Update theme-color meta tag
             const meta = document.querySelector('meta[name="theme-color"]');
@@ -130,6 +151,7 @@ export function StoreProvider({
             root.style.removeProperty('--primary-light');
             root.style.removeProperty('--primary-lighter');
             root.style.removeProperty('--primary-border');
+            root.style.removeProperty('--theme-primary-tint');
         };
     }, [config]);
 
