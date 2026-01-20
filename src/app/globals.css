@@ -48,8 +48,16 @@
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.708 0 0);
 
-    /* Add your custom color variable here */
-    --libero-red: rgba(180, 71, 52, 1);
+    /* Dynamic Theme Colors - Fallback values */
+    --theme-primary: var(--primary, #B44734);
+    --theme-secondary: var(--secondary, #FFB800);
+    --theme-primary-hover: var(--primary-hover, #9a3c2c);
+    --theme-primary-light: var(--primary-light, rgba(180, 71, 52, 0.1));
+    --theme-primary-lighter: var(--primary-lighter, rgba(180, 71, 52, 0.05));
+    --theme-primary-border: var(--primary-border, rgba(180, 71, 52, 0.3));
+    
+    /* Legacy support - will be removed after migration */
+    --libero-red: var(--theme-primary);
 }
 
 /* .dark {
@@ -129,8 +137,16 @@
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.708 0 0);
 
-    /* Add your custom color variable here */
-    --libero-red: rgba(180, 71, 52, 1);
+    /* Dynamic Theme Colors - Fallback values */
+    --theme-primary: var(--primary, #B44734);
+    --theme-secondary: var(--secondary, #FFB800);
+    --theme-primary-hover: var(--primary-hover, #9a3c2c);
+    --theme-primary-light: var(--primary-light, rgba(180, 71, 52, 0.1));
+    --theme-primary-lighter: var(--primary-lighter, rgba(180, 71, 52, 0.05));
+    --theme-primary-border: var(--primary-border, rgba(180, 71, 52, 0.3));
+    
+    /* Legacy support - will be removed after migration */
+    --libero-red: var(--theme-primary);
 }
 
 @theme inline {
@@ -161,7 +177,15 @@
     --color-chart-4: var(--chart-4);
     --color-chart-5: var(--chart-5);
 
-    /* Add your custom color mapping here */
+    /* Dynamic Theme Color Mappings */
+    --color-theme-primary: var(--theme-primary);
+    --color-theme-secondary: var(--theme-secondary);
+    --color-theme-primary-hover: var(--theme-primary-hover);
+    --color-theme-primary-light: var(--theme-primary-light);
+    --color-theme-primary-lighter: var(--theme-primary-lighter);
+    --color-theme-primary-border: var(--theme-primary-border);
+    
+    /* Legacy support - will be removed after migration */
     --color-libero-red: var(--libero-red);
 
     --radius-sm: calc(var(--radius) - 4px);
@@ -252,7 +276,7 @@
 .hero-swiper [class*='swiper-pagination-bullet-active'] {
     width: 2rem !important;
     border-radius: 4px !important;
-    background: #ffb800 !important;
+    background: var(--theme-secondary, #ffb800) !important;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
