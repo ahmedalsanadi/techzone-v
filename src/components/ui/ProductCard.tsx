@@ -108,7 +108,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                         e.preventDefault();
                         onAddToCartClick?.(e);
                     }}
-                    className="w-full bg-theme-primary-light hover:bg-theme-primary hover:text-white text-theme-primary font-medium py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95 border border-theme-primary-border cursor-pointer group/btn">
+                    className="w-full bg-theme-primary/10 hover:bg-theme-primary hover:text-white text-theme-primary font-medium py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95 border border-theme-primary cursor-pointer group/btn">
                     <Plus className="w-4 h-4 transition-transform group-hover/btn:rotate-90" />
                     <span className="text-sm">
                         {addToCartLabel || 'إضافة إلى السلة'}

@@ -92,11 +92,24 @@ export function StoreProvider({
 
         // Calculate and set primary color variations
         if (primary && isValidColor(primary)) {
+            // Convert to RGB format for better Tailwind opacity modifier compatibility
+            const rgb = hexToRgb(primary);
+            if (rgb) {
+                // Set theme-primary in RGB format for Tailwind opacity modifiers
+                updateVar('--theme-primary', `${primary}`);
+                // Also set RGB values for advanced usage
+                updateVar('--theme-primary-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
+            } else {
+                // Fallback to hex if conversion fails
+                updateVar('--theme-primary', primary);
+            }
+            
             // Hover state (darken by ~12%)
             const primaryHover = darkenColor(primary, 0.12);
             updateVar('--primary-hover', primaryHover);
+            updateVar('--theme-primary-hover', primaryHover);
 
-            // Light tints with opacity
+            // Light tints with opacity (for backward compatibility)
             updateVar('--primary-light', colorWithOpacity(primary, 0.1));
             updateVar('--primary-lighter', colorWithOpacity(primary, 0.05));
             updateVar('--primary-border', colorWithOpacity(primary, 0.3));
@@ -110,7 +123,10 @@ export function StoreProvider({
         return () => {
             root.style.removeProperty('--primary');
             root.style.removeProperty('--secondary');
+            root.style.removeProperty('--theme-primary');
+            root.style.removeProperty('--theme-primary-rgb');
             root.style.removeProperty('--primary-hover');
+            root.style.removeProperty('--theme-primary-hover');
             root.style.removeProperty('--primary-light');
             root.style.removeProperty('--primary-lighter');
             root.style.removeProperty('--primary-border');

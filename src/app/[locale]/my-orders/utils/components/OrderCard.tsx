@@ -151,7 +151,7 @@ export default function OrderCard({ order }: OrderCardProps) {
                         </Button>
                         <Button
                             asChild
-                            className="flex-1 bg-theme-primary-light text-theme-primary hover:bg-theme-primary-lighter border-none font-bold h-11 rounded-xl">
+                            className="flex-1 bg-theme-primary/10 text-theme-primary hover:bg-theme-primary/5 border-none font-bold h-11 rounded-xl">
                             <Link href={`/my-orders/${order.id}`}>
                                 {t('details')}
                             </Link>

@@ -95,7 +95,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                 )}>
                 {isMain ? (
                     <div className="flex flex-col items-center gap-2 w-full">
-                        <div className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-theme-primary-light rounded-xl group-hover:scale-110 transition-transform">
+                        <div className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-theme-primary/10 rounded-xl group-hover:scale-110 transition-transform">
                             <LayoutGrid
                                 size={28}
                                 className="text-theme-primary"

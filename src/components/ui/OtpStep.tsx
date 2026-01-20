@@ -62,7 +62,7 @@ export default function OtpStep({
                     </Button>
 
                     {timer && (
-                        <div className="flex items-center justify-between h-18 px-8 rounded-2xl bg-theme-primary-lighter">
+                        <div className="flex items-center justify-between h-18 px-8 rounded-2xl bg-theme-primary/5">
                             <span
                                 className="text-theme-primary font-black text-2xl"
                                 dir="ltr">
