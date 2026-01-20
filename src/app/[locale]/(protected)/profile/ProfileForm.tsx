@@ -73,7 +73,7 @@ export default function ProfileForm({
                         placeholder={t('firstNamePlaceholder') || 'أحمد'}
                         variant="default"
                         inputSize="lg"
-                        containerClassName="h-16 rounded-2xl bg-[#F4F7FA] border-[#E2E8F0] focus-within:border-[#B44734]/30 focus-within:ring-4 focus-within:ring-[#B44734]/5 px-6"
+                        containerClassName="h-16 rounded-2xl bg-[#F4F7FA] border-[#E2E8F0] focus-within:border-theme-primary-border focus-within:ring-4 focus-within:ring-theme-primary/5 px-6"
                         className="font-bold text-lg text-[#2D3142]"
                     />
                 ) : (
@@ -100,7 +100,7 @@ export default function ProfileForm({
                             placeholder={t('middleNamePlaceholder') || 'محمد'}
                             variant="default"
                             inputSize="lg"
-                            containerClassName="h-16 rounded-2xl bg-[#F4F7FA] border-[#E2E8F0] focus-within:border-[#B44734]/30 focus-within:ring-4 focus-within:ring-[#B44734]/5 px-6"
+                            containerClassName="h-16 rounded-2xl bg-[#F4F7FA] border-[#E2E8F0] focus-within:border-theme-primary-border focus-within:ring-4 focus-within:ring-theme-primary/5 px-6"
                             className="font-bold text-lg text-[#2D3142]"
                         />
                     ) : (
@@ -125,7 +125,7 @@ export default function ProfileForm({
                             placeholder={t('lastNamePlaceholder') || 'العلي'}
                             variant="default"
                             inputSize="lg"
-                            containerClassName="h-16 rounded-2xl bg-[#F4F7FA] border-[#E2E8F0] focus-within:border-[#B44734]/30 focus-within:ring-4 focus-within:ring-[#B44734]/5 px-6"
+                            containerClassName="h-16 rounded-2xl bg-[#F4F7FA] border-[#E2E8F0] focus-within:border-theme-primary-border focus-within:ring-4 focus-within:ring-theme-primary/5 px-6"
                             className="font-bold text-lg text-[#2D3142]"
                         />
                     ) : (
@@ -164,7 +164,7 @@ export default function ProfileForm({
                         placeholder={t('emailPlaceholder') || 'someone@example.com'}
                         variant="default"
                         inputSize="lg"
-                        containerClassName="h-16 rounded-2xl bg-[#F4F7FA] border-[#E2E8F0] focus-within:border-[#B44734]/30 focus-within:ring-4 focus-within:ring-[#B44734]/5 px-6"
+                        containerClassName="h-16 rounded-2xl bg-[#F4F7FA] border-[#E2E8F0] focus-within:border-theme-primary-border focus-within:ring-4 focus-within:ring-theme-primary/5 px-6"
                         className="font-bold text-lg text-[#2D3142]"
                     />
                 ) : (

@@ -532,7 +532,7 @@ export default function AuthFlow({
                             type="text"
                             required
                             placeholder="احمد"
-                            className="w-full h-16 px-6 rounded-2xl bg-[#F4F7FA] border border-[#E2E8F0] focus:border-[#B44734]/30 focus:ring-4 focus:ring-[#B44734]/5 outline-none transition-all font-bold text-lg text-[#2D3142] text-start"
+                            className="w-full h-16 px-6 rounded-2xl bg-[#F4F7FA] border border-[#E2E8F0] focus:border-theme-primary-border focus:ring-4 focus:ring-theme-primary/5 outline-none transition-all font-bold text-lg text-[#2D3142] text-start"
                             value={formData.first_name}
                             onChange={(e) =>
                                 setFormData({
@@ -550,7 +550,7 @@ export default function AuthFlow({
                             </label>
                             <input
                                 type="text"
-                                className="w-full h-16 px-6 rounded-2xl bg-[#F4F7FA] border border-[#E2E8F0] focus:border-[#B44734]/30 focus:ring-4 focus:ring-[#B44734]/5 outline-none transition-all font-bold text-lg text-[#2D3142] text-start"
+                                className="w-full h-16 px-6 rounded-2xl bg-[#F4F7FA] border border-[#E2E8F0] focus:border-theme-primary-border focus:ring-4 focus:ring-theme-primary/5 outline-none transition-all font-bold text-lg text-[#2D3142] text-start"
                                 value={formData.middle_name || ''}
                                 onChange={(e) =>
                                     setFormData({
@@ -566,7 +566,7 @@ export default function AuthFlow({
                             </label>
                             <input
                                 type="text"
-                                className="w-full h-16 px-6 rounded-2xl bg-[#F4F7FA] border border-[#E2E8F0] focus:border-[#B44734]/30 focus:ring-4 focus:ring-[#B44734]/5 outline-none transition-all font-bold text-lg text-[#2D3142] text-start"
+                                className="w-full h-16 px-6 rounded-2xl bg-[#F4F7FA] border border-[#E2E8F0] focus:border-theme-primary-border focus:ring-4 focus:ring-theme-primary/5 outline-none transition-all font-bold text-lg text-[#2D3142] text-start"
                                 value={formData.last_name}
                                 onChange={(e) =>
                                     setFormData({
@@ -594,7 +594,7 @@ export default function AuthFlow({
                         <input
                             type="email"
                             placeholder="someone@gmail.com"
-                            className="w-full h-16 px-6 rounded-2xl bg-[#F4F7FA] border border-[#E2E8F0] focus:border-[#B44734]/30 focus:ring-4 focus:ring-[#B44734]/5 outline-none transition-all font-bold text-lg text-[#2D3142] text-start"
+                            className="w-full h-16 px-6 rounded-2xl bg-[#F4F7FA] border border-[#E2E8F0] focus:border-theme-primary-border focus:ring-4 focus:ring-theme-primary/5 outline-none transition-all font-bold text-lg text-[#2D3142] text-start"
                             value={formData.email}
                             onChange={(e) =>
                                 setFormData({
