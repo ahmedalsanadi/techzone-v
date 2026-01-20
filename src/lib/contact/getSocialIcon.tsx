@@ -23,6 +23,6 @@ export function getSocialIcon(type: string): React.ReactNode {
         case 'whatsapp':
             return <Phone className="w-5 h-5 text-green-500" />;
         default:
-            return <MessageSquareText className="w-5 h-5 text-[#B44734]" />;
+            return <MessageSquareText className="w-5 h-5 text-theme-primary" />;
     }
 }

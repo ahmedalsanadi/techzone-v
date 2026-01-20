@@ -114,7 +114,7 @@ export default function OtpInput({
                     onChange={(e) => handleOtpChange(index, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(index, e)}
                     onPaste={handleOtpPaste}
-                    className="w-20 h-20 text-center text-3xl font-black rounded-2xl bg-white border border-[#E2E8F0] focus:border-[#B44734]/30 focus:ring-4 focus:ring-[#B44734]/5 outline-none transition-all shadow-sm text-gray-400 placeholder:text-gray-300"
+                    className="w-20 h-20 text-center text-3xl font-black rounded-2xl bg-white border border-[#E2E8F0] focus:border-theme-primary-border focus:ring-4 focus:ring-theme-primary/5 outline-none transition-all shadow-sm text-gray-400 placeholder:text-gray-300"
                 />
             ))}
         </div>

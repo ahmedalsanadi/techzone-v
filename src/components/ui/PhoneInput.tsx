@@ -64,7 +64,7 @@ export default function PhoneInput({
                     placeholder={placeholder}
                     disabled={disabled}
                     className={cn(
-                        'w-full h-16 rounded-2xl border border-[#E2E8F0] focus:border-[#B44734]/30 focus:ring-4 focus:ring-[#B44734]/5 outline-none transition-all font-bold text-lg text-[#2D3142] text-start ps-36',
+                        'w-full h-16 rounded-2xl border border-[#E2E8F0] focus:border-theme-primary-border focus:ring-4 focus:ring-theme-primary/5 outline-none transition-all font-bold text-lg text-[#2D3142] text-start ps-36',
                         disabled ? 'opacity-50 cursor-not-allowed' : '',
                         inputClassName,
                     )}

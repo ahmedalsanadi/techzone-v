@@ -53,7 +53,7 @@ export default function OtpStep({
                     <Button
                         type="submit"
                         disabled={loading}
-                        className="w-full h-16 rounded-2xl text-white font-black text-2xl shadow-xl transition-all active:scale-[0.98] bg-libero-red shadow-libero-red/20">
+                        className="w-full h-16 rounded-2xl text-white font-black text-2xl shadow-xl transition-all active:scale-[0.98] bg-theme-primary shadow-theme-primary/20">
                         {loading ? (
                             <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         ) : (
@@ -62,9 +62,9 @@ export default function OtpStep({
                     </Button>
 
                     {timer && (
-                        <div className="flex items-center justify-between h-18 px-8 rounded-2xl bg-[#FDF2F2]">
+                        <div className="flex items-center justify-between h-18 px-8 rounded-2xl bg-theme-primary-lighter">
                             <span
-                                className="text-[#B44734] font-black text-2xl"
+                                className="text-theme-primary font-black text-2xl"
                                 dir="ltr">
                                 {timer}
                             </span>
@@ -72,7 +72,7 @@ export default function OtpStep({
                                 <button
                                     type="button"
                                     onClick={onResend}
-                                    className="text-[#B44734] font-black text-2xl opacity-60 hover:opacity-100 transition-opacity">
+                                    className="text-theme-primary font-black text-2xl opacity-60 hover:opacity-100 transition-opacity">
                                     {resendLabel}
                                 </button>
                             )}
