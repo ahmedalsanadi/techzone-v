@@ -17,7 +17,7 @@ export default async function MyOrdersView({ orders }: MyOrdersViewProps) {
 
             {/*Title Section */}
             <div className="flex items-center justify-start my-4 md:my-12">
-                <h1 className="text-2xl font-black text-gray-900 border-s-4 border-[#B44B3A] ps-4">
+                <h1 className="text-2xl font-black text-gray-900 border-s-4 border-theme-primary ps-4">
                     {t('title')}
                 </h1>
             </div>

@@ -41,7 +41,7 @@ const CartPage = () => {
                 </p>
                 <Link
                     href="/products"
-                    className="bg-[#B44734] text-white font-bold py-4 px-10 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all active:scale-95">
+                    className="bg-theme-primary text-white font-bold py-4 px-10 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all active:scale-95">
                     {t('backToMenu')}
                 </Link>
             </div>
@@ -161,7 +161,7 @@ const CartPage = () => {
                                                 </div>
                                             )}
 
-                                            <div className="flex items-center gap-1 mt-1 text-[#B44734] font-black">
+                                            <div className="flex items-center gap-1 mt-1 text-theme-primary font-black">
                                                 <span>
                                                     {item.price * item.quantity}
                                                 </span>
@@ -229,7 +229,7 @@ const CartPage = () => {
                                                 </div>
                                             )}
 
-                                            <div className="flex items-center gap-1 mt-1 text-[#B44734] font-black">
+                                            <div className="flex items-center gap-1 mt-1 text-theme-primary font-black">
                                                 <span>
                                                     {item.price * item.quantity}
                                                 </span>
@@ -250,7 +250,7 @@ const CartPage = () => {
                                                         item.quantity - 1,
                                                     );
                                                 }}
-                                                className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-[#B44734] transition-colors">
+                                                className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-theme-primary transition-colors">
                                                 <Minus size={16} />
                                             </button>
                                             <span className="w-10 text-center font-bold text-gray-900">
@@ -264,7 +264,7 @@ const CartPage = () => {
                                                         item.quantity + 1,
                                                     );
                                                 }}
-                                                className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-[#B44734] transition-colors">
+                                                className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-theme-primary transition-colors">
                                                 <Plus size={16} />
                                             </button>
                                         </div>
@@ -314,7 +314,7 @@ const CartPage = () => {
                                 <span className="text-lg font-bold text-gray-900">
                                     {t('total')}
                                 </span>
-                                <div className="flex items-center gap-1.5 text-2xl font-black text-[#B44734]">
+                                <div className="flex items-center gap-1.5 text-2xl font-black text-theme-primary">
                                     <span>{total}</span>
                                     <CurrencySymbol className="w-5 h-5" />
                                 </div>
@@ -323,7 +323,7 @@ const CartPage = () => {
 
                         <button
                             onClick={handleCheckout}
-                            className="w-full bg-[#B44734] text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 active:scale-95">
+                            className="w-full bg-theme-primary text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 active:scale-95">
                             {t('checkout')}
                             <ArrowRight size={20} className="rtl:rotate-180" />
                         </button>
