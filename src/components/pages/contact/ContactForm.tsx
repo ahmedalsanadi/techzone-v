@@ -21,7 +21,7 @@ export const ContactForm: React.FC = () => {
                         <input
                             type="email"
                             placeholder={t('form.placeholder_email')}
-                            className="w-full h-14 px-6 rounded-2xl bg-gray-50/50 border border-gray-100 focus:border-[#B44734]/30 focus:ring-4 focus:ring-[#B44734]/5 outline-none transition-all text-start"
+                            className="w-full h-14 px-6 rounded-2xl bg-gray-50/50 border border-gray-100 focus:border-theme-primary-border focus:ring-4 focus:ring-theme-primary/5 outline-none transition-all text-start"
                         />
                     </div>
 
@@ -33,7 +33,7 @@ export const ContactForm: React.FC = () => {
                         <input
                             type="text"
                             placeholder={t('form.placeholder_subject')}
-                            className="w-full h-14 px-6 rounded-2xl bg-gray-50/50 border border-gray-100 focus:border-[#B44734]/30 focus:ring-4 focus:ring-[#B44734]/5 outline-none transition-all text-start"
+                            className="w-full h-14 px-6 rounded-2xl bg-gray-50/50 border border-gray-100 focus:border-theme-primary-border focus:ring-4 focus:ring-theme-primary/5 outline-none transition-all text-start"
                         />
                     </div>
 
@@ -44,7 +44,7 @@ export const ContactForm: React.FC = () => {
                         </label>
                         <textarea
                             rows={8}
-                            className="w-full p-6 rounded-2xl bg-gray-50/50 border border-gray-100 focus:border-[#B44734]/30 focus:ring-4 focus:ring-[#B44734]/5 outline-none transition-all resize-none text-start"
+                            className="w-full p-6 rounded-2xl bg-gray-50/50 border border-gray-100 focus:border-theme-primary-border focus:ring-4 focus:ring-theme-primary/5 outline-none transition-all resize-none text-start"
                         />
                     </div>
                 </div>
@@ -52,7 +52,7 @@ export const ContactForm: React.FC = () => {
                 <div className="flex justify-end pt-4">
                     <Button
                         type="submit"
-                        className="h-10 px-14 rounded-lg bg-[#B44734] hover:bg-[#9E3E2D] text-white font-bold text-md shadow-lg shadow-[#B44734]/20 transition-all active:scale-95">
+                        className="h-10 px-14 rounded-lg bg-theme-primary hover:bg-theme-primary-hover text-white font-bold text-md shadow-lg shadow-theme-primary/20 transition-all active:scale-95">
                         {t('form.send')}
                     </Button>
                 </div>

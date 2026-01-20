@@ -40,8 +40,8 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
                 className={cn(
                     'w-full h-full aspect-4/5 md:aspect-square flex flex-col items-center justify-center gap-2 p-3 transition-all duration-300 rounded-2xl relative',
                     isSelected
-                        ? 'bg-white border-2 border-[#B44734] shadow-xl -translate-y-1'
-                        : 'bg-gray-100 border border-gray-200 group-hover:bg-gray-50 group-hover:border-[#B44734]/30 group-hover:shadow-md',
+                        ? 'bg-white border-2 border-theme-primary shadow-xl -translate-y-1'
+                        : 'bg-gray-100 border border-gray-200 group-hover:bg-gray-50 group-hover:border-theme-primary-border group-hover:shadow-md',
                 )}>
                 {/* Image/Icon */}
                 <div className="relative w-10 h-10 md:w-14 md:h-14 transition-transform group-hover:scale-110">
@@ -68,7 +68,7 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
 
                 {/* Active Indicator Line */}
                 {isSelected && (
-                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-[#B44734] rounded-full" />
+                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-theme-primary rounded-full" />
                 )}
             </div>
         </div>
