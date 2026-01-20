@@ -40,9 +40,9 @@ export const BranchListItem: React.FC<BranchListItemProps> = ({
             onClick={onClick}
             onKeyDown={onKeyDown}
             className={cn(
-                'group p-5 rounded-3xl border transition-all duration-300 cursor-pointer relative focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2',
+                'group p-5 rounded-3xl border transition-all duration-300 cursor-pointer relative focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-2',
                 isHovered
-                    ? 'border-red-100 bg-red-50/30 shadow-lg shadow-red-500/5 -translate-x-1'
+                    ? 'border-theme-primary/20 bg-theme-primary/5 shadow-lg shadow-theme-primary/5 -translate-x-1'
                     : 'border-gray-50 bg-white hover:border-gray-200',
             )}
             role="option"
@@ -56,7 +56,7 @@ export const BranchListItem: React.FC<BranchListItemProps> = ({
                         className={cn(
                             'w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300',
                             isHovered
-                                ? 'bg-red-500 text-white'
+                                ? 'bg-theme-primary text-white'
                                 : 'bg-gray-50 text-gray-400 group-hover:bg-gray-100',
                         )}
                         aria-hidden="true">
@@ -81,7 +81,7 @@ export const BranchListItem: React.FC<BranchListItemProps> = ({
                                 aria-hidden="true"
                             />
                             {branch.services && (
-                                <span className="text-xs text-red-500 bg-red-50 px-2 py-0.5 rounded-full font-bold">
+                                <span className="text-xs text-theme-primary bg-theme-primary/10 px-2 py-0.5 rounded-full font-bold">
                                     {branch.services.shipping_enabled
                                         ? t('free_delivery')
                                         : t('delivery_with_fee', { fee: 5 })}
@@ -95,14 +95,14 @@ export const BranchListItem: React.FC<BranchListItemProps> = ({
                     <div className="flex gap-2">
                         <button
                             onClick={onWorkingHoursClick}
-                            className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-red-50 hover:text-red-500 transition-all focus:outline-none focus:ring-2 focus:ring-red-500"
+                            className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-theme-primary/10 hover:text-theme-primary transition-all focus:outline-none focus:ring-2 focus:ring-theme-primary"
                             aria-label={`${t('view_working_hours') || 'View working hours'} - ${branch.name}`}
                             title={t('view_working_hours') || 'View working hours'}>
                             <Clock size={16} />
                         </button>
                         <button
                             onClick={onContactClick}
-                            className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-red-50 hover:text-red-500 transition-all focus:outline-none focus:ring-2 focus:ring-red-500"
+                            className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-theme-primary/10 hover:text-theme-primary transition-all focus:outline-none focus:ring-2 focus:ring-theme-primary"
                             aria-label={`${t('contact_branch') || 'Contact branch'} - ${branch.name}`}
                             title={t('contact_branch') || 'Contact branch'}>
                             <Headphones size={16} />

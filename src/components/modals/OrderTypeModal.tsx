@@ -233,7 +233,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                         className={cn(
                                             'p-4 rounded-xl border-2 transition-all duration-200 text-right',
                                             orderType === type.id
-                                                ? 'bg-libero-red/5 border-libero-red text-libero-red font-semibold'
+                                                ? 'bg-theme-primary/5 border-theme-primary text-theme-primary font-semibold'
                                                 : 'bg-gray-50 border-gray-200 text-gray-700 hover:border-gray-300',
                                         )}
                                         aria-pressed={orderType === type.id}>
@@ -253,7 +253,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                     <div className="space-y-3">
                                         <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
                                             <div className="flex items-start gap-3">
-                                                <MapPin className="w-5 h-5 text-libero-red shrink-0 mt-0.5" />
+                                                <MapPin className="w-5 h-5 text-theme-primary shrink-0 mt-0.5" />
                                                 <div className="flex-1">
                                                     <p className="text-sm font-medium text-gray-900 mb-1">
                                                         {deliveryAddress.name}
@@ -273,7 +273,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                                 </div>
                                                 <button
                                                     onClick={handleEditAddress}
-                                                    className="px-4 py-2 bg-libero-red text-white text-sm font-medium rounded-lg hover:bg-libero-red/90 transition-colors flex items-center gap-2">
+                                                    className="px-4 py-2 bg-theme-primary text-white text-sm font-medium rounded-lg hover:bg-theme-primary-hover transition-colors flex items-center gap-2">
                                                     <Edit className="w-4 h-4" />
                                                     {t('edit') || 'Edit'}
                                                 </button>
@@ -283,7 +283,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                 ) : (
                                     <button
                                         onClick={handleAddAddress}
-                                        className="w-full p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-libero-red hover:bg-libero-red/5 transition-all flex items-center justify-center gap-2 text-gray-600 hover:text-libero-red">
+                                        className="w-full p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-theme-primary hover:bg-theme-primary/5 transition-all flex items-center justify-center gap-2 text-gray-600 hover:text-theme-primary">
                                         <Plus className="w-5 h-5" />
                                         <span className="font-medium">
                                             {t('addAddress') || 'Add Address'}
@@ -304,7 +304,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                     className={cn(
                                         'p-4 rounded-xl border-2 transition-all duration-200 text-right',
                                         orderTime === 'now'
-                                            ? 'bg-libero-red/5 border-libero-red text-libero-red font-semibold'
+                                            ? 'bg-theme-primary/5 border-theme-primary text-theme-primary font-semibold'
                                             : 'bg-gray-50 border-gray-200 text-gray-700 hover:border-gray-300',
                                     )}
                                     aria-pressed={orderTime === 'now'}>
@@ -315,7 +315,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                     className={cn(
                                         'p-4 rounded-xl border-2 transition-all duration-200 text-right',
                                         orderTime === 'later'
-                                            ? 'bg-libero-red/5 border-libero-red text-libero-red font-semibold'
+                                            ? 'bg-theme-primary/5 border-theme-primary text-theme-primary font-semibold'
                                             : 'bg-gray-50 border-gray-200 text-gray-700 hover:border-gray-300',
                                     )}
                                     aria-pressed={orderTime === 'later'}>
@@ -328,7 +328,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                 <>
                                     {scheduledTime && !showDateTimePicker && (
                                         <div className="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-200 flex items-center gap-3">
-                                            <Clock className="w-5 h-5 text-libero-red shrink-0" />
+                                            <Clock className="w-5 h-5 text-theme-primary shrink-0" />
                                             <p className="text-sm text-gray-700">
                                                 {formatScheduledTime(
                                                     scheduledTime,
@@ -336,7 +336,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                             </p>
                                             <button
                                                 onClick={openDateTimePicker}
-                                                className="ml-auto px-4 py-2 bg-libero-red text-white text-sm font-medium rounded-lg hover:bg-libero-red/90 transition-colors">
+                                                className="ml-auto px-4 py-2 bg-theme-primary text-white text-sm font-medium rounded-lg hover:bg-theme-primary-hover transition-colors">
                                                 {t('change') || 'Change'}
                                             </button>
                                         </div>
@@ -346,7 +346,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                     {showDateTimePicker && (
                                         <div className="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-200 space-y-4">
                                             <div className="flex items-center gap-3 mb-3">
-                                                <Clock className="w-5 h-5 text-libero-red shrink-0" />
+                                                <Clock className="w-5 h-5 text-theme-primary shrink-0" />
                                                 <h4 className="text-sm font-semibold text-gray-900">
                                                     {t('selectOrderTime') ||
                                                         'Select Date & Time'}
@@ -371,7 +371,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                                                 .toISOString()
                                                                 .split('T')[0]
                                                         }
-                                                        className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-libero-red focus:border-transparent"
+                                                        className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary focus:border-transparent"
                                                     />
                                                 </div>
                                                 <div>
@@ -386,7 +386,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                                                 e.target.value,
                                                             )
                                                         }
-                                                        className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-libero-red focus:border-transparent"
+                                                        className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary focus:border-transparent"
                                                     />
                                                 </div>
                                             </div>
@@ -407,7 +407,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                                     className={cn(
                                                         'px-4 py-2 text-white text-sm font-medium rounded-lg transition-colors',
                                                         tempDate && tempTime
-                                                            ? 'bg-libero-red hover:bg-libero-red/90'
+                                                            ? 'bg-theme-primary hover:bg-theme-primary-hover'
                                                             : 'bg-gray-300 cursor-not-allowed',
                                                     )}>
                                                     {t('save') || 'Save'}
@@ -424,7 +424,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                             </p>
                                             <button
                                                 onClick={openDateTimePicker}
-                                                className="w-full px-4 py-2 bg-libero-red text-white text-sm font-medium rounded-lg hover:bg-libero-red/90 transition-colors">
+                                                className="w-full px-4 py-2 bg-theme-primary text-white text-sm font-medium rounded-lg hover:bg-theme-primary-hover transition-colors">
                                                 {t('selectDateTime') ||
                                                     'Select Date & Time'}
                                             </button>
@@ -439,7 +439,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                     <div className="p-6 border-t border-gray-100 flex items-center justify-end">
                         <button
                             onClick={handleSave}
-                            className="w-full bg-libero-red text-white font-semibold py-3 rounded-xl hover:bg-libero-red/90 transition-colors">
+                            className="w-full bg-theme-primary text-white font-semibold py-3 rounded-xl hover:bg-theme-primary-hover transition-colors">
                             {t('save') || 'Save'}
                         </button>
                     </div>

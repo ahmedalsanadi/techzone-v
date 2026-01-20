@@ -118,13 +118,13 @@ const WorkingHoursModal: React.FC<WorkingHoursModalProps> = ({
                         <h3
                             id="working-hours-title"
                             className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                            <Clock size={20} className="text-red-500" />
+                            <Clock size={20} className="text-theme-primary" />
                             {t('working_hours')} - {branch.name}
                         </h3>
                         <button
                             ref={closeButtonRef}
                             onClick={onClose}
-                            className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-all focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                            className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-all focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-2"
                             aria-label={t('close_modal') || 'Close modal'}>
                             <X size={20} />
                         </button>
@@ -156,7 +156,7 @@ const WorkingHoursModal: React.FC<WorkingHoursModalProps> = ({
                                                     'px-3 py-1 rounded-full text-xs font-bold border',
                                                     item.closed
                                                         ? 'bg-gray-100 text-gray-400 border-gray-200'
-                                                        : 'bg-red-50 text-red-500 border-red-100',
+                                                        : 'bg-theme-primary/10 text-theme-primary border-theme-primary-border',
                                                 )}>
                                                 {h === 'Closed'
                                                     ? t('closed')

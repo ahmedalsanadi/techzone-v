@@ -193,7 +193,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                                 t('searchPlaceholder') ||
                                                 'Al Yarmouk, Al Najah Street...'
                                             }
-                                            className="w-full pr-10 pl-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-libero-red focus:border-transparent"
+                                            className="w-full pr-10 pl-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-theme-primary focus:border-transparent"
                                         />
                                     </div>
                                 </div>
@@ -207,7 +207,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                     {/* Selected Address Display */}
                                     {formattedAddress && (
                                         <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200 flex items-start gap-3">
-                                            <MapPin className="w-5 h-5 text-libero-red shrink-0 mt-0.5" />
+                                            <MapPin className="w-5 h-5 text-theme-primary shrink-0 mt-0.5" />
                                             <p className="text-sm text-gray-700 flex-1">
                                                 {formattedAddress}
                                             </p>
@@ -229,7 +229,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                                 t('addressNamePlaceholder') ||
                                                 'Home'
                                             }
-                                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-libero-red focus:border-transparent"
+                                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-theme-primary focus:border-transparent"
                                         />
                                     </div>
 
@@ -279,7 +279,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
                             className={cn(
                                 'px-6 py-3 font-medium rounded-xl transition-colors',
                                 isValid
-                                    ? 'bg-libero-red text-white hover:bg-libero-red/90'
+                                    ? 'bg-theme-primary text-white hover:bg-theme-primary-hover'
                                     : 'bg-gray-200 text-gray-400 cursor-not-allowed',
                             )}>
                             {initialAddress

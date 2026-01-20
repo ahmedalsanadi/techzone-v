@@ -51,7 +51,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({ error, onRetry }) => {
                 <p className="text-xs text-gray-500 mb-4">{errorMessage}</p>
                 <button
                     onClick={onRetry}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-theme-primary text-white text-sm font-medium hover:bg-theme-primary-hover transition-colors focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-2"
                     aria-label={t('retry') || 'Retry'}>
                     <RefreshCw size={16} />
                     {t('retry') || 'Retry'}

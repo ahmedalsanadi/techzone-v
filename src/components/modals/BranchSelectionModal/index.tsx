@@ -76,7 +76,7 @@ const BranchSelectionModal: React.FC = () => {
                             <button
                                 ref={closeButtonRef}
                                 onClick={() => setModalOpen(false)}
-                                className="w-10 h-10 flex items-center justify-center rounded-2xl bg-gray-50 text-gray-400 hover:bg-gray-100 transition-all focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                                className="w-10 h-10 flex items-center justify-center rounded-2xl bg-gray-50 text-gray-400 hover:bg-gray-100 transition-all focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-2"
                                 aria-label={t('close_modal') || 'Close modal'}>
                                 <ChevronRight size={20} />
                             </button>
