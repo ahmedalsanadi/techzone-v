@@ -1,0 +1,172 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
+import { useTranslations } from 'next-intl';
+import { useWishlistStore } from '@/store/useWishlistStore';
+import { useWishlistActions } from '@/hooks/useWishlistActions';
+import { Link, useRouter } from '@/i18n/navigation';
+import { Heart, ShoppingBag, Trash2 } from 'lucide-react';
+import CurrencySymbol from '@/components/ui/CurrencySymbol';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useCartActions } from '@/hooks/useCartActions';
+
+const WishlistPage = () => {
+    const t = useTranslations('Wishlist');
+    const { items, getTotalItems, syncWithAPI, isLoading, isGuestMode } =
+        useWishlistStore();
+    const { isAuthenticated } = useAuthStore();
+    const { toggleWishlist, removeFromWishlist } = useWishlistActions();
+    const { addToCart } = useCartActions();
+    // const router = useRouter();
+    const [isMounted, setIsMounted] = useState(false);
+
+    // Prevent hydration mismatch
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    // CRITICAL: Only sync wishlist with API when authenticated
+    // Guest users should only see local wishlist (no API calls)
+    useEffect(() => {
+        if (!isMounted) return;
+
+        // Only make API call if user is authenticated
+        if (isAuthenticated && !isGuestMode) {
+            syncWithAPI();
+        }
+        // If not authenticated, wishlist page will show local guest wishlist (or empty)
+    }, [isMounted, isAuthenticated, isGuestMode, syncWithAPI]);
+
+    const handleMoveToCart = async (item: typeof items[0]) => {
+        // Add to cart with basic product info
+        await addToCart(
+            {
+                id: String(item.productId),
+                name: item.name,
+                image: item.image,
+                price: item.salePrice || item.price,
+                categoryId: item.productId.toString(),
+                metadata: {
+                    productId: item.productId,
+                    productSlug: item.slug,
+                },
+            },
+            1,
+        );
+    };
+
+    if (!isMounted) return null;
+
+    if (items.length === 0) {
+        return (
+            <div className="min-h-[70vh] flex flex-col items-center justify-center px-4 text-center">
+                <div className="w-24 h-24 md:w-32 md:h-32 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+                    <Heart size={48} className="text-gray-300" />
+                </div>
+                <h1 className="text-2xl md:text-3xl font-black text-gray-900 mb-2">
+                    {t('empty')}
+                </h1>
+                <p className="text-gray-500 max-w-sm mb-8 leading-relaxed">
+                    {t('emptyDesc')}
+                </p>
+                <Link
+                    href="/products"
+                    className="bg-theme-primary text-white font-bold py-4 px-10 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all active:scale-95">
+                    {t('backToMenu')}
+                </Link>
+            </div>
+        );
+    }
+
+    return (
+        <div className="container mx-auto px-4 py-8 md:py-12">
+            <h1 className="text-3xl md:text-4xl font-black text-gray-900 mb-10 flex items-center gap-3">
+                {t('title')}
+                <span className="text-sm font-medium text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
+                    {t('items', { count: getTotalItems() })}
+                </span>
+            </h1>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                {items.map((item) => {
+                    const productUrl = `/products/${item.slug}`;
+                    const finalPrice = item.salePrice || item.price;
+                    const hasDiscount = item.salePrice !== null && item.salePrice < item.price;
+
+                    return (
+                        <div
+                            key={item.id}
+                            className="bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                            {/* Product Image - Clickable */}
+                            <Link
+                                href={productUrl}
+                                className="relative w-full aspect-square bg-gray-50 overflow-hidden group">
+                                <Image
+                                    src={item.image}
+                                    alt={item.name}
+                                    fill
+                                    className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+                                />
+                                {hasDiscount && (
+                                    <div className="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-lg">
+                                        {t('discount')}
+                                    </div>
+                                )}
+                            </Link>
+
+                            <div className="p-4 flex-1 flex flex-col">
+                                {/* Product Info - Clickable */}
+                                <Link
+                                    href={productUrl}
+                                    className="flex-1 hover:opacity-80 transition-opacity cursor-pointer mb-3">
+                                    <h3 className="font-bold text-gray-900 text-lg md:text-xl mb-2 line-clamp-2">
+                                        {item.name}
+                                    </h3>
+
+                                    <div className="flex items-center gap-2">
+                                        {hasDiscount && (
+                                            <span className="text-sm text-gray-400 line-through">
+                                                {item.price}
+                                            </span>
+                                        )}
+                                        <div className="flex items-center gap-1 text-theme-primary font-black">
+                                            <span>{finalPrice}</span>
+                                            <CurrencySymbol className="w-3.5 h-3.5" />
+                                        </div>
+                                    </div>
+                                </Link>
+
+                                {/* Actions */}
+                                <div className="flex items-center gap-2 mt-auto">
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleMoveToCart(item);
+                                        }}
+                                        disabled={isLoading}
+                                        className="flex-1 bg-theme-primary/10 hover:bg-theme-primary hover:text-white text-theme-primary font-medium py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95 border border-theme-primary disabled:opacity-50 disabled:cursor-not-allowed">
+                                        <ShoppingBag className="w-4 h-4" />
+                                        <span className="text-sm">{t('addToCart')}</span>
+                                    </button>
+
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            removeFromWishlist(item.productId);
+                                        }}
+                                        disabled={isLoading}
+                                        className="text-gray-300 hover:text-red-500 transition-colors p-2.5 rounded-lg border border-gray-100 hover:border-red-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                                        <Trash2 size={18} />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
+};
+
+export default WishlistPage;

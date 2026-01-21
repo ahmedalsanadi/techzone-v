@@ -15,6 +15,7 @@ import { useStore } from '@/components/providers/StoreProvider';
 import { siteConfig } from '@/config/site';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useCartStore } from '@/store/useCartStore';
+import { useWishlistStore } from '@/store/useWishlistStore';
 import { LogOut, LogIn } from 'lucide-react';
 
 export default function MobileSidebar() {
@@ -26,6 +27,7 @@ export default function MobileSidebar() {
     const { config } = useStore();
     const { isAuthenticated, user, logout } = useAuthStore();
     const { setGuestMode, clearCart } = useCartStore();
+    const { setGuestMode: setWishlistGuestMode, clearWishlist } = useWishlistStore();
 
     const handleLogout = async () => {
         // Always clear local state first
@@ -37,9 +39,11 @@ export default function MobileSidebar() {
                 // Ignore errors - we've already cleared local state
             });
         }
-        // Switch cart back to guest mode and clear API cart
+        // Switch cart and wishlist back to guest mode and clear API data
         setGuestMode(true);
         clearCart();
+        setWishlistGuestMode(true);
+        clearWishlist();
         setMobileMenuOpen(false);
     };
     if (!isMobileMenuOpen) return null;

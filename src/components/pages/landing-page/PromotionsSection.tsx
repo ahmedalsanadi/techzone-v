@@ -82,6 +82,8 @@ const PromotionsSection = () => {
                         price={product.price}
                         oldPrice={product.oldPrice}
                         href={`/products/${product.slug}`}
+                        productId={product.id}
+                        productSlug={product.slug}
                         discountBadge={t('save', {
                             amount: product.discountAmount,
                         })}

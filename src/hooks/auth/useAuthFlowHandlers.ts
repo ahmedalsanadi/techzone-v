@@ -15,6 +15,7 @@ import { authStorage } from '@/lib/auth';
 import { getAuthErrorMessage } from '@/lib/auth/error-handler';
 import type { AuthStep, ProfileUpdateRequest } from '@/types/auth';
 import { useCartMerge } from '@/hooks/useCartMerge';
+import { useWishlistMerge } from '@/hooks/useWishlistMerge';
 
 interface UseAuthFlowHandlersOptions {
     step: AuthStep;
@@ -66,6 +67,7 @@ export function useAuthFlowHandlers({
     const searchParams = useSearchParams();
     const { setAuth, setProfile } = useAuthStore();
     const { mergeGuestCartAfterAuth } = useCartMerge();
+    const { mergeGuestWishlistAfterAuth } = useWishlistMerge();
 
     // Step 1: Send OTP
     const handlePhoneSubmit = useCallback(
@@ -142,7 +144,11 @@ export function useAuthFlowHandlers({
                     setAuth(response.customer, response.token);
                 } else {
                     setAuth(response.customer, response.token);
-                    await mergeGuestCartAfterAuth();
+                    // Merge both cart and wishlist after login
+                    await Promise.all([
+                        mergeGuestCartAfterAuth(),
+                        mergeGuestWishlistAfterAuth(),
+                    ]);
                 }
 
                 // Clear auth flow data
@@ -183,6 +189,8 @@ export function useAuthFlowHandlers({
             setStep,
             setAuth,
             mergeGuestCartAfterAuth,
+            mergeGuestWishlistAfterAuth,
+            setLoading,
             setTempToken,
             setMaskedPhone,
             setOtpExpiresAt,
@@ -220,7 +228,11 @@ export function useAuthFlowHandlers({
                     await storeService.updateProfile(updatePayload);
 
                 setProfile(updatedProfile);
-                await mergeGuestCartAfterAuth();
+                // Merge both cart and wishlist after signup
+                await Promise.all([
+                    mergeGuestCartAfterAuth(),
+                    mergeGuestWishlistAfterAuth(),
+                ]);
 
                 authStorage.clearAuthFlow();
                 setTempToken(null);
@@ -248,8 +260,8 @@ export function useAuthFlowHandlers({
 
                 if (
                     error instanceof Error &&
-                    (error as any).status === 401 &&
-                    (error as any).status === 403
+                    ((error as any).status === 401 ||
+                        (error as any).status === 403)
                 ) {
                     authStorage.clearAll();
                     setIsNewUser(false);
@@ -266,6 +278,7 @@ export function useAuthFlowHandlers({
             setLoading,
             setProfile,
             mergeGuestCartAfterAuth,
+            mergeGuestWishlistAfterAuth,
             setTempToken,
             setMaskedPhone,
             setOtpExpiresAt,

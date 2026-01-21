@@ -19,7 +19,7 @@ export const PROTECTED_API_ENDPOINTS = [
     '/auth/store/me',
     '/auth/store/logout',
     '/store/orders',
-    '/store/wishlist',
+    '/store/wishlist', // All wishlist endpoints require authentication
     '/store/profile',
     '/store/profile/update',
     '/store/cart', // All cart endpoints require authentication
