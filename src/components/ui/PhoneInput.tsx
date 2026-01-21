@@ -32,7 +32,7 @@ export default function PhoneInput({
     disabled = false,
 }: PhoneInputProps) {
     return (
-        <div className={cn('space-y-2', className)}>
+        <div className={cn('space-y-1 sm:space-y-1.5 md:space-y-2', className)}>
             {label && (
                 <label className="text-xs font-bold text-gray-400 block text-start">
                     {label}
@@ -42,18 +42,18 @@ export default function PhoneInput({
                 </label>
             )}
             <div className="relative group">
-                <div className="absolute top-1/2 -translate-y-1/2 flex items-center gap-3 px-4 h-10 start-0">
-                    <div className="w-8 h-5 relative rounded-sm overflow-hidden shadow-sm border border-gray-100">
+                <div className="absolute top-1/2 -translate-y-1/2 flex items-center gap-2 sm:gap-2.5 md:gap-3 px-2 sm:px-3 md:px-4 h-10 sm:h-12 md:h-14 start-0">
+                    <div className="w-6 h-4 sm:w-7 sm:h-4.5 md:w-8 md:h-5 relative rounded-sm overflow-hidden shadow-sm border border-gray-100 shrink-0">
                         <Image
                             src={flagUrl}
                             alt="Country Flag"
                             width={32}
                             height={20}
-                            className="object-cover"
+                            className="object-cover w-full h-full"
                         />
                     </div>
                     <span
-                        className="text-[#2D3142] font-black text-lg"
+                        className="text-[#2D3142] font-black text-sm sm:text-base md:text-lg shrink-0"
                         dir="ltr">
                         {countryCode}
                     </span>
@@ -64,7 +64,7 @@ export default function PhoneInput({
                     placeholder={placeholder}
                     disabled={disabled}
                     className={cn(
-                        'w-full h-16 rounded-2xl border border-[#E2E8F0] focus:border-theme-primary-border focus:ring-4 focus:ring-theme-primary/5 outline-none transition-all font-bold text-lg text-[#2D3142] text-start ps-36',
+                        'w-full h-10 sm:h-12 md:h-14 rounded-lg sm:rounded-xl md:rounded-2xl border border-[#E2E8F0] focus:border-theme-primary-border focus:ring-2 sm:focus:ring-3 md:focus:ring-4 focus:ring-theme-primary/5 outline-none transition-all font-bold text-sm sm:text-base md:text-lg text-[#2D3142] text-start ps-24 sm:ps-28 md:ps-36',
                         disabled ? 'opacity-50 cursor-not-allowed' : '',
                         inputClassName,
                     )}

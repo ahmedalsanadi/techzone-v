@@ -26,35 +26,37 @@ export default function AuthContainer({
     return (
         <div className="flex min-h-screen">
             {/* Left Side -Content Container  */}
-            <div className="w-full lg:w-[60%] bg-white flex flex-col p-6 md:p-12 lg:p-16 relative">
+            <div className="w-full lg:w-[60%] bg-white flex flex-col p-4 sm:p-6 md:p-8 lg:p-12 xl:p-16 relative overflow-x-hidden">
                 {/* Header with Back Button */}
-                <div className="flex items-center mb-12">
+                <div className="flex items-center mb-6 sm:mb-8 md:mb-10 lg:mb-12 shrink-0">
                     <button
                         onClick={onBack || (() => window.history.back())}
-                        className="flex items-center gap-6 group">
+                        className="flex items-center gap-2 sm:gap-4 md:gap-6 group w-full min-w-0">
                        
-                        <div className="w-14 h-14 rounded-full border border-gray-100 flex items-center justify-center transition-all bg-white shadow-sm group-hover:bg-gray-50">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full border border-gray-100 flex items-center justify-center transition-all bg-white shadow-sm group-hover:bg-gray-50 shrink-0">
                            
                                 <ChevronLeft
-                                    size={28}
-                                    className="text-gray-400 rtl:rotate-180"
+                                    size={20}
+                                    className="sm:w-6 sm:h-6 md:w-7 md:h-7 text-gray-400 rtl:rotate-180"
                                 />
                         </div>
-                         <h1 className="text-3xl font-black text-[#2D3142] leading-none pt-2">
+                         <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-[#2D3142] leading-tight sm:leading-none pt-1 sm:pt-2 truncate min-w-0">
                             {title}
                         </h1>
                     </button>
                 </div>
 
                 {/* Main Content Area */}
-                <div className="max-w-md mx-auto w-full flex-1 flex flex-col justify-center -mt-24">
-                    {children}
+                <div className="max-w-md mx-auto w-full flex-1 flex flex-col justify-center mt-4 sm:mt-6 md:mt-8 lg:-mt-12 xl:-mt-16 pb-4 sm:pb-6 md:pb-8 min-h-0">
+                    <div className="w-full overflow-y-auto">
+                        {children}
+                    </div>
                 </div>
 
                 {/* Footer Branding */}
-                <div className="mt-auto flex flex-col items-center gap-4">
-                    <div className="flex items-center gap-3">
-                        <span className="text-gray-400 text-lg font-bold">
+                <div className="mt-auto flex flex-col items-center gap-2 sm:gap-3 md:gap-4 pt-4 sm:pt-6 shrink-0">
+                    <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-center">
+                        <span className="text-gray-400 text-sm sm:text-base md:text-lg font-bold">
                             {isArabic ? 'يعمل بواسطة' : 'Powered by'}
                         </span>
                         <Image
@@ -62,7 +64,7 @@ export default function AuthContainer({
                             alt="Libro"
                             width={80}
                             height={28}
-                            className="grayscale opacity-60"
+                            className="grayscale opacity-60 w-auto h-5 sm:h-6 md:h-7"
                         />
                     </div>
                 </div>
@@ -70,20 +72,20 @@ export default function AuthContainer({
 
             {/* Right Side - Branding */}
             <div
-                className="hidden lg:flex w-[40%] flex-col items-center justify-center p-12 text-white relative overflow-hidden bg-theme-primary"
+                className="hidden lg:flex w-[40%] flex-col items-center justify-center p-8 xl:p-12 text-white relative overflow-hidden bg-theme-primary"
                 >
-                <div className="relative z-10 flex flex-col items-center">
-                    <div className="mb-8">
+                <div className="relative z-10 flex flex-col items-center max-w-full px-4">
+                    <div className="mb-6 xl:mb-8">
                         <Image
                             src={config.store.logo_url}
                             alt={config.store.name}
                             width={160}
                             height={160}
-                            className="object-contain"
+                            className="object-contain w-32 h-32 xl:w-40 xl:h-40"
                         />
                     </div>
                     <h1
-                        className="text-7xl font-black tracking-tighter"
+                        className="text-5xl xl:text-6xl 2xl:text-7xl font-black tracking-tighter wrap-break-word text-center"
                         style={{ color: secondaryColor }}>
                         {config.store.name}
                     </h1>
