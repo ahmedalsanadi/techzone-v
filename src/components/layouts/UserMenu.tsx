@@ -18,6 +18,7 @@ import {
 } from '../ui/DropdownMenu';
 import { useRouter } from '@/i18n/navigation';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useCartStore } from '@/store/useCartStore';
 import { authService } from '@/services/auth-service';
 
 const UserMenu = () => {
@@ -25,6 +26,7 @@ const UserMenu = () => {
     const locale = useLocale();
     const router = useRouter();
     const { user, isAuthenticated, logout: clearAuth } = useAuthStore();
+    const { setGuestMode, clearCart } = useCartStore();
 
     const handleLogout = async () => {
         // CRITICAL: Call logout API FIRST while token is still in cookies
@@ -39,6 +41,10 @@ const UserMenu = () => {
         
         // Clear local state after API call (cookies will be cleared here)
         clearAuth();
+        
+        // Switch cart back to guest mode and clear API cart
+        setGuestMode(true);
+        clearCart();
         
         // Refresh router to update any server-side state
         router.refresh();

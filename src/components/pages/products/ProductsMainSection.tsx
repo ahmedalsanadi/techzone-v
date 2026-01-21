@@ -71,6 +71,7 @@ export function ProductsMainSection({
                                 product.categories?.[0]?.id || '',
                             ),
                             metadata: {
+                                productId: product.id, // CRITICAL: Required for API calls
                                 productSlug: product.slug,
                             },
                         });

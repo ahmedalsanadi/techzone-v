@@ -14,6 +14,7 @@ import LogoImage from '@/components/layouts/LogoImage';
 import { useStore } from '@/components/providers/StoreProvider';
 import { siteConfig } from '@/config/site';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useCartStore } from '@/store/useCartStore';
 import { LogOut, LogIn } from 'lucide-react';
 
 export default function MobileSidebar() {
@@ -24,6 +25,7 @@ export default function MobileSidebar() {
     const isArabic = locale === 'ar';
     const { config } = useStore();
     const { isAuthenticated, user, logout } = useAuthStore();
+    const { setGuestMode, clearCart } = useCartStore();
 
     const handleLogout = async () => {
         // Always clear local state first
@@ -35,6 +37,9 @@ export default function MobileSidebar() {
                 // Ignore errors - we've already cleared local state
             });
         }
+        // Switch cart back to guest mode and clear API cart
+        setGuestMode(true);
+        clearCart();
         setMobileMenuOpen(false);
     };
     if (!isMobileMenuOpen) return null;

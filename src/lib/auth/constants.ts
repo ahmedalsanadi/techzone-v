@@ -22,6 +22,8 @@ export const PROTECTED_API_ENDPOINTS = [
     '/store/wishlist',
     '/store/profile',
     '/store/profile/update',
+    '/store/cart', // All cart endpoints require authentication
+    '/store/cart/merge',
 ] as const;
 
 /**

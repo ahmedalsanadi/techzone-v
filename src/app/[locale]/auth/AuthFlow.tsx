@@ -18,6 +18,9 @@ import { env } from '@/config/env';
 import type { AuthStep, ProfileUpdateRequest } from '@/types/auth';
 import { authStorage } from '@/lib/auth';
 import { formatMaskedPhone, validateStoredStep } from '@/lib/auth/utils';
+import { useCartStore } from '@/store/useCartStore';
+import { cartService } from '@/services/cart-service';
+import { transformLocalCartToGuestCart } from '@/lib/cart/transform';
 
 interface AuthFlowProps {
     config: StoreConfig;
@@ -43,6 +46,13 @@ export default function AuthFlow({
         setProfile,
         checkProfileComplete,
     } = useAuthStore();
+    const {
+        getGuestCartItems,
+        setGuestMode,
+        setCartFromAPI,
+        clearCart,
+        syncWithAPI,
+    } = useCartStore();
 
     // State management - restore from sessionStorage on page refresh
     // Initialize with server-safe value to prevent hydration mismatch
@@ -388,6 +398,54 @@ export default function AuthFlow({
         }
     };
 
+    // Helper function to merge guest cart after authentication
+    const mergeGuestCartAfterAuth = async () => {
+        try {
+            // Get guest cart items (only if in guest mode)
+            const guestItems = getGuestCartItems();
+            
+            if (guestItems.length === 0) {
+                // No guest items to merge, just sync with API
+                await syncWithAPI();
+                return;
+            }
+
+            // Transform guest cart items to API format
+            const guestCartItems = transformLocalCartToGuestCart(guestItems);
+            
+            if (guestCartItems.length === 0) {
+                // No valid items to merge, just sync with API
+                await syncWithAPI();
+                return;
+            }
+
+            // Merge guest cart with customer cart
+            const mergedCart = await cartService.mergeGuestCart({
+                guest_cart: guestCartItems,
+            });
+
+            // Update cart store with merged cart
+            setCartFromAPI(mergedCart);
+            
+            // Clear local guest cart items
+            clearCart();
+            
+            // Switch to authenticated mode
+            setGuestMode(false);
+        } catch (error) {
+            // If merge fails, log error but don't block auth flow
+            // Try to sync with API anyway to get customer's existing cart
+            console.error('Failed to merge guest cart:', error);
+            try {
+                await syncWithAPI();
+                setGuestMode(false);
+            } catch (syncError) {
+                console.error('Failed to sync cart after merge failure:', syncError);
+                // Keep guest mode if sync also fails
+            }
+        }
+    };
+
     // Step 2: Verify OTP
     const handleOtpSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -419,6 +477,8 @@ export default function AuthFlow({
             } else {
                 // For existing users: setAuth immediately, then redirect
                 setAuth(response.customer, response.token);
+                // Merge guest cart after authentication (for existing users)
+                await mergeGuestCartAfterAuth();
             }
 
             // Clear auth flow data from sessionStorage after successful login
@@ -493,6 +553,9 @@ export default function AuthFlow({
             const updatedProfile = await storeService.updateProfile(updatePayload);
 
             setProfile(updatedProfile);
+
+            // Merge guest cart after profile completion (for new users)
+            await mergeGuestCartAfterAuth();
 
             // Clear all auth-related sessionStorage after successful profile completion
             authStorage.clearAuthFlow();

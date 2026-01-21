@@ -95,6 +95,7 @@ const PromotionsSection = () => {
                                 price: product.price,
                                 categoryId: 'promo', // Placeholder
                                 metadata: {
+                                    productId: product.id, // CRITICAL: Required for API calls
                                     productSlug: product.slug,
                                 },
                             });

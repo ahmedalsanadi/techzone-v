@@ -98,6 +98,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
                                     price: displayPrice,
                                     categoryId,
                                     metadata: {
+                                        productId: product.id, // CRITICAL: Required for API calls
                                         productSlug: product.slug,
                                     },
                                 });

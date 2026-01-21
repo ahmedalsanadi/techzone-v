@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useCartStore } from '@/store/useCartStore';
+import { useCartActions } from '@/hooks/useCartActions';
 import { Link, useRouter } from '@/i18n/navigation';
 import { Trash2, Plus, Minus, ShoppingBag, ArrowRight } from 'lucide-react';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
@@ -11,9 +12,10 @@ import { useAuthStore } from '@/store/useAuthStore';
 
 const CartPage = () => {
     const t = useTranslations('Cart');
-    const { items, updateQuantity, removeItem, getTotalPrice, getTotalItems } =
+    const { items, getTotalPrice, getTotalItems, syncWithAPI, isLoading, isGuestMode } =
         useCartStore();
     const { isAuthenticated } = useAuthStore();
+    const { updateItemQuantity, removeFromCart } = useCartActions();
     const router = useRouter();
     const [isMounted, setIsMounted] = useState(false);
 
@@ -21,6 +23,18 @@ const CartPage = () => {
     useEffect(() => {
         setIsMounted(true);
     }, []);
+
+    // CRITICAL: Only sync cart with API when authenticated
+    // Guest users should only see local cart (no API calls)
+    useEffect(() => {
+        if (!isMounted) return;
+        
+        // Only make API call if user is authenticated
+        if (isAuthenticated && !isGuestMode) {
+            syncWithAPI();
+        }
+        // If not authenticated, cart page will show local guest cart (or empty)
+    }, [isMounted, isAuthenticated, isGuestMode, syncWithAPI]);
 
     const handleCheckout = () => {
         router.push('/checkout' as any);
@@ -245,12 +259,13 @@ const CartPage = () => {
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    updateQuantity(
+                                                    updateItemQuantity(
                                                         item.id,
                                                         item.quantity - 1,
                                                     );
                                                 }}
-                                                className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-theme-primary transition-colors">
+                                                disabled={isLoading}
+                                                className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-theme-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                                                 <Minus size={16} />
                                             </button>
                                             <span className="w-10 text-center font-bold text-gray-900">
@@ -259,12 +274,13 @@ const CartPage = () => {
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    updateQuantity(
+                                                    updateItemQuantity(
                                                         item.id,
                                                         item.quantity + 1,
                                                     );
                                                 }}
-                                                className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-theme-primary transition-colors">
+                                                disabled={isLoading}
+                                                className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-theme-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                                                 <Plus size={16} />
                                             </button>
                                         </div>
@@ -272,9 +288,10 @@ const CartPage = () => {
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                removeItem(item.id);
+                                                removeFromCart(item.id);
                                             }}
-                                            className="text-gray-300 hover:text-red-500 transition-colors p-2">
+                                            disabled={isLoading}
+                                            className="text-gray-300 hover:text-red-500 transition-colors p-2 disabled:opacity-50 disabled:cursor-not-allowed">
                                             <Trash2 size={20} />
                                         </button>
                                     </div>
@@ -323,9 +340,16 @@ const CartPage = () => {
 
                         <button
                             onClick={handleCheckout}
-                            className="w-full bg-theme-primary text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 active:scale-95">
-                            {t('checkout')}
-                            <ArrowRight size={20} className="rtl:rotate-180" />
+                            disabled={isLoading}
+                            className="w-full bg-theme-primary text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+                            {isLoading ? (
+                                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                                <>
+                                    {t('checkout')}
+                                    <ArrowRight size={20} className="rtl:rotate-180" />
+                                </>
+                            )}
                         </button>
                     </div>
                 </div>
