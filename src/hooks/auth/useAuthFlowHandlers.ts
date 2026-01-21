@@ -34,7 +34,11 @@ interface UseAuthFlowHandlersOptions {
     otp: string;
     setOtp: (otp: string) => void;
     formData: ProfileUpdateRequest;
-    setFormData: (data: ProfileUpdateRequest) => void;
+    setFormData: (
+        data:
+            | ProfileUpdateRequest
+            | ((prev: ProfileUpdateRequest) => ProfileUpdateRequest),
+    ) => void;
     redirectTo?: string;
     isAuthenticated: boolean;
 }
@@ -212,7 +216,9 @@ export function useAuthFlowHandlers({
                     ...(formData.middle_name && {
                         middle_name: formData.middle_name,
                     }),
-                    ...(formData.last_name && { last_name: formData.last_name }),
+                    ...(formData.last_name && {
+                        last_name: formData.last_name,
+                    }),
                     ...(formData.email && { email: formData.email }),
                 };
 

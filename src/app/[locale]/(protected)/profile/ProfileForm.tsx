@@ -12,7 +12,11 @@ import { Loader2 } from 'lucide-react';
 interface ProfileFormProps {
     profile: CustomerProfile;
     formData: ProfileUpdateRequest;
-    onFormDataChange: (data: ProfileUpdateRequest) => void;
+    onFormDataChange: (
+        data:
+            | ProfileUpdateRequest
+            | ((prev: ProfileUpdateRequest) => ProfileUpdateRequest),
+    ) => void;
     isEditing: boolean;
     isLoading: boolean;
     onSave: (data: ProfileUpdateRequest) => void;
@@ -69,7 +73,9 @@ export default function ProfileForm({
                         type="text"
                         required
                         value={formData.first_name}
-                        onChange={(e) => updateField('first_name', e.target.value)}
+                        onChange={(e) =>
+                            updateField('first_name', e.target.value)
+                        }
                         placeholder={t('firstNamePlaceholder') || 'أحمد'}
                         variant="default"
                         inputSize="lg"
@@ -161,7 +167,9 @@ export default function ProfileForm({
                         type="email"
                         value={formData.email || ''}
                         onChange={(e) => updateField('email', e.target.value)}
-                        placeholder={t('emailPlaceholder') || 'someone@example.com'}
+                        placeholder={
+                            t('emailPlaceholder') || 'someone@example.com'
+                        }
                         variant="default"
                         inputSize="lg"
                         containerClassName="h-16 rounded-2xl bg-[#F4F7FA] border-[#E2E8F0] focus-within:border-theme-primary-border focus-within:ring-4 focus-within:ring-theme-primary/5 px-6"

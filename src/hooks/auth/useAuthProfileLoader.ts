@@ -17,7 +17,11 @@ interface UseAuthProfileLoaderOptions {
     isNewUser: boolean;
     token: string | null;
     checkProfileComplete: () => boolean;
-    setFormData: (data: ProfileUpdateRequest) => void;
+    setFormData: (
+        data:
+            | ProfileUpdateRequest
+            | ((prev: ProfileUpdateRequest) => ProfileUpdateRequest),
+    ) => void;
     redirectTo?: string;
 }
 
