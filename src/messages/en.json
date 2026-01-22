@@ -419,7 +419,8 @@
       "Thursday": "Thursday",
       "Friday": "Friday"
     },
-    "all_day": "All Day"
+    "all_day": "All Day",
+    "confirm": "Confirm Selection"
   },
   "Collections": {
     "title": "Special Offers & Collections",

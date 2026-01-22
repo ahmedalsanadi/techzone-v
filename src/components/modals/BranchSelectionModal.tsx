@@ -15,6 +15,7 @@ import {
     Clock,
     AlertCircle,
     RefreshCw,
+    MapPin,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
@@ -46,13 +47,23 @@ const BranchSelectionModal: React.FC = () => {
         setModalOpen,
         selectedBranchId,
         hasSelectedOnce,
+        selectedBranch,
     } = useBranchStore();
 
-    const [hoveredBranchId, setHoveredBranchId] = useState<number | null>(null);
+    const [tempSelectedBranch, setTempSelectedBranch] = useState<Branch | null>(
+        null,
+    );
     const [showWorkingHours, setShowWorkingHours] = useState<Branch | null>(
         null,
     );
     const [focusedBranchIndex, setFocusedBranchIndex] = useState<number>(0);
+
+    // Initialize temp selection from store when modal opens
+    useEffect(() => {
+        if (isModalOpen) {
+            setTempSelectedBranch(selectedBranch);
+        }
+    }, [isModalOpen, selectedBranch]);
 
     // Refs for accessibility and focus management
     const modalRef = useRef<HTMLDivElement>(null);
@@ -168,12 +179,11 @@ const BranchSelectionModal: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [branches.length]); // Only reset when branches.length changes
 
-    const handleBranchSelect = useCallback(
-        (branch: Branch) => {
-            setSelectedBranch(branch);
-        },
-        [setSelectedBranch],
-    );
+    const handleConfirmSelection = useCallback(() => {
+        if (tempSelectedBranch) {
+            setSelectedBranch(tempSelectedBranch);
+        }
+    }, [tempSelectedBranch, setSelectedBranch]);
 
     const handleWorkingHoursClick = useCallback(
         (e: React.MouseEvent, branch: Branch) => {
@@ -187,17 +197,14 @@ const BranchSelectionModal: React.FC = () => {
         (e: React.MouseEvent, branchId: number) => {
             e.stopPropagation();
             router.push(`/contact?branch_id=${branchId}`);
-            setModalOpen(false);
+            // Do not close modal - let the initializer handle it or force selection
         },
-        [router, setModalOpen],
+        [router],
     );
 
-    // Memoize selected branch for map
-    const selectedBranchForMap = useMemo(() => {
-        return hoveredBranchId || branches[0]?.id;
-    }, [hoveredBranchId, branches]);
-
     if (!isModalOpen) return null;
+
+    const selectedBranchForMap = tempSelectedBranch?.id || branches[0]?.id;
 
     return (
         <>
@@ -222,7 +229,7 @@ const BranchSelectionModal: React.FC = () => {
                 onClick={(e) => e.stopPropagation()}>
                 <div className="bg-white w-full max-w-6xl h-[90vh] md:h-[80vh] rounded-[3rem] shadow-2xl flex flex-col md:flex-row overflow-hidden relative animate-in zoom-in-95 duration-500 pointer-events-auto">
                     {/* Branch list Side */}
-                    <div className="w-full md:w-[400px] flex flex-col bg-white border-r border-gray-100 p-8 shadow-2xl">
+                    <div className="w-full md:w-[450px] flex flex-col bg-white border-r border-gray-100 p-8 shadow-2xl z-10">
                         {/* Header */}
                         <div className="flex items-center justify-between mb-8">
                             {(selectedBranchId || hasSelectedOnce) && (
@@ -246,221 +253,172 @@ const BranchSelectionModal: React.FC = () => {
                         {/* Content */}
                         <div
                             ref={branchListRef}
-                            className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-4"
+                            className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-4 mb-6"
                             role="listbox"
                             aria-label={t('branch_list') || 'Branch list'}>
                             {isLoading || isFetching ? (
-                                // Loading state
                                 Array.from({ length: 4 }).map((_, i) => (
                                     <div
                                         key={i}
                                         className="h-24 w-full bg-gray-50 animate-pulse rounded-3xl"
-                                        aria-label="Loading branch"
                                     />
                                 ))
                             ) : error ? (
-                                // Error state
-                                <div
-                                    className="flex flex-col items-center justify-center p-8 text-center space-y-4"
-                                    role="alert"
-                                    aria-live="polite">
+                                <div className="flex flex-col items-center justify-center p-8 text-center space-y-4">
                                     <AlertCircle className="w-12 h-12 text-red-400" />
                                     <div>
                                         <p className="text-sm font-medium text-gray-700 mb-2">
-                                            {t('error_loading_branches') ||
-                                                'Failed to load branches'}
-                                        </p>
-                                        <p className="text-xs text-gray-500 mb-4">
-                                            {error instanceof Error
-                                                ? error.message.includes(
-                                                      'timeout',
-                                                  ) ||
-                                                  error.message.includes(
-                                                      'timed out',
-                                                  )
-                                                    ? 'The request took too long. Please check your connection and try again.'
-                                                    : error.message
-                                                : 'An unexpected error occurred. Please try again.'}
+                                            {t('error_loading_branches')}
                                         </p>
                                         <button
                                             onClick={() => refetch()}
-                                            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-theme-primary text-white text-sm font-medium hover:brightness-[0.95] transition-all focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-2"
-                                            aria-label={t('retry') || 'Retry'}>
+                                            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-theme-primary text-white text-sm font-medium hover:brightness-[0.95] transition-all">
                                             <RefreshCw size={16} />
-                                            {t('retry') || 'Retry'}
+                                            {t('retry')}
                                         </button>
                                     </div>
                                 </div>
                             ) : branches.length === 0 ? (
-                                // Empty state
                                 <div className="flex flex-col items-center justify-center p-8 text-center">
                                     <Building2 className="w-12 h-12 text-gray-300 mb-4" />
                                     <p className="text-sm text-gray-500">
-                                        {t('no_branches_available') ||
-                                            'No branches available'}
+                                        {t('no_branches_available')}
                                     </p>
                                 </div>
                             ) : (
-                                // Branch list
                                 branches.map((branch, index) => (
                                     <div
                                         key={branch.id}
                                         data-branch-item
                                         tabIndex={0}
-                                        onMouseEnter={() =>
-                                            setHoveredBranchId(branch.id)
+                                        onClick={() =>
+                                            setTempSelectedBranch(branch)
                                         }
                                         onFocus={() => {
-                                            setHoveredBranchId(branch.id);
                                             setFocusedBranchIndex(index);
                                         }}
-                                        onClick={() =>
-                                            handleBranchSelect(branch)
-                                        }
                                         onKeyDown={(e) => {
                                             if (
                                                 e.key === 'Enter' ||
                                                 e.key === ' '
                                             ) {
                                                 e.preventDefault();
-                                                handleBranchSelect(branch);
+                                                setTempSelectedBranch(branch);
                                             }
                                         }}
                                         className={cn(
-                                            'group p-5 rounded-3xl border transition-all duration-300 cursor-pointer relative focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-2',
-                                            hoveredBranchId === branch.id
-                                                ? 'border-theme-primary/20 bg-theme-primary/5 shadow-lg shadow-theme-primary/5 -translate-x-1'
-                                                : 'border-gray-50 bg-white hover:border-gray-200',
+                                            'group p-6 rounded-3xl border-2 transition-all duration-300 cursor-pointer relative focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-2',
+                                            tempSelectedBranch?.id === branch.id
+                                                ? 'border-theme-primary bg-linear-to-br from-theme-primary/10 to-theme-primary/5 shadow-xl shadow-theme-primary/10 z-10'
+                                                : 'border-gray-50 bg-white hover:border-gray-200 hover:shadow-lg hover:shadow-gray-100',
                                         )}
                                         role="option"
                                         aria-selected={
-                                            hoveredBranchId === branch.id
-                                        }
-                                        aria-label={`${
-                                            branch.name || 'Branch'
-                                        }, ${
-                                            branch.is_open
-                                                ? t('open')
-                                                : t('closed')
-                                        }`}>
-                                        <div className="flex items-start justify-between">
-                                            <div className="flex gap-4">
+                                            tempSelectedBranch?.id === branch.id
+                                        }>
+                                        <div className="flex items-center justify-between gap-6">
+                                            <div className="flex items-center gap-5 flex-1 min-w-0">
                                                 <div
                                                     className={cn(
-                                                        'w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300',
-                                                        hoveredBranchId ===
+                                                        'w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-500 overflow-hidden',
+                                                        tempSelectedBranch?.id ===
                                                             branch.id
-                                                            ? 'bg-theme-primary text-white'
-                                                            : 'bg-gray-50 text-gray-400 group-hover:bg-gray-100',
-                                                    )}
-                                                    aria-hidden="true">
-                                                    <Building2 size={24} />
+                                                            ? 'bg-theme-primary text-white scale-105 shadow-lg shadow-theme-primary/30'
+                                                            : 'bg-gray-50 text-gray-400 group-hover:bg-theme-primary/10 group-hover:text-theme-primary',
+                                                    )}>
+                                                    <Building2
+                                                        size={32}
+                                                        className="transition-transform duration-500 group-hover:scale-110"
+                                                    />
                                                 </div>
-                                                <div>
-                                                    <h4 className="font-bold text-gray-900">
-                                                        {branch.name ||
-                                                            'Branch'}
+                                                <div className="flex flex-col justify-center min-w-0 flex-1">
+                                                    <h4 className="font-bold text-gray-900 text-xl truncate mb-1.5 transition-colors duration-300 group-hover:text-theme-primary">
+                                                        {branch.name}
                                                     </h4>
-                                                    <div className="flex items-center gap-2 mt-1">
+                                                    <div className="flex flex-wrap items-center gap-y-1.5 gap-x-3">
                                                         <span
                                                             className={cn(
-                                                                'text-[10px] font-black uppercase tracking-wider',
+                                                                'text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm',
                                                                 branch.is_open
-                                                                    ? 'text-green-500'
-                                                                    : 'text-gray-400',
+                                                                    ? 'text-green-600 bg-green-50/80 backdrop-blur-sm'
+                                                                    : 'text-gray-400 bg-gray-50',
                                                             )}>
                                                             {branch.is_open
                                                                 ? t('open')
                                                                 : t('closed')}
                                                         </span>
-                                                        <span
-                                                            className="w-1 h-1 rounded-full bg-gray-200"
-                                                            aria-hidden="true"
-                                                        />
-                                                        {branch.services && (
-                                                            <span className="text-xs text-theme-primary bg-theme-primary/10 px-2 py-0.5 rounded-full font-bold">
-                                                                {branch.services
-                                                                    .shipping_enabled
-                                                                    ? t(
-                                                                          'free_delivery',
-                                                                      )
-                                                                    : t(
-                                                                          'delivery_with_fee',
-                                                                          {
-                                                                              fee: 5,
-                                                                          },
-                                                                      )}
-                                                            </span>
-                                                        )}
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-gray-200" />
+                                                        <span className="text-sm text-gray-500 font-medium whitespace-nowrap">
+                                                            {branch.services
+                                                                ?.shipping_enabled
+                                                                ? t(
+                                                                      'free_delivery',
+                                                                  )
+                                                                : t(
+                                                                      'delivery_with_fee',
+                                                                      {
+                                                                          fee: 5,
+                                                                      },
+                                                                  )}
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <div className="flex flex-col items-end gap-2">
-                                                <div className="flex gap-2">
-                                                    <button
-                                                        onClick={(e) =>
-                                                            handleWorkingHoursClick(
-                                                                e,
-                                                                branch,
-                                                            )
-                                                        }
-                                                        className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-theme-primary/10 hover:text-theme-primary transition-all focus:outline-none focus:ring-2 focus:ring-theme-primary"
-                                                        aria-label={`${
-                                                            t(
-                                                                'view_working_hours',
-                                                            ) ||
-                                                            'View working hours'
-                                                        } - ${branch.name}`}
-                                                        title={
-                                                            t(
-                                                                'view_working_hours',
-                                                            ) ||
-                                                            'View working hours'
-                                                        }>
-                                                        <Clock size={16} />
-                                                    </button>
-                                                    <button
-                                                        onClick={(e) =>
-                                                            handleContactClick(
-                                                                e,
-                                                                branch.id,
-                                                            )
-                                                        }
-                                                        className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-theme-primary/10 hover:text-theme-primary transition-all focus:outline-none focus:ring-2 focus:ring-theme-primary"
-                                                        aria-label={`${
-                                                            t(
-                                                                'contact_branch',
-                                                            ) ||
-                                                            'Contact branch'
-                                                        } - ${branch.name}`}
-                                                        title={
-                                                            t(
-                                                                'contact_branch',
-                                                            ) ||
-                                                            'Contact branch'
-                                                        }>
-                                                        <Headphones size={16} />
-                                                    </button>
-                                                </div>
+                                            <div className="flex items-center gap-3 shrink-0">
+                                                <button
+                                                    onClick={(e) =>
+                                                        handleWorkingHoursClick(
+                                                            e,
+                                                            branch,
+                                                        )
+                                                    }
+                                                    className="w-12 h-12 rounded-xl bg-gray-50/50 backdrop-blur-sm flex items-center justify-center text-gray-400 hover:bg-theme-primary hover:text-white transition-all duration-300 active:scale-90 shadow-sm border border-gray-100/50"
+                                                    title={t('working_hours')}>
+                                                    <Clock size={22} />
+                                                </button>
+                                                <button
+                                                    onClick={(e) =>
+                                                        handleContactClick(
+                                                            e,
+                                                            branch.id,
+                                                        )
+                                                    }
+                                                    className="w-12 h-12 rounded-xl bg-gray-50/50 backdrop-blur-sm flex items-center justify-center text-gray-400 hover:bg-theme-primary hover:text-white transition-all duration-300 active:scale-90 shadow-sm border border-gray-100/50"
+                                                    title={t('contact_branch')}>
+                                                    <Headphones size={22} />
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
                                 ))
                             )}
                         </div>
+
+                        {/* Footer Action */}
+                        <div className="pt-6 border-t border-gray-100">
+                            <button
+                                onClick={handleConfirmSelection}
+                                disabled={!tempSelectedBranch}
+                                className={cn(
+                                    'w-full py-5 rounded-4xl font-black text-xl shadow-xl transition-all duration-300',
+                                    tempSelectedBranch
+                                        ? 'bg-theme-primary text-white hover:brightness-[1.05] active:scale-[0.98] shadow-theme-primary/30'
+                                        : 'bg-gray-100 text-gray-400 cursor-not-allowed',
+                                )}>
+                                {t('confirm')}
+                            </button>
+                        </div>
                     </div>
 
-                    {/* Map Side - Only load when branches are ready */}
-                    <div className="flex-1 h-1/2 md:h-auto relative p-6">
+                    {/* Map Side */}
+                    <div className="flex-1 h-1/2 md:h-auto relative p-6 bg-gray-50">
                         {branches.length > 0 ? (
-                            // Show map with branches (cached or fresh data)
-                            // Map loads asynchronously, doesn't block modal
                             <BranchMap
                                 branches={branches}
                                 selectedBranchId={selectedBranchForMap}
                                 onBranchSelect={(branch) => {
-                                    setHoveredBranchId(branch.id);
+                                    setTempSelectedBranch(branch);
                                     const index = branches.findIndex(
                                         (b) => b.id === branch.id,
                                     );
@@ -470,27 +428,14 @@ const BranchSelectionModal: React.FC = () => {
                                 }}
                             />
                         ) : isLoading ? (
-                            // Show loading state for map while initial fetch
-                            <div className="w-full h-full bg-gray-100 animate-pulse rounded-3xl flex items-center justify-center">
+                            <div className="w-full h-full bg-gray-100 animate-pulse rounded-[2.5rem] flex items-center justify-center">
                                 <div className="text-sm text-gray-400">
                                     Loading map...
                                 </div>
                             </div>
-                        ) : error ? (
-                            // Show error state for map
-                            <div className="w-full h-full rounded-3xl border border-gray-100 bg-gray-50 flex flex-col items-center justify-center p-8">
-                                <AlertCircle className="w-12 h-12 text-gray-300 mb-4" />
-                                <p className="text-xs text-gray-500 text-center">
-                                    Map unavailable
-                                </p>
-                            </div>
                         ) : (
-                            // Empty state
-                            <div className="w-full h-full rounded-3xl border border-gray-100 bg-gray-50 flex flex-col items-center justify-center p-8">
-                                <Building2 className="w-12 h-12 text-gray-300 mb-4" />
-                                <p className="text-xs text-gray-500 text-center">
-                                    No branches available
-                                </p>
+                            <div className="w-full h-full bg-gray-100 animate-pulse rounded-[2.5rem] flex items-center justify-center">
+                                <MapPin size={48} className="text-gray-200" />
                             </div>
                         )}
                     </div>

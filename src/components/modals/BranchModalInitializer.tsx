@@ -19,8 +19,13 @@ import type { Branch } from '@/types/branches';
  * - Fetches selected branch data if only ID is stored
  */
 export default function BranchModalInitializer() {
-    const { hasSelectedOnce, setModalOpen, selectedBranchId, selectedBranch } =
-        useBranchStore();
+    const {
+        hasSelectedOnce,
+        setModalOpen,
+        selectedBranchId,
+        selectedBranch,
+        isModalOpen,
+    } = useBranchStore();
     const queryClient = useQueryClient();
     const hasInitialized = useRef(false);
 
@@ -70,14 +75,10 @@ export default function BranchModalInitializer() {
         // Modal should ONLY auto-open if no branch is selected yet
         // If branch is selected, modal stays closed (user can open manually via navbar/SubHeader)
         if (!selectedBranchId && !hasSelectedOnce) {
-            setModalOpen(true);
-        } else if (selectedBranchId || hasSelectedOnce) {
-            // Ensure modal is closed if branch is already selected
-            // User can still open it manually by clicking navbar item or SubHeader button
-            setModalOpen(false);
+            if (!isModalOpen) setModalOpen(true);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedBranchId, hasSelectedOnce]); // Re-run when branch selection changes
+    }, [selectedBranchId, hasSelectedOnce, isModalOpen]); // Re-run when branch selection OR modal state changes
 
     return null;
 }
