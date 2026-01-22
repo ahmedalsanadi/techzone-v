@@ -21,7 +21,7 @@ const Breadcrumbs = ({ items, className }: BreadcrumbsProps) => {
         <nav
             aria-label="Breadcrumb"
             className={cn(
-                'flex items-center gap-2 text-sm md:text-md px-1 md:px-2 overflow-hidden pt-2',
+                'flex items-center gap-2 text-sm md:text-lg overflow-hidden pt-2',
                 className,
             )}>
             {items.map((item, index) => {
