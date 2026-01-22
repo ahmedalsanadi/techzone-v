@@ -138,7 +138,7 @@ export default function AddonSelector({
 
     return (
         <div className={cn(
-            "border border-gray-100 rounded-2xl bg-white p-5 sm:p-6 flex flex-col gap-4 h-fit shadow-sm",
+            "border border-gray-100 rounded-2xl bg-white p-5 sm:p-6 flex flex-col gap-4 h-full shadow-sm",
             validationError && "border-red-200 bg-red-50/30"
         )}>
             <div className="flex items-center justify-between">
@@ -213,6 +213,11 @@ export default function AddonSelector({
                                     {item.description && (
                                         <p className="text-xs text-gray-500">
                                             {item.description}
+                                        </p>
+                                    )}
+                                    {item.max_quantity !== null && (
+                                        <p className="text-[10px] font-bold text-gray-400 bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100/50 mt-0.5 w-fit">
+                                            {t('maxQuantity') || 'Max'}: {item.max_quantity}
                                         </p>
                                     )}
                                 </div>
@@ -291,6 +296,11 @@ export default function AddonSelector({
                                     {item.description && (
                                         <p className="text-xs text-gray-500">
                                             {item.description}
+                                        </p>
+                                    )}
+                                    {item.max_quantity !== null && (
+                                        <p className="text-[10px] font-bold text-gray-400 bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100/50 mt-0.5 w-fit">
+                                            {t('maxQuantity') || 'Max'}: {item.max_quantity}
                                         </p>
                                     )}
                                 </div>
