@@ -2,7 +2,7 @@
  * Custom hook for branch selection modal logic
  */
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from '@/i18n/navigation';
 import { useBranchStore } from '@/store/useBranchStore';
@@ -12,8 +12,18 @@ import type { Branch } from '@/types/branches';
 
 export function useBranchSelection() {
     const router = useRouter();
-    const { setSelectedBranch, isModalOpen, setModalOpen } = useBranchStore();
-    const [hoveredBranchId, setHoveredBranchId] = useState<number | null>(null);
+    const {
+        setSelectedBranch,
+        isModalOpen,
+        setModalOpen,
+        selectedBranchId,
+        hasSelectedOnce,
+        selectedBranch,
+    } = useBranchStore();
+
+    const [tempSelectedBranch, setTempSelectedBranch] = useState<Branch | null>(
+        null,
+    );
     const [showWorkingHours, setShowWorkingHours] = useState<Branch | null>(
         null,
     );
@@ -51,6 +61,13 @@ export function useBranchSelection() {
         refetchOnReconnect: false,
     });
 
+    // Initialize temp selection from store when modal opens
+    useEffect(() => {
+        if (isModalOpen) {
+            setTempSelectedBranch(selectedBranch);
+        }
+    }, [isModalOpen, selectedBranch]);
+
     // Calculate is_open for each branch
     const branches = useMemo(() => {
         return rawBranches.map((branch) => ({
@@ -59,18 +76,22 @@ export function useBranchSelection() {
         }));
     }, [rawBranches]);
 
-    // Memoize selected branch for map
+    // Memoize selected branch for map - use temp selection for preview
     const selectedBranchForMap = useMemo(() => {
-        return hoveredBranchId || branches[0]?.id;
-    }, [hoveredBranchId, branches]);
+        return tempSelectedBranch?.id || branches[0]?.id;
+    }, [tempSelectedBranch, branches]);
 
     // Handlers
-    const handleBranchSelect = useCallback(
-        (branch: Branch) => {
-            setSelectedBranch(branch);
-        },
-        [setSelectedBranch],
-    );
+    const handleBranchSelect = useCallback((branch: Branch) => {
+        setTempSelectedBranch(branch);
+    }, []);
+
+    const handleConfirmSelection = useCallback(() => {
+        if (tempSelectedBranch) {
+            setSelectedBranch(tempSelectedBranch);
+            setModalOpen(false);
+        }
+    }, [tempSelectedBranch, setSelectedBranch, setModalOpen]);
 
     const handleWorkingHoursClick = useCallback(
         (e: React.MouseEvent, branch: Branch) => {
@@ -84,14 +105,20 @@ export function useBranchSelection() {
         (e: React.MouseEvent, branchId: number) => {
             e.stopPropagation();
             router.push(`/contact?branch_id=${branchId}`);
-            setModalOpen(false);
+            // Do not close modal - let fixed logic handle it
         },
-        [router, setModalOpen],
+        [router],
     );
 
     const handleCloseWorkingHours = useCallback(() => {
         setShowWorkingHours(null);
     }, []);
+
+    const handleCloseModal = useCallback(() => {
+        if (selectedBranchId || hasSelectedOnce) {
+            setModalOpen(false);
+        }
+    }, [selectedBranchId, hasSelectedOnce, setModalOpen]);
 
     return {
         branches,
@@ -99,17 +126,21 @@ export function useBranchSelection() {
         error,
         refetch,
         isFetching,
-        hoveredBranchId,
-        setHoveredBranchId,
+        tempSelectedBranch,
+        setTempSelectedBranch,
         focusedBranchIndex,
         setFocusedBranchIndex,
         selectedBranchForMap,
         showWorkingHours,
         handleBranchSelect,
+        handleConfirmSelection,
         handleWorkingHoursClick,
         handleContactClick,
         handleCloseWorkingHours,
+        handleCloseModal,
         isModalOpen,
         setModalOpen,
+        selectedBranchId,
+        hasSelectedOnce,
     };
 }

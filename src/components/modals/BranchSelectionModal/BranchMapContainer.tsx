@@ -24,46 +24,46 @@ interface BranchMapContainerProps {
     onBranchSelect: (branch: Branch) => void;
 }
 
-export const BranchMapContainer: React.FC<BranchMapContainerProps> = ({
-    branches,
-    selectedBranchId,
-    isLoading,
-    error,
-    onBranchSelect,
-}) => {
-    if (branches.length > 0) {
-        return (
-            <BranchMap
-                branches={branches}
-                selectedBranchId={selectedBranchId}
-                onBranchSelect={onBranchSelect}
-            />
-        );
-    }
+export const BranchMapContainer: React.FC<BranchMapContainerProps> = React.memo(
+    ({ branches, selectedBranchId, isLoading, error, onBranchSelect }) => {
+        if (branches.length > 0) {
+            return (
+                <BranchMap
+                    branches={branches}
+                    selectedBranchId={selectedBranchId}
+                    onBranchSelect={onBranchSelect}
+                />
+            );
+        }
 
-    if (isLoading) {
-        return (
-            <div className="w-full h-full bg-gray-100 animate-pulse rounded-3xl flex items-center justify-center">
-                <div className="text-sm text-gray-400">Loading map...</div>
-            </div>
-        );
-    }
+        if (isLoading) {
+            return (
+                <div className="w-full h-full bg-gray-100 animate-pulse rounded-3xl flex items-center justify-center">
+                    <div className="text-sm text-gray-400">Loading map...</div>
+                </div>
+            );
+        }
 
-    if (error) {
+        if (error) {
+            return (
+                <div className="w-full h-full rounded-3xl border border-gray-100 bg-gray-50 flex flex-col items-center justify-center p-8">
+                    <AlertCircle className="w-12 h-12 text-gray-300 mb-4" />
+                    <p className="text-xs text-gray-500 text-center">
+                        Map unavailable
+                    </p>
+                </div>
+            );
+        }
+
         return (
             <div className="w-full h-full rounded-3xl border border-gray-100 bg-gray-50 flex flex-col items-center justify-center p-8">
-                <AlertCircle className="w-12 h-12 text-gray-300 mb-4" />
-                <p className="text-xs text-gray-500 text-center">Map unavailable</p>
+                <Building2 className="w-12 h-12 text-gray-300 mb-4" />
+                <p className="text-xs text-gray-500 text-center">
+                    No branches available
+                </p>
             </div>
         );
-    }
+    },
+);
 
-    return (
-        <div className="w-full h-full rounded-3xl border border-gray-100 bg-gray-50 flex flex-col items-center justify-center p-8">
-            <Building2 className="w-12 h-12 text-gray-300 mb-4" />
-            <p className="text-xs text-gray-500 text-center">
-                No branches available
-            </p>
-        </div>
-    );
-};
+BranchMapContainer.displayName = 'BranchMapContainer';
