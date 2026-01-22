@@ -17,6 +17,7 @@ import { QueryProvider } from '@/components/providers/QueryProvider';
 import { getStoreCategories } from '@/services/store-config';
 import { getServerStoreConfig } from '@/lib/server/store-config';
 import { StoreProvider } from '@/components/providers/StoreProvider';
+import { ThemeStyles } from '@/components/providers/ThemeStyles';
 import ToasterContainer from '@/components/layouts/ToasterContainer';
 import BranchSelectionModal from '@/components/modals/BranchSelectionModal';
 import BranchModalInitializer from '@/components/modals/BranchModalInitializer';
@@ -132,6 +133,8 @@ export default async function RootLayout({
             dir={isArabic ? 'rtl' : 'ltr'}
             suppressHydrationWarning>
             <head>
+                {/* Critical: Theme styles must be first to prevent FOUC */}
+                <ThemeStyles config={storeConfig} />
                 {storeConfig && (
                     <>
                         <link

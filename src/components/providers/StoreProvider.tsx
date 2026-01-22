@@ -6,11 +6,11 @@ import React, {
     useContext,
     useLayoutEffect,
     useEffect,
+    useRef,
 } from 'react';
 import { StoreConfig, Category } from '@/services/types';
 import { useCartStore } from '@/store/useCartStore';
-import { useOrderStore } from '@/store/useOrderStore';
-import { isValidColor } from '@/lib/utils';
+import { isValidColor, generateThemeVariables } from '@/lib/theme-utils';
 
 interface StoreContextType {
     config: StoreConfig;
@@ -18,64 +18,6 @@ interface StoreContextType {
 }
 
 const StoreContext = createContext<StoreContextType | null>(null);
-
-/**
- * Converts hex color to RGB values
- */
-function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result
-        ? {
-              r: parseInt(result[1], 16),
-              g: parseInt(result[2], 16),
-              b: parseInt(result[3], 16),
-          }
-        : null;
-}
-
-/**
- * Darkens a color by a percentage (0-1)
- */
-function darkenColor(hex: string, amount: number): string {
-    const rgb = hexToRgb(hex);
-    if (!rgb) return hex;
-
-    const r = Math.max(0, Math.floor(rgb.r * (1 - amount)));
-    const g = Math.max(0, Math.floor(rgb.g * (1 - amount)));
-    const b = Math.max(0, Math.floor(rgb.b * (1 - amount)));
-
-    return `#${[r, g, b]
-        .map((x) => {
-            const hex = x.toString(16);
-            return hex.length === 1 ? '0' + hex : hex;
-        })
-        .join('')}`;
-}
-
-/**
- * Creates an rgba color string with opacity
- */
-function colorWithOpacity(hex: string, opacity: number): string {
-    const rgb = hexToRgb(hex);
-    if (!rgb) return hex;
-    return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity})`;
-}
-
-/**
- * Blends white with a color at a given percentage
- * Used for creating tinted backgrounds (white + X% primary color)
- */
-function blendWithWhite(hex: string, percentage: number): string {
-    const rgb = hexToRgb(hex);
-    if (!rgb) return hex;
-    
-    // Blend: result = white * (1 - percentage) + color * percentage
-    const r = Math.round(255 * (1 - percentage) + rgb.r * percentage);
-    const g = Math.round(255 * (1 - percentage) + rgb.g * percentage);
-    const b = Math.round(255 * (1 - percentage) + rgb.b * percentage);
-    
-    return `rgb(${r}, ${g}, ${b})`;
-}
 
 export function StoreProvider({
     children,
@@ -86,6 +28,9 @@ export function StoreProvider({
     config: StoreConfig;
     categories: Category[];
 }) {
+    // Track previous theme colors to avoid unnecessary updates
+    const prevThemeRef = useRef<string | null>(null);
+
     // Hydrate cart store on mount (order store rehydrates automatically)
     useEffect(() => {
         useCartStore.persist.rehydrate();
@@ -98,62 +43,37 @@ export function StoreProvider({
         const { primary_color: primary, secondary_color: secondary } =
             config.theme;
 
-        const updateVar = (name: string, val?: string) => {
-            if (val && isValidColor(val)) root.style.setProperty(name, val);
-        };
+        // Create a unique key from theme colors to detect changes
+        const themeKey = `${primary || ''}|${secondary || ''}`;
 
-        // Set base theme colors
-        updateVar('--primary', primary);
-        updateVar('--secondary', secondary);
+        // Skip update if theme hasn't changed (optimization)
+        // Server-side ThemeStyles already sets these, so this is mainly for dynamic updates
+        if (prevThemeRef.current === themeKey) {
+            return;
+        }
+        prevThemeRef.current = themeKey;
 
-        // Calculate and set primary color variations
-        if (primary && isValidColor(primary)) {
-            // Convert to RGB format for better Tailwind opacity modifier compatibility
-            const rgb = hexToRgb(primary);
-            if (rgb) {
-                // Set theme-primary in RGB format for Tailwind opacity modifiers
-                updateVar('--theme-primary', `${primary}`);
-                // Also set RGB values for advanced usage
-                updateVar('--theme-primary-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
-            } else {
-                // Fallback to hex if conversion fails
-                updateVar('--theme-primary', primary);
+        // Generate all theme variables using shared utility
+        const variables = generateThemeVariables(primary, secondary);
+
+        // Apply all CSS variables
+        Object.entries(variables).forEach(([key, value]) => {
+            if (value && isValidColor(value)) {
+                root.style.setProperty(`--${key}`, value);
             }
-            
-            // Hover state (darken by ~4% for conventional, subtle hover)
-            // This creates a subtle darkening that works well with all colors
-            // For buttons, we'll use brightness filter instead for better results
-            const primaryHover = darkenColor(primary, 0.04);
-            updateVar('--primary-hover', primaryHover);
-            updateVar('--theme-primary-hover', primaryHover);
+        });
 
-            // Light tints with opacity (for backward compatibility)
-            updateVar('--primary-light', colorWithOpacity(primary, 0.1));
-            updateVar('--primary-lighter', colorWithOpacity(primary, 0.05));
-            updateVar('--primary-border', colorWithOpacity(primary, 0.3));
-            
-            // Tinted background: white blended with 10% primary color
-            // This creates the effect: white background with 10% primary overlay
-            const tintedBg = blendWithWhite(primary, 0.1);
-            updateVar('--theme-primary-tint', tintedBg);
-
-            // Update theme-color meta tag
+        // Update theme-color meta tag
+        if (primary && isValidColor(primary)) {
             const meta = document.querySelector('meta[name="theme-color"]');
             if (meta) meta.setAttribute('content', primary);
         }
 
-        // Cleanup function
+        // Cleanup function (only runs on unmount or theme change)
         return () => {
-            root.style.removeProperty('--primary');
-            root.style.removeProperty('--secondary');
-            root.style.removeProperty('--theme-primary');
-            root.style.removeProperty('--theme-primary-rgb');
-            root.style.removeProperty('--primary-hover');
-            root.style.removeProperty('--theme-primary-hover');
-            root.style.removeProperty('--primary-light');
-            root.style.removeProperty('--primary-lighter');
-            root.style.removeProperty('--primary-border');
-            root.style.removeProperty('--theme-primary-tint');
+            Object.keys(variables).forEach((key) => {
+                root.style.removeProperty(`--${key}`);
+            });
         };
     }, [config]);
 
