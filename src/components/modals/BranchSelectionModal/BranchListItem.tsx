@@ -37,7 +37,7 @@ export const BranchListItem: React.FC<BranchListItemProps> = ({
             onClick={onClick}
             onKeyDown={onKeyDown}
             className={cn(
-                'group p-4 md:p-6 rounded-2xl md:rounded-3xl border-2 transition-all duration-300 cursor-pointer relative focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-2',
+                'group p-3 md:p-6 rounded-2xl md:rounded-3xl border-2 transition-all duration-300 cursor-pointer relative focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-2',
                 isSelected
                     ? 'border-theme-primary bg-linear-to-br from-theme-primary/10 to-theme-primary/5 shadow-xl shadow-theme-primary/10 z-10'
                     : 'border-gray-50 bg-white hover:border-gray-200 hover:shadow-lg hover:shadow-gray-100',
@@ -47,26 +47,26 @@ export const BranchListItem: React.FC<BranchListItemProps> = ({
             aria-label={`${branch.name || 'Branch'}, ${
                 branch.is_open ? t('open') : t('closed')
             }`}>
-            <div className="flex items-center justify-between gap-3 md:gap-6">
-                <div className="flex items-center gap-3 md:gap-5 flex-1 min-w-0">
+            <div className="flex items-center justify-between gap-2 md:gap-6">
+                <div className="flex items-center gap-2.5 md:gap-5 flex-1 min-w-0">
                     <div
                         className={cn(
-                            'w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl flex items-center justify-center shrink-0 transition-all duration-500 overflow-hidden',
+                            'w-10 h-10 md:w-16 md:h-16 rounded-lg md:rounded-2xl flex items-center justify-center shrink-0 transition-all duration-500 overflow-hidden',
                             isSelected
                                 ? 'bg-theme-primary text-white scale-105 shadow-lg shadow-theme-primary/30'
                                 : 'bg-gray-50 text-gray-400 group-hover:bg-theme-primary/10 group-hover:text-theme-primary',
                         )}
                         aria-hidden="true">
-                        <Building2 className="size-6 md:size-8 transition-transform duration-500 group-hover:scale-110" />
+                        <Building2 className="size-5 md:size-8 transition-transform duration-500 group-hover:scale-110" />
                     </div>
                     <div className="flex flex-col justify-center min-w-0 flex-1">
-                        <h4 className="font-bold text-gray-900 text-base md:text-xl truncate mb-0.5 md:mb-1.5 transition-colors duration-300 group-hover:text-theme-primary">
+                        <h4 className="font-bold text-gray-900 text-sm md:text-xl truncate mb-0.5 md:mb-1.5 transition-colors duration-300 group-hover:text-theme-primary">
                             {branch.name || 'Branch'}
                         </h4>
                         <div className="flex flex-wrap items-center gap-y-1 gap-x-2 md:gap-x-3">
                             <span
                                 className={cn(
-                                    'text-[8px] md:text-[10px] font-black uppercase tracking-wider px-2 py-0.5 md:py-1 rounded-full shadow-sm',
+                                    'text-[7px] md:text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 md:py-1 rounded-full shadow-sm',
                                     branch.is_open
                                         ? 'text-green-600 bg-green-50/80 backdrop-blur-sm'
                                         : 'text-gray-400 bg-gray-50',
@@ -78,7 +78,7 @@ export const BranchListItem: React.FC<BranchListItemProps> = ({
                                 aria-hidden="true"
                             />
                             {branch.services && (
-                                <span className="text-xs md:text-sm text-gray-500 font-medium whitespace-nowrap">
+                                <span className="text-[10px] md:text-sm text-gray-500 font-medium whitespace-nowrap">
                                     {branch.services.shipping_enabled
                                         ? t('free_delivery')
                                         : t('delivery_with_fee', { fee: 5 })}
@@ -88,20 +88,20 @@ export const BranchListItem: React.FC<BranchListItemProps> = ({
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2 md:gap-3 shrink-0">
+                <div className="flex items-center gap-1.5 md:gap-3 shrink-0">
                     <button
                         onClick={onWorkingHoursClick}
-                        className="w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-gray-50/50 backdrop-blur-sm flex items-center justify-center text-gray-400 hover:bg-theme-primary hover:text-white transition-all duration-300 active:scale-90 shadow-sm border border-gray-100/50"
+                        className="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-gray-50/50 backdrop-blur-sm flex items-center justify-center text-gray-400 hover:bg-theme-primary hover:text-white transition-all duration-300 active:scale-90 shadow-sm border border-gray-100/50"
                         aria-label={`${t('view_working_hours') || 'View working hours'} - ${branch.name}`}
                         title={t('view_working_hours') || 'View working hours'}>
-                        <Clock className="size-5 md:size-[22px]" />
+                        <Clock className="size-4 md:size-[22px]" />
                     </button>
                     <button
                         onClick={onContactClick}
-                        className="w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-gray-50/50 backdrop-blur-sm flex items-center justify-center text-gray-400 hover:bg-theme-primary hover:text-white transition-all duration-300 active:scale-90 shadow-sm border border-gray-100/50"
+                        className="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-gray-50/50 backdrop-blur-sm flex items-center justify-center text-gray-400 hover:bg-theme-primary hover:text-white transition-all duration-300 active:scale-90 shadow-sm border border-gray-100/50"
                         aria-label={`${t('contact_branch') || 'Contact branch'} - ${branch.name}`}
                         title={t('contact_branch') || 'Contact branch'}>
-                        <Headphones className="size-5 md:size-[22px]" />
+                        <Headphones className="size-4 md:size-[22px]" />
                     </button>
                 </div>
             </div>
