@@ -65,12 +65,28 @@ export function blendWithWhite(hex: string, percentage: number): string {
 
 /**
  * Validates if a string is a valid color (hex or rgb)
+ * Client-side: Permissive validation for flexibility
  */
 export function isValidColor(color: string): boolean {
     return (
         /^#([A-Fa-f0-9]{3}){1,2}$/.test(color) ||
         /^rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)$/.test(color)
     );
+}
+
+/**
+ * Strict validation for server-side use (security best practice).
+ * Only allows 6-digit hex colors (#RRGGBB).
+ * 
+ * Why strict on server?
+ * - Backend data is not trusted, even if "internal"
+ * - Prevents edge cases: 3-digit hex, hsl(), transparent, malformed strings
+ * - Server should fail fast on invalid data
+ * 
+ * Client can stay flexible, server must be strict.
+ */
+export function isValidColorStrict(color: string): boolean {
+    return /^#[0-9A-Fa-f]{6}$/.test(color);
 }
 
 /**

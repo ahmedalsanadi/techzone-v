@@ -69,12 +69,12 @@ export function StoreProvider({
             if (meta) meta.setAttribute('content', primary);
         }
 
-        // Cleanup function (only runs on unmount or theme change)
-        return () => {
-            Object.keys(variables).forEach((key) => {
-                root.style.removeProperty(`--${key}`);
-            });
-        };
+        // No cleanup function - themes are global document state, not component lifecycle
+        // Removing CSS variables on unmount could break server-injected vars if:
+        // - Provider unmounts due to navigation
+        // - Error boundary remounts
+        // - Layout nesting changes
+        // Themes persist across component lifecycle and should only change on explicit tenant switch
     }, [config]);
 
     return (
