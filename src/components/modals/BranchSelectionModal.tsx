@@ -40,7 +40,13 @@ const BranchMap = dynamic(() => import('./BranchMap'), {
 const BranchSelectionModal: React.FC = () => {
     const t = useTranslations('Branches');
     const router = useRouter();
-    const { setSelectedBranch, isModalOpen, setModalOpen } = useBranchStore();
+    const {
+        setSelectedBranch,
+        isModalOpen,
+        setModalOpen,
+        selectedBranchId,
+        hasSelectedOnce,
+    } = useBranchStore();
 
     const [hoveredBranchId, setHoveredBranchId] = useState<number | null>(null);
     const [showWorkingHours, setShowWorkingHours] = useState<Branch | null>(
@@ -107,8 +113,9 @@ const BranchSelectionModal: React.FC = () => {
         if (!isModalOpen) return;
 
         const handleKeyDown = (e: KeyboardEvent) => {
-            // Close on Escape
+            // Close on Escape - Only if dismissible
             if (e.key === 'Escape') {
+                if (!selectedBranchId && !hasSelectedOnce) return;
                 setModalOpen(false);
                 return;
             }
@@ -197,7 +204,11 @@ const BranchSelectionModal: React.FC = () => {
             {/* Backdrop */}
             <div
                 className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-md p-4 md:p-8 animate-in fade-in duration-500"
-                onClick={() => setModalOpen(false)}
+                onClick={() => {
+                    if (selectedBranchId || hasSelectedOnce) {
+                        setModalOpen(false);
+                    }
+                }}
                 role="presentation"
             />
 
@@ -214,13 +225,17 @@ const BranchSelectionModal: React.FC = () => {
                     <div className="w-full md:w-[400px] flex flex-col bg-white border-r border-gray-100 p-8 shadow-2xl">
                         {/* Header */}
                         <div className="flex items-center justify-between mb-8">
-                            <button
-                                ref={closeButtonRef}
-                                onClick={() => setModalOpen(false)}
-                                className="w-10 h-10 flex items-center justify-center rounded-2xl bg-gray-50 text-gray-400 hover:bg-gray-100 transition-all focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-2"
-                                aria-label={t('close_modal') || 'Close modal'}>
-                                <ChevronRight size={20} />
-                            </button>
+                            {(selectedBranchId || hasSelectedOnce) && (
+                                <button
+                                    ref={closeButtonRef}
+                                    onClick={() => setModalOpen(false)}
+                                    className="w-10 h-10 flex items-center justify-center rounded-2xl bg-gray-50 text-gray-400 hover:bg-gray-100 transition-all focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-2"
+                                    aria-label={
+                                        t('close_modal') || 'Close modal'
+                                    }>
+                                    <ChevronRight size={20} />
+                                </button>
+                            )}
                             <h2
                                 id="branch-modal-title"
                                 className="text-xl font-black text-gray-900">
