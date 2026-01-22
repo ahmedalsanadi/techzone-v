@@ -228,6 +228,11 @@ export default function AddonSelector({
                                             + {item.extra_price}
                                         </span>
                                         <CurrencySymbol className="w-4 h-4" />
+                                        {item.multiply_price_by_quantity && (
+                                            <span className="text-[10px] font-medium text-gray-500">
+                                                ({t('perQuantity') || 'لكل كمية'})
+                                            </span>
+                                        )}
                                     </div>
 
                                     <div className="flex items-center gap-2 bg-[#F1F3F5] p-1 rounded-lg shadow-inner">
@@ -298,18 +303,20 @@ export default function AddonSelector({
                                             {item.description}
                                         </p>
                                     )}
-                                    {item.max_quantity !== null && (
-                                        <p className="text-[10px] font-bold text-gray-400 bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100/50 mt-0.5 w-fit">
-                                            {t('maxQuantity') || 'Max'}: {item.max_quantity}
-                                        </p>
-                                    )}
                                 </div>
                             </div>
                             <div className="flex items-center gap-1.5">
-                                <span className="text-md font-bold text-gray-900 leading-none">
-                                    + {item.extra_price}
-                                </span>
-                                <CurrencySymbol className="w-4 h-4" />
+                                <div className="flex items-center gap-1">
+                                    <span className="text-md font-bold text-gray-900 leading-none">
+                                        + {item.extra_price}
+                                    </span>
+                                    <CurrencySymbol className="w-4 h-4" />
+                                    {item.multiply_price_by_quantity && addonGroup.input_type === 'number' && (
+                                        <span className="text-[10px] font-medium text-gray-500">
+                                            ({t('perQuantity') || 'لكل كمية'})
+                                        </span>
+                                    )}
+                                </div>
                             </div>
                             <input
                                 type="checkbox"

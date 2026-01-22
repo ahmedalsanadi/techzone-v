@@ -68,18 +68,17 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 selectedCount = Object.values(items).reduce((sum, qty) => sum + qty, 0);
             }
 
-            // Check required groups
-            if (addonGroup.is_required && selectedCount < addonGroup.min_selected) {
-                errors.push(
-                    `${addonGroup.name}: ${t('minSelectionRequired', { count: addonGroup.min_selected }) || `Please select at least ${addonGroup.min_selected} item(s)`}`
-                );
-            }
-
-            // Check min_selected constraint
-            if (selectedCount < addonGroup.min_selected) {
-                errors.push(
-                    `${addonGroup.name}: ${t('minSelectionRequired', { count: addonGroup.min_selected }) || `Minimum ${addonGroup.min_selected} selection(s) required`}`
-                );
+            // Check min_selected constraint (only if required or min_selected > 0)
+            if (addonGroup.min_selected > 0 && selectedCount < addonGroup.min_selected) {
+                if (addonGroup.is_required) {
+                    errors.push(
+                        `${addonGroup.name}: ${t('minSelectionRequired', { count: addonGroup.min_selected }) || `Please select at least ${addonGroup.min_selected} item(s)`}`
+                    );
+                } else {
+                    errors.push(
+                        `${addonGroup.name}: ${t('minSelectionRequired', { count: addonGroup.min_selected }) || `Minimum ${addonGroup.min_selected} selection(s) required`}`
+                    );
+                }
             }
 
             // Check max_selected constraint
