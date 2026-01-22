@@ -29,6 +29,15 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
+## Technical Documentation
+
+This project contains detailed documentation for specific features:
+
+- **[Checkout & Order Flow](CHECKOUT_FLOW.md)**: Detailed explanation of how addresses, map searching, and order types are managed.
+- **[API Documentation](API_DOC.md)**: Details about backend integrations.
+- **[Theme Guide](THEME_GUIDE.md)**: Styling and design system information.
+- **[Cart & Wishlist](CART_WISHLIST_API.md)**: Logic for cart management.
+
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
