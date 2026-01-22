@@ -115,12 +115,12 @@ const BranchSelectionModal: React.FC = () => {
                         />
 
                         {/* Footer Action */}
-                        <div className="pt-4 md:pt-6 border-t border-gray-100">
+                        <div className="pt-3.5 md:pt-6 border-t border-gray-100">
                             <button
                                 onClick={handleConfirmSelection}
                                 disabled={!tempSelectedBranch}
                                 className={cn(
-                                    'w-full py-4 md:py-5 rounded-3xl md:rounded-4xl font-black text-lg md:text-xl shadow-xl transition-all duration-300',
+                                    'w-full py-3.5 md:py-5 rounded-2xl md:rounded-4xl font-black text-base md:text-xl shadow-xl transition-all duration-300',
                                     tempSelectedBranch
                                         ? 'bg-theme-primary text-white hover:brightness-[1.05] active:scale-[0.98] shadow-theme-primary/30'
                                         : 'bg-gray-100 text-gray-400 cursor-not-allowed',
