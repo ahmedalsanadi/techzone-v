@@ -59,7 +59,8 @@ export default function SubHeader() {
         { id: 'delivery', label: t('delivery') },
     ];
 
-    const activeStyle = 'bg-theme-primary/5 text-theme-primary border-theme-primary-border';
+    const activeStyle =
+        'bg-theme-primary/5 text-theme-primary border-theme-primary-border';
     const inactiveStyle = 'bg-gray-50 text-gray-500 hover:border-gray-200';
 
     return (
@@ -94,7 +95,10 @@ export default function SubHeader() {
                                 <div className="flex items-center gap-2 text-sm text-gray-700">
                                     <MapPin className="w-4 h-4 text-theme-primary" />
                                     <span>
-                                        {t('deliveryTo')} {deliveryAddress.name}{' '}
+                                        {t('deliveryTo')}{' '}
+                                        <span className="font-bold">
+                                            ({deliveryAddress.name})
+                                        </span>{' '}
                                         {deliveryAddress.formatted}
                                     </span>
                                 </div>
@@ -166,7 +170,10 @@ export default function SubHeader() {
                                 <MapPin className="w-4 h-4 text-libero-red shrink-0 mt-0.5" />
                                 <div className="flex-1">
                                     <span className="font-medium">
-                                        {t('deliveryTo')} {deliveryAddress.name}
+                                        {t('deliveryTo')}{' '}
+                                        <span className="text-theme-primary font-bold">
+                                            ({deliveryAddress.name})
+                                        </span>
                                     </span>
                                     <p className="text-gray-600 text-xs mt-1">
                                         {deliveryAddress.formatted}

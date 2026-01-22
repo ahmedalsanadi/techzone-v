@@ -255,10 +255,10 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                             <div className="flex items-start gap-3">
                                                 <MapPin className="w-5 h-5 text-theme-primary shrink-0 mt-0.5" />
                                                 <div className="flex-1">
-                                                    <p className="text-sm font-medium text-gray-900 mb-1">
-                                                        {deliveryAddress.name}
+                                                    <p className="text-sm font-bold text-theme-primary mb-1">
+                                                        ({deliveryAddress.name})
                                                     </p>
-                                                    <p className="text-sm text-gray-600">
+                                                    <p className="text-sm text-gray-700 leading-relaxed">
                                                         {
                                                             deliveryAddress.formatted
                                                         }

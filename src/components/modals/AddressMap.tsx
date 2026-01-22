@@ -2,7 +2,13 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
+import {
+    MapContainer,
+    TileLayer,
+    Marker,
+    useMapEvents,
+    useMap,
+} from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { DEFAULT_MAP_ZOOM } from '@/lib/branches';
@@ -42,13 +48,21 @@ const MapClickHandler = ({
     onLocationSelect: (location: [number, number], formatted: string) => void;
 }) => {
     useMapEvents({
-        click: (e) => {
+        click: async (e) => {
             const { lat, lng } = e.latlng;
-            // Reverse geocode to get formatted address
-            // For now, we'll use a simple format
-            // TODO: Integrate with geocoding API when available
-            const formatted = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-            onLocationSelect([lat, lng], formatted);
+            try {
+                const response = await fetch(
+                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ar`,
+                );
+                const data = await response.json();
+                const formatted =
+                    data.display_name || `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                onLocationSelect([lat, lng], formatted);
+            } catch (error) {
+                console.error('Reverse geocoding error:', error);
+                const formatted = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                onLocationSelect([lat, lng], formatted);
+            }
         },
     });
     return null;
@@ -86,9 +100,10 @@ const AddressMap: React.FC<AddressMapProps> = ({
     searchQuery,
 }) => {
     const [mounted, setMounted] = useState(false);
-    const [selectedLocation, setSelectedLocation] = useState<[number, number] | null>(
-        center,
-    );
+    const [selectedLocation, setSelectedLocation] = useState<
+        [number, number] | null
+    >(center);
+    const [mapCenter, setMapCenter] = useState<[number, number]>(center);
 
     useEffect(() => {
         setMounted(true);
@@ -97,21 +112,46 @@ const AddressMap: React.FC<AddressMapProps> = ({
     useEffect(() => {
         if (center) {
             setSelectedLocation(center);
+            setMapCenter(center);
         }
     }, [center]);
 
-    // Handle geocoding search query
+    // Handle geocoding search query with debounce
     useEffect(() => {
-        if (searchQuery && searchQuery.trim()) {
-            // TODO: Integrate with geocoding API
-            // For now, we'll just log it
-            console.log('Searching for:', searchQuery);
-        }
-    }, [searchQuery]);
+        if (!searchQuery || !searchQuery.trim()) return;
+
+        const timer = setTimeout(async () => {
+            try {
+                // Search specifically in Saudi Arabia for better relevance if possible,
+                // but keep it general for now as requested.
+                const response = await fetch(
+                    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+                        searchQuery,
+                    )}&limit=1&accept-language=ar`,
+                );
+                const data = await response.json();
+                if (data && data.length > 0) {
+                    const { lat, lon, display_name } = data[0];
+                    const newLocation: [number, number] = [
+                        parseFloat(lat),
+                        parseFloat(lon),
+                    ];
+                    setMapCenter(newLocation);
+                    setSelectedLocation(newLocation);
+                    onLocationSelect(newLocation, display_name);
+                }
+            } catch (error) {
+                console.error('Geocoding error:', error);
+            }
+        }, 800); // 800ms debounce
+
+        return () => clearTimeout(timer);
+    }, [searchQuery, onLocationSelect]);
 
     const handleLocationSelect = useCallback(
         (location: [number, number], formatted: string) => {
             setSelectedLocation(location);
+            setMapCenter(location);
             onLocationSelect(location, formatted);
         },
         [onLocationSelect],
@@ -128,7 +168,7 @@ const AddressMap: React.FC<AddressMapProps> = ({
 
     return (
         <MapContainer
-            center={center}
+            center={mapCenter}
             zoom={DEFAULT_MAP_ZOOM}
             className="w-full h-full rounded-2xl"
             style={{ height: '100%', width: '100%', zIndex: 0 }}
@@ -138,12 +178,10 @@ const AddressMap: React.FC<AddressMapProps> = ({
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <ChangeView center={center} />
+            <ChangeView center={mapCenter} />
             <MapSizeInvalidator />
             <MapClickHandler onLocationSelect={handleLocationSelect} />
-            {selectedLocation && (
-                <Marker position={selectedLocation} />
-            )}
+            {selectedLocation && <Marker position={selectedLocation} />}
         </MapContainer>
     );
 };

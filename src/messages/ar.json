@@ -42,6 +42,18 @@
     "noAddressSelected": "لم يتم تحديد عنوان",
     "edit": "تعديل"
   },
+  "Checkout": {
+    "orderTypeAndTime": "نوع الطلب ووقته",
+    "edit": "تعديل",
+    "deliveryTo": "توصيل إلى",
+    "pickupBranch": "فرع الاستلام",
+    "pleaseSelectAddress": "الرجاء اختيار عنوان",
+    "pleaseSelectBranch": "الرجاء اختيار فرع",
+    "deliveryTime": "وقت التوصيل",
+    "pickupTime": "وقت الاستلام",
+    "now": "الآن",
+    "later": "لاحقاً"
+  },
   "Order": {
     "orderType": "نوع الطلب",
     "selectOrderType": "حدد نوع الطلب",

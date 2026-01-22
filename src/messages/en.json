@@ -42,6 +42,18 @@
     "noAddressSelected": "No address selected",
     "edit": "Edit"
   },
+  "Checkout": {
+    "orderTypeAndTime": "Order Type & Time",
+    "edit": "Edit",
+    "deliveryTo": "Delivery to",
+    "pickupBranch": "Pickup Branch",
+    "pleaseSelectAddress": "Please select an address",
+    "pleaseSelectBranch": "Please select a branch",
+    "deliveryTime": "Delivery Time",
+    "pickupTime": "Pickup Time",
+    "now": "Now",
+    "later": "Later"
+  },
   "Order": {
     "orderType": "Order Type",
     "selectOrderType": "Select order type",

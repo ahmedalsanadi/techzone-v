@@ -35,13 +35,7 @@ export default function CheckoutPage() {
             <div className="flex flex-col lg:flex-row gap-4 md:gap-6">
                 {/* Right Section */}
                 <div className="flex-1 space-y-4">
-                    <OrderTypeCard
-                        addressLabel="توصيل إلى"
-                        deliveryType="المنزل"
-                        address="حي اليرموك، شارع النجاح، منزل رقم 42، الرياض 13243"
-                        date="25/11/2025"
-                        time="4:30 م"
-                    />
+                    <OrderTypeCard />
 
                     <WalletDiscountCard balance="20 ﷼" selected="yes" />
 
