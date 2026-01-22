@@ -8,8 +8,7 @@ import CouponCard from './components/CouponCard';
 import OrderSummaryCard from './components/OrderSummaryCard';
 
 export default function CheckoutPage() {
-
-    //fetch data can be here for server later 
+    //fetch data can be here for server later
     const paymentMethods = [
         { id: 1, name: 'STC', isSelected: true },
         { id: 2, name: 'PayPal', isSelected: false },
@@ -17,21 +16,23 @@ export default function CheckoutPage() {
     ];
 
     return (
-        <div className="container mx-auto min-h-screen py-12 px-2 md:px-6 space-y-8">
+        <div className="container mx-auto min-h-screen py-6 md:py-12 px-4 sm:px-6 space-y-6 md:space-y-8">
             {/* Breadcrumb */}
-            <Breadcrumbs
-                items={[
-                    { label: 'الرئيسية', href: '/' },
-                    { label: 'السلة', href: '/cart' },
-                    { label: 'الدفع', href: '/checkout' },
-                ]}
-            />
+            <div className="hidden sm:block">
+                <Breadcrumbs
+                    items={[
+                        { label: 'الرئيسية', href: '/' },
+                        { label: 'السلة', href: '/cart' },
+                        { label: 'الدفع', href: '/checkout' },
+                    ]}
+                />
+            </div>
 
             {/* Page Title */}
-            <h1 className="text-2xl sm:text-3xl font-bold">الدفع</h1>
+            <h1 className="text-xl sm:text-3xl font-bold">الدفع</h1>
 
             {/* Main Layout */}
-            <div className="flex flex-col lg:flex-row gap-6">
+            <div className="flex flex-col lg:flex-row gap-4 md:gap-6">
                 {/* Right Section */}
                 <div className="flex-1 space-y-4">
                     <OrderTypeCard

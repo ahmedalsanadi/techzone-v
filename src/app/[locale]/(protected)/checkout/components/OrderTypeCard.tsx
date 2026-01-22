@@ -29,25 +29,40 @@ export default function OrderTypeCard({
                     <ChevronLeft className="w-4 h-4" />
                 </button>
             }>
-            <div className="text-md space-y-3">
+            <div className="text-md space-y-4">
                 <div className="flex items-start gap-3">
-                    <MapPin className="w-5 h-5 text-gray-400 mt-0.5" />
-                    <div className="flex flex-wrap gap-1">
-                        <span className="text-gray-600">{addressLabel}</span>
-                        <span className="text-red-600 font-medium">
-                            {deliveryType}
+                    <div className="mt-1 p-2 bg-gray-50 rounded-lg">
+                        <MapPin className="w-5 h-5 text-red-600" />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                            <span className="text-gray-500 text-sm font-medium">
+                                {addressLabel}
+                            </span>
+                            <span className="bg-red-50 text-red-600 text-xs px-2 py-0.5 rounded-full font-bold">
+                                {deliveryType}
+                            </span>
+                        </div>
+                        <span className="text-gray-800 font-medium leading-relaxed">
+                            {address}
                         </span>
-                        <span className="text-gray-600">{address}</span>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                    <Clock className="w-5 h-5 text-gray-400" />
-                    <div className="flex items-center gap-1">
-                        <span className="text-red-600 font-medium">لاحقاً</span>
-                        <span className="text-gray-600">{date}</span>
-                        <span className="text-gray-400">،</span>
-                        <span className="text-gray-600">{time}</span>
+                <div className="flex items-start gap-3">
+                    <div className="mt-1 p-2 bg-gray-50 rounded-lg">
+                        <Clock className="w-5 h-5 text-red-600" />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                        <span className="text-gray-500 text-sm font-medium">
+                            وقت التوصيل
+                        </span>
+                        <div className="flex items-center gap-1.5 text-gray-800 font-medium">
+                            <span className="text-red-600">لاحقاً</span>
+                            <span>{date}</span>
+                            <span className="text-gray-300">|</span>
+                            <span>{time}</span>
+                        </div>
                     </div>
                 </div>
             </div>

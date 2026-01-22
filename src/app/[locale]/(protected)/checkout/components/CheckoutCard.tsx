@@ -12,11 +12,13 @@ export default function CheckoutCard({
     children,
 }: CheckoutCardProps) {
     return (
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
             {(title || action) && (
                 <div className="flex items-center justify-between mb-6">
                     {title && (
-                        <h2 className="text-xl font-bold">{title}</h2>
+                        <h2 className="text-lg sm:text-xl font-bold text-gray-800">
+                            {title}
+                        </h2>
                     )}
                     {action}
                 </div>

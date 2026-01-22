@@ -11,16 +11,15 @@ export default function WalletDiscountCard({
 }: WalletDiscountCardProps) {
     return (
         <CheckoutCard>
-            <div className="flex items-center justify-between mb-4">
-                <h2 className="text-md font-bold">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <h2 className="text-md sm:text-lg font-bold text-gray-800">
                     هل تريد خصم المبلغ من المحفظة؟
                 </h2>
-
-                <div className="inline-flex items-center gap-2 bg-gray-100 rounded-lg px-4 py-2">
-                    <span className="text-gray-600 text-sm">
+                <div className="inline-flex items-center gap-2 bg-gray-50 border border-gray-100 rounded-xl px-4 py-2 self-start sm:self-auto">
+                    <span className="text-gray-500 text-sm">
                         رصيدك في المحفظة:
                     </span>
-                    <span className="font-bold">{balance}</span>
+                    <span className="font-bold text-red-600">{balance}</span>
                 </div>
             </div>
 

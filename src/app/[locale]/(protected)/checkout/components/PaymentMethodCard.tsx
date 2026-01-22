@@ -27,15 +27,15 @@ export default function PaymentMethodCard({
                     <ChevronLeft className="w-4 h-4" />
                 </button>
             }>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-3 md:gap-4">
                 {methods.map((method) => (
                     <div
                         key={method.id}
-                        className={`w-20 h-14 flex items-center justify-center rounded-lg cursor-pointer transition-all hover:scale-105
+                        className={`group relative flex-1 min-w-[80px] sm:flex-none sm:w-24 h-14 flex items-center justify-center rounded-lg cursor-pointer transition-all hover:scale-105
                         ${
                             method.isSelected
-                                ? 'border-red-600 border-2'
-                                : 'border border-gray-300'
+                                ? 'border-red-600 border-2 bg-red-50'
+                                : 'border border-gray-300 hover:border-gray-400'
                         }`}>
                         <span className="text-purple-900 font-bold text-lg">
                             {method.name}
