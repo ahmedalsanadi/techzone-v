@@ -16,7 +16,7 @@ export const LoadingState: React.FC<LoadingStateProps> = React.memo(
             {Array.from({ length: count }).map((_, i) => (
                 <div
                     key={i}
-                    className="h-24 w-full bg-gray-50 animate-pulse rounded-3xl"
+                    className="h-20 md:h-24 w-full bg-gray-50 animate-pulse rounded-2xl md:rounded-3xl"
                     aria-label="Loading branch"
                 />
             ))}

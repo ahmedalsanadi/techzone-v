@@ -31,7 +31,11 @@ const WorkingHoursModal: React.FC<WorkingHoursModalProps> = ({
         } catch (error) {
             // Handle invalid working hours data gracefully
             if (process.env.NODE_ENV === 'development') {
-                console.warn('Invalid working hours data for branch:', branch.id, error);
+                console.warn(
+                    'Invalid working hours data for branch:',
+                    branch.id,
+                    error,
+                );
             }
             return [];
         }
@@ -111,27 +115,30 @@ const WorkingHoursModal: React.FC<WorkingHoursModalProps> = ({
                 aria-labelledby="working-hours-title"
                 className="fixed inset-0 z-60 flex items-center justify-center p-4 pointer-events-none"
                 onClick={handleBackdropClick}>
-                <div className="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 pointer-events-auto">
+                <div className="bg-white w-full max-w-md rounded-3xl md:rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 pointer-events-auto">
                     {/* Header */}
-                    <div className="p-6 flex items-center justify-between border-b border-gray-50">
-                        <div className="w-10 h-10" aria-hidden="true" />
+                    <div className="p-4 md:p-6 flex items-center justify-between border-b border-gray-50">
+                        <div
+                            className="w-8 h-8 md:w-10 md:h-10"
+                            aria-hidden="true"
+                        />
                         <h3
                             id="working-hours-title"
-                            className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                            <Clock size={20} className="text-theme-primary" />
-                            {t('working_hours')} - {branch.name}
+                            className="text-lg md:text-xl font-bold text-gray-800 flex items-center gap-2">
+                            <Clock className="size-5 md:size-[20px] text-theme-primary" />
+                            {t('working_hours')}
                         </h3>
                         <button
                             ref={closeButtonRef}
                             onClick={onClose}
-                            className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-all focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-2"
+                            className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-full bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-all focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-2"
                             aria-label={t('close_modal') || 'Close modal'}>
                             <X size={20} />
                         </button>
                     </div>
 
                     {/* Content */}
-                    <div className="p-6 space-y-3 max-h-[60vh] overflow-y-auto">
+                    <div className="p-4 md:p-6 space-y-2 md:space-y-3 max-h-[70vh] md:max-h-[60vh] overflow-y-auto">
                         {schedule.length === 0 ? (
                             <div className="flex flex-col items-center justify-center p-8 text-center">
                                 <AlertCircle className="w-12 h-12 text-gray-300 mb-4" />
@@ -144,16 +151,18 @@ const WorkingHoursModal: React.FC<WorkingHoursModalProps> = ({
                             schedule.map((item, idx) => (
                                 <div
                                     key={`${item.day}-${idx}`}
-                                    className="flex items-center justify-between py-3 px-4 rounded-2xl bg-gray-50/50 hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100">
-                                    <span className="font-bold text-gray-700">
+                                    className="flex items-center justify-between py-2 md:py-3 px-3 md:px-4 rounded-xl md:rounded-2xl bg-gray-50/50 hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100">
+                                    <span className="font-bold text-sm md:text-base text-gray-700">
                                         {t(`days.${item.day}`) || item.day}
                                     </span>
-                                    <div dir="ltr" className="flex gap-2 flex-wrap justify-end">
+                                    <div
+                                        dir="ltr"
+                                        className="flex gap-1.5 md:gap-2 flex-wrap justify-end">
                                         {item.hours.map((h, i) => (
                                             <span
                                                 key={i}
                                                 className={cn(
-                                                    'px-3 py-1 rounded-full text-xs font-bold border',
+                                                    'px-2 md:px-3 py-0.5 md:py-1 rounded-full text-[10px] md:text-xs font-bold border',
                                                     item.closed
                                                         ? 'bg-gray-100 text-gray-400 border-gray-200'
                                                         : 'bg-theme-primary/10 text-theme-primary border-theme-primary-border',

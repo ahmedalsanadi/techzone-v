@@ -91,7 +91,7 @@ const BranchMap: React.FC<BranchMapProps> = React.memo(
         }
 
         return (
-            <div className="w-full h-full rounded-3xl overflow-hidden border border-gray-100 shadow-inner">
+            <div className="w-full h-full rounded-2xl md:rounded-3xl overflow-hidden border border-gray-100 shadow-inner">
                 <MapContainer
                     center={center}
                     zoom={DEFAULT_MAP_ZOOM}

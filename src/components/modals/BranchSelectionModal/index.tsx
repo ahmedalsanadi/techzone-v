@@ -71,11 +71,16 @@ const BranchSelectionModal: React.FC = () => {
                 aria-labelledby="branch-modal-title"
                 className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8 pointer-events-none"
                 onClick={(e) => e.stopPropagation()}>
-                <div className="bg-white w-full max-w-6xl h-[90vh] md:h-[80vh] rounded-[3rem] shadow-2xl flex flex-col md:flex-row overflow-hidden relative animate-in zoom-in-95 duration-500 pointer-events-auto">
+                <div className="bg-white w-full max-w-6xl h-full md:h-[80vh] rounded-3xl md:rounded-[3rem] shadow-2xl flex flex-col md:flex-row overflow-hidden relative animate-in zoom-in-95 duration-500 pointer-events-auto">
                     {/* Branch list Side */}
-                    <div className="w-full md:w-[450px] flex flex-col bg-white border-r border-gray-100 p-8 shadow-2xl z-10">
+                    <div className="w-full md:w-[450px] flex flex-col bg-white border-b md:border-b-0 md:border-r border-gray-100 p-5 md:p-8 shadow-2xl z-10 overflow-hidden">
                         {/* Header */}
-                        <div className="flex items-center justify-between mb-8">
+                        <div className="flex items-center justify-between mb-4 md:mb-8">
+                            <h2
+                                id="branch-modal-title"
+                                className="text-lg md:text-xl font-black text-gray-900">
+                                {t('select_branch')}
+                            </h2>
                             {(selectedBranchId || hasSelectedOnce) && (
                                 <button
                                     ref={closeButtonRef}
@@ -87,11 +92,6 @@ const BranchSelectionModal: React.FC = () => {
                                     <ChevronRight size={20} />
                                 </button>
                             )}
-                            <h2
-                                id="branch-modal-title"
-                                className="text-xl font-black text-gray-900">
-                                {t('select_branch')}
-                            </h2>
                         </div>
 
                         {/* Branch List */}
@@ -115,12 +115,12 @@ const BranchSelectionModal: React.FC = () => {
                         />
 
                         {/* Footer Action */}
-                        <div className="pt-6 border-t border-gray-100">
+                        <div className="pt-4 md:pt-6 border-t border-gray-100">
                             <button
                                 onClick={handleConfirmSelection}
                                 disabled={!tempSelectedBranch}
                                 className={cn(
-                                    'w-full py-5 rounded-4xl font-black text-xl shadow-xl transition-all duration-300',
+                                    'w-full py-4 md:py-5 rounded-3xl md:rounded-4xl font-black text-lg md:text-xl shadow-xl transition-all duration-300',
                                     tempSelectedBranch
                                         ? 'bg-theme-primary text-white hover:brightness-[1.05] active:scale-[0.98] shadow-theme-primary/30'
                                         : 'bg-gray-100 text-gray-400 cursor-not-allowed',
@@ -131,7 +131,7 @@ const BranchSelectionModal: React.FC = () => {
                     </div>
 
                     {/* Map Side */}
-                    <div className="flex-1 h-1/2 md:h-auto relative p-6 bg-gray-50">
+                    <div className="flex-1 h-[250px] md:h-auto relative p-3 md:p-6 bg-gray-50">
                         <BranchMapContainer
                             branches={branches}
                             selectedBranchId={selectedBranchForMap}
