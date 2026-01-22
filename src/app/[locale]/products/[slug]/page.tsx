@@ -65,7 +65,7 @@ export default async function ProductPage({ params }: Props) {
     );
 
     return (
-        <div className="py-8">
+        <>
             {structuredData && (
                 <script
                     type="application/ld+json"
@@ -75,6 +75,6 @@ export default async function ProductPage({ params }: Props) {
                 />
             )}
             <ProductDetails product={product} />
-        </div>
+        </>
     );
 }

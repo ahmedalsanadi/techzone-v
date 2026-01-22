@@ -7,6 +7,7 @@ import ProductGallery from './product-details/ProductGallery';
 import ProductInfo from './product-details/ProductInfo';
 import ProductActionBar from './product-details/ProductActionBar';
 import AddonSelector from './product-details/AddonSelector';
+import ProductShareActions from './product-details/ProductShareActions';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import { useCartActions } from '@/hooks/useCartActions';
 import { Product } from '@/services/types';
@@ -212,36 +213,78 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     };
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <Breadcrumbs
-                items={[
-                    { label: t('home'), href: '/' },
-                    { label: t('products'), href: '/products' },
-                    { label: product.title },
-                ]}
-            />
+        <div className="flex flex-col gap-16 pb-24 relative pt-4 px-2 md:px-4">
+            <div className="flex flex-col gap-6">
+                {/* Breadcrumbs */}
+                <Breadcrumbs
+                    items={[
+                        { label: t('home'), href: '/' },
+                        { label: t('products'), href: '/products' },
+                        { label: product.title },
+                    ]}
+                />
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-8">
-                {/* Gallery */}
-                <ProductGallery images={images} />
+                {/* Top Section: Info & Image */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-stretch">
+                    {/* Info Column */}
+                    <div className="lg:col-span-7 flex flex-col gap-8 order-2">
+                        <ProductShareActions />
+                        <ProductInfo
+                            name={product.title}
+                            subtitle={product.subtitle}
+                            description={product.description}
+                            price={Number(currentPrice)}
+                            originalPrice={
+                                product.has_discount
+                                    ? Number(product.price)
+                                    : undefined
+                            }
+                            calories={product.calories}
+                            prepTime={product.prepTime}
+                            categories={product.categories}
+                        />
 
-                {/* Product Info */}
-                <div className="space-y-6">
-                    <ProductInfo
-                        name={product.title}
-                        subtitle={product.subtitle}
-                        description={product.description}
-                        price={Number(currentPrice)}
-                        originalPrice={
-                            product.has_discount
-                                ? Number(product.price)
-                                : undefined
-                        }
-                        calories={product.calories}
-                        categories={product.categories}
-                    />
+                        {/* Notes */}
+                        <div className="space-y-2">
+                            <label className="block text-sm font-medium">
+                                {t('notes')}
+                            </label>
+                            <textarea
+                                value={notes}
+                                onChange={(e) => setNotes(e.target.value)}
+                                placeholder={t('addNotes')}
+                                rows={3}
+                                className="w-full p-3 border rounded-lg resize-none"
+                            />
+                        </div>
 
-                    {/* Addons */}
+                        {/* Action Bar */}
+                        <ProductActionBar
+                            totalPrice={calculateTotalPrice()}
+                            originalPrice={
+                                product.has_discount
+                                    ? Number(product.price) * quantity
+                                    : undefined
+                            }
+                            quantity={quantity}
+                            setQuantity={setQuantity}
+                            onAddToCart={handleAddToCart}
+                            isAvailable={product.is_available && validation.isValid}
+                        />
+                    </div>
+
+                    {/* Gallery Column */}
+                    <div className="lg:col-span-5 order-1">
+                        <div className="sticky top-24">
+                            <ProductGallery images={images} />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Customization Grid */}
+            {(product.addons || []).length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {(product.addons || []).map((addonGroup) => (
                         <AddonSelector
                             key={addonGroup.id}
@@ -252,31 +295,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                             }
                         />
                     ))}
-
-                    {/* Notes */}
-                    <div className="space-y-2">
-                        <label className="block text-sm font-medium">
-                            {t('notes')}
-                        </label>
-                        <textarea
-                            value={notes}
-                            onChange={(e) => setNotes(e.target.value)}
-                            placeholder={t('addNotes')}
-                            rows={3}
-                            className="w-full p-3 border rounded-lg resize-none"
-                        />
-                    </div>
-
-                    {/* Action Bar */}
-                    <ProductActionBar
-                        totalPrice={calculateTotalPrice()}
-                        quantity={quantity}
-                        setQuantity={setQuantity}
-                        onAddToCart={handleAddToCart}
-                        isAvailable={product.is_available && validation.isValid}
-                    />
                 </div>
-            </div>
+            )}
         </div>
     );
 }

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useTranslations } from 'next-intl';
-import { Plus, Minus, AlertCircle } from 'lucide-react';
+import { Plus, Minus, AlertCircle, Check, Trash2 } from 'lucide-react';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
 import { cn } from '@/lib/utils';
 
@@ -138,30 +138,40 @@ export default function AddonSelector({
 
     return (
         <div className={cn(
-            "space-y-4 p-4 border rounded-xl bg-white shadow-sm",
+            "border border-gray-100 rounded-2xl bg-white p-5 sm:p-6 flex flex-col gap-4 h-fit shadow-sm",
             validationError && "border-red-200 bg-red-50/30"
         )}>
-            <div className="flex justify-between items-start">
-                <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                        <h3 className="font-bold text-gray-900">
-                            {addonGroup.name}
-                        </h3>
+            <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2.5">
+                        <h3 className="text-lg font-bold text-gray-900">{addonGroup.name}</h3>
                         {addonGroup.is_required && (
-                            <span className="text-[10px] bg-red-50 text-red-500 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                            <span className={cn(
+                                "text-xs font-bold px-2.5 py-0.5 rounded-full",
+                                "bg-red-50 text-red-700"
+                            )}>
                                 {t('required')}
+                            </span>
+                        )}
+                        {!addonGroup.is_required && (
+                            <span className={cn(
+                                "text-xs font-bold px-2.5 py-0.5 rounded-full",
+                                "bg-gray-100 text-gray-700"
+                            )}>
+                                {t('optional')}
                             </span>
                         )}
                     </div>
                     {addonGroup.description && (
-                        <p className="text-sm text-gray-500 mt-1">
-                            {addonGroup.description}
-                        </p>
+                        <p className="text-sm text-gray-500 font-medium">{addonGroup.description}</p>
                     )}
                     {/* Selection count indicator */}
                     {addonGroup.max_selected !== null && (
                         <p className="text-xs text-gray-400 mt-1">
-                            {selectedCount} / {addonGroup.max_selected} {t('selected') || 'selected'}
+                            {t('maxAddons', {
+                                max: addonGroup.max_selected,
+                                current: selectedCount,
+                            }) || `${selectedCount} / ${addonGroup.max_selected} ${t('selected') || 'selected'}`}
                         </p>
                     )}
                     {addonGroup.min_selected > 0 && (
@@ -171,18 +181,19 @@ export default function AddonSelector({
                     )}
                 </div>
             </div>
+            <div className="pt-1">
 
-            {/* Validation error message */}
-            {validationError && (
-                <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 p-2 rounded-lg">
-                    <AlertCircle size={16} />
-                    <span>
-                        {t('minSelectionRequired', { count: addonGroup.min_selected }) || `Please select at least ${addonGroup.min_selected} item(s)`}
-                    </span>
-                </div>
-            )}
+                {/* Validation error message */}
+                {validationError && (
+                    <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 p-2 rounded-lg mb-4">
+                        <AlertCircle size={16} />
+                        <span>
+                            {t('minSelectionRequired', { count: addonGroup.min_selected }) || `Please select at least ${addonGroup.min_selected} item(s)`}
+                        </span>
+                    </div>
+                )}
 
-            <div className="divide-y divide-gray-50">
+                <div className="flex flex-col divide-y divide-gray-50">
                 {addonGroup.items.map((item) => {
                     const quantity = selectedItems[item.id] || 0;
                     const isSelected = quantity > 0;
@@ -190,88 +201,117 @@ export default function AddonSelector({
                     const canIncrementItem = canIncrement(item, quantity);
                     const canDecrementItem = quantity > 0; // Always allow decrementing (validation checked when adding to cart)
 
-                    return (
-                        <div
-                            key={item.id}
-                            className={cn(
-                                "py-3 flex items-center justify-between transition-opacity",
-                                isDisabled && "opacity-50"
-                            )}>
-                            <div className="flex flex-col flex-1">
-                                <div className="flex items-center gap-2">
-                                    <span className="font-medium text-gray-800">
+                    if (addonGroup.input_type === 'number') {
+                        return (
+                            <div
+                                key={item.id}
+                                className="flex items-center justify-between py-3 group hover:bg-gray-50/50 -mx-2 px-2 rounded-xl transition-colors">
+                                <div className="flex flex-col gap-0.5">
+                                    <span className="text-sm sm:text-base font-bold text-gray-700 transition-colors group-hover:text-gray-900">
                                         {item.title}
                                     </span>
-                                    {item.is_required && (
-                                        <span className="text-[10px] bg-orange-50 text-orange-600 px-1.5 py-0.5 rounded font-semibold">
-                                            {t('required')}
-                                        </span>
+                                    {item.description && (
+                                        <p className="text-xs text-gray-500">
+                                            {item.description}
+                                        </p>
                                     )}
                                 </div>
-                                {item.description && (
-                                    <p className="text-xs text-gray-500 mt-0.5">
-                                        {item.description}
-                                    </p>
-                                )}
-                                <div className="flex items-center gap-1 text-sm font-bold text-theme-primary mt-1">
-                                    <span>+ {item.extra_price}</span>
-                                    <CurrencySymbol className="w-3.5 h-3.5" />
-                                    {item.multiply_price_by_quantity && addonGroup.input_type === 'number' && (
-                                        <span className="text-xs text-gray-400 ml-1">
-                                            ({t('perQuantity') || 'per quantity'})
-                                        </span>
-                                    )}
-                                </div>
-                                {addonGroup.input_type === 'number' && item.max_quantity !== null && (
-                                    <p className="text-xs text-gray-400 mt-0.5">
-                                        {t('maxQuantity') || 'Max'}: {item.max_quantity}
-                                    </p>
-                                )}
-                            </div>
 
-                            {addonGroup.input_type === 'number' ? (
-                                <div className="flex items-center gap-3 bg-gray-50 p-1 rounded-lg border">
-                                    <button
-                                        onClick={() => handleQuantityChange(item.id, -1)}
-                                        disabled={!canDecrementItem}
-                                        className={cn(
-                                            "p-1 hover:text-red-500 transition-colors",
-                                            !canDecrementItem && "opacity-30 cursor-not-allowed"
-                                        )}>
-                                        <Minus size={16} />
-                                    </button>
-                                    <span className="w-8 text-center font-bold text-sm">
-                                        {quantity}
-                                    </span>
-                                    <button
-                                        onClick={() => handleQuantityChange(item.id, 1)}
-                                        disabled={!canIncrementItem}
-                                        className={cn(
-                                            "p-1 hover:text-green-600 transition-colors",
-                                            !canIncrementItem && "opacity-30 cursor-not-allowed"
-                                        )}>
-                                        <Plus size={16} />
-                                    </button>
+                                <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-1">
+                                        <span className="text-md font-bold text-gray-800 leading-none">
+                                            + {item.extra_price}
+                                        </span>
+                                        <CurrencySymbol className="w-4 h-4" />
+                                    </div>
+
+                                    <div className="flex items-center gap-2 bg-[#F1F3F5] p-1 rounded-lg shadow-inner">
+                                        <button
+                                            onClick={() => handleQuantityChange(item.id, -1)}
+                                            disabled={!canDecrementItem}
+                                            className={cn(
+                                                'w-7 h-7 rounded-md bg-white flex items-center justify-center transition-all shadow-sm active:scale-95',
+                                                !canDecrementItem
+                                                    ? 'opacity-30 cursor-not-allowed'
+                                                    : 'text-gray-600 hover:text-theme-primary',
+                                            )}>
+                                            {quantity === 1 ? (
+                                                <Trash2 size={13} />
+                                            ) : (
+                                                <Minus size={13} strokeWidth={3} />
+                                            )}
+                                        </button>
+                                        <span className="w-5 text-center font-bold text-base text-gray-800">
+                                            {quantity}
+                                        </span>
+                                        <button
+                                            onClick={() => handleQuantityChange(item.id, 1)}
+                                            disabled={!canIncrementItem}
+                                            className={cn(
+                                                'w-7 h-7 rounded-md bg-white flex items-center justify-center transition-all shadow-sm active:scale-95',
+                                                !canIncrementItem
+                                                    ? 'opacity-30 cursor-not-allowed'
+                                                    : 'text-gray-600 hover:text-theme-primary',
+                                            )}>
+                                            <Plus size={13} strokeWidth={3} />
+                                        </button>
+                                    </div>
                                 </div>
-                            ) : (
-                                <button
-                                    onClick={() => handleToggle(item.id)}
-                                    disabled={isDisabled}
+                            </div>
+                        );
+                    }
+
+                    return (
+                        <label
+                            key={item.id}
+                            className={cn(
+                                "flex items-center justify-between py-3 cursor-pointer group hover:bg-gray-50/50 -mx-2 px-2 rounded-xl transition-colors",
+                                isDisabled && "opacity-50 cursor-not-allowed"
+                            )}>
+                            <div className="flex items-center gap-3">
+                                <div
                                     className={cn(
-                                        "w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all",
+                                        'w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all',
                                         isSelected
-                                            ? 'bg-theme-primary border-theme-primary text-white'
-                                            : 'border-gray-200 hover:border-gray-300',
-                                        isDisabled && "opacity-50 cursor-not-allowed"
+                                            ? 'border-theme-primary bg-theme-primary text-white'
+                                            : 'border-gray-200 group-hover:border-gray-300',
                                     )}>
                                     {isSelected && (
-                                        <Plus size={16} strokeWidth={4} />
+                                        <Check size={14} strokeWidth={3} />
                                     )}
-                                </button>
-                            )}
-                        </div>
+                                </div>
+                                <div className="flex flex-col gap-0.5">
+                                    <span
+                                        className={cn(
+                                            'text-md font-bold transition-colors',
+                                            isSelected ? 'text-gray-900' : 'text-gray-700',
+                                        )}>
+                                        {item.title}
+                                    </span>
+                                    {item.description && (
+                                        <p className="text-xs text-gray-500">
+                                            {item.description}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                                <span className="text-md font-bold text-gray-900 leading-none">
+                                    + {item.extra_price}
+                                </span>
+                                <CurrencySymbol className="w-4 h-4" />
+                            </div>
+                            <input
+                                type="checkbox"
+                                className="hidden"
+                                checked={isSelected}
+                                onChange={() => handleToggle(item.id)}
+                                disabled={isDisabled}
+                            />
+                        </label>
                     );
                 })}
+                </div>
             </div>
         </div>
     );

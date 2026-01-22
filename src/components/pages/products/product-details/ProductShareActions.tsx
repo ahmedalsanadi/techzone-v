@@ -11,7 +11,7 @@ interface ActionButtonProps {
 
 const ActionButton = React.memo(({ icon: Icon, label }: ActionButtonProps) => (
     <button className="bg-white border border-gray-100 text-gray-600 hover:bg-gray-50 flex items-center gap-1.5 sm:gap-2.5 px-3 py-2 sm:px-5 sm:py-2.5 rounded-md sm:rounded-xl transition-all group shadow-sm cursor-pointer">
-        <Icon className="w-4 h-4 sm:w-[18px] sm:h-[18px] text-gray-400 group-hover:text-libero-red transition-colors" />
+        <Icon className="w-4 h-4 sm:w-[18px] sm:h-[18px] text-gray-400 group-hover:text-theme-primary transition-colors" />
         <span className="text-xs sm:text-sm font-bold">{label}</span>
     </button>
 ));

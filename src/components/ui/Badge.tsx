@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 // Define variant types
-type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline';
+type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline' | 'primary';
 
 // Props interface
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
@@ -21,6 +21,7 @@ const variantStyles: Record<BadgeVariant, string> = {
         'border-transparent bg-red-600 text-white hover:bg-red-700 focus:ring-red-200 dark:focus:ring-red-400 dark:bg-red-700',
     outline:
         'text-gray-900 border-gray-300 hover:bg-gray-100 hover:text-gray-900 focus:ring-gray-200 dark:focus:ring-gray-400 dark:text-gray-100 dark:border-gray-600 dark:hover:bg-gray-800',
+    primary: 'border-transparent bg-theme-primary text-white hover:bg-theme-primary-hover focus:ring-theme-primary-border'            
 };
 
 const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
@@ -30,7 +31,7 @@ const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
     ) => {
         // Base styles
         const baseStyles =
-            'inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 gap-1 overflow-hidden transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2';
+            'inline-flex items-center justify-center rounded-lg border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 gap-1 overflow-hidden transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2';
 
         // Combine all styles
         const badgeClasses = cn(baseStyles, variantStyles[variant], className);
