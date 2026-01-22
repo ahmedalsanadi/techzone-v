@@ -22,7 +22,7 @@ export default function PaymentMethodCard({
             action={
                 <button
                     onClick={onChange}
-                    className="bg-red-100 px-2 py-1 rounded-md flex items-center gap-1 text-red-600 text-md font-medium">
+                    className="bg-theme-primary/10 px-2.5 py-1.5 rounded-md flex items-center gap-1 text-theme-primary text-md font-medium hover:brightness-[0.95] transition-all">
                     <span>تغيير</span>
                     <ChevronLeft className="w-4 h-4" />
                 </button>
@@ -34,8 +34,8 @@ export default function PaymentMethodCard({
                         className={`group relative flex-1 min-w-[80px] sm:flex-none sm:w-24 h-14 flex items-center justify-center rounded-lg cursor-pointer transition-all hover:scale-105
                         ${
                             method.isSelected
-                                ? 'border-red-600 border-2 bg-red-50'
-                                : 'border border-gray-300 hover:border-gray-400'
+                                ? 'border-theme-primary border-2 bg-theme-primary/5'
+                                : 'border border-gray-300 hover:border-theme-primary-border'
                         }`}>
                         <span className="text-purple-900 font-bold text-lg">
                             {method.name}

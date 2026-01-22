@@ -19,7 +19,9 @@ export default function WalletDiscountCard({
                     <span className="text-gray-500 text-sm">
                         رصيدك في المحفظة:
                     </span>
-                    <span className="font-bold text-red-600">{balance}</span>
+                    <span className="font-bold text-theme-primary">
+                        {balance}
+                    </span>
                 </div>
             </div>
 
@@ -34,7 +36,7 @@ export default function WalletDiscountCard({
                             readOnly
                             className="sr-only peer"
                         />
-                        <div className="w-5 h-5 rounded-full border-2 border-red-600 peer-checked:bg-red-600 flex items-center justify-center">
+                        <div className="w-5 h-5 rounded-full border-2 border-theme-primary peer-checked:bg-theme-primary flex items-center justify-center transition-all">
                             <div className="w-2 h-2 rounded-full bg-white" />
                         </div>
                         <span className="text-gray-700">

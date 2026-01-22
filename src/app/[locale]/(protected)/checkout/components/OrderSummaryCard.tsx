@@ -32,7 +32,7 @@ export default function OrderSummaryCard({
                     </div>
                 </div>
 
-                <button className="w-full bg-red-700 hover:bg-red-800 text-white font-bold py-3.5 rounded-lg mt-4">
+                <button className="w-full bg-theme-primary hover:brightness-[0.95] text-white font-bold py-3.5 rounded-lg mt-4 shadow-lg shadow-theme-primary/20 transition-all">
                     تقديم الطلب
                 </button>
             </div>
