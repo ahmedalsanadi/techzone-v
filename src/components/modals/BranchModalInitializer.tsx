@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useBranchStore } from '@/store/useBranchStore';
 import { branchService } from '@/services/branch-service';
-import { BRANCH_TYPES } from '@/lib/branches';
+import { BRANCH_TYPES, branchCookies } from '@/lib/branches';
 import type { Branch } from '@/types/branches';
 
 /**
@@ -69,6 +69,11 @@ export default function BranchModalInitializer() {
             }
 
             hasInitialized.current = true;
+        }
+
+        // Sync cookie with persisted store state on mount/change
+        if (selectedBranchId) {
+            branchCookies.setBranchId(selectedBranchId);
         }
 
         // Check on EVERY mount (refresh/navigation) if modal should auto-open

@@ -45,3 +45,10 @@ export const DEFAULT_MAP_ZOOM = 13;
  * Increment this when Branch type structure changes to invalidate old persisted data
  */
 export const BRANCH_STORAGE_VERSION = 2; // Incremented to add selectedBranchName
+
+/**
+ * Cookie names for branches
+ */
+export const BRANCH_COOKIES = {
+    BRANCH_ID: 'x-branch-id',
+} as const;

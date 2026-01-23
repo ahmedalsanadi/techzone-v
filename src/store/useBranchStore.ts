@@ -4,7 +4,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { Branch } from '@/types/branches';
-import { BRANCH_STORAGE_VERSION } from '@/lib/branches';
+import { BRANCH_STORAGE_VERSION, branchCookies } from '@/lib/branches';
 
 interface BranchState {
     selectedBranch: Branch | null; // Full object in memory (not persisted)
@@ -34,23 +34,27 @@ export const useBranchStore = create<BranchState>()(
             selectedBranchName: null,
             isModalOpen: false,
             hasSelectedOnce: false,
-            setSelectedBranch: (branch) =>
+            setSelectedBranch: (branch) => {
+                branchCookies.setBranchId(branch.id);
                 set({
                     selectedBranch: branch,
                     selectedBranchId: branch.id,
                     selectedBranchName: branch.name || null,
                     isModalOpen: false,
                     hasSelectedOnce: true,
-                }),
+                });
+            },
             setModalOpen: (open) => set({ isModalOpen: open }),
-            clearSelectedBranch: () =>
+            clearSelectedBranch: () => {
+                branchCookies.clearBranchId();
                 set({
                     selectedBranch: null,
                     selectedBranchId: null,
                     selectedBranchName: null,
                     hasSelectedOnce: false,
                     isModalOpen: true,
-                }),
+                });
+            },
             syncBranchData: (branch) => {
                 // Sync the full branch object when fetched from API
                 // This is called after fetching branch by ID from persisted state

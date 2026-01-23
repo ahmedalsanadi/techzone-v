@@ -74,6 +74,65 @@ Users can change their branch at any time by clicking the branch name in the `Su
 - **Syncing**: Even if we have a persisted ID, we fetch the full object on mount to ensure the name, status, and services are up-to-date (using `syncBranchData`).
 - **Cache Duration**: Branches are cached for 1 hour (`revalidate: 3600`) at the service level and 5 minutes in the client state.
 
+### 🍪 Cookie Synchronization (`x-branch-id`)
+
+To ensure that the backend provides branch-specific pricing and availability during **Server-Side Rendering (SSR)**, the selection is synced to a cookie:
+
+- **Store-to-Cookie**: The `useBranchStore` automatically updates the `x-branch-id` cookie via `branchCookies` whenever a selection changes.
+- **Mount Sync**: `BranchModalInitializer` ensures the cookie matches the persisted store state on every visit.
+
+---
+
+## 🌐 API & Header Synchronization
+
+The system ensures that the selected branch context is passed to every API request (Direct or Proxied).
+
+### 1. Header Injection (`getBaseHeaders`)
+
+The `src/services/utils.ts` utility automatically extracts the branch ID from cookies (using both `document.cookie` for client and `next/headers` for server) and injects it into the `x-branch-id` header.
+
+### 2. Proxy Chain
+
+The API proxy preserves the `x-branch-id` header from the client request and forwards it to the backend infrastructure, maintaining the branch context for all dynamic data fetching.
+
+### 3. Default Behavior
+
+If no branch is selected (e.g., first visit pre-modal), the `x-branch-id` header will be empty. The backend is configured to default to the **Main Branch** in this case, ensuring that initial data prefetching (categories, featured products) still returns valid data.
+
+---
+
+## 🛠️ Implementation Deep Dive: Cookie-Based Sync
+
+### 1. Cookie & Utility Integration
+
+- **Constant**: Added `BRANCH_COOKIES.BRANCH_ID` (`x-branch-id`) in `src/lib/branches/constants.ts`.
+- **Utility**: `src/lib/branches/cookies.ts` handles the lifecycle (Set/Get/Clear) of the cookie with `SameSite=Lax` and persistent duration.
+
+### 2. State Syncing logic
+
+- **Automatic Updates**: `useBranchStore.ts` is wired to update the cookie immediately whenever `setSelectedBranch` or `clearSelectedBranch` is called.
+- **Hydration Sync**: `BranchModalInitializer.tsx` performs a "Handshake" on mount—if a user has a branch in `localStorage` but the cookie is missing (e.g., first request after browser restart), it sets the cookie to ensure subsequent SSR requests are correct.
+
+### 3. Transparent Header Injection
+
+The `getBaseHeaders` utility in `src/services/utils.ts` is the heart of the system:
+
+- **Environment Aware**: It detects if it's running on the **Server** (using `next/headers`) or **Client** (using `document.cookie`).
+- **Universal Injection**: Every call to `fetchLibero` automatically includes the branch context without developers needing to pass it manually.
+
+### 4. Proxy Layer
+
+`src/app/proxy/[...path]/route.ts` serves as a bridge. It extracts the `branchId` from the incoming request cookies and ensures the header is explicitly forwarded to the backend, maintaining the "Chain of Context".
+
+---
+
+## 🔄 How the data flows now
+
+1. **User Action**: User confirms a branch in the modal.
+2. **Persistence**: Store saves ID to `localStorage` and sets the `x-branch-id` cookie.
+3. **Browser Fetch**: `fetchLibero` calls `getBaseHeaders` -> Finds cookie -> Adds `x-branch-id` header -> Backend receives selection.
+4. **Server Rendering**: Page loads (SSR) -> `getBaseHeaders` calls `next/headers` -> Finds cookie -> Injects header into direct API call -> Backend returns branch-specific prices/availability.
+
 ---
 
 ## 🛠️ Key Technical Features

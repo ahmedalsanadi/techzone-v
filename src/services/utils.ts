@@ -1,6 +1,6 @@
-//src/services/utils.ts
 import { env } from '@/config/env';
 import { AUTH_COOKIES } from '@/lib/auth/constants';
+import { BRANCH_COOKIES } from '@/lib/branches/constants';
 
 /**
  * Standardize header construction for both server-side and client-side requests.
@@ -15,6 +15,32 @@ export async function getBaseHeaders(
         Accept: 'application/json',
         'Accept-Language': locale || 'ar',
     });
+
+    // Inject Branch ID if available in cookies
+    let branchId: string | undefined;
+    if (typeof window === 'undefined') {
+        try {
+            const { cookies } = await import('next/headers');
+            const cookieStore = await cookies();
+            branchId = cookieStore.get(BRANCH_COOKIES.BRANCH_ID)?.value;
+        } catch (e) {
+            /* No-op */
+        }
+    } else {
+        try {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${BRANCH_COOKIES.BRANCH_ID}=`);
+            if (parts.length === 2) {
+                branchId = parts.pop()?.split(';').shift()?.trim();
+            }
+        } catch (e) {
+            /* No-op */
+        }
+    }
+
+    if (branchId) {
+        headers.set('x-branch-id', branchId);
+    }
 
     // Only add X-Store-Key on server-side
     // On client-side, the proxy will inject it from server env (not exposed to browser)

@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getBaseHeaders } from '@/services/utils';
 import { env } from '@/config/env';
 import { PROTECTED_API_ENDPOINTS, AUTH_COOKIES } from '@/lib/auth';
+import { BRANCH_COOKIES } from '@/lib/branches/constants';
 
 async function handleRequest(
     request: NextRequest,
@@ -62,11 +63,21 @@ async function handleRequest(
             searchParams ? `?${searchParams}` : ''
         }`;
 
+        // Get branch ID from cookies
+        const branchId = request.cookies.get(BRANCH_COOKIES.BRANCH_ID)?.value;
+
+        if (branchId) {
+            headers.set('x-branch-id', branchId);
+        }
+
         if (env.isDev) {
             console.log(`[Proxy] ${method} -> ${targetUrl}`, {
                 hasToken: !!token,
                 isProtected,
-                authHeader: headers.get('Authorization') ? 'present' : 'missing',
+                branchId,
+                authHeader: headers.get('Authorization')
+                    ? 'present'
+                    : 'missing',
             });
         }
 
