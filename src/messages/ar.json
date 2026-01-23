@@ -207,7 +207,11 @@
     "maxSelectionExceeded": "تم تجاوز الحد الأقصى للمحددات",
     "perQuantity": "لكل كمية",
     "maxQuantity": "الحد الأقصى",
-    "validationError": "خطأ في التحقق"
+    "validationError": "خطأ في التحقق",
+    "variants": "المقاسات",
+    "customFields": "معلومات إضافية",
+    "variantRequired": "يرجى اختيار مقاس",
+    "select": "اختر..."
   },
   "Orders": {
     "title": "طلباتي",

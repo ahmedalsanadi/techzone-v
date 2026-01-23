@@ -7,6 +7,8 @@ import ProductGallery from './product-details/ProductGallery';
 import ProductInfo from './product-details/ProductInfo';
 import ProductActionBar from './product-details/ProductActionBar';
 import AddonSelector from './product-details/AddonSelector';
+import VariantSelector from './product-details/VariantSelector';
+import CustomFieldsForm from './product-details/CustomFieldsForm';
 import ProductShareActions from './product-details/ProductShareActions';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import { useCartActions } from '@/hooks/useCartActions';
@@ -40,16 +42,46 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     const [selectedAddons, setSelectedAddons] = useState<
         Record<number, Record<number, number>>
     >(initializeAddons);
+    const [selectedVariantId, setSelectedVariantId] = useState<number | null>(
+        (product.variants && product.variants.length > 0) ? product.variants[0].id : null
+    );
+    const [customFields, setCustomFields] = useState<Record<string, any>>({});
+    
+    // Extract variant_options from selected variant
+    const variantOptions = useMemo(() => {
+        if (!selectedVariantId) return {};
+        const variant = (product.variants || []).find((v) => v.id === selectedVariantId);
+        return variant?.option_values || {};
+    }, [selectedVariantId, product.variants]);
     const [quantity, setQuantity] = useState(1);
     const [notes, setNotes] = useState('');
 
     // Re-initialize when product changes
     useEffect(() => {
         setSelectedAddons(initializeAddons);
-    }, [initializeAddons]);
+        // Reset variant selection to first variant if variants exist
+        if (product.variants && product.variants.length > 0) {
+            setSelectedVariantId(product.variants[0].id);
+        } else {
+            setSelectedVariantId(null);
+        }
+        // Reset custom fields
+        setCustomFields({});
+        // Reset quantity
+        setQuantity(1);
+        // Reset notes
+        setNotes('');
+    }, [initializeAddons, product.variants, product.id]);
 
     const images = [product.cover_image_url, ...(product.image_urls || [])];
-    const currentPrice = product.sale_price || product.price;
+    
+    // Get current price - use variant price if variant is selected, otherwise product price
+    const selectedVariant = selectedVariantId
+        ? (product.variants || []).find((v) => v.id === selectedVariantId)
+        : null;
+    const currentPrice = selectedVariant
+        ? (selectedVariant.sale_price || selectedVariant.price)
+        : (product.sale_price || product.price);
 
     // Validate addon constraints
     const validateAddons = useCallback((): { isValid: boolean; errors: string[] } => {
@@ -120,7 +152,11 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             });
         });
 
-        return (Number(currentPrice) + totalAddonsPrice) * quantity;
+        // Base price: variant price if selected, otherwise product price
+        const basePrice = Number(currentPrice);
+        
+        // Total = (base price + addons) * quantity
+        return (basePrice + totalAddonsPrice) * quantity;
     };
 
     const updateAddonSelection = (
@@ -192,6 +228,34 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             }
         });
 
+        // Validate custom fields
+        const customFieldsErrors: string[] = [];
+        (product.custom_fields || []).forEach((field) => {
+            if (field.is_required && !customFields[field.name]) {
+                customFieldsErrors.push(
+                    `${field.label}: ${t('required') || 'Required'}`
+                );
+            }
+        });
+
+        if (customFieldsErrors.length > 0) {
+            toast.error(
+                customFieldsErrors[0] || t('validationError') || 'Please fill all required fields',
+                {
+                    description: customFieldsErrors.length > 1 
+                        ? `${customFieldsErrors.length - 1} more error(s)`
+                        : undefined,
+                }
+            );
+            return;
+        }
+
+        // Validate variant selection if variants exist
+        if ((product.variants || []).length > 0 && !selectedVariantId) {
+            toast.error(t('variantRequired') || 'Please select a variant');
+            return;
+        }
+
         addToCart(
             {
                 id: `${product.id}-${Date.now()}`, // Unique ID for this configuration
@@ -202,8 +266,11 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 metadata: {
                     productId: product.id,
                     productSlug: product.slug, // Store slug for navigation
+                    product_variant_id: selectedVariantId || null,
+                    variant_options: Object.keys(variantOptions).length > 0 ? variantOptions : null,
                     addons: selectedAddons, // Keep IDs for reference
                     addonDetails, // Add names for display
+                    custom_fields: Object.keys(customFields).length > 0 ? customFields : null,
                     notes,
                 },
             },
@@ -234,11 +301,11 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                             description={product.description}
                             price={Number(currentPrice)}
                             originalPrice={
-                                product.has_discount
-                                    ? Number(product.price)
-                                    : undefined
+                                selectedVariant
+                                    ? (selectedVariant.sale_price ? Number(selectedVariant.price) : undefined)
+                                    : (product.has_discount ? Number(product.price) : undefined)
                             }
-                            calories={product.calories}
+                            calories={selectedVariant?.calories || product.calories}
                             prepTime={product.prepTime}
                             categories={product.categories}
                         />
@@ -282,8 +349,23 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             </div>
 
             {/* Customization Grid */}
-            {(product.addons || []).length > 0 && (
+            {((product.variants && product.variants.length > 0) || 
+              (product.addons && product.addons.length > 0) || 
+              (product.custom_fields && product.custom_fields.length > 0)) && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
+                    {/* Variants */}
+                    {product.variants && product.variants.length > 0 && (
+                        <VariantSelector
+                            variants={product.variants}
+                            selectedVariantId={selectedVariantId}
+                            onSelect={(variantId) => {
+                                setSelectedVariantId(variantId);
+                            }}
+                            required={true}
+                        />
+                    )}
+
+                    {/* Addons */}
                     {(product.addons || []).map((addonGroup) => (
                         <AddonSelector
                             key={addonGroup.id}
@@ -294,6 +376,20 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                             }
                         />
                     ))}
+
+                    {/* Custom Fields */}
+                    {product.custom_fields && product.custom_fields.length > 0 && (
+                        <CustomFieldsForm
+                            customFields={product.custom_fields}
+                            values={customFields}
+                            onChange={(name, value) => {
+                                setCustomFields((prev) => ({
+                                    ...prev,
+                                    [name]: value,
+                                }));
+                            }}
+                        />
+                    )}
                 </div>
             )}
         </div>

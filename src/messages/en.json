@@ -207,7 +207,11 @@
     "maxSelectionExceeded": "Maximum selections exceeded",
     "perQuantity": "per quantity",
     "maxQuantity": "Max",
-    "validationError": "Validation error"
+    "validationError": "Validation error",
+    "variants": "Variants",
+    "customFields": "Additional Information",
+    "variantRequired": "Please select a variant",
+    "select": "Select..."
   },
   "Orders": {
     "title": "My Orders",

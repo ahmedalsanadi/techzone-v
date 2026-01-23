@@ -215,11 +215,6 @@ export default function AddonSelector({
                                             {item.description}
                                         </p>
                                     )}
-                                    {item.max_quantity !== null && (
-                                        <p className="text-[10px] font-bold text-gray-400 bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100/50 mt-0.5 w-fit">
-                                            {t('maxQuantity') || 'Max'}: {item.max_quantity}
-                                        </p>
-                                    )}
                                 </div>
 
                                 <div className="flex items-center gap-3">

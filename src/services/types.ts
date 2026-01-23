@@ -139,6 +139,31 @@ export interface ProductAllergy {
     icon: string;
 }
 
+export interface ProductVariant {
+    id: number;
+    title: string;
+    option_values: Record<string, string>; // e.g., { "size": "S", "color": "red" }
+    price: number;
+    sale_price?: number | null;
+    calories?: number | null;
+    is_active?: boolean;
+    unlimited_quantity?: boolean;
+    available_quantity?: number | null;
+    sku?: string | null;
+}
+
+export interface ProductCustomField {
+    id: number;
+    label: string;
+    name: string; // form field name
+    description?: string | null;
+    input_type: 'boolean' | 'number' | 'text' | 'textarea' | 'date' | 'time' | 'datetime' | 'file' | 'image' | 'select' | 'radio' | 'checkbox';
+    max_limit?: number | null;
+    options?: Record<string, string> | null; // { label: value }
+    is_required: boolean;
+    is_active?: boolean;
+}
+
 export interface Product {
     id: number;
     title: string;
@@ -157,7 +182,10 @@ export interface Product {
     rating?: number;
     review_count?: number;
     categories?: Array<{ id: number; name: string }>;
-    variants?: unknown[];
+    is_variation?: boolean;
+    variation_options?: Record<string, string[]> | null; // e.g., { "size": ["S", "M", "L"], "color": ["red", "blue"] }
+    variants?: ProductVariant[];
+    custom_fields?: ProductCustomField[];
     addons?: Array<{
         id: number;
         name: string;
