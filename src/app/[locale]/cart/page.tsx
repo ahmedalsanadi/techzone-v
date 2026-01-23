@@ -12,8 +12,14 @@ import { useAuthStore } from '@/store/useAuthStore';
 
 const CartPage = () => {
     const t = useTranslations('Cart');
-    const { items, getTotalPrice, getTotalItems, syncWithAPI, isLoading, isGuestMode } =
-        useCartStore();
+    const {
+        items,
+        getTotalPrice,
+        getTotalItems,
+        syncWithAPI,
+        isLoading,
+        isGuestMode,
+    } = useCartStore();
     const { isAuthenticated } = useAuthStore();
     const { updateItemQuantity, removeFromCart } = useCartActions();
     const router = useRouter();
@@ -28,7 +34,7 @@ const CartPage = () => {
     // Guest users should only see local cart (no API calls)
     useEffect(() => {
         if (!isMounted) return;
-        
+
         // Only make API call if user is authenticated
         if (isAuthenticated && !isGuestMode) {
             syncWithAPI();
@@ -181,6 +187,43 @@ const CartPage = () => {
                                                 </span>
                                                 <CurrencySymbol className="w-3.5 h-3.5" />
                                             </div>
+
+                                            {/* Display Custom Fields */}
+                                            {item.metadata?.custom_fields &&
+                                                Object.keys(
+                                                    item.metadata.custom_fields,
+                                                ).length > 0 && (
+                                                    <div className="mt-2 space-y-0.5 border-t border-gray-100 pt-2">
+                                                        {Object.entries(
+                                                            item.metadata
+                                                                .custom_fields,
+                                                        ).map(
+                                                            ([key, value]) => (
+                                                                <div
+                                                                    key={key}
+                                                                    className="text-[11px] text-gray-500 flex items-center justify-between">
+                                                                    <span className="font-semibold text-gray-600 capitalize">
+                                                                        {key.replace(
+                                                                            /_/g,
+                                                                            ' ',
+                                                                        )}
+                                                                        :
+                                                                    </span>
+                                                                    <span className="truncate ml-2 text-gray-700">
+                                                                        {typeof value ===
+                                                                        'boolean'
+                                                                            ? value
+                                                                                ? 'Yes'
+                                                                                : 'No'
+                                                                            : String(
+                                                                                  value,
+                                                                              )}
+                                                                    </span>
+                                                                </div>
+                                                            ),
+                                                        )}
+                                                    </div>
+                                                )}
                                         </Link>
                                     ) : (
                                         <div className="flex-1">
@@ -249,6 +292,43 @@ const CartPage = () => {
                                                 </span>
                                                 <CurrencySymbol className="w-3.5 h-3.5" />
                                             </div>
+
+                                            {/* Display Custom Fields */}
+                                            {item.metadata?.custom_fields &&
+                                                Object.keys(
+                                                    item.metadata.custom_fields,
+                                                ).length > 0 && (
+                                                    <div className="mt-2 space-y-0.5 border-t border-gray-100 pt-2">
+                                                        {Object.entries(
+                                                            item.metadata
+                                                                .custom_fields,
+                                                        ).map(
+                                                            ([key, value]) => (
+                                                                <div
+                                                                    key={key}
+                                                                    className="text-[11px] text-gray-500 flex items-center justify-between">
+                                                                    <span className="font-semibold text-gray-600 capitalize">
+                                                                        {key.replace(
+                                                                            /_/g,
+                                                                            ' ',
+                                                                        )}
+                                                                        :
+                                                                    </span>
+                                                                    <span className="truncate ml-2 text-gray-700">
+                                                                        {typeof value ===
+                                                                        'boolean'
+                                                                            ? value
+                                                                                ? 'Yes'
+                                                                                : 'No'
+                                                                            : String(
+                                                                                  value,
+                                                                              )}
+                                                                    </span>
+                                                                </div>
+                                                            ),
+                                                        )}
+                                                    </div>
+                                                )}
                                         </div>
                                     )}
 
@@ -347,7 +427,10 @@ const CartPage = () => {
                             ) : (
                                 <>
                                     {t('checkout')}
-                                    <ArrowRight size={20} className="rtl:rotate-180" />
+                                    <ArrowRight
+                                        size={20}
+                                        className="rtl:rotate-180"
+                                    />
                                 </>
                             )}
                         </button>

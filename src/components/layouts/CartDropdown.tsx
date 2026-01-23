@@ -11,17 +11,33 @@ import {
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from '../ui/DropdownMenu';
+import { useAuthStore } from '@/store/useAuthStore';
 import React, { useEffect, useState } from 'react';
 
 const CartDropdown = () => {
     const t = useTranslations('Cart');
-    const { items, removeItem, getTotalItems, getTotalPrice } = useCartStore();
+    const {
+        items,
+        removeItem,
+        getTotalItems,
+        getTotalPrice,
+        syncWithAPI,
+        isGuestMode,
+    } = useCartStore();
+    const { isAuthenticated } = useAuthStore();
     const count = getTotalItems();
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
     }, []);
+
+    // Sync cart with API when authenticated
+    useEffect(() => {
+        if (isMounted && isAuthenticated && !isGuestMode) {
+            syncWithAPI();
+        }
+    }, [isMounted, isAuthenticated, isGuestMode, syncWithAPI]);
 
     return (
         <DropdownMenu>
@@ -81,7 +97,41 @@ const CartDropdown = () => {
                                                 {item.metadata.variety.name}
                                             </p>
                                         )}
-                                        <p className="text-xs text-gray-500">
+                                        {/* Addons Summary */}
+                                        {item.metadata?.addonDetails &&
+                                            item.metadata.addonDetails.length >
+                                                0 && (
+                                                <p className="text-[10px] text-gray-400 line-clamp-1">
+                                                    {item.metadata.addonDetails
+                                                        .map((g: any) =>
+                                                            g.items
+                                                                .map(
+                                                                    (i: any) =>
+                                                                        i.name,
+                                                                )
+                                                                .join(', '),
+                                                        )
+                                                        .join(', ')}
+                                                </p>
+                                            )}
+                                        {/* Custom Fields Summary */}
+                                        {item.metadata?.custom_fields &&
+                                            Object.keys(
+                                                item.metadata.custom_fields,
+                                            ).length > 0 && (
+                                                <p className="text-[10px] text-gray-400 line-clamp-1 italic">
+                                                    {Object.entries(
+                                                        item.metadata
+                                                            .custom_fields,
+                                                    )
+                                                        .map(
+                                                            ([k, v]) =>
+                                                                `${k.replace(/_/g, ' ')}: ${v}`,
+                                                        )
+                                                        .join(', ')}
+                                                </p>
+                                            )}
+                                        <p className="text-xs text-gray-500 mt-0.5">
                                             x{item.quantity}
                                         </p>
                                         <div className="flex items-center gap-1 text-sm font-black text-theme-primary mt-1">
