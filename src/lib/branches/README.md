@@ -112,6 +112,7 @@ If no branch is selected (e.g., first visit pre-modal), the `x-branch-id` header
 
 - **Automatic Updates**: `useBranchStore.ts` is wired to update the cookie immediately whenever `setSelectedBranch` or `clearSelectedBranch` is called.
 - **Hydration Sync**: `BranchModalInitializer.tsx` performs a "Handshake" on mount—if a user has a branch in `localStorage` but the cookie is missing (e.g., first request after browser restart), it sets the cookie to ensure subsequent SSR requests are correct.
+- **🛡️ Hydration Guard**: To prevent the modal from "flickering" or auto-opening during the brief moment before `localStorage` is loaded into the store (during hydration), the system evaluates the auto-open logic only after `_hasHydrated` becomes `true`. This fixes the issue where the modal would reappear on every navigation for already-selected users.
 
 ### 3. Transparent Header Injection
 

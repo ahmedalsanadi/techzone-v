@@ -25,6 +25,7 @@ export default function BranchModalInitializer() {
         selectedBranchId,
         selectedBranch,
         isModalOpen,
+        _hasHydrated,
     } = useBranchStore();
     const queryClient = useQueryClient();
     const hasInitialized = useRef(false);
@@ -77,13 +78,12 @@ export default function BranchModalInitializer() {
         }
 
         // Check on EVERY mount (refresh/navigation) if modal should auto-open
-        // Modal should ONLY auto-open if no branch is selected yet
-        // If branch is selected, modal stays closed (user can open manually via navbar/SubHeader)
-        if (!selectedBranchId && !hasSelectedOnce) {
+        // IMPORTANT: Only check AFTER hydration to avoid CSR/SSR mismatch (auto-opening when localStorage hasn't loaded yet)
+        if (_hasHydrated && !selectedBranchId && !hasSelectedOnce) {
             if (!isModalOpen) setModalOpen(true);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedBranchId, hasSelectedOnce, isModalOpen]); // Re-run when branch selection OR modal state changes
+    }, [selectedBranchId, hasSelectedOnce, isModalOpen, _hasHydrated]); // Re-run when branch selection, modal state, or hydration change
 
     return null;
 }

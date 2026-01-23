@@ -17,6 +17,9 @@ interface BranchState {
     clearSelectedBranch: () => void;
     // Helper to sync branch object when fetched from API
     syncBranchData: (branch: Branch | null) => void;
+    // Hydration status
+    _hasHydrated: boolean;
+    setHasHydrated: (state: boolean) => void;
 }
 
 interface PersistedState {
@@ -34,6 +37,7 @@ export const useBranchStore = create<BranchState>()(
             selectedBranchName: null,
             isModalOpen: false,
             hasSelectedOnce: false,
+            _hasHydrated: false,
             setSelectedBranch: (branch) => {
                 branchCookies.setBranchId(branch.id);
                 set({
@@ -71,6 +75,7 @@ export const useBranchStore = create<BranchState>()(
                     });
                 }
             },
+            setHasHydrated: (state) => set({ _hasHydrated: state }),
         }),
         {
             name: 'branch-storage',
@@ -116,6 +121,9 @@ export const useBranchStore = create<BranchState>()(
                     hasSelectedOnce: state?.hasSelectedOnce ?? false,
                     version: BRANCH_STORAGE_VERSION,
                 };
+            },
+            onRehydrateStorage: (state) => {
+                return () => state?.setHasHydrated(true);
             },
         },
     ),
