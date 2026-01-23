@@ -211,7 +211,8 @@
     "variants": "المقاسات",
     "customFields": "معلومات إضافية",
     "variantRequired": "يرجى اختيار مقاس",
-    "select": "اختر..."
+    "select": "اختر...",
+    "completeSelection": "أكمل الاختيارات"
   },
   "Orders": {
     "title": "طلباتي",

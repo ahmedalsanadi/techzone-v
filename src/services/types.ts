@@ -147,6 +147,7 @@ export interface ProductVariant {
     sale_price?: number | null;
     calories?: number | null;
     is_active?: boolean;
+    is_available?: boolean;
     unlimited_quantity?: boolean;
     available_quantity?: number | null;
     sku?: string | null;
@@ -157,7 +158,19 @@ export interface ProductCustomField {
     label: string;
     name: string; // form field name
     description?: string | null;
-    input_type: 'boolean' | 'number' | 'text' | 'textarea' | 'date' | 'time' | 'datetime' | 'file' | 'image' | 'select' | 'radio' | 'checkbox';
+    input_type:
+        | 'boolean'
+        | 'number'
+        | 'text'
+        | 'textarea'
+        | 'date'
+        | 'time'
+        | 'datetime'
+        | 'file'
+        | 'image'
+        | 'select'
+        | 'radio'
+        | 'checkbox';
     max_limit?: number | null;
     options?: Record<string, string> | null; // { label: value }
     is_required: boolean;

@@ -211,7 +211,8 @@
     "variants": "Variants",
     "customFields": "Additional Information",
     "variantRequired": "Please select a variant",
-    "select": "Select..."
+    "select": "Select...",
+    "completeSelection": "Complete Selection"
   },
   "Orders": {
     "title": "My Orders",

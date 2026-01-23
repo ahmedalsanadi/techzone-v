@@ -14,6 +14,7 @@ interface ProductActionBarProps {
     setQuantity: (qty: number | ((prev: number) => number)) => void;
     onAddToCart: () => void;
     isAvailable?: boolean;
+    isValid?: boolean;
 }
 
 interface QtyButtonProps {
@@ -42,6 +43,7 @@ export default function ProductActionBar({
     setQuantity,
     onAddToCart,
     isAvailable = true,
+    isValid = true,
 }: ProductActionBarProps) {
     const t = useTranslations('Product');
 
@@ -53,6 +55,12 @@ export default function ProductActionBar({
         () => setQuantity((prev) => Math.max(1, prev - 1)),
         [setQuantity],
     );
+
+    const buttonText = React.useMemo(() => {
+        if (!isAvailable) return t('outOfStock');
+        if (!isValid) return t('completeSelection');
+        return t('addToCart');
+    }, [isAvailable, isValid, t]);
 
     return (
         <div className="border-t border-gray-200 pt-8 mt-auto">
@@ -85,9 +93,9 @@ export default function ProductActionBar({
                         'disabled:bg-gray-400 disabled:shadow-none disabled:cursor-not-allowed',
                     )}>
                     <span className="text-sm sm:text-lg font-bold">
-                        {isAvailable ? t('addToCart') : t('outOfStock')}
+                        {buttonText}
                     </span>
-                    {isAvailable && (
+                    {isAvailable && isValid && (
                         <div className="flex items-center gap-2 sm:gap-2.5">
                             {originalPrice && (
                                 <div className="flex items-center gap-1 opacity-60">

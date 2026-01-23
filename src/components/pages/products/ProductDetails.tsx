@@ -24,9 +24,12 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     const { addToCart } = useCartActions();
 
     // Initialize addons with default values
-    const initializeAddons = useMemo((): Record<number, Record<number, number>> => {
+    const initializeAddons = useMemo((): Record<
+        number,
+        Record<number, number>
+    > => {
         const initial: Record<number, Record<number, number>> = {};
-        
+
         (product.addons || []).forEach((addonGroup) => {
             initial[addonGroup.id] = {};
             addonGroup.items.forEach((item) => {
@@ -39,18 +42,21 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         return initial;
     }, [product.addons]);
 
-    const [selectedAddons, setSelectedAddons] = useState<
-        Record<number, Record<number, number>>
-    >(initializeAddons);
+    const [selectedAddons, setSelectedAddons] =
+        useState<Record<number, Record<number, number>>>(initializeAddons);
     const [selectedVariantId, setSelectedVariantId] = useState<number | null>(
-        (product.variants && product.variants.length > 0) ? product.variants[0].id : null
+        product.variants && product.variants.length > 0
+            ? product.variants[0].id
+            : null,
     );
     const [customFields, setCustomFields] = useState<Record<string, any>>({});
-    
+
     // Extract variant_options from selected variant
     const variantOptions = useMemo(() => {
         if (!selectedVariantId) return {};
-        const variant = (product.variants || []).find((v) => v.id === selectedVariantId);
+        const variant = (product.variants || []).find(
+            (v) => v.id === selectedVariantId,
+        );
         return variant?.option_values || {};
     }, [selectedVariantId, product.variants]);
     const [quantity, setQuantity] = useState(1);
@@ -74,49 +80,63 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     }, [initializeAddons, product.variants, product.id]);
 
     const images = [product.cover_image_url, ...(product.image_urls || [])];
-    
+
     // Get current price - use variant price if variant is selected, otherwise product price
     const selectedVariant = selectedVariantId
         ? (product.variants || []).find((v) => v.id === selectedVariantId)
         : null;
     const currentPrice = selectedVariant
-        ? (selectedVariant.sale_price || selectedVariant.price)
-        : (product.sale_price || product.price);
+        ? selectedVariant.sale_price || selectedVariant.price
+        : product.sale_price || product.price;
 
     // Validate addon constraints
-    const validateAddons = useCallback((): { isValid: boolean; errors: string[] } => {
+    const validateAddons = useCallback((): {
+        isValid: boolean;
+        errors: string[];
+    } => {
         const errors: string[] = [];
 
         (product.addons || []).forEach((addonGroup) => {
             // Calculate selected count for this addon group
             const items = selectedAddons[addonGroup.id] || {};
             let selectedCount: number;
-            
+
             if (addonGroup.input_type === 'boolean') {
                 // Count items with quantity > 0
-                selectedCount = Object.values(items).filter((qty) => qty > 0).length;
+                selectedCount = Object.values(items).filter(
+                    (qty) => qty > 0,
+                ).length;
             } else {
                 // Sum all quantities for number input type
-                selectedCount = Object.values(items).reduce((sum, qty) => sum + qty, 0);
+                selectedCount = Object.values(items).reduce(
+                    (sum, qty) => sum + qty,
+                    0,
+                );
             }
 
             // Check min_selected constraint (only if required or min_selected > 0)
-            if (addonGroup.min_selected > 0 && selectedCount < addonGroup.min_selected) {
+            if (
+                addonGroup.min_selected > 0 &&
+                selectedCount < addonGroup.min_selected
+            ) {
                 if (addonGroup.is_required) {
                     errors.push(
-                        `${addonGroup.name}: ${t('minSelectionRequired', { count: addonGroup.min_selected }) || `Please select at least ${addonGroup.min_selected} item(s)`}`
+                        `${addonGroup.name}: ${t('minSelectionRequired', { count: addonGroup.min_selected }) || `Please select at least ${addonGroup.min_selected} item(s)`}`,
                     );
                 } else {
                     errors.push(
-                        `${addonGroup.name}: ${t('minSelectionRequired', { count: addonGroup.min_selected }) || `Minimum ${addonGroup.min_selected} selection(s) required`}`
+                        `${addonGroup.name}: ${t('minSelectionRequired', { count: addonGroup.min_selected }) || `Minimum ${addonGroup.min_selected} selection(s) required`}`,
                     );
                 }
             }
 
             // Check max_selected constraint
-            if (addonGroup.max_selected !== null && selectedCount > addonGroup.max_selected) {
+            if (
+                addonGroup.max_selected !== null &&
+                selectedCount > addonGroup.max_selected
+            ) {
                 errors.push(
-                    `${addonGroup.name}: ${t('maxSelectionExceeded') || `Maximum ${addonGroup.max_selected} selection(s) allowed`}`
+                    `${addonGroup.name}: ${t('maxSelectionExceeded') || `Maximum ${addonGroup.max_selected} selection(s) allowed`}`,
                 );
             }
         });
@@ -154,7 +174,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
         // Base price: variant price if selected, otherwise product price
         const basePrice = Number(currentPrice);
-        
+
         // Total = (base price + addons) * quantity
         return (basePrice + totalAddonsPrice) * quantity;
     };
@@ -178,12 +198,15 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         const validationResult = validateAddons();
         if (!validationResult.isValid) {
             toast.error(
-                validationResult.errors[0] || t('validationError') || 'Please fix the selection errors',
+                validationResult.errors[0] ||
+                    t('validationError') ||
+                    'Please fix the selection errors',
                 {
-                    description: validationResult.errors.length > 1 
-                        ? `${validationResult.errors.length - 1} more error(s)`
-                        : undefined,
-                }
+                    description:
+                        validationResult.errors.length > 1
+                            ? `${validationResult.errors.length - 1} more error(s)`
+                            : undefined,
+                },
             );
             return;
         }
@@ -233,19 +256,22 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         (product.custom_fields || []).forEach((field) => {
             if (field.is_required && !customFields[field.name]) {
                 customFieldsErrors.push(
-                    `${field.label}: ${t('required') || 'Required'}`
+                    `${field.label}: ${t('required') || 'Required'}`,
                 );
             }
         });
 
         if (customFieldsErrors.length > 0) {
             toast.error(
-                customFieldsErrors[0] || t('validationError') || 'Please fill all required fields',
+                customFieldsErrors[0] ||
+                    t('validationError') ||
+                    'Please fill all required fields',
                 {
-                    description: customFieldsErrors.length > 1 
-                        ? `${customFieldsErrors.length - 1} more error(s)`
-                        : undefined,
-                }
+                    description:
+                        customFieldsErrors.length > 1
+                            ? `${customFieldsErrors.length - 1} more error(s)`
+                            : undefined,
+                },
             );
             return;
         }
@@ -267,10 +293,16 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                     productId: product.id,
                     productSlug: product.slug, // Store slug for navigation
                     product_variant_id: selectedVariantId || null,
-                    variant_options: Object.keys(variantOptions).length > 0 ? variantOptions : null,
+                    variant_options:
+                        Object.keys(variantOptions).length > 0
+                            ? variantOptions
+                            : null,
                     addons: selectedAddons, // Keep IDs for reference
                     addonDetails, // Add names for display
-                    custom_fields: Object.keys(customFields).length > 0 ? customFields : null,
+                    custom_fields:
+                        Object.keys(customFields).length > 0
+                            ? customFields
+                            : null,
                     notes,
                 },
             },
@@ -302,10 +334,16 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                             price={Number(currentPrice)}
                             originalPrice={
                                 selectedVariant
-                                    ? (selectedVariant.sale_price ? Number(selectedVariant.price) : undefined)
-                                    : (product.has_discount ? Number(product.price) : undefined)
+                                    ? selectedVariant.sale_price
+                                        ? Number(selectedVariant.price)
+                                        : undefined
+                                    : product.has_discount
+                                      ? Number(product.price)
+                                      : undefined
                             }
-                            calories={selectedVariant?.calories || product.calories}
+                            calories={
+                                selectedVariant?.calories || product.calories
+                            }
                             prepTime={product.prepTime}
                             categories={product.categories}
                         />
@@ -325,18 +363,29 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                         </div>
 
                         {/* Action Bar */}
-                        <ProductActionBar
-                            totalPrice={calculateTotalPrice()}
-                            originalPrice={
-                                product.has_discount
-                                    ? Number(product.price) * quantity
-                                    : undefined
-                            }
-                            quantity={quantity}
-                            setQuantity={setQuantity}
-                            onAddToCart={handleAddToCart}
-                            isAvailable={product.is_available && validation.isValid}
-                        />
+                        {(() => {
+                            const isOutOfStock =
+                                !product.is_available ||
+                                (product.is_variation &&
+                                    selectedVariant &&
+                                    selectedVariant.is_available === false);
+
+                            return (
+                                <ProductActionBar
+                                    totalPrice={calculateTotalPrice()}
+                                    originalPrice={
+                                        product.has_discount
+                                            ? Number(product.price) * quantity
+                                            : undefined
+                                    }
+                                    quantity={quantity}
+                                    setQuantity={setQuantity}
+                                    onAddToCart={handleAddToCart}
+                                    isAvailable={!isOutOfStock}
+                                    isValid={validation.isValid}
+                                />
+                            );
+                        })()}
                     </div>
 
                     {/* Gallery Column */}
@@ -349,9 +398,10 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             </div>
 
             {/* Customization Grid */}
-            {((product.variants && product.variants.length > 0) || 
-              (product.addons && product.addons.length > 0) || 
-              (product.custom_fields && product.custom_fields.length > 0)) && (
+            {((product.variants && product.variants.length > 0) ||
+                (product.addons && product.addons.length > 0) ||
+                (product.custom_fields &&
+                    product.custom_fields.length > 0)) && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
                     {/* Variants */}
                     {product.variants && product.variants.length > 0 && (
@@ -378,18 +428,19 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                     ))}
 
                     {/* Custom Fields */}
-                    {product.custom_fields && product.custom_fields.length > 0 && (
-                        <CustomFieldsForm
-                            customFields={product.custom_fields}
-                            values={customFields}
-                            onChange={(name, value) => {
-                                setCustomFields((prev) => ({
-                                    ...prev,
-                                    [name]: value,
-                                }));
-                            }}
-                        />
-                    )}
+                    {product.custom_fields &&
+                        product.custom_fields.length > 0 && (
+                            <CustomFieldsForm
+                                customFields={product.custom_fields}
+                                values={customFields}
+                                onChange={(name, value) => {
+                                    setCustomFields((prev) => ({
+                                        ...prev,
+                                        [name]: value,
+                                    }));
+                                }}
+                            />
+                        )}
                 </div>
             )}
         </div>

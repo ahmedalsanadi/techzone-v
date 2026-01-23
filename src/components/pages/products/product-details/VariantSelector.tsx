@@ -24,9 +24,14 @@ const VariantItem = React.memo(
     ({ variant, isSelected, onSelect, t }: VariantItemProps) => {
         const variantPrice = variant.sale_price || variant.price;
         const originalPrice = variant.sale_price ? variant.price : undefined;
+        const isAvailable = variant.is_available !== false; // Default to true if undefined
 
         return (
-            <label className="flex items-center justify-between py-3 cursor-pointer group hover:bg-gray-50/50 -mx-2 px-2 rounded-xl transition-colors">
+            <label
+                className={cn(
+                    'flex items-center justify-between py-3 cursor-pointer group hover:bg-gray-50/50 -mx-2 px-2 rounded-xl transition-colors',
+                    !isAvailable && 'opacity-50 cursor-not-allowed contrast-75',
+                )}>
                 <div className="flex items-center gap-3">
                     <div
                         className={cn(
@@ -34,28 +39,40 @@ const VariantItem = React.memo(
                             isSelected
                                 ? 'border-theme-primary bg-white'
                                 : 'border-gray-200 group-hover:border-gray-300',
+                            !isAvailable && 'border-gray-300 bg-gray-50',
                         )}>
-                        {isSelected && (
+                        {isSelected && isAvailable && (
                             <div className="w-2.5 h-2.5 rounded-full bg-theme-primary shadow-[0_0_8px_rgba(var(--theme-primary-rgb),0.3)]" />
                         )}
                     </div>
                     <div className="flex flex-col gap-0.5">
-                        <span
-                            className={cn(
-                                'text-md font-bold transition-colors',
-                                isSelected ? 'text-gray-900' : 'text-gray-700',
-                            )}>
-                            {variant.title}
-                        </span>
+                        <div className="flex items-center gap-2">
+                            <span
+                                className={cn(
+                                    'text-md font-bold transition-colors',
+                                    isSelected
+                                        ? 'text-gray-900'
+                                        : 'text-gray-700',
+                                )}>
+                                {variant.title}
+                            </span>
+                            {!isAvailable && (
+                                <span className="text-[10px] font-bold text-red-500 bg-red-50 px-1.5 py-0.5 rounded border border-red-100">
+                                    {t('outOfStock')}
+                                </span>
+                            )}
+                        </div>
                         {Object.keys(variant.option_values).length > 0 && (
                             <div className="flex items-center gap-2 mt-0.5">
-                                {Object.entries(variant.option_values).map(([key, value]) => (
-                                    <span
-                                        key={key}
-                                        className="text-[10px] font-bold text-gray-400 bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100/50">
-                                        {key}: {value}
-                                    </span>
-                                ))}
+                                {Object.entries(variant.option_values).map(
+                                    ([key, value]) => (
+                                        <span
+                                            key={key}
+                                            className="text-[10px] font-bold text-gray-400 bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100/50">
+                                            {key}: {value}
+                                        </span>
+                                    ),
+                                )}
                             </div>
                         )}
                         {variant.calories && (
@@ -89,7 +106,8 @@ const VariantItem = React.memo(
                     type="radio"
                     className="hidden"
                     checked={isSelected}
-                    onChange={() => onSelect(variant.id)}
+                    onChange={() => isAvailable && onSelect(variant.id)}
+                    disabled={!isAvailable}
                 />
             </label>
         );
@@ -113,12 +131,15 @@ export default function VariantSelector({
             <div className="flex items-center justify-between">
                 <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2.5">
-                        <h3 className="text-lg font-bold text-gray-900">{t('variants') || 'Variants'}</h3>
+                        <h3 className="text-lg font-bold text-gray-900">
+                            {t('variants') || 'Variants'}
+                        </h3>
                         {required && (
-                            <span className={cn(
-                                "text-xs font-bold px-2.5 py-0.5 rounded-full",
-                                "bg-red-50 text-red-700"
-                            )}>
+                            <span
+                                className={cn(
+                                    'text-xs font-bold px-2.5 py-0.5 rounded-full',
+                                    'bg-red-50 text-red-700',
+                                )}>
                                 {t('required')}
                             </span>
                         )}
