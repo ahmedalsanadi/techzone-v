@@ -27,7 +27,10 @@
     "signUp": "إنشاء حساب",
     "logout": "تسجيل الخروج",
     "guest": "زائر",
-    "guestSubtitle": "سجل دخولك للمتابعة"
+    "guestSubtitle": "سجل دخولك للمتابعة",
+    "pointsEarned": "نقطة مكتسبة",
+    "myAddresses": "عناويني",
+    "favorites": "المفضلة"
   },
   "Notifications": {
     "empty": "لا توجد إشعارات جديدة"

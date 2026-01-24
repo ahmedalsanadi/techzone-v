@@ -153,7 +153,8 @@ const UserMenu = () => {
                                             strokeWidth={0}
                                         />
                                         <span className="text-[10px] font-black uppercase tracking-wide">
-                                            {profile?.points || 0} نقطة مكتسبة
+                                            {profile?.points || 0}{' '}
+                                            {t('pointsEarned')}
                                         </span>
                                     </div>
                                 </>
@@ -197,7 +198,7 @@ const UserMenu = () => {
                                             <MapPin size={18} strokeWidth={2} />
                                         </div>
                                         <span className="text-[13px] font-bold text-gray-700">
-                                            عناويني
+                                            {t('myAddresses')}
                                         </span>
                                     </Link>
                                 </DropdownMenuItem>
@@ -225,7 +226,7 @@ const UserMenu = () => {
                                             <Heart size={18} strokeWidth={2} />
                                         </div>
                                         <span className="text-[13px] font-bold text-gray-700">
-                                            المفضلة
+                                            {t('favorites')}
                                         </span>
                                     </Link>
                                 </DropdownMenuItem>

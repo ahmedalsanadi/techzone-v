@@ -27,7 +27,10 @@
     "signUp": "Sign Up",
     "logout": "Logout",
     "guest": "Guest",
-    "guestSubtitle": "Sign in to continue"
+    "guestSubtitle": "Sign in to continue",
+    "pointsEarned": "Points Earned",
+    "myAddresses": "My Addresses",
+    "favorites": "Favorites"
   },
   "Notifications": {
     "empty": "No new notifications"
