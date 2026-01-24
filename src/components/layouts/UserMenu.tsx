@@ -1,12 +1,6 @@
 'use client';
 
-import {
-    User,
-    ChevronDown,
-    Package,
-    LogOut,
-    LogIn,
-} from 'lucide-react';
+import { User, ChevronDown, Package, LogOut, LogIn } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import {
@@ -38,14 +32,14 @@ const UserMenu = () => {
             // Error already handled in authService.logout()
             // Continue to clear local state even if API call fails
         }
-        
+
         // Clear local state after API call (cookies will be cleared here)
         clearAuth();
-        
+
         // Switch cart back to guest mode and clear API cart
         setGuestMode(true);
         clearCart();
-        
+
         // Refresh router to update any server-side state
         router.refresh();
     };
@@ -64,14 +58,16 @@ const UserMenu = () => {
                         </div>
                         <div className="absolute -bottom-0.5 -right-0.5 size-3.5 bg-white rounded-full border border-gray-100 flex items-center justify-center shadow-xs">
                             <ChevronDown
-                                size={10}
+                                size={50}
                                 className="text-libero-red"
                                 strokeWidth={3}
                             />
                         </div>
                     </div>
                     <span className="text-libero-red font-bold text-[13px] whitespace-nowrap hidden lg:inline mx-1">
-                        {isAuthenticated ? user?.name : t('guest')}
+                        {isAuthenticated
+                            ? user?.name?.split(' ')[0]
+                            : t('guest')}
                     </span>
                     <ChevronDown
                         size={14}
