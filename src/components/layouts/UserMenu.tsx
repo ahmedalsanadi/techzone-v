@@ -176,14 +176,14 @@ const UserMenu = () => {
                                     <Link
                                         href="/my-orders"
                                         onClick={closeMenu}
-                                        className="py-2.5 px-3 rounded-[18px] gap-2.5 cursor-pointer group transition-all hover:bg-gray-50 flex items-center active:scale-[0.98]">
-                                        <div className="size-8 rounded-lg bg-orange-50 flex items-center justify-center text-orange-500 group-hover:bg-orange-500 group-hover:text-white transition-all shadow-xs">
+                                        className="py-2.5 px-3 rounded-[18px] gap-3 cursor-pointer group transition-all hover:bg-orange-50/50 flex items-center active:scale-[0.98]">
+                                        <div className="size-8 rounded-lg bg-orange-100/50 flex items-center justify-center text-orange-600 group-hover:scale-110 transition-transform">
                                             <Package
                                                 size={18}
                                                 strokeWidth={2}
                                             />
                                         </div>
-                                        <span className="text-[13px] font-bold text-gray-700">
+                                        <span className="text-[13px] font-bold text-gray-700 group-hover:text-orange-700 transition-colors">
                                             {t('myOrders')}
                                         </span>
                                     </Link>
@@ -193,11 +193,11 @@ const UserMenu = () => {
                                     <Link
                                         href="/profile?tab=addresses"
                                         onClick={closeMenu}
-                                        className="py-2.5 px-3 rounded-[18px] gap-2.5 cursor-pointer group transition-all hover:bg-gray-50 flex items-center active:scale-[0.98]">
-                                        <div className="size-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all shadow-xs">
+                                        className="py-2.5 px-3 rounded-[18px] gap-3 cursor-pointer group transition-all hover:bg-blue-50/50 flex items-center active:scale-[0.98]">
+                                        <div className="size-8 rounded-lg bg-blue-100/50 flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform">
                                             <MapPin size={18} strokeWidth={2} />
                                         </div>
-                                        <span className="text-[13px] font-bold text-gray-700">
+                                        <span className="text-[13px] font-bold text-gray-700 group-hover:text-blue-700 transition-colors">
                                             {t('myAddresses')}
                                         </span>
                                     </Link>
@@ -207,11 +207,11 @@ const UserMenu = () => {
                                     <Link
                                         href="/wallet"
                                         onClick={closeMenu}
-                                        className="py-2.5 px-3 rounded-[18px] gap-2.5 cursor-pointer group transition-all hover:bg-gray-50 flex items-center active:scale-[0.98]">
-                                        <div className="size-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-all shadow-xs">
+                                        className="py-2.5 px-3 rounded-[18px] gap-3 cursor-pointer group transition-all hover:bg-emerald-50/50 flex items-center active:scale-[0.98]">
+                                        <div className="size-8 rounded-lg bg-emerald-100/50 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
                                             <Wallet size={18} strokeWidth={2} />
                                         </div>
-                                        <span className="text-[13px] font-bold text-gray-700">
+                                        <span className="text-[13px] font-bold text-gray-700 group-hover:text-emerald-700 transition-colors">
                                             {t('wallet')}
                                         </span>
                                     </Link>
@@ -221,11 +221,11 @@ const UserMenu = () => {
                                     <Link
                                         href="/wishlist"
                                         onClick={closeMenu}
-                                        className="py-2.5 px-3 rounded-[18px] gap-2.5 cursor-pointer group transition-all hover:bg-gray-50 flex items-center active:scale-[0.98]">
-                                        <div className="size-8 rounded-lg bg-pink-50 flex items-center justify-center text-pink-500 group-hover:bg-pink-500 group-hover:text-white transition-all shadow-xs">
+                                        className="py-2.5 px-3 rounded-[18px] gap-3 cursor-pointer group transition-all hover:bg-pink-50/50 flex items-center active:scale-[0.98]">
+                                        <div className="size-8 rounded-lg bg-pink-100/50 flex items-center justify-center text-pink-600 group-hover:scale-110 transition-transform">
                                             <Heart size={18} strokeWidth={2} />
                                         </div>
-                                        <span className="text-[13px] font-bold text-gray-700">
+                                        <span className="text-[13px] font-bold text-gray-700 group-hover:text-pink-700 transition-colors">
                                             {t('favorites')}
                                         </span>
                                     </Link>
@@ -235,30 +235,34 @@ const UserMenu = () => {
                             {/* Sign Out Action */}
                             <DropdownMenuItem
                                 onClick={handleLogout}
-                                className="mt-1 py-2.5 px-3 rounded-[18px] gap-2.5 cursor-pointer group transition-all hover:bg-red-50 flex items-center text-red-600 active:scale-[0.98]">
-                                <div className="size-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500 group-hover:bg-red-600 group-hover:text-white transition-all shadow-xs">
+                                className="mt-1 py-2.5 px-3 rounded-[18px] gap-3 cursor-pointer group transition-all hover:bg-red-50/50 flex items-center text-red-600 active:scale-[0.98]">
+                                <div className="size-8 rounded-lg bg-red-100/50 flex items-center justify-center text-red-600 group-hover:scale-110 transition-transform">
                                     <LogOut size={18} strokeWidth={2} />
                                 </div>
-                                <span className="text-[13px] font-bold">
+                                <span className="text-[13px] font-bold group-hover:text-red-700 transition-colors">
                                     {t('logout')}
                                 </span>
                             </DropdownMenuItem>
                         </div>
                     ) : (
-                        <div className="bg-white rounded-[22px] p-1 border border-gray-100/50 shadow-xs">
+                        <div className="px-1.5 pb-1.5">
                             <DropdownMenuItem asChild>
                                 <Link
                                     href="/auth"
                                     onClick={closeMenu}
-                                    className="py-3 px-3 rounded-[18px] gap-3 cursor-pointer group transition-all hover:bg-blue-50 flex items-center w-full active:scale-[0.98]">
-                                    <div className="size-9 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm">
-                                        <LogIn size={20} strokeWidth={2} />
+                                    className="bg-gradient-to-r from-blue-50 to-indigo-50 flex items-center justify-start gap-2 w-full h-[52px] text-slate-800 px-4 rounded-[20px] transition-all shadow-sm shadow-blue-100/50 hover:shadow-md hover:shadow-blue-200/70 active:scale-[0.98] cursor-pointer border border-blue-100/50 hover:border-blue-200">
+                                    <div className="size-8 bg-white rounded-xl flex items-center justify-center shadow-sm ring-1 ring-blue-100">
+                                        <LogIn
+                                            size={18}
+                                            strokeWidth={2.5}
+                                            className="text-blue-600"
+                                        />
                                     </div>
-                                    <div className="flex flex-col">
-                                        <span className="text-[14px] font-black text-gray-800 leading-none mb-1">
+                                    <div className="flex flex-col items-start leading-tight">
+                                        <span className="text-[14px] font-black uppercase tracking-tight text-blue-800">
                                             {t('signIn')}
                                         </span>
-                                        <span className="text-[10px] font-medium text-gray-400">
+                                        <span className="text-[10px] text-slate-600 font-medium">
                                             {t('guestSubtitle')}
                                         </span>
                                     </div>
