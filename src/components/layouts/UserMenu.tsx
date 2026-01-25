@@ -13,7 +13,6 @@ import {
     Star,
     Phone,
     Mail,
-    Edit3,
 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
@@ -22,7 +21,7 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-    DropdownMenuSeparator,
+    // DropdownMenuSeparator,
 } from '../ui/DropdownMenu';
 import { useRouter } from '@/i18n/navigation';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -250,7 +249,7 @@ const UserMenu = () => {
                                 <Link
                                     href="/auth"
                                     onClick={closeMenu}
-                                    className="bg-gradient-to-r from-blue-50 to-indigo-50 flex items-center justify-start gap-2 w-full h-[52px] text-slate-800 px-4 rounded-[20px] transition-all shadow-sm shadow-blue-100/50 hover:shadow-md hover:shadow-blue-200/70 active:scale-[0.98] cursor-pointer border border-blue-100/50 hover:border-blue-200">
+                                    className="bg-linear-to-r from-blue-50 to-indigo-50 flex items-center justify-start gap-2 w-full h-[52px] text-slate-800 px-4 rounded-[20px] transition-all shadow-sm shadow-blue-100/50 hover:shadow-md hover:shadow-blue-200/70 active:scale-[0.98] cursor-pointer border border-blue-100/50 hover:border-blue-200">
                                     <div className="size-8 bg-white rounded-xl flex items-center justify-center shadow-sm ring-1 ring-blue-100">
                                         <LogIn
                                             size={18}
