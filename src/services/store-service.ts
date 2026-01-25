@@ -44,7 +44,7 @@ export const storeService = {
     ): Promise<{ data: Product[]; meta: PaginationMeta }> {
         const response = await fetchLiberoFull<Product[]>('/store/products', {
             params,
-            next: { revalidate: 300 }, // Cache products for 5 minutes
+            next: { revalidate: 0 }, // Cache products for 5 minutes
         });
 
         const per_page = Number(params?.per_page) || 8;
@@ -66,7 +66,7 @@ export const storeService = {
      */
     getProduct: (slug: string) =>
         fetchLibero<Product>(`/store/products/${slug}`, {
-            next: { revalidate: 300 }, // Cache product for 5 minutes
+            next: { revalidate: 0 }, // Cache product for 5 minutes
         }),
 
     /**

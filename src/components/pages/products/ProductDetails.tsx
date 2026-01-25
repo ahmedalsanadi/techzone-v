@@ -164,10 +164,15 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 );
                 if (!item || qty <= 0) return;
 
+                // Addon price = (extra_price * addon selection quantity)
+                const addonSelectionTotalPrice = item.extra_price * qty;
+
                 if (item.multiply_price_by_quantity) {
-                    totalAddonsPrice += item.extra_price * qty;
+                    // This addon is per-unit, so multiply by product quantity
+                    totalAddonsPrice += addonSelectionTotalPrice * quantity;
                 } else {
-                    totalAddonsPrice += item.extra_price;
+                    // This addon is once per cart item, regardless of quantity
+                    totalAddonsPrice += addonSelectionTotalPrice;
                 }
             });
         });
@@ -175,8 +180,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         // Base price: variant price if selected, otherwise product price
         const basePrice = Number(currentPrice);
 
-        // Total = (base price + addons) * quantity
-        return (basePrice + totalAddonsPrice) * quantity;
+        // Total = (base price * product quantity) + total addons price
+        return basePrice * quantity + totalAddonsPrice;
     };
 
     const updateAddonSelection = (

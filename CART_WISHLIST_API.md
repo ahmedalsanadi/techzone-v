@@ -1,14 +1,59 @@
 # Libero Store API - Cart & Wishlist Documentation
 
 ## 🛒 Cart Endpoints (7 Endpoints)
+Shopping cart management endpoints. Supports product variants, addons, custom fields, and guest cart merging.
+
+**Cart System Overview:**
+
+- **Single Cart**: Each customer has ONE cart that automatically switches branches
+    
+- **Branch Context**: Pass branch via `X-Branch-Id` header (not body parameter)
+    
+- **Auto-Switching**: Cart's branch_id updates automatically when customer switches branches
+    
+- **Smart Matching**: Same product with different addons/custom_fields = separate items
+    
+- **Read vs Write**: GET /cart is read-only, POST /cart/items creates cart
+    
+- **No Data Loss**: Items preserved when switching branches, validated at checkout
 
 ### 1. GET Cart - `GET /store/cart`
-**Description:** Retrieve the customer's active cart with all items and totals.
+**Description:** Retrieve the customer's cart with all items and totals.
+Retrieve the customer's cart with all items and totals.
+
+**Headers:**
+
+- `X-Branch-Id` (integer, **required**): Current branch ID
+    
+
+**Behavior:**
+
+- **Read-only**: Does NOT create a cart if it doesn't exist
+    
+- **Auto-updates branch**: If cart exists with different branch_id, it will be updated to the current branch
+    
+- **Single cart**: Each customer has ONE cart that automatically switches branches
+    
+- Returns empty cart structure if no cart exists
+    
+
+**Response:**
+
+- Cart object with items array
+    
+- If no cart exists: `{ id: null, branch_id: 1, items: [], items_count: 0 }`
 
 **Headers:**
 - `X-Store-Key`: Tenant identifier (required)
-- `Authorization`: Bearer token (optional for guests)
-- `Accept-Language`: ar or en
+- `X-Branch-Id`: Current branch ID (integer, **required**)
+- `Authorization`: Bearer token
+- `Accept`: application/json (required)
+
+**Behavior:**
+- **Read-only**: Does NOT create a cart if it doesn't exist
+- **Auto-updates branch**: If cart exists with different branch_id, it will be updated to the current branch
+- **Single cart**: Each customer has ONE cart that automatically switches branches
+- Returns empty cart structure if no cart exists
 
 **Response:**
 ```json
@@ -17,6 +62,7 @@
     "message": "تم جلب السلة بنجاح",
     "data": {
         "id": 1,
+        "branch_id": 1,
         "status": "open",
         "items": [
             {
@@ -69,15 +115,19 @@
 }
 ```
 
+**Note:** If no cart exists: `{ id: null, branch_id: 1, items: [], items_count: 0 }`
+
 ---
 
 ### 2. Add Item to Cart - `POST /store/cart/items`
-**Description:** Add a product to cart. If item exists with same variant, quantity will be increased.
+**Description:** Add a product to cart. Creates cart if it doesn't exist.
 
 **Headers:**
 - `X-Store-Key`: Tenant identifier (required)
-- `Content-Type`: application/json
-- `Accept`: application/json
+- `X-Branch-Id`: Branch ID where cart belongs (integer, **required**)
+- `Content-Type`: application/json (required)
+- `Accept`: application/json (required)
+- `Authorization`: Bearer token
 
 **Request Body:**
 ```json
@@ -101,6 +151,27 @@
   "notes": "Please wrap carefully"
 }
 ```
+
+**Body Parameters:**
+- `product_id` (integer, required)
+- `product_variant_id` (integer, optional)
+- `quantity` (integer, required)
+- `addons` (array, optional)
+  - `addon_item_id` (integer, required)
+  - `quantity` (integer, required)
+- `custom_fields` (object, optional)
+- `variant_options` (object, optional)
+- `notes` (string, optional)
+
+**Smart Matching Behavior:**
+- Same product + same variant + same addons + same custom_fields = **Merges** (increases quantity)
+- Different addons or custom_fields = **Separate cart items**
+- Order of addons doesn't matter for matching
+
+**Examples:**
+- Pizza + cheese → Add again → Quantity increases ✅
+- Pizza + cheese → Pizza + olives → Two separate items ✅
+- T-shirt (no addons) → Add again → Quantity increases ✅
 
 **Response:**
 ```json
@@ -155,6 +226,8 @@
 }
 ```
 
+**Note:** This is the ONLY endpoint that creates a cart. Each customer has ONE cart that auto-switches branches.
+
 ---
 
 ### 3. Update Cart Item - `PATCH /store/cart/items/{id}`
@@ -165,8 +238,9 @@
 
 **Headers:**
 - `X-Store-Key`: Tenant identifier (required)
-- `Content-Type`: application/json
-- `Accept`: application/json
+- `Content-Type`: application/json (required)
+- `Accept`: application/json (required)
+- `Authorization`: Bearer token
 
 **Request Body:**
 ```json
@@ -184,6 +258,14 @@
   "notes": "Updated notes"
 }
 ```
+
+**Body Parameters:**
+- `quantity` (integer, required)
+- `addons` (array, optional)
+  - `addon_item_id` (integer, required)
+  - `quantity` (integer, required)
+- `custom_fields` (object, optional)
+- `notes` (string, optional)
 
 **Response:**
 ```json
@@ -232,6 +314,8 @@
 }
 ```
 
+**Note:** branch_id is NOT required - item ID is unique and identifies the cart.
+
 ---
 
 ### 4. Remove Item from Cart - `DELETE /store/cart/items/{id}`
@@ -242,7 +326,8 @@
 
 **Headers:**
 - `X-Store-Key`: Tenant identifier (required)
-- `Accept`: application/json
+- `Accept`: application/json (required)
+- `Authorization`: Bearer token (optional for guests)
 
 **Response:**
 ```json
@@ -253,6 +338,8 @@
 }
 ```
 
+**Note:** branch_id is NOT required - item ID is unique and identifies the cart.
+
 ---
 
 ### 5. Clear Cart - `DELETE /store/cart`
@@ -260,7 +347,13 @@
 
 **Headers:**
 - `X-Store-Key`: Tenant identifier (required)
-- `Accept`: application/json
+- `Accept`: application/json (required)
+- `Authorization`: Bearer token (optional for guests)
+
+**Behavior:**
+- Removes all items from the customer's cart
+- Cart remains with same branch_id (only items are cleared)
+- Branch ID is NOT required (customer has only one cart)
 
 **Response:**
 ```json
@@ -271,16 +364,19 @@
 }
 ```
 
+**Note:** Since each customer has ONE cart, this clears all items regardless of which branch they were added from.
+
 ---
 
 ### 6. Merge Guest Cart - `POST /store/cart/merge`
-**Description:** Merge guest cart with customer cart after login. Duplicate items will have quantities increased.
+**Description:** Merge guest cart with customer cart after login.
 
 **Headers:**
 - `X-Store-Key`: Tenant identifier (required)
+- `X-Branch-Id`: Branch ID for the cart (integer, **required**)
 - `Authorization`: Bearer token (required for authenticated users)
-- `Content-Type`: application/json
-- `Accept`: application/json
+- `Content-Type`: application/json (required)
+- `Accept`: application/json (required)
 
 **Request Body:**
 ```json
@@ -302,6 +398,24 @@
 }
 ```
 
+**Body Parameters:**
+- `guest_cart` (array, required): Array of cart items
+  - `product_id` (integer, required)
+  - `product_variant_id` (integer, optional)
+  - `quantity` (integer, required)
+  - `addons` (array, optional)
+  - `custom_fields` (object, optional)
+  - `variant_options` (object, optional)
+  - `notes` (string, optional)
+
+**Smart Merging Behavior:**
+- Items with matching product + variant + addons + custom_fields → **Quantities merged**
+- Items with different addons/custom_fields → **Added as separate items**
+- Creates cart if customer doesn't have one
+- Updates cart branch_id to specified branch
+
+**Use Case:** Called after customer login to merge their guest session cart with their account cart.
+
 **Response:**
 ```json
 {
@@ -309,6 +423,7 @@
     "message": "تم دمج السلة بنجاح",
     "data": {
         "id": 1,
+        "branch_id": 1,
         "status": "open",
         "items": [
             {
@@ -375,12 +490,19 @@
 ---
 
 ### 7. Validate Cart - `POST /store/cart/validate`
-**Description:** Validate cart before checkout. Checks product availability and stock levels.
+**Description:** Validate cart before checkout. Checks product availability, stock levels, and prices in the current branch.
 
 **Headers:**
 - `X-Store-Key`: Tenant identifier (required)
+- `X-Branch-Id`: Branch ID to validate cart for (integer, **required**)
 - `Authorization`: Bearer token (optional)
-- `Accept`: application/json
+- `Accept`: application/json (required)
+
+**Validation Checks:**
+- Product availability in current branch
+- Sufficient stock in current branch
+- Price changes (returns warnings)
+- Product status (active/inactive)
 
 **Response:**
 ```json
@@ -390,7 +512,17 @@
     "data": {
         "is_valid": true,
         "issues": [],
-        "warnings": []
+        "warnings": [],
+        "cart": {
+            "id": 1,
+            "branch_id": 1,
+            "status": "open",
+            "items": [...],
+            "items_count": 2,
+            "subtotal": 50,
+            "total_addons_price": 0,
+            "total_price": 50
+        }
     }
 }
 ```
@@ -411,10 +543,32 @@
                 "message": "الكمية المطلوبة تتجاوز المخزون المتاح"
             }
         ],
-        "warnings": []
+        "warnings": [
+            {
+                "item_id": 2,
+                "product_id": 2,
+                "product_name": "دبل تشيز برجر",
+                "issue": "price_changed",
+                "message": "سعر المنتج تغير من 35 إلى 42",
+                "old_price": 35,
+                "new_price": 42
+            }
+        ],
+        "cart": {
+            "id": 1,
+            "branch_id": 1,
+            "status": "open",
+            "items": [...],
+            "items_count": 2,
+            "subtotal": 92,
+            "total_addons_price": 0,
+            "total_price": 92
+        }
     }
 }
 ```
+
+**Important:** Since customers can switch branches, items added in one branch may not be available in another. This endpoint validates against the CURRENT branch (X-Branch-Id).
 
 ---
 
@@ -426,7 +580,7 @@
 **Headers:**
 - `X-Store-Key`: Tenant identifier (required)
 - `Authorization`: Bearer token (required)
-- `Accept`: application/json
+- `Accept`: application/json (required)
 
 **Response:**
 ```json
@@ -464,8 +618,8 @@
 **Headers:**
 - `X-Store-Key`: Tenant identifier (required)
 - `Authorization`: Bearer token (required)
-- `Content-Type`: application/json
-- `Accept`: application/json
+- `Content-Type`: application/json (required)
+- `Accept`: application/json (required)
 
 **Request Body:**
 ```json
@@ -473,6 +627,9 @@
   "product_id": 1
 }
 ```
+
+**Body Parameters:**
+- `product_id` (integer, required)
 
 **Response:**
 ```json
@@ -507,7 +664,7 @@
 **Headers:**
 - `X-Store-Key`: Tenant identifier (required)
 - `Authorization`: Bearer token (required)
-- `Accept`: application/json
+- `Accept`: application/json (required)
 
 **Response:**
 ```json
@@ -529,7 +686,7 @@
 **Headers:**
 - `X-Store-Key`: Tenant identifier (required)
 - `Authorization`: Bearer token (required)
-- `Accept`: application/json
+- `Accept`: application/json (required)
 
 **Response (when adding):**
 ```json
@@ -578,8 +735,8 @@
 **Headers:**
 - `X-Store-Key`: Tenant identifier (required)
 - `Authorization`: Bearer token (required)
-- `Content-Type`: application/json
-- `Accept`: application/json
+- `Content-Type`: application/json (required)
+- `Accept`: application/json (required)
 
 **Request Body (optional):**
 ```json
@@ -588,6 +745,10 @@
   "product_variant_id": null
 }
 ```
+
+**Body Parameters:**
+- `quantity` (integer, optional)
+- `product_variant_id` (integer, optional)
 
 **Response:**
 ```json
@@ -633,7 +794,7 @@
 **Headers:**
 - `X-Store-Key`: Tenant identifier (required)
 - `Authorization`: Bearer token (required)
-- `Accept`: application/json
+- `Accept`: application/json (required)
 
 **Response:**
 ```json
@@ -655,7 +816,7 @@
 **Headers:**
 - `X-Store-Key`: Tenant identifier (required)
 - `Authorization`: Bearer token (required)
-- `Accept`: application/json
+- `Accept`: application/json (required)
 
 **Response:**
 ```json
@@ -691,13 +852,37 @@
 |--------|-------------|----------|---------|
 | `X-Store-Key` | Tenant identifier | Yes | `37858998-3343-4293-98ac-1e28cc0f9e27` |
 | `Authorization` | Bearer token | Varies* | `Bearer 1|abc123...` |
+| `X-Branch-Id` | Current branch ID | For cart endpoints** | `1` |
 | `Accept-Language` | Language preference | No | `ar` or `en` |
 | `Content-Type` | Request content type | For POST/PATCH/PUT | `application/json` |
 | `Accept` | Response format | Yes | `application/json` |
 
 ***Note on Authentication:***
-- **Cart endpoints:** Most work for guests (except merge)
+- **Cart endpoints:** Most work for guests (except merge requires auth)
 - **Wishlist endpoints:** All require authentication
+
+****Note on X-Branch-Id:***
+- **Required for:** GET /cart, POST /cart/items, POST /cart/merge, POST /cart/validate
+- **Not required for:** PATCH/DELETE /cart/items, DELETE /cart (item/cart ID is sufficient)
+
+---
+
+## 🔧 Cart System Overview
+
+**Key Concepts:**
+- **Single Cart**: Each customer has ONE cart that automatically switches branches
+- **Branch Context**: Pass branch via `X-Branch-Id` header (not body parameter)
+- **Auto-Switching**: Cart's branch_id updates automatically when customer switches branches
+- **Smart Matching**: Same product with different addons/custom_fields = separate items
+- **Read vs Write**: GET /cart is read-only, POST /cart/items creates cart
+- **No Data Loss**: Items preserved when switching branches, validated at checkout
+
+**Branch Switching Example:**
+1. Customer adds items in Branch A (branch_id=1)
+2. Customer switches to Branch B (branch_id=2)
+3. GET /cart with X-Branch-Id=2 → cart.branch_id updates to 2, items remain
+4. POST /cart/validate checks availability in Branch B
+5. Some items may fail validation if not available in Branch B
 
 ---
 
@@ -723,6 +908,7 @@ All endpoints return consistent error responses:
 - `out_of_stock`: Product out of stock
 - `cart_empty`: Cart has no items
 - `already_in_wishlist`: Product already in wishlist
+- `branch_required`: X-Branch-Id header missing
 
 ---
 
@@ -734,4 +920,14 @@ All endpoints return consistent error responses:
 
 ---
 
-*Last Updated: January 2024*
+## 🎯 Key Changes from Previous Version
+
+1. **Branch Support**: All cart endpoints now require `X-Branch-Id` header
+2. **Single Cart System**: Each customer has one cart that switches branches
+3. **Enhanced Validation**: Returns price change warnings and full cart data
+4. **Improved Responses**: More detailed meta information in responses
+5. **Smart Matching**: Better handling of addons and custom fields
+
+---
+
+*Last Updated: January 2026*

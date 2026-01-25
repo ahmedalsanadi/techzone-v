@@ -39,7 +39,7 @@ export interface ApiCartItem {
     };
     variant: {
         id: number;
-        name: string;
+        title: string;
         price: number;
     } | null;
     quantity: number;

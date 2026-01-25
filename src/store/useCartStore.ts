@@ -95,7 +95,10 @@ function transformApiCartItemToLocal(item: ApiCartItem): CartItem {
         id: localId,
         name: item.product.title,
         image: item.product.cover_image_url,
-        price: item.unit_price,
+        price:
+            item.quantity > 0
+                ? item.total_price / item.quantity
+                : item.unit_price,
         quantity: item.quantity,
         categoryId: item.product.id.toString(),
         metadata: {
@@ -108,7 +111,7 @@ function transformApiCartItemToLocal(item: ApiCartItem): CartItem {
             custom_fields: item.custom_fields || undefined,
             variant_options: item.variant_options || undefined,
             product_variant_id: item.variant?.id || undefined,
-            variety: item.variant ? { name: item.variant.name } : undefined,
+            variety: item.variant ? { name: item.variant.title } : undefined,
         },
     };
 }
