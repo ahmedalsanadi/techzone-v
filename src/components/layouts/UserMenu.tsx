@@ -73,12 +73,8 @@ const UserMenu = () => {
             onOpenChange={setOpen}>
             <DropdownMenuTrigger asChild>
                 <button className="bg-white flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-black/5 shadow-sm cursor-pointer hover:bg-gray-50 transition-all active:scale-95 outline-none h-[38px] lg:h-[42px]">
-                    <div className="size-[28px] lg:size-[32px] bg-red-50 rounded-full flex items-center justify-center border border-red-100 shadow-xs">
-                        <User
-                            size={16}
-                            className="text-libero-red"
-                            strokeWidth={2.5}
-                        />
+                    <div className="size-[28px] lg:size-[32px] bg-theme-primary/10 rounded-full flex items-center justify-center border border-theme-primary shadow-xs">
+                        <User size={16} className="text-theme-primary" />
                     </div>
                     <span className="text-gray-900 font-bold text-[13px] whitespace-nowrap hidden lg:inline mx-1">
                         {isAuthenticated
@@ -87,7 +83,7 @@ const UserMenu = () => {
                     </span>
                     <ChevronDown
                         size={14}
-                        className="text-gray-400 group-hover:text-libero-red transition-colors"
+                        className="text-gray-400 group-hover:text-theme-primary transition-colors"
                     />
                 </button>
             </DropdownMenuTrigger>
@@ -103,7 +99,7 @@ const UserMenu = () => {
                         <Link
                             href="/profile"
                             onClick={closeMenu}
-                            className="absolute top-3 left-3 text-[11px] font-bold text-gray-400 hover:text-libero-red transition-colors bg-gray-50 px-2.5 py-1 rounded-full border border-gray-100 shadow-xs">
+                            className="absolute top-3 left-3 text-[11px] font-bold text-gray-400 hover:text-theme-primary transition-colors bg-gray-50 px-2.5 py-1 rounded-full border border-gray-100 shadow-xs">
                             {t('profile')}
                         </Link>
                     )}
@@ -111,10 +107,10 @@ const UserMenu = () => {
                     <div className="flex flex-col items-center text-center gap-3 mt-1.5">
                         {/* Avatar */}
                         <div className="size-16 bg-gray-50 rounded-full flex items-center justify-center border-2 border-white shadow-lg relative overflow-hidden group">
-                            <div className="absolute inset-0 bg-libero-red/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <div className="absolute inset-0 bg-theme-primary/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                             <User
                                 size={32}
-                                className="text-libero-red"
+                                className="text-theme-primary"
                                 strokeWidth={1.5}
                             />
                         </div>
@@ -145,7 +141,7 @@ const UserMenu = () => {
                                     </div>
 
                                     {/* Points Badge */}
-                                    <div className="mt-1.5 inline-flex items-center gap-1.5 bg-[#FDEDEE] text-[#E03137] px-3 py-1 rounded-full border border-[#FBE3E4]">
+                                    <div className="mt-1.5 max-w-[150px] mx-auto inline-flex items-center gap-1.5 bg-theme-primary/5 text-theme-primary px-3 py-1 rounded-full border border-theme-primary ">
                                         <Star
                                             size={10}
                                             fill="currentColor"
