@@ -67,18 +67,24 @@ function transformApiCartItemToLocal(item: ApiCartItem): CartItem {
 
     if (item.addons && item.addons.length > 0) {
         // Group addons by group name
-        const grouped = item.addons.reduce((acc, addon) => {
-            const groupName = addon.addon_group_name || 'Addons';
-            if (!acc[groupName]) {
-                acc[groupName] = [];
-            }
-            acc[groupName].push({
-                name: addon.addon_item_name,
-                quantity: addon.quantity,
-                price: addon.price,
-            });
-            return acc;
-        }, {} as Record<string, Array<{ name: string; quantity: number; price: number }>>);
+        const grouped = item.addons.reduce(
+            (acc, addon) => {
+                const groupName = addon.addon_group_name || 'Addons';
+                if (!acc[groupName]) {
+                    acc[groupName] = [];
+                }
+                acc[groupName].push({
+                    name: addon.addon_item_name,
+                    quantity: addon.quantity,
+                    price: addon.price,
+                });
+                return acc;
+            },
+            {} as Record<
+                string,
+                Array<{ name: string; quantity: number; price: number }>
+            >,
+        );
 
         Object.entries(grouped).forEach(([groupName, items]) => {
             addonDetails.push({ groupName, items });
@@ -102,6 +108,7 @@ function transformApiCartItemToLocal(item: ApiCartItem): CartItem {
             custom_fields: item.custom_fields || undefined,
             variant_options: item.variant_options || undefined,
             product_variant_id: item.variant?.id || undefined,
+            variety: item.variant ? { name: item.variant.name } : undefined,
         },
     };
 }
@@ -119,7 +126,9 @@ export const useCartStore = create<CartStore>()(
                 // If in guest mode, use local storage
                 if (get().isGuestMode) {
                     const currentItems = get().items;
-                    const existingItem = currentItems.find((i) => i.id === item.id);
+                    const existingItem = currentItems.find(
+                        (i) => i.id === item.id,
+                    );
 
                     if (existingItem) {
                         set({
@@ -130,7 +139,9 @@ export const useCartStore = create<CartStore>()(
                             ),
                         });
                     } else {
-                        set({ items: [...currentItems, { ...item, quantity }] });
+                        set({
+                            items: [...currentItems, { ...item, quantity }],
+                        });
                     }
                 }
                 // If authenticated, this should be called via API (handled in useCartActions)
@@ -184,7 +195,7 @@ export const useCartStore = create<CartStore>()(
                 // Additional guard: Check if we're in a browser environment
                 // and verify authentication state (can't import useAuthStore here due to circular deps)
                 // The calling code should check authentication before calling this
-                
+
                 set({ isLoading: true });
                 try {
                     const cart = await cartService.getCart();

@@ -297,6 +297,9 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                         Object.keys(variantOptions).length > 0
                             ? variantOptions
                             : null,
+                    variety: selectedVariant
+                        ? { name: selectedVariant.title }
+                        : null,
                     addons: selectedAddons, // Keep IDs for reference
                     addonDetails, // Add names for display
                     custom_fields:

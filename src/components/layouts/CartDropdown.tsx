@@ -97,6 +97,24 @@ const CartDropdown = () => {
                                                 {item.metadata.variety.name}
                                             </p>
                                         )}
+                                        {/* Variant Options Summary */}
+                                        {item.metadata?.variant_options &&
+                                            Object.keys(
+                                                item.metadata.variant_options,
+                                            ).length > 0 && (
+                                                <div className="flex flex-wrap gap-1 mt-0.5">
+                                                    {Object.entries(
+                                                        item.metadata
+                                                            .variant_options,
+                                                    ).map(([k, v]) => (
+                                                        <span
+                                                            key={k}
+                                                            className="text-[9px] text-gray-400 bg-gray-50 px-1 rounded border border-gray-100/50">
+                                                            {k}: {String(v)}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            )}
                                         {/* Addons Summary */}
                                         {item.metadata?.addonDetails &&
                                             item.metadata.addonDetails.length >

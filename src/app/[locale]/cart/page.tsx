@@ -173,6 +173,31 @@ const CartPage = () => {
                                                     </div>
                                                 )}
 
+                                            {/* Display Variant Options */}
+                                            {item.metadata?.variant_options &&
+                                                Object.keys(
+                                                    item.metadata
+                                                        .variant_options,
+                                                ).length > 0 && (
+                                                    <div className="mt-2 flex flex-wrap gap-1.5">
+                                                        {Object.entries(
+                                                            item.metadata
+                                                                .variant_options,
+                                                        ).map(
+                                                            ([key, value]) => (
+                                                                <span
+                                                                    key={key}
+                                                                    className="text-[11px] font-bold text-gray-500 bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100">
+                                                                    {key}:{' '}
+                                                                    {String(
+                                                                        value,
+                                                                    )}
+                                                                </span>
+                                                            ),
+                                                        )}
+                                                    </div>
+                                                )}
+
                                             {/* Display Notes */}
                                             {item.metadata?.notes && (
                                                 <div className="mt-2 text-xs text-gray-500 italic">
@@ -273,6 +298,31 @@ const CartPage = () => {
                                                                             ', ',
                                                                         )}
                                                                 </div>
+                                                            ),
+                                                        )}
+                                                    </div>
+                                                )}
+
+                                            {/* Display Variant Options */}
+                                            {item.metadata?.variant_options &&
+                                                Object.keys(
+                                                    item.metadata
+                                                        .variant_options,
+                                                ).length > 0 && (
+                                                    <div className="mt-2 flex flex-wrap gap-1.5">
+                                                        {Object.entries(
+                                                            item.metadata
+                                                                .variant_options,
+                                                        ).map(
+                                                            ([key, value]) => (
+                                                                <span
+                                                                    key={key}
+                                                                    className="text-[11px] font-bold text-gray-500 bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100">
+                                                                    {key}:{' '}
+                                                                    {String(
+                                                                        value,
+                                                                    )}
+                                                                </span>
                                                             ),
                                                         )}
                                                     </div>
