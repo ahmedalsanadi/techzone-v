@@ -11,6 +11,10 @@ import VariantSelector from './product-details/VariantSelector';
 import CustomFieldsForm from './product-details/CustomFieldsForm';
 import ProductShareActions from './product-details/ProductShareActions';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import {
+    generateCartItemId,
+    transformLocalAddonsToApi,
+} from '@/lib/cart/utils';
 import { useCartActions } from '@/hooks/useCartActions';
 import { Product } from '@/services/types';
 import { toast } from 'sonner';
@@ -289,7 +293,12 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
         addToCart(
             {
-                id: `${product.id}-${Date.now()}`, // Unique ID for this configuration
+                id: generateCartItemId(product.id, {
+                    variantId: selectedVariantId,
+                    addons: selectedAddons,
+                    customFields,
+                    notes,
+                }), // Stable ID for this configuration
                 name: product.title,
                 image: product.cover_image_url,
                 price: calculateTotalPrice() / quantity,

@@ -117,270 +117,146 @@ const CartPage = () => {
                                 )}
 
                                 <div className="flex-1 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                    {/* Product Info - Clickable */}
-                                    {productUrl ? (
-                                        <Link
-                                            href={productUrl}
-                                            className="flex-1 hover:opacity-80 transition-opacity cursor-pointer">
+                                    {/* Product Info Content */}
+                                    <div className="flex-1">
+                                        {productUrl ? (
+                                            <Link
+                                                href={productUrl}
+                                                className="group/title block">
+                                                <h3 className="font-bold text-gray-900 text-lg md:text-xl group-hover/title:text-theme-primary transition-colors">
+                                                    {item.name}
+                                                </h3>
+                                            </Link>
+                                        ) : (
                                             <h3 className="font-bold text-gray-900 text-lg md:text-xl">
                                                 {item.name}
                                             </h3>
-                                            {item.metadata?.variety && (
-                                                <p className="text-sm text-gray-400 font-medium -mt-1">
-                                                    {item.metadata.variety.name}
-                                                </p>
-                                            )}
+                                        )}
 
-                                            {/* Display Addons */}
-                                            {item.metadata?.addonDetails &&
-                                                item.metadata.addonDetails
-                                                    .length > 0 && (
-                                                    <div className="mt-2 space-y-1">
-                                                        {item.metadata.addonDetails.map(
-                                                            (
-                                                                addonGroup: any,
-                                                                idx: number,
-                                                            ) => (
-                                                                <div
-                                                                    key={idx}
-                                                                    className="text-xs text-gray-600">
-                                                                    <span className="font-semibold text-gray-700">
-                                                                        {
-                                                                            addonGroup.groupName
-                                                                        }
-                                                                        :
-                                                                    </span>{' '}
-                                                                    {addonGroup.items
-                                                                        .map(
-                                                                            (
-                                                                                item: any,
-                                                                            ) =>
-                                                                                `${
-                                                                                    item.name
-                                                                                }${
-                                                                                    item.quantity >
-                                                                                    1
-                                                                                        ? ` (x${item.quantity})`
-                                                                                        : ''
-                                                                                }`,
-                                                                        )
-                                                                        .join(
-                                                                            ', ',
-                                                                        )}
-                                                                </div>
-                                                            ),
-                                                        )}
-                                                    </div>
-                                                )}
+                                        {item.metadata?.variety && (
+                                            <p className="text-sm text-gray-400 font-medium -mt-1">
+                                                {item.metadata.variety.name}
+                                            </p>
+                                        )}
 
-                                            {/* Display Variant Options */}
-                                            {item.metadata?.variant_options &&
-                                                Object.keys(
-                                                    item.metadata
-                                                        .variant_options,
-                                                ).length > 0 && (
-                                                    <div className="mt-2 flex flex-wrap gap-1.5">
-                                                        {Object.entries(
-                                                            item.metadata
-                                                                .variant_options,
-                                                        ).map(
-                                                            ([key, value]) => (
-                                                                <span
-                                                                    key={key}
-                                                                    className="text-[11px] font-bold text-gray-500 bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100">
-                                                                    {key}:{' '}
-                                                                    {String(
-                                                                        value,
-                                                                    )}
-                                                                </span>
-                                                            ),
-                                                        )}
-                                                    </div>
-                                                )}
-
-                                            {/* Display Notes */}
-                                            {item.metadata?.notes && (
-                                                <div className="mt-2 text-xs text-gray-500 italic">
-                                                    {t('notes')}:{' '}
-                                                    {item.metadata.notes}
+                                        {/* Display Addons */}
+                                        {item.metadata?.addonDetails &&
+                                            item.metadata.addonDetails.length >
+                                                0 && (
+                                                <div className="mt-2 space-y-1">
+                                                    {item.metadata.addonDetails.map(
+                                                        (
+                                                            addonGroup: {
+                                                                groupName: string;
+                                                                items: Array<{
+                                                                    name: string;
+                                                                    quantity: number;
+                                                                }>;
+                                                            },
+                                                            idx: number,
+                                                        ) => (
+                                                            <div
+                                                                key={idx}
+                                                                className="text-xs text-gray-600">
+                                                                <span className="font-semibold text-gray-700">
+                                                                    {
+                                                                        addonGroup.groupName
+                                                                    }
+                                                                    :
+                                                                </span>{' '}
+                                                                {addonGroup.items
+                                                                    .map(
+                                                                        (addonItem: {
+                                                                            name: string;
+                                                                            quantity: number;
+                                                                        }) =>
+                                                                            `${
+                                                                                addonItem.name
+                                                                            }${
+                                                                                addonItem.quantity >
+                                                                                1
+                                                                                    ? ` (x${addonItem.quantity})`
+                                                                                    : ''
+                                                                            }`,
+                                                                    )
+                                                                    .join(', ')}
+                                                            </div>
+                                                        ),
+                                                    )}
                                                 </div>
                                             )}
 
-                                            <div className="flex items-center gap-1 mt-1 text-theme-primary font-black">
-                                                <span>
-                                                    {item.price * item.quantity}
-                                                </span>
-                                                <CurrencySymbol className="w-3.5 h-3.5" />
-                                            </div>
-
-                                            {/* Display Custom Fields */}
-                                            {item.metadata?.custom_fields &&
-                                                Object.keys(
-                                                    item.metadata.custom_fields,
-                                                ).length > 0 && (
-                                                    <div className="mt-2 space-y-0.5 border-t border-gray-100 pt-2">
-                                                        {Object.entries(
-                                                            item.metadata
-                                                                .custom_fields,
-                                                        ).map(
-                                                            ([key, value]) => (
-                                                                <div
-                                                                    key={key}
-                                                                    className="text-[11px] text-gray-500 flex items-center justify-between">
-                                                                    <span className="font-semibold text-gray-600 capitalize">
-                                                                        {key.replace(
-                                                                            /_/g,
-                                                                            ' ',
-                                                                        )}
-                                                                        :
-                                                                    </span>
-                                                                    <span className="truncate ml-2 text-gray-700">
-                                                                        {typeof value ===
-                                                                        'boolean'
-                                                                            ? value
-                                                                                ? 'Yes'
-                                                                                : 'No'
-                                                                            : String(
-                                                                                  value,
-                                                                              )}
-                                                                    </span>
-                                                                </div>
-                                                            ),
-                                                        )}
-                                                    </div>
-                                                )}
-                                        </Link>
-                                    ) : (
-                                        <div className="flex-1">
-                                            <h3 className="font-bold text-gray-900 text-lg md:text-xl">
-                                                {item.name}
-                                            </h3>
-                                            {item.metadata?.variety && (
-                                                <p className="text-sm text-gray-400 font-medium -mt-1">
-                                                    {item.metadata.variety.name}
-                                                </p>
-                                            )}
-
-                                            {/* Display Addons */}
-                                            {item.metadata?.addonDetails &&
-                                                item.metadata.addonDetails
-                                                    .length > 0 && (
-                                                    <div className="mt-2 space-y-1">
-                                                        {item.metadata.addonDetails.map(
-                                                            (
-                                                                addonGroup: any,
-                                                                idx: number,
-                                                            ) => (
-                                                                <div
-                                                                    key={idx}
-                                                                    className="text-xs text-gray-600">
-                                                                    <span className="font-semibold text-gray-700">
-                                                                        {
-                                                                            addonGroup.groupName
-                                                                        }
-                                                                        :
-                                                                    </span>{' '}
-                                                                    {addonGroup.items
-                                                                        .map(
-                                                                            (
-                                                                                item: any,
-                                                                            ) =>
-                                                                                `${
-                                                                                    item.name
-                                                                                }${
-                                                                                    item.quantity >
-                                                                                    1
-                                                                                        ? ` (x${item.quantity})`
-                                                                                        : ''
-                                                                                }`,
-                                                                        )
-                                                                        .join(
-                                                                            ', ',
-                                                                        )}
-                                                                </div>
-                                                            ),
-                                                        )}
-                                                    </div>
-                                                )}
-
-                                            {/* Display Variant Options */}
-                                            {item.metadata?.variant_options &&
-                                                Object.keys(
-                                                    item.metadata
-                                                        .variant_options,
-                                                ).length > 0 && (
-                                                    <div className="mt-2 flex flex-wrap gap-1.5">
-                                                        {Object.entries(
-                                                            item.metadata
-                                                                .variant_options,
-                                                        ).map(
-                                                            ([key, value]) => (
-                                                                <span
-                                                                    key={key}
-                                                                    className="text-[11px] font-bold text-gray-500 bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100">
-                                                                    {key}:{' '}
-                                                                    {String(
-                                                                        value,
-                                                                    )}
-                                                                </span>
-                                                            ),
-                                                        )}
-                                                    </div>
-                                                )}
-
-                                            {/* Display Notes */}
-                                            {item.metadata?.notes && (
-                                                <div className="mt-2 text-xs text-gray-500 italic">
-                                                    {t('notes')}:{' '}
-                                                    {item.metadata.notes}
+                                        {/* Display Variant Options */}
+                                        {item.metadata?.variant_options &&
+                                            Object.keys(
+                                                item.metadata.variant_options,
+                                            ).length > 0 && (
+                                                <div className="mt-2 flex flex-wrap gap-1.5">
+                                                    {Object.entries(
+                                                        item.metadata
+                                                            .variant_options,
+                                                    ).map(([key, value]) => (
+                                                        <span
+                                                            key={key}
+                                                            className="text-[11px] font-bold text-gray-500 bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100">
+                                                            {key}:{' '}
+                                                            {String(value)}
+                                                        </span>
+                                                    ))}
                                                 </div>
                                             )}
 
-                                            <div className="flex items-center gap-1 mt-1 text-theme-primary font-black">
-                                                <span>
-                                                    {item.price * item.quantity}
-                                                </span>
-                                                <CurrencySymbol className="w-3.5 h-3.5" />
+                                        {/* Display Notes */}
+                                        {item.metadata?.notes && (
+                                            <div className="mt-2 text-xs text-gray-500 italic">
+                                                {t('notes')}:{' '}
+                                                {item.metadata.notes}
                                             </div>
+                                        )}
 
-                                            {/* Display Custom Fields */}
-                                            {item.metadata?.custom_fields &&
-                                                Object.keys(
-                                                    item.metadata.custom_fields,
-                                                ).length > 0 && (
-                                                    <div className="mt-2 space-y-0.5 border-t border-gray-100 pt-2">
-                                                        {Object.entries(
-                                                            item.metadata
-                                                                .custom_fields,
-                                                        ).map(
-                                                            ([key, value]) => (
-                                                                <div
-                                                                    key={key}
-                                                                    className="text-[11px] text-gray-500 flex items-center justify-between">
-                                                                    <span className="font-semibold text-gray-600 capitalize">
-                                                                        {key.replace(
-                                                                            /_/g,
-                                                                            ' ',
-                                                                        )}
-                                                                        :
-                                                                    </span>
-                                                                    <span className="truncate ml-2 text-gray-700">
-                                                                        {typeof value ===
-                                                                        'boolean'
-                                                                            ? value
-                                                                                ? 'Yes'
-                                                                                : 'No'
-                                                                            : String(
-                                                                                  value,
-                                                                              )}
-                                                                    </span>
-                                                                </div>
-                                                            ),
-                                                        )}
-                                                    </div>
-                                                )}
+                                        {/* Price */}
+                                        <div className="flex items-center gap-1 mt-1 text-theme-primary font-black">
+                                            <span>
+                                                {item.price * item.quantity}
+                                            </span>
+                                            <CurrencySymbol className="w-3.5 h-3.5" />
                                         </div>
-                                    )}
+
+                                        {/* Display Custom Fields */}
+                                        {item.metadata?.custom_fields &&
+                                            Object.keys(
+                                                item.metadata.custom_fields,
+                                            ).length > 0 && (
+                                                <div className="mt-2 space-y-0.5 border-t border-gray-100 pt-2">
+                                                    {Object.entries(
+                                                        item.metadata
+                                                            .custom_fields,
+                                                    ).map(([key, value]) => (
+                                                        <div
+                                                            key={key}
+                                                            className="text-[11px] text-gray-500 flex items-center justify-between">
+                                                            <span className="font-semibold text-gray-600 capitalize">
+                                                                {key.replace(
+                                                                    /_/g,
+                                                                    ' ',
+                                                                )}
+                                                                :
+                                                            </span>
+                                                            <span className="truncate ml-2 text-gray-700">
+                                                                {typeof value ===
+                                                                'boolean'
+                                                                    ? value
+                                                                        ? 'Yes'
+                                                                        : 'No'
+                                                                    : String(
+                                                                          value,
+                                                                      )}
+                                                            </span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                    </div>
 
                                     <div
                                         className="flex items-center gap-4"

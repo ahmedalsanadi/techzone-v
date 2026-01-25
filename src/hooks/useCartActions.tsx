@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { ShoppingCart } from 'lucide-react';
 import React from 'react';
 import { useRouter } from '@/i18n/navigation';
+import { transformLocalAddonsToApi } from '@/lib/cart/utils';
 import type { AddCartAddon } from '@/types/cart';
 
 export const useCartActions = () => {
@@ -36,29 +37,13 @@ export const useCartActions = () => {
                 }
 
                 // Transform addons to API format
-                const addons: AddCartAddon[] = [];
-                const localAddons = item.metadata?.addons;
-                
-                if (localAddons && typeof localAddons === 'object') {
-                    Object.entries(localAddons).forEach(([groupId, items]) => {
-                        if (items && typeof items === 'object') {
-                            Object.entries(items).forEach(([itemId, qty]) => {
-                                const addonQty = typeof qty === 'number' ? qty : 0;
-                                if (addonQty > 0) {
-                                    addons.push({
-                                        addon_item_id: parseInt(itemId, 10),
-                                        quantity: addonQty,
-                                    });
-                                }
-                            });
-                        }
-                    });
-                }
+                const addons = transformLocalAddonsToApi(item.metadata?.addons);
 
                 // Prepare API request
                 const apiRequest = {
                     product_id: productId,
-                    product_variant_id: item.metadata?.product_variant_id || null,
+                    product_variant_id:
+                        item.metadata?.product_variant_id || null,
                     quantity,
                     ...(addons.length > 0 && { addons }),
                     ...(item.metadata?.notes && { notes: item.metadata.notes }),
@@ -77,7 +62,12 @@ export const useCartActions = () => {
                 await syncWithAPI();
 
                 toast.success(t('added', { name: item.name }), {
-                    icon: <ShoppingCart size={18} className="text-theme-primary" />,
+                    icon: (
+                        <ShoppingCart
+                            size={18}
+                            className="text-theme-primary"
+                        />
+                    ),
                     description: t('viewCart'),
                     action: {
                         label: t('viewCart'),
@@ -109,7 +99,9 @@ export const useCartActions = () => {
         if (isAuthenticated && !isGuestMode) {
             try {
                 // Extract API item ID from metadata
-                const item = useCartStore.getState().items.find((i) => i.id === itemId);
+                const item = useCartStore
+                    .getState()
+                    .items.find((i) => i.id === itemId);
                 const apiItemId = item?.metadata?.apiItemId;
 
                 if (!apiItemId || typeof apiItemId !== 'number') {
@@ -126,7 +118,10 @@ export const useCartActions = () => {
 
                 toast.success(t('removed') || 'تم حذف المنتج من السلة');
             } catch (error) {
-                console.error('Failed to remove item from cart via API:', error);
+                console.error(
+                    'Failed to remove item from cart via API:',
+                    error,
+                );
                 toast.error(t('removeError') || 'فشل حذف المنتج من السلة');
             }
         } else {
@@ -146,7 +141,9 @@ export const useCartActions = () => {
         if (isAuthenticated && !isGuestMode) {
             try {
                 // Extract API item ID from metadata
-                const item = useCartStore.getState().items.find((i) => i.id === itemId);
+                const item = useCartStore
+                    .getState()
+                    .items.find((i) => i.id === itemId);
                 const apiItemId = item?.metadata?.apiItemId;
 
                 if (!apiItemId || typeof apiItemId !== 'number') {

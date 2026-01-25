@@ -1,8 +1,9 @@
 //src/store/useCartStore.ts
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import type { ApiCart, ApiCartItem } from '@/types/cart';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import { cartService } from '@/services/cart-service';
+import type { ApiCart, ApiCartItem } from '@/types/cart';
+import { generateCartItemId } from '@/lib/cart/utils';
 
 export interface CartItem {
     id: string;
@@ -37,12 +38,17 @@ interface CartStore {
     getGuestCartItems: () => CartItem[];
 }
 
-/**
- * Transform API cart item to local cart item format
- */
 function transformApiCartItemToLocal(item: ApiCartItem): CartItem {
-    // Use API item ID as the local ID
-    const localId = `api-${item.id}`;
+    // Generate a stable local ID based on the product composition
+    const localId = generateCartItemId(item.product.id, {
+        variantId: item.variant?.id,
+        addons: item.addons?.map((a) => ({
+            id: a.addon_item_id,
+            qty: a.quantity,
+        })),
+        customFields: item.custom_fields,
+        notes: item.notes,
+    });
 
     // Transform addons back to local format
     const addons: Record<number, Record<number, number>> = {};
