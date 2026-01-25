@@ -238,6 +238,13 @@ export default function AddonSelector({
                                                 {item.description}
                                             </p>
                                         )}
+                                        {item.max_quantity !== null && (
+                                            <span className="text-[10px] font-medium text-gray-400">
+                                                {t('maxQuantity') ||
+                                                    'الحد الأقصى'}
+                                                : {item.max_quantity}
+                                            </span>
+                                        )}
                                     </div>
 
                                     <div className="flex items-center gap-3">
