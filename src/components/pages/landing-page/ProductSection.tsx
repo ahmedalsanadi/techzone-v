@@ -82,6 +82,8 @@ const ProductSection: React.FC<ProductSectionProps> = ({
                             price={displayPrice}
                             oldPrice={oldPrice}
                             href={productHref}
+                            productId={product.id}
+                            productSlug={product.slug}
                             discountBadge={
                                 hasDiscount
                                     ? t('save', {

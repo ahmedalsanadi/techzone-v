@@ -79,6 +79,8 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
                             price={product.price}
                             oldPrice={product.sale_price}
                             href={`/products/${product.slug}`}
+                            productId={product.id}
+                            productSlug={product.slug}
                             addToCartLabel={t('addToCart')}
                             onAddToCartClick={() => onAddToCart?.(product)}
                         />

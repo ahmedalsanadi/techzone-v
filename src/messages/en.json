@@ -296,6 +296,21 @@
     "updateError": "Failed to update quantity",
     "removed": "Product removed from cart"
   },
+  "Wishlist": {
+    "title": "Wishlist",
+    "empty": "Your wishlist is empty",
+    "emptyDesc": "It looks like you haven't added any products to your wishlist yet. Explore our menu and add your favorites!",
+    "backToMenu": "Back to Menu",
+    "viewWishlist": "View Wishlist",
+    "items": "{count} items",
+    "added": "Added to wishlist",
+    "removed": "Removed from wishlist",
+    "addError": "Failed to add product to wishlist",
+    "removeError": "Failed to remove product from wishlist",
+    "toggleError": "Failed to update wishlist",
+    "addToCart": "Add to Cart",
+    "discount": "Sale"
+  },
   "Category": {
     "categories": "Categories",
     "categories_description": "Browse all our store categories",

@@ -26,6 +26,7 @@ import {
 import { useRouter } from '@/i18n/navigation';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useCartStore } from '@/store/useCartStore';
+import { useWishlistStore } from '@/store/useWishlistStore';
 import { authService } from '@/services/auth-service';
 
 const UserMenu = () => {
@@ -40,6 +41,7 @@ const UserMenu = () => {
         logout: clearAuth,
     } = useAuthStore();
     const { setGuestMode, clearCart } = useCartStore();
+    const { setGuestMode: setWishlistGuestMode, clearWishlist } = useWishlistStore();
 
     const handleLogout = async () => {
         setOpen(false);

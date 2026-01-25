@@ -6,6 +6,8 @@ import DynamicImage from './DynamicImage';
 import { Heart, Plus, ShoppingBasket } from 'lucide-react';
 import CurrencySymbol from './CurrencySymbol';
 import { Link } from '@/i18n/navigation';
+import { useWishlistActions } from '@/hooks/useWishlistActions';
+import { useWishlistStore } from '@/store/useWishlistStore';
 
 interface ProductCardProps {
     name: string;
@@ -16,7 +18,9 @@ interface ProductCardProps {
     addToCartLabel?: string;
     href?: string;
     priority?: boolean;
-    onWishlistClick?: (e: React.MouseEvent) => void;
+    productId?: number; // Product ID for wishlist functionality
+    productSlug?: string; // Product slug for wishlist functionality
+    onWishlistClick?: (e: React.MouseEvent) => void; // Optional custom handler
     onAddToCartClick?: (e: React.MouseEvent) => void;
     onClick?: () => void;
 }
@@ -30,23 +34,60 @@ const ProductCard: React.FC<ProductCardProps> = ({
     addToCartLabel,
     href = '#',
     priority = false,
+    productId,
+    productSlug,
     onWishlistClick,
     onAddToCartClick,
     onClick,
 }) => {
+    const { toggleWishlist } = useWishlistActions();
+    // Subscribe to items array to make it reactive
+    const wishlistItems = useWishlistStore((state) => state.items);
+    const isInWishlistState = productId
+        ? wishlistItems.some((item) => item.productId === productId)
+        : false;
+
+    const handleWishlistClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        
+        // Use custom handler if provided
+        if (onWishlistClick) {
+            onWishlistClick(e);
+            return;
+        }
+        
+        // Otherwise use default wishlist handler
+        if (productId) {
+            const numericPrice = typeof price === 'string' ? parseFloat(price) : price;
+            const numericOldPrice = oldPrice 
+                ? (typeof oldPrice === 'string' ? parseFloat(oldPrice) : oldPrice)
+                : null;
+            
+            toggleWishlist(productId, {
+                productId,
+                name,
+                image,
+                price: numericPrice,
+                salePrice: numericOldPrice,
+                slug: productSlug || href.replace('/products/', ''),
+            });
+        }
+    };
+
     return (
         <div
             onClick={onClick}
             className="bg-white border border-gray-100 rounded-xl overflow-hidden relative group shadow-sm flex flex-col h-full">
             {/* Wishlist Button */}
             <button
-                onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    onWishlistClick?.(e);
-                }}
-                className="absolute top-3 left-3 w-8 h-8 bg-white/90 backdrop-blur-sm shadow-sm rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 transition-all z-20 cursor-pointer">
-                <Heart className="w-4 h-4" />
+                onClick={handleWishlistClick}
+                className={`absolute top-3 left-3 w-8 h-8 bg-white/90 backdrop-blur-sm shadow-sm rounded-full flex items-center justify-center transition-all z-20 cursor-pointer ${
+                    isInWishlistState
+                        ? 'text-red-500 fill-red-500'
+                        : 'text-gray-400 hover:text-red-500'
+                }`}>
+                <Heart className={`w-4 h-4 ${isInWishlistState ? 'fill-current' : ''}`} />
             </button>
 
             {/* Link wrapper for Image and Info */}
