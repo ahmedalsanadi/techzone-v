@@ -86,7 +86,9 @@ export const useWishlistStore = create<WishlistStore>()(
                 // If in guest mode, remove from local storage
                 if (get().isGuestMode) {
                     set({
-                        items: get().items.filter((i) => i.productId !== productId),
+                        items: get().items.filter(
+                            (i) => i.productId !== productId,
+                        ),
                     });
                 }
                 // If authenticated, this should be called via API (handled in useWishlistActions)
@@ -101,16 +103,25 @@ export const useWishlistStore = create<WishlistStore>()(
                 return get().items.length;
             },
             syncWithAPI: async () => {
-                // CRITICAL: Only sync if authenticated and not in guest mode
-                if (get().isGuestMode) {
-                    return; // Don't sync if in guest mode
-                }
-
+                // Determine if we should sync based on auth state
+                // This is now more flexible to allow forced syncs
                 set({ isLoading: true });
                 try {
                     const wishlist = await wishlistService.getWishlist();
-                    get().setWishlistFromAPI(wishlist);
-                    set({ lastSyncedAt: Date.now() });
+                    console.log(
+                        '[WishlistStore] Received wishlist from API:',
+                        wishlist,
+                    );
+
+                    if (wishlist) {
+                        get().setWishlistFromAPI(wishlist);
+                        set({ lastSyncedAt: Date.now() });
+                    } else {
+                        console.warn(
+                            '[WishlistStore] API returned empty wishlist data',
+                        );
+                        set({ items: [] });
+                    }
                 } catch (error) {
                     console.error('Failed to sync wishlist with API:', error);
                     // Don't throw - allow fallback to local state
@@ -126,9 +137,30 @@ export const useWishlistStore = create<WishlistStore>()(
                     set({ items: [] });
                 }
             },
-            setWishlistFromAPI: (items) => {
+            setWishlistFromAPI: (data) => {
                 // Transform API wishlist items to local format
-                const localItems = items.map(transformApiWishlistItemToLocal);
+                // Handle cases where data might be the full response object or missing items
+                let itemsArray: ApiWishlistItem[] = [];
+
+                if (Array.isArray(data)) {
+                    itemsArray = data;
+                } else if (data && typeof data === 'object') {
+                    // Check if data is wrapped in another object (e.g. { data: [], ... })
+                    if (Array.isArray((data as any).data)) {
+                        itemsArray = (data as any).data;
+                    } else if (Array.isArray((data as any).items)) {
+                        itemsArray = (data as any).items;
+                    } else {
+                        console.error(
+                            '[WishlistStore] Expected array in setWishlistFromAPI but got:',
+                            data,
+                        );
+                    }
+                }
+
+                const localItems = itemsArray.map(
+                    transformApiWishlistItemToLocal,
+                );
                 set({
                     items: localItems,
                 });
