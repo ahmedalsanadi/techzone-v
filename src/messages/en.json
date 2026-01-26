@@ -531,5 +531,20 @@
     "storeUnavailable": "Store Unavailable",
     "description": "We&apos;re sorry, but the store you&apos;re looking for is currently unavailable or doesn&apos;t exist.",
     "tryAgain": "Try Again"
+  },
+  "ReportProblem": {
+    "title": "Report a Problem",
+    "problemType": "Select Problem Type:",
+    "problemDescription": "Write something about the problem:",
+    "addImages": "Add images explaining your problem:",
+    "submit": "Submit",
+    "types": {
+      "type1": "Type 1",
+      "type2": "Type 2",
+      "type3": "Type 3",
+      "type4": "Type 4",
+      "type5": "Type 5"
+    },
+    "uploadDesc": "Click or drag images here to upload"
   }
 }
