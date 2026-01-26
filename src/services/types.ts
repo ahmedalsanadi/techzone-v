@@ -17,6 +17,7 @@ export interface StoreTheme {
     primary_color: string;
     secondary_color: string;
     logo_url: string;
+    icon_url?: string;
 }
 
 export interface AppVersion {

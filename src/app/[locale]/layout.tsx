@@ -139,7 +139,12 @@ export default async function RootLayout({
                     <>
                         <link
                             rel="icon"
-                            href={storeConfig.store.logo_url || '/favicon.ico'}
+                            href={
+                                storeConfig.theme.icon_url ||
+                                storeConfig.theme.logo_url ||
+                                storeConfig.store.logo_url ||
+                                '/favicon.ico'
+                            }
                         />
                         <meta
                             name="theme-color"
