@@ -39,13 +39,8 @@ export const TransactionList: React.FC<TransactionListProps> = ({
                     <div
                         key={tx.id}
                         className="bg-white rounded-2xl md:rounded-3xl p-5 md:p-6 shadow-sm border border-gray-100 transition-all hover:shadow-md hover:shadow-gray-100 group flex items-center justify-between gap-4">
-                        {/* Transaction Date */}
-                        <div className="text-sm font-bold text-gray-500">
-                            {tx.date}
-                        </div>
-
                         {/* Transaction Details */}
-                        <div className="flex flex-col items-end text-end flex-1 min-w-0">
+                        <div className="flex flex-col flex-1 min-w-0">
                             <div className="flex items-center gap-2 max-w-full">
                                 <h3 className="text-base md:text-lg font-bold text-gray-900 truncate">
                                     {tx.type === 'purchase' && tx.refNumber
@@ -62,17 +57,22 @@ export const TransactionList: React.FC<TransactionListProps> = ({
                                         ? 'text-emerald-500'
                                         : 'text-rose-500',
                                 )}>
-                                <span>
-                                    {tx.type === 'add' ? '+' : '-'}
-                                    {tx.amount.toFixed(2)}
-                                </span>
-                                <CurrencySymbol className="w-4 h-4 md:w-5 md:h-5" />
                                 {tx.type === 'add' ? (
                                     <TrendingUp className="w-5 h-5 md:w-6 md:h-6 ml-1" />
                                 ) : (
                                     <TrendingDown className="w-5 h-5 md:w-6 md:h-6 ml-1" />
                                 )}
+                                <span>
+                                    {tx.type === 'add' ? '+' : '-'}
+                                    {tx.amount.toFixed(2)}
+                                </span>
+                                <CurrencySymbol className="w-4 h-4 md:w-5 md:h-5" />
                             </div>
+                        </div>
+
+                        {/* Transaction Date */}
+                        <div className="text-sm font-bold text-gray-500">
+                            {tx.date}
                         </div>
                     </div>
                 ))}

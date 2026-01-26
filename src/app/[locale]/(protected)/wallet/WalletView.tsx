@@ -85,7 +85,7 @@ export default function WalletView({ balance }: WalletViewProps) {
 
     return (
         <main className="min-h-screen bg-gray-50/30 py-8">
-            <div className="container mx-auto px-4 max-w-6xl">
+            <div className="container mx-auto px-6">
                 <Breadcrumbs items={breadcrumbItems} />
 
                 <div className="mt-8 mb-12">
@@ -95,13 +95,12 @@ export default function WalletView({ balance }: WalletViewProps) {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Sidebar: Wallet Balance (RIGHT in RTL, LEFT in LTR) */}
-                    {/* We keep the same structure as contact page: Sidebar first in DOM */}
+                    {/* Sidebar: Wallet Balance */}
                     <div className="space-y-6">
                         <WalletBalanceCard balance={balance} />
                     </div>
 
-                    {/* Main Content: Transaction History (LEFT in RTL, RIGHT in LTR) */}
+                    {/* Main Content: Transaction History */}
                     <div className="lg:col-span-2">
                         <TransactionList transactions={transactions} />
                     </div>
