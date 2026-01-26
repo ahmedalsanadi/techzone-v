@@ -144,10 +144,10 @@ const HeroSlider = () => {
                                 {/* Footer Info (Contact & Website) */}
                                 <div className="absolute bottom-8 right-10 lg:right-20 text-right hidden md:block z-10">
                                     <p className="text-white font-bold text-2xl tracking-tighter">
-                                        609-791-3583
+                                        +966-555-555-555
                                     </p>
                                     <p className="text-white/50 text-xs tracking-[0.3em] uppercase mt-1">
-                                        WWW.YOURWEBSITE.COM
+                                        www.Fitoro.com
                                     </p>
                                 </div>
 
