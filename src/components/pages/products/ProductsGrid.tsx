@@ -37,7 +37,7 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
                     'grid grid-cols-1 gap-4 md:gap-6',
                     variant === 'compact'
                         ? 'sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-                        : 'sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5',
+                        : 'sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4',
                 )}>
                 {Array.from({ length: 8 }).map((_, i) => (
                     <div
@@ -69,7 +69,7 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
                         'grid grid-cols-1 gap-4 md:gap-6',
                         variant === 'compact'
                             ? 'sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-                            : 'sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5',
+                            : 'sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4',
                     )}>
                     {products.map((product) => (
                         <ProductCard

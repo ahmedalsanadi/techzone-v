@@ -61,7 +61,7 @@ const HeroSlider = () => {
                                         viewBox="0 0 200 200"
                                         fill="none"
                                         xmlns="http://www.w3.org/2000/svg"
-                                        className="w-full h-full text-orange-500">
+                                        className="w-full h-full text-theme-primary">
                                         <path
                                             d="M0 0C50 20 80 50 100 100C120 150 150 180 200 200"
                                             stroke="currentColor"
@@ -75,7 +75,7 @@ const HeroSlider = () => {
                                         viewBox="0 0 200 200"
                                         fill="none"
                                         xmlns="http://www.w3.org/2000/svg"
-                                        className="w-full h-full text-orange-500">
+                                        className="w-full h-full text-theme-primary">
                                         <path
                                             d="M0 200C50 180 80 150 100 100C120 50 150 20 200 0"
                                             stroke="currentColor"
@@ -88,18 +88,18 @@ const HeroSlider = () => {
                                 <div className="container mx-auto px-6 md:px-8 lg:px-20 grid grid-cols-1 md:grid-cols-2 items-center gap-4 md:gap-8 h-full relative z-10">
                                     {/* Content Side */}
                                     <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-1 md:space-y-4 pt-12 md:pt-0">
-                                        <span className="text-[#FFB800] text-lg md:text-2xl lg:text-3xl font-semibold tracking-tight uppercase">
+                                        <span className="text-theme-primary text-lg md:text-2xl lg:text-3xl font-semibold tracking-tight uppercase">
                                             {slide.subtitle}
                                         </span>
                                         <h1 className="text-white text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-black leading-none tracking-tighter drop-shadow-lg">
                                             {slide.title}
                                         </h1>
-                                        <p className="text-[#FFB800] text-xl md:text-3xl lg:text-4xl italic font-serif leading-tight">
+                                        <p className="text-theme-primary text-xl md:text-3xl lg:text-4xl italic font-serif leading-tight">
                                             {slide.deal}
                                         </p>
 
                                         <div className="pt-4 md:pt-8">
-                                            <button className="bg-[#FFB800] hover:bg-white hover:text-black text-white px-8 py-3 md:px-10 md:py-4 rounded-full flex items-center gap-3 md:gap-4 transition-all duration-300 transform hover:scale-105 active:scale-95 group cursor-pointer shadow-lg shadow-orange-500/20">
+                                            <button className="bg-theme-primary hover:bg-white hover:text-black text-white px-8 py-3 md:px-10 md:py-4 rounded-full flex items-center gap-3 md:gap-4 transition-all duration-300 transform hover:scale-105 active:scale-95 group cursor-pointer shadow-lg shadow-theme-primary/20">
                                                 <span className="font-bold tracking-wider text-base md:text-lg">
                                                     ORDER NOW
                                                 </span>
@@ -114,7 +114,7 @@ const HeroSlider = () => {
                                     <div className="relative h-full flex items-center justify-center pb-8 md:pb-0">
                                         {/* 50% Off Badge */}
                                         <div className="absolute top-0 right-0 md:top-10 md:right-0 lg:right-10 z-20 animate-bounce-slow">
-                                            <div className="bg-[#FFB800] w-24 h-24 md:w-36 md:h-36 rounded-full flex flex-col items-center justify-center text-white border-4 border-white/30 shadow-2xl transform -rotate-12 hover:rotate-0 transition-transform duration-500">
+                                            <div className="bg-theme-primary w-24 h-24 md:w-36 md:h-36 rounded-full flex flex-col items-center justify-center text-white border-4 border-white/30 shadow-2xl transform -rotate-12 hover:rotate-0 transition-transform duration-500">
                                                 <span className="text-2xl md:text-5xl font-black leading-none">
                                                     {
                                                         slide.discount.split(
@@ -154,7 +154,7 @@ const HeroSlider = () => {
                                 {/* Logo/Brand at top left */}
                                 <div className="absolute top-6 left-6 md:top-10 md:left-20 z-10">
                                     <span className="text-white text-xl md:text-2xl font-black tracking-tighter flex items-center gap-2 opacity-90">
-                                        <span className="bg-[#FFB800] w-6 h-6 md:w-8 md:h-8 rounded-lg flex items-center justify-center text-xs md:text-sm text-white shadow-lg">
+                                        <span className="bg-theme-primary w-6 h-6 md:w-8 md:h-8 rounded-lg flex items-center justify-center text-xs md:text-sm text-white shadow-lg">
                                             T
                                         </span>
                                         HERE
