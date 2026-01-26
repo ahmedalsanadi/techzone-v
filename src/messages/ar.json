@@ -546,5 +546,14 @@
       "type5": "النوع الخامس"
     },
     "uploadDesc": "انقر أو اسحب الصور هنا للتحميل"
+  },
+  "Wallet": {
+    "title": "المحفظة",
+    "home": "الرئيسية",
+    "balance": "رصيد المحفظة",
+    "addBalance": "اضافة رصيد",
+    "transactions": "سجل العمليات",
+    "addBalanceTitle": "اضافة رصيد",
+    "orderPurchase": "شراء الطلب #{number}"
   }
 }

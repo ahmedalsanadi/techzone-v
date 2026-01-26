@@ -546,5 +546,14 @@
       "type5": "Type 5"
     },
     "uploadDesc": "Click or drag images here to upload"
+  },
+  "Wallet": {
+    "title": "Wallet",
+    "home": "Home",
+    "balance": "Wallet Balance",
+    "addBalance": "Add balance",
+    "transactions": "Transaction History",
+    "addBalanceTitle": "Add Balance",
+    "orderPurchase": "Order Purchase #{number}"
   }
 }
