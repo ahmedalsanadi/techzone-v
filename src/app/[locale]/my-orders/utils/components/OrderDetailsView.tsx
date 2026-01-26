@@ -58,23 +58,37 @@ export default function OrderDetailsView({ order }: OrderDetailsViewProps) {
 
                 {/* Action Buttons */}
                 <div className="grid grid-cols-2 md:flex md:flex-wrap items-center gap-2 md:gap-3 w-full md:w-auto">
-                    <Button variant="outline" size="sm" className="w-full md:w-auto">
-                        <Info className="w-4 h-4" />
-                        <span className="truncate">
-                            {t('actions.reportProblem')}
-                        </span>
-                    </Button>
-                    <Button variant="outline" size="sm" className="w-full md:w-auto">
+                    <Link href={`/my-orders/${order.id}/report-problem`}>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full md:w-auto">
+                            <Info className="w-4 h-4" />
+                            <span className="truncate">
+                                {t('actions.reportProblem')}
+                            </span>
+                        </Button>
+                    </Link>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full md:w-auto">
                         <Star className="w-4 h-4" />
                         <span className="truncate">
                             {t('actions.rateOrder')}
                         </span>
                     </Button>
-                    <Button variant="outline" size="sm" className="w-full md:w-auto">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full md:w-auto">
                         <RotateCcw className="w-4 h-4" />
                         <span className="truncate">{t('actions.reorder')}</span>
                     </Button>
-                    <Button variant="destructive" size="sm" className="w-full md:w-auto">
+                    <Button
+                        variant="destructive"
+                        size="sm"
+                        className="w-full md:w-auto">
                         <X className="w-4 h-4" />
                         <span className="truncate">
                             {t('actions.cancelOrder')}
