@@ -131,11 +131,6 @@ export const useWishlistStore = create<WishlistStore>()(
             },
             setGuestMode: (isGuest) => {
                 set({ isGuestMode: isGuest });
-                if (!isGuest) {
-                    // When switching to authenticated mode, clear local guest items
-                    // They should have been merged already
-                    set({ items: [] });
-                }
             },
             setWishlistFromAPI: (data) => {
                 // Transform API wishlist items to local format

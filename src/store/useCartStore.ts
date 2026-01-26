@@ -219,11 +219,6 @@ export const useCartStore = create<CartStore>()(
             },
             setGuestMode: (isGuest) => {
                 set({ isGuestMode: isGuest });
-                if (!isGuest) {
-                    // When switching to authenticated mode, clear local guest items
-                    // They should have been merged already
-                    set({ items: [] });
-                }
             },
             setCartFromAPI: (cart) => {
                 // Transform API cart items to local format

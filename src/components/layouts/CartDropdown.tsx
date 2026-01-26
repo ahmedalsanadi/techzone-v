@@ -22,6 +22,8 @@ const CartDropdown = () => {
         getTotalItems,
         getTotalPrice,
         syncWithAPI,
+        lastSyncedAt,
+        isLoading,
         isGuestMode,
     } = useCartStore();
     const { isAuthenticated } = useAuthStore();
@@ -64,15 +66,25 @@ const CartDropdown = () => {
 
                 {/* Items List (Previous Body Content Style) */}
                 <div className="max-h-[400px] overflow-y-auto p-4 scrollbar-hide">
-                    {!isMounted || items.length === 0 ? (
+                    {!isMounted ? (
                         <div className="text-center py-10">
-                            <ShoppingCart
-                                size={40}
-                                className="mx-auto text-gray-200 mb-3"
-                            />
-                            <p className="text-sm font-medium text-gray-400">
-                                {t('empty')}
-                            </p>
+                            <div className="w-8 h-8 border-2 border-theme-primary border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                        </div>
+                    ) : items.length === 0 ? (
+                        <div className="text-center py-10">
+                            {isLoading ? (
+                                <div className="w-8 h-8 border-2 border-theme-primary border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                            ) : (
+                                <>
+                                    <ShoppingCart
+                                        size={40}
+                                        className="mx-auto text-gray-200 mb-3"
+                                    />
+                                    <p className="text-sm font-medium text-gray-400">
+                                        {t('empty')}
+                                    </p>
+                                </>
+                            )}
                         </div>
                     ) : (
                         <div className="space-y-4">

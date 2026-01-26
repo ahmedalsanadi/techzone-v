@@ -47,6 +47,17 @@ const CartPage = () => {
     };
     if (!isMounted) return null;
 
+    if (isLoading && items.length === 0) {
+        return (
+            <div className="min-h-[70vh] flex flex-col items-center justify-center px-4 text-center">
+                <div className="w-16 h-16 border-4 border-theme-primary border-t-transparent rounded-full animate-spin mb-6" />
+                <p className="text-gray-500">
+                    {t('loading') || 'Loading your cart...'}
+                </p>
+            </div>
+        );
+    }
+
     if (items.length === 0) {
         return (
             <div className="min-h-[70vh] flex flex-col items-center justify-center px-4 text-center">

@@ -36,18 +36,14 @@ export function useWishlistMerge() {
                 return;
             }
 
-            // Merge guest wishlist with customer wishlist
-            // API will handle duplicates (won't add if already exists)
-            await wishlistService.mergeGuestWishlist(productIds);
-
-            // First switch to authenticated mode (this clears local guest items)
+            // 1. Switch to authenticated mode FIRST
             setGuestMode(false);
 
-            // Then sync wishlist with API to get updated state (includes merged items)
-            await syncWithAPI();
+            // 2. Merge guest wishlist with customer wishlist
+            await wishlistService.mergeGuestWishlist(productIds);
 
-            // Clear any remaining local state just in case
-            clearWishlist();
+            // 3. Then sync wishlist with API to get updated state (includes merged items)
+            await syncWithAPI();
         } catch (error) {
             try {
                 setGuestMode(false);

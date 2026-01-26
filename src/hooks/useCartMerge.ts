@@ -36,19 +36,17 @@ export function useCartMerge() {
                 return;
             }
 
-            // Merge guest cart with customer cart
+            // 1. Switch to authenticated mode FIRST
+            // This prevents the store from treating future updates as guest actions
+            setGuestMode(false);
+
+            // 2. Merge guest cart with customer cart
             const mergedCart = await cartService.mergeGuestCart({
                 guest_cart: guestCartItems,
             });
 
-            // Update cart store with merged cart
+            // 3. Update cart store with merged cart
             setCartFromAPI(mergedCart);
-
-            // Clear local guest cart items
-            clearCart();
-
-            // Switch to authenticated mode
-            setGuestMode(false);
         } catch (error) {
             // If merge fails, log error but don't block auth flow
             // Try to sync with API anyway to get customer's existing cart
