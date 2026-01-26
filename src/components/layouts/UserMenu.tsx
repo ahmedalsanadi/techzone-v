@@ -41,7 +41,8 @@ const UserMenu = () => {
         logout: clearAuth,
     } = useAuthStore();
     const { setGuestMode, clearCart } = useCartStore();
-    const { setGuestMode: setWishlistGuestMode, clearWishlist } = useWishlistStore();
+    const { setGuestMode: setWishlistGuestMode, clearWishlist } =
+        useWishlistStore();
 
     const handleLogout = async () => {
         setOpen(false);
@@ -188,7 +189,7 @@ const UserMenu = () => {
 
                                 <DropdownMenuItem asChild>
                                     <Link
-                                        href="/profile?tab=addresses"
+                                        href="/my-addresses"
                                         onClick={closeMenu}
                                         className="py-2.5 px-3 rounded-[18px] gap-3 cursor-pointer group transition-all hover:bg-blue-50/50 flex items-center active:scale-[0.98]">
                                         <div className="size-8 rounded-lg bg-blue-100/50 flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform">

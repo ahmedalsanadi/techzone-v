@@ -555,5 +555,14 @@
     "transactions": "سجل العمليات",
     "addBalanceTitle": "اضافة رصيد",
     "orderPurchase": "شراء الطلب #{number}"
+  },
+  "MyAddresses": {
+    "title": "عناويني",
+    "subtitle": "إدارة عناوين التوصيل المسجلة لديك",
+    "addNew": "اضافة عنوان جديد",
+    "noAddresses": "لا توجد عناوين مسجلة بعد",
+    "deleteConfirm": "هل أنت متأكد من حذف هذا العنوان؟",
+    "default": "افتراضي",
+    "home": "الرئيسية"
   }
 }

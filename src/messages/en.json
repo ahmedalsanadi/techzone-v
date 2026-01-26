@@ -555,5 +555,14 @@
     "transactions": "Transaction History",
     "addBalanceTitle": "Add Balance",
     "orderPurchase": "Order Purchase #{number}"
+  },
+  "MyAddresses": {
+    "title": "My Addresses",
+    "subtitle": "Manage your saved delivery addresses",
+    "addNew": "Add New Address",
+    "noAddresses": "No addresses saved yet",
+    "deleteConfirm": "Are you sure you want to delete this address?",
+    "default": "Default",
+    "home": "Home"
   }
 }

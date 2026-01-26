@@ -23,10 +23,10 @@ export const footerSections = [
     {
         titleKey: 'sections.more',
         links: [
-            { labelKey: 'links.myAddresses', href: '/' },
-            { labelKey: 'links.wallet', href: '/' },
-            { labelKey: 'links.favorites', href: '/' },
-            { labelKey: 'links.profile', href: '/' },
+            { labelKey: 'links.myAddresses', href: '/my-addresses' },
+            { labelKey: 'links.wallet', href: '/wallet' },
+            { labelKey: 'links.favorites', href: '/wishlist' },
+            { labelKey: 'links.profile', href: '/profile' },
         ],
     },
     {
