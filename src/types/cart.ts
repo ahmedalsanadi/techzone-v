@@ -36,6 +36,7 @@ export interface ApiCartItem {
         cover_image_url: string;
         is_available: boolean;
         type: string;
+        categories?: Array<{ id: number; name: string; slug: string }>;
     };
     variant: {
         id: number;

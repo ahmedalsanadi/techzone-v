@@ -106,7 +106,7 @@ function transformApiCartItemToLocal(item: ApiCartItem): CartItem {
                 ? item.total_price / item.quantity
                 : item.unit_price,
         quantity: item.quantity,
-        categoryId: item.product.id.toString(),
+        categoryId: String(item.product.categories?.[0]?.id || item.product.id),
         metadata: {
             productId: item.product.id,
             productSlug: item.product.slug,
@@ -204,6 +204,12 @@ export const useCartStore = create<CartStore>()(
                 // Additional guard: Check if we're in a browser environment
                 // and verify authentication state (can't import useAuthStore here due to circular deps)
                 // The calling code should check authentication before calling this
+
+                // Guard: Avoid redundant syncs if one happened recently (e.g., during merge)
+                const lastSynced = get().lastSyncedAt;
+                if (lastSynced && Date.now() - lastSynced < 2000) {
+                    return;
+                }
 
                 set({ isLoading: true });
                 try {
