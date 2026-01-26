@@ -50,183 +50,175 @@ export default function ProfileForm({
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Full Name Display (Read-only) */}
-            {!isEditing && (
-                <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-400">
-                        {t('fullName') || 'Full Name'}
-                    </Label>
-                    <div className="text-lg font-bold text-gray-900">
-                        {profile.full_name}
-                    </div>
+        <form onSubmit={handleSubmit} className="space-y-8 md:space-y-12">
+            {/* Personal Information Section */}
+            <div className="space-y-6 md:space-y-8">
+                <div className="flex items-center gap-3">
+                    <div className="w-1.5 h-5 md:h-6 bg-theme-primary rounded-full" />
+                    <h2 className="text-lg md:text-xl font-bold text-gray-900">
+                        {t('title')}
+                    </h2>
                 </div>
-            )}
 
-            {/* First Name */}
-            <div className="space-y-2">
-                <Label className="text-xs font-bold text-gray-400">
-                    {t('firstName') || 'First Name'} *
-                </Label>
-                {isEditing ? (
-                    <Input
-                        type="text"
-                        required
-                        value={formData.first_name}
-                        onChange={(e) =>
-                            updateField('first_name', e.target.value)
-                        }
-                        placeholder={t('firstNamePlaceholder') || 'أحمد'}
-                        variant="default"
-                        inputSize="lg"
-                        containerClassName="h-16 rounded-2xl bg-[#F4F7FA] border-[#E2E8F0] focus-within:border-theme-primary-border focus-within:ring-4 focus-within:ring-theme-primary/5 px-6"
-                        className="font-bold text-lg text-[#2D3142]"
-                    />
-                ) : (
-                    <div className="text-lg font-bold text-gray-900">
-                        {profile.first_name}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 md:gap-y-10">
+                    {/* First Name */}
+                    <div className="space-y-2 md:space-y-3">
+                        <Label className="text-[11px] md:text-sm font-bold text-gray-400 uppercase tracking-widest pl-1">
+                            {t('firstName')} *
+                        </Label>
+                        {isEditing ? (
+                            <Input
+                                type="text"
+                                required
+                                value={formData.first_name}
+                                onChange={(e) =>
+                                    updateField('first_name', e.target.value)
+                                }
+                                placeholder={t('firstNamePlaceholder')}
+                                containerClassName="h-12 md:h-14 rounded-xl bg-gray-50 border-gray-100 focus-within:border-theme-primary-border focus-within:ring-4 focus-within:ring-theme-primary/5 px-4 md:px-5"
+                                className="font-semibold text-base md:text-lg text-gray-800"
+                            />
+                        ) : (
+                            <div className="h-12 md:h-14 flex items-center px-4 md:px-5 rounded-xl bg-gray-50/50 border border-transparent font-semibold md:font-bold text-base md:text-xl text-gray-900">
+                                {profile.first_name}
+                            </div>
+                        )}
                     </div>
-                )}
-            </div>
 
-            {/* Middle Name and Last Name Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Middle Name */}
-                <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-400">
-                        {t('middleName') || 'Middle Name'}
-                    </Label>
-                    {isEditing ? (
-                        <Input
-                            type="text"
-                            value={formData.middle_name || ''}
-                            onChange={(e) =>
-                                updateField('middle_name', e.target.value)
-                            }
-                            placeholder={t('middleNamePlaceholder') || 'محمد'}
-                            variant="default"
-                            inputSize="lg"
-                            containerClassName="h-16 rounded-2xl bg-[#F4F7FA] border-[#E2E8F0] focus-within:border-theme-primary-border focus-within:ring-4 focus-within:ring-theme-primary/5 px-6"
-                            className="font-bold text-lg text-[#2D3142]"
-                        />
-                    ) : (
-                        <div className="text-lg font-bold text-gray-900">
-                            {profile.middle_name || '-'}
+                    {/* Last Name */}
+                    <div className="space-y-2 md:space-y-3">
+                        <Label className="text-[11px] md:text-sm font-bold text-gray-400 uppercase tracking-widest pl-1">
+                            {t('lastName')}
+                        </Label>
+                        {isEditing ? (
+                            <Input
+                                type="text"
+                                value={formData.last_name || ''}
+                                onChange={(e) =>
+                                    updateField('last_name', e.target.value)
+                                }
+                                placeholder={t('lastNamePlaceholder')}
+                                containerClassName="h-12 md:h-14 rounded-xl bg-gray-50 border-gray-100 focus-within:border-theme-primary-border focus-within:ring-4 focus-within:ring-theme-primary/5 px-4 md:px-5"
+                                className="font-semibold text-base md:text-lg text-gray-800"
+                            />
+                        ) : (
+                            <div className="h-12 md:h-14 flex items-center px-4 md:px-5 rounded-xl bg-gray-50/50 border border-transparent font-semibold md:font-bold text-base md:text-xl text-gray-900">
+                                {profile.last_name || '-'}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Middle Name */}
+                    <div className="space-y-2 md:space-y-3">
+                        <Label className="text-[11px] md:text-sm font-bold text-gray-400 uppercase tracking-widest pl-1">
+                            {t('middleName')}
+                        </Label>
+                        {isEditing ? (
+                            <Input
+                                type="text"
+                                value={formData.middle_name || ''}
+                                onChange={(e) =>
+                                    updateField('middle_name', e.target.value)
+                                }
+                                placeholder={t('middleNamePlaceholder')}
+                                containerClassName="h-12 md:h-14 rounded-xl bg-gray-50 border-gray-100 focus-within:border-theme-primary-border focus-within:ring-4 focus-within:ring-theme-primary/5 px-4 md:px-5"
+                                className="font-semibold text-base md:text-lg text-gray-800"
+                            />
+                        ) : (
+                            <div className="h-12 md:h-14 flex items-center px-4 md:px-5 rounded-xl bg-gray-50/50 border border-transparent font-semibold md:font-bold text-base md:text-xl text-gray-900">
+                                {profile.middle_name || '-'}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Email */}
+                    <div className="space-y-2 md:space-y-3">
+                        <Label className="text-[11px] md:text-sm font-bold text-gray-400 uppercase tracking-widest pl-1">
+                            {t('email')}
+                        </Label>
+                        {isEditing ? (
+                            <Input
+                                type="email"
+                                value={formData.email || ''}
+                                onChange={(e) =>
+                                    updateField('email', e.target.value)
+                                }
+                                placeholder={t('emailPlaceholder')}
+                                containerClassName="h-12 md:h-14 rounded-xl bg-gray-50 border-gray-100 focus-within:border-theme-primary-border focus-within:ring-4 focus-within:ring-theme-primary/5 px-4 md:px-5"
+                                className="font-semibold text-base md:text-lg text-gray-800"
+                            />
+                        ) : (
+                            <div className="h-12 md:h-14 flex items-center px-4 md:px-5 rounded-xl bg-gray-50/50 border border-transparent font-semibold md:font-bold text-base md:text-xl text-gray-900 lg:truncate overflow-hidden">
+                                {profile.email || '-'}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Phone Number (Full Width in its row) */}
+                    <div className="space-y-2 md:space-y-3 md:col-span-2">
+                        <Label className="text-[11px] md:text-sm font-bold text-gray-400 uppercase tracking-widest pl-1">
+                            {t('phone')}
+                        </Label>
+                        <div className="h-12 md:h-14 flex items-center px-4 md:px-5 rounded-xl bg-gray-100/80 border border-gray-200/50 font-semibold md:font-bold text-base md:text-xl text-gray-400 cursor-not-allowed">
+                            {profile.phone}
                         </div>
-                    )}
-                </div>
-
-                {/* Last Name */}
-                <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-400">
-                        {t('lastName') || 'Last Name'}
-                    </Label>
-                    {isEditing ? (
-                        <Input
-                            type="text"
-                            value={formData.last_name || ''}
-                            onChange={(e) =>
-                                updateField('last_name', e.target.value)
-                            }
-                            placeholder={t('lastNamePlaceholder') || 'العلي'}
-                            variant="default"
-                            inputSize="lg"
-                            containerClassName="h-16 rounded-2xl bg-[#F4F7FA] border-[#E2E8F0] focus-within:border-theme-primary-border focus-within:ring-4 focus-within:ring-theme-primary/5 px-6"
-                            className="font-bold text-lg text-[#2D3142]"
-                        />
-                    ) : (
-                        <div className="text-lg font-bold text-gray-900">
-                            {profile.last_name || '-'}
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            {/* Phone (Read-only) */}
-            <div className="space-y-2">
-                <Label className="text-xs font-bold text-gray-400">
-                    {t('phone') || 'Phone Number'}
-                </Label>
-                <PhoneInput
-                    label=""
-                    value={profile.phone}
-                    onChange={() => {}}
-                    required
-                    disabled
-                    inputClassName="bg-gray-100 text-gray-400"
-                />
-            </div>
-
-            {/* Email */}
-            <div className="space-y-2">
-                <Label className="text-xs font-bold text-gray-400">
-                    {t('email') || 'Email'}
-                </Label>
-                {isEditing ? (
-                    <Input
-                        type="email"
-                        value={formData.email || ''}
-                        onChange={(e) => updateField('email', e.target.value)}
-                        placeholder={
-                            t('emailPlaceholder') || 'someone@example.com'
-                        }
-                        variant="default"
-                        inputSize="lg"
-                        containerClassName="h-16 rounded-2xl bg-[#F4F7FA] border-[#E2E8F0] focus-within:border-theme-primary-border focus-within:ring-4 focus-within:ring-theme-primary/5 px-6"
-                        className="font-bold text-lg text-[#2D3142]"
-                    />
-                ) : (
-                    <div className="text-lg font-bold text-gray-900">
-                        {profile.email || '-'}
                     </div>
-                )}
+                </div>
             </div>
 
-            {/* Additional Info (Read-only) */}
+            {/* Account Stats Section */}
             {!isEditing && (
-                <div className="pt-6 border-t border-gray-200 space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <Label className="text-xs font-bold text-gray-400">
-                                {t('points') || 'Loyalty Points'}
-                            </Label>
-                            <div className="text-lg font-bold text-gray-900">
+                <div className="space-y-6 md:space-y-8 pt-8 md:pt-10 border-t border-gray-100">
+                    <div className="flex items-center gap-3">
+                        <div className="w-1.5 h-5 md:h-6 bg-theme-primary rounded-full" />
+                        <h2 className="text-lg md:text-xl font-bold text-gray-900">
+                            {t('subtitle')}
+                        </h2>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+                        <div className="bg-theme-primary/5 p-5 md:p-8 rounded-2xl md:rounded-3xl border border-theme-primary/10 transition-all hover:shadow-md hover:shadow-theme-primary/5 group">
+                            <p className="text-[11px] md:text-sm font-bold text-theme-primary/60 uppercase tracking-widest mb-1 md:mb-2">
+                                {t('points')}
+                            </p>
+                            <p className="text-2xl md:text-4xl font-black text-theme-primary ">
                                 {profile.points}
-                            </div>
+                            </p>
                         </div>
-                        <div>
-                            <Label className="text-xs font-bold text-gray-400">
-                                {t('totalOrders') || 'Total Orders'}
-                            </Label>
-                            <div className="text-lg font-bold text-gray-900">
+                        <div className="bg-gray-50 p-5 md:p-8 rounded-2xl md:rounded-3xl border border-gray-100 transition-all hover:shadow-md hover:shadow-gray-100 group">
+                            <p className="text-[11px] md:text-sm font-bold text-gray-400 uppercase tracking-widest mb-1 md:mb-2">
+                                {t('totalOrders')}
+                            </p>
+                            <p className="text-2xl md:text-4xl font-black text-gray-900">
                                 {profile.total_orders}
-                            </div>
+                            </p>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* Action Buttons */}
+            {/* Form Actions */}
             {isEditing && (
-                <div className="flex items-center justify-end gap-4 pt-6 border-t border-gray-200">
+                <div className="flex flex-col sm:flex-row items-center justify-end gap-3 md:gap-4 pt-6 md:pt-8 border-t border-gray-100">
                     <Button
                         type="button"
-                        variant="outline"
+                        variant="ghost"
                         onClick={onCancel}
-                        disabled={isLoading}>
-                        {t('cancel') || 'Cancel'}
+                        disabled={isLoading}
+                        className="w-full sm:w-auto h-11 md:h-12 px-8 md:px-10 rounded-xl text-gray-500 font-bold hover:bg-gray-50 transition-all">
+                        {t('cancel')}
                     </Button>
                     <Button
                         type="submit"
-                        variant="default"
-                        disabled={isLoading || !formData.first_name.trim()}>
+                        disabled={isLoading || !formData.first_name.trim()}
+                        className="w-full sm:w-auto h-11 md:h-12 px-10 md:px-12 rounded-xl bg-theme-primary hover:brightness-95 text-white font-bold text-sm md:text-md shadow-lg shadow-theme-primary/20 transition-all active:scale-95">
                         {isLoading ? (
                             <>
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                                {t('saving') || 'Saving...'}
+                                <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                                {t('saving')}
                             </>
                         ) : (
-                            t('save') || 'Save Changes'
+                            t('save')
                         )}
                     </Button>
                 </div>

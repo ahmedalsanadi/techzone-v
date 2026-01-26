@@ -44,9 +44,9 @@ export default async function ProfilePage({
     ];
 
     return (
-        <main className="min-h-screen bg-gray-50/30 py-8">
-            <div className="container mx-auto px-4 max-w-4xl">
-                <Breadcrumbs items={breadcrumbItems} />
+        <main className="min-h-screen bg-gray-50/30 py-12">
+            <div className="container mx-auto  max-w-5xl">
+                <Breadcrumbs className="mb-6" items={breadcrumbItems} />
                 <ProfileView initialProfile={initialProfile} />
             </div>
         </main>
