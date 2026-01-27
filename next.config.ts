@@ -15,7 +15,15 @@ const nextConfig: NextConfig = {
                 hostname: 'store-api.libro-shop.com',
             },
             {
+                protocol: 'http',
+                hostname: 'store-api.libro-shop.com',
+            },
+            {
                 protocol: 'https',
+                hostname: 'dashboard.libro-shop.com',
+            },
+            {
+                protocol: 'http',
                 hostname: 'dashboard.libro-shop.com',
             },
             {

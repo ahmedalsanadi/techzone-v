@@ -33,7 +33,7 @@ export const footerSections = [
         titleKey: 'sections.about',
         links: [
             { labelKey: 'links.contactUs', href: '/contact' },
-            { labelKey: 'links.faq', href: '/' },
+            { labelKey: 'links.faq', href: '/faq' },
             { labelKey: 'links.terms', href: '/terms' },
         ],
     },

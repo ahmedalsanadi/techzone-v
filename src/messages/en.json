@@ -90,7 +90,22 @@
     "addressNotesPlaceholder": "Red building, second floor, apartment number 5",
     "save": "Save",
     "cancel": "Cancel",
-    "close": "Close"
+    "close": "Close",
+    "phone": "Phone Number",
+    "country": "Country",
+    "city": "City",
+    "district": "District",
+    "street": "Street",
+    "building": "Building Number",
+    "unit": "Unit Number",
+    "postalCode": "Postal Code",
+    "additionalNumber": "Additional Number",
+    "recipientName": "Recipient Name",
+    "selectCountry": "Select Country",
+    "selectCity": "Select City",
+    "selectDistrict": "Select District (Optional)",
+    "setDefault": "Set as default address",
+    "addNew": "Add New Address"
   },
   "Footer": {
     "description": "At our restaurant, we offer a dining experience that combines high quality and distinct taste, using the best fresh ingredients under the supervision of a specialized team to ensure the highest standards of hygiene and quality.",
@@ -564,5 +579,32 @@
     "deleteConfirm": "Are you sure you want to delete this address?",
     "default": "Default",
     "home": "Home"
+  },
+  "FAQ": {
+    "title": "FAQ",
+    "home": "Home",
+    "description": "Everything you need to know about Fasto services",
+    "questions": [
+      {
+        "question": "How can I order from the app?",
+        "answer": "Choose the branch or order method (delivery/pickup), then browse the menu, add items to the cart, and complete the payment."
+      },
+      {
+        "question": "Is delivery available at my location?",
+        "answer": "You can find out by enabling the location feature in the app, it will inform you immediately if delivery is available for your area."
+      },
+      {
+        "question": "How long does delivery take?",
+        "answer": "Delivery time usually ranges between 30 to 60 minutes, depending on the distance, order size, and current load on the branch."
+      },
+      {
+        "question": "Can I modify the order after sending it?",
+        "answer": "You can modify the order as long as it hasn't started being prepared. Please contact the branch directly as soon as possible."
+      },
+      {
+        "question": "What payment methods are available?",
+        "answer": "We provide various payment options including cash on delivery, credit cards (Visa and Mastercard), Mada, and Apple Pay."
+      }
+    ]
   }
 }

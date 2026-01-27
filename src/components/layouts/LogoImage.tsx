@@ -21,8 +21,9 @@ export default function LogoImage({ brandName, brandLogo }: LogoProps) {
                     />
                 )}
             </div>
-            <p className="text-white text-xl md:text-[28px] font-medium leading-none">
-                {brandName}
+            <p className="text-white text-xl md:text-[24px] font-medium leading-none">
+                {/* {brandName} */}
+                Fitoro
             </p>
         </Link>
     );

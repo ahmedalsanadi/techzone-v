@@ -7,6 +7,14 @@ import {
     Collection,
 } from './types';
 import type { CustomerProfile, ProfileUpdateRequest } from '@/types/auth';
+import type {
+    Address,
+    CreateAddressRequest,
+    UpdateAddressRequest,
+    Country,
+    City,
+    District,
+} from '@/types/address';
 
 /**
  * Service for store-related data fetching.
@@ -31,7 +39,7 @@ export const storeService = {
         fetchLibero<Category[]>('/store/categories', {
             params: { tree },
             next: {
-                revalidate: 3600, // Cache for 1 hour
+                revalidate: 0, // Cache for 1 hour
                 tags: ['categories'],
             },
         }),
@@ -44,7 +52,7 @@ export const storeService = {
     ): Promise<{ data: Product[]; meta: PaginationMeta }> {
         const response = await fetchLiberoFull<Product[]>('/store/products', {
             params,
-            next: { revalidate: 0 }, // Cache products for 5 minutes
+            next: { revalidate: 300 }, // Cache products for 5 minutes
         });
 
         const per_page = Number(params?.per_page) || 8;
@@ -66,7 +74,7 @@ export const storeService = {
      */
     getProduct: (slug: string) =>
         fetchLibero<Product>(`/store/products/${slug}`, {
-            next: { revalidate: 0 }, // Cache product for 5 minutes
+            next: { revalidate: 300 }, // Cache product for 5 minutes
         }),
 
     /**
@@ -74,7 +82,7 @@ export const storeService = {
      */
     getCategory: (slug: string) =>
         fetchLibero<Category>(`/store/categories/${slug}`, {
-            next: { revalidate: 3600 }, // Cache category for 1 hour
+            next: { revalidate: 300 }, // Cache category for 1 hour
         }),
 
     /**
@@ -83,7 +91,7 @@ export const storeService = {
     getCollections: () =>
         fetchLibero<Collection[]>('/store/collections', {
             next: {
-                revalidate: 3600, // Cache collections for 1 hour
+                revalidate: 300, // Cache collections for 1 hour
                 tags: ['collections'],
             },
         }),
@@ -130,5 +138,77 @@ export const storeService = {
             method: 'POST',
             body: JSON.stringify(data),
             isProtected: true,
+        }),
+
+    /**
+     * Get customer addresses.
+     */
+    getAddresses: (params?: { default?: boolean; label?: string }) =>
+        fetchLibero<Address[]>('/store/addresses', {
+            params,
+            isProtected: true,
+        }),
+
+    /**
+     * Get a specific address.
+     */
+    getAddress: (id: number) =>
+        fetchLibero<Address>(`/store/addresses/${id}`, {
+            isProtected: true,
+        }),
+
+    /**
+     * Create a new address.
+     */
+    createAddress: (data: CreateAddressRequest) =>
+        fetchLibero<Address>('/store/addresses', {
+            method: 'POST',
+            body: JSON.stringify(data),
+            isProtected: true,
+        }),
+
+    /**
+     * Update an existing address.
+     */
+    updateAddress: (id: number, data: UpdateAddressRequest) =>
+        fetchLibero<Address>(`/store/addresses/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(data),
+            isProtected: true,
+        }),
+
+    /**
+     * Delete an address.
+     */
+    deleteAddress: (id: number) =>
+        fetchLiberoFull<null>(`/store/addresses/${id}`, {
+            method: 'DELETE',
+            isProtected: true,
+        }),
+
+    /**
+     * Get list of countries.
+     */
+    getCountries: () =>
+        fetchLibero<Country[]>('/store/locations/countries', {
+            next: { revalidate: 86400 }, // Cache for 24 hours
+        }),
+
+    /**
+     * Get cities by country.
+     */
+    getCities: (countryId: number) =>
+        fetchLibero<City[]>('/store/locations/cities', {
+            params: { country_id: countryId },
+            next: { revalidate: 86400 }, // Cache for 24 hours
+        }),
+
+    /**
+     * Get districts by city.
+     */
+    getDistricts: (cityId: number) =>
+        fetchLibero<District[]>('/store/locations/districts', {
+            params: { city_id: cityId },
+            next: { revalidate: 86400 }, // Cache for 24 hours
         }),
 };
