@@ -46,8 +46,8 @@ export default async function FAQPage({
     }));
 
     return (
-        <div className="py-8 md:py-12">
-            <div className="max-w-4xl mx-auto">
+        <div className="py-8 md:py-12 px-6">
+            <div className="mx-auto">
                 <Breadcrumbs items={breadcrumbItems} />
 
                 <div className="mt-8 mb-12">
