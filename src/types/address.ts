@@ -24,20 +24,26 @@ export interface Address {
     district_id: number | null;
     street: string;
     building?: string | null;
+    building_number?: string | null;
     unit?: string | null;
+    unit_number?: string | null;
     postal_code?: string | null;
     additional_number?: string | null;
     description?: string | null;
+    notes?: string | null;
     is_default: boolean;
     // For convenience in UI
     country_name?: string;
     city_name?: string;
     district_name?: string;
+    // Seen in some API responses
+    country?: string;
+    city?: string;
+    district?: string;
     formatted?: string;
     latitude?: number;
     longitude?: number;
     name?: string;
-    notes?: string;
     isDefault?: boolean;
 }
 

@@ -76,7 +76,10 @@
     "cancel": "إلغاء",
     "date": "التاريخ",
     "time": "الوقت",
-    "selectDateTime": "حدد التاريخ والوقت"
+    "selectDateTime": "حدد التاريخ والوقت",
+    "addressSaved": "تم حفظ العنوان بنجاح",
+    "addNew": "إضافة جديد",
+    "default":"افتراضي"
   },
   "Address": {
     "addNewAddress": "إضافة عنوان جديد",
@@ -427,7 +430,10 @@
     "completeProfile": "إكمال الملف الشخصي",
     "completeProfileRequired": "يجب إكمال الملف الشخصي للمتابعة",
     "profileUpdated": "تم تحديث الملف الشخصي بنجاح",
-    "profileError": "فشل تحديث الملف الشخصي"
+    "profileError": "فشل تحديث الملف الشخصي",
+    "tooManyRequests": "طلبات كثيرة جداً. يرجى المحاولة لاحقاً",
+    "networkError": "خطأ في الاتصال بالشبكة",
+    "unauthorizedError": "غير مصرح لك بالوصول"
   },
   "Branches": {
     "select_branch": "اختر الفرع الذي تريده",

@@ -82,14 +82,31 @@ export default function OrderTypeCard() {
                                     deliveryAddress ? (
                                         <>
                                             <span className="text-theme-primary font-bold">
-                                                ({deliveryAddress.name})
+                                                (
+                                                {deliveryAddress.label ||
+                                                    deliveryAddress.name ||
+                                                    'Address'}
+                                                )
                                             </span>
                                             <span>
-                                                {deliveryAddress.formatted}
+                                                {deliveryAddress.formatted || (
+                                                    <>
+                                                        {deliveryAddress.street}
+                                                        {(deliveryAddress.building ||
+                                                            deliveryAddress.building_number) &&
+                                                            `, ${deliveryAddress.building || deliveryAddress.building_number}`}
+                                                        {', '}
+                                                        {deliveryAddress.city_name ||
+                                                            deliveryAddress.city ||
+                                                            ''}
+                                                    </>
+                                                )}
                                             </span>
-                                            {deliveryAddress.notes && (
+                                            {(deliveryAddress.notes ||
+                                                deliveryAddress.description) && (
                                                 <span className="text-gray-500 text-sm font-normal">
-                                                    {deliveryAddress.notes}
+                                                    {deliveryAddress.notes ||
+                                                        deliveryAddress.description}
                                                 </span>
                                             )}
                                         </>

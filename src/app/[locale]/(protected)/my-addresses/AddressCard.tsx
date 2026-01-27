@@ -67,7 +67,18 @@ export default function AddressCard({
                         </div>
 
                         <p className="text-gray-500 text-sm md:text-md leading-relaxed line-clamp-2 pr-2">
-                            {formatted}
+                            {address.formatted || (
+                                <>
+                                    {address.street}
+                                    {(address.building ||
+                                        address.building_number) &&
+                                        `, ${address.building || address.building_number}`}
+                                    {(address.unit || address.unit_number) &&
+                                        `, ${address.unit || address.unit_number}`}
+                                    {', '}
+                                    {address.city_name || address.city || ''}
+                                </>
+                            )}
                         </p>
 
                         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2">
@@ -88,9 +99,9 @@ export default function AddressCard({
                             )}
                         </div>
 
-                        {address.description && (
+                        {(address.description || address.notes) && (
                             <p className="text-gray-400 text-xs mt-2 italic bg-gray-50/50 p-2 rounded-lg border border-dashed border-gray-200">
-                                "{address.description}"
+                                "{address.description || address.notes}"
                             </p>
                         )}
                     </div>

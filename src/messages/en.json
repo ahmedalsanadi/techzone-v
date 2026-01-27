@@ -105,7 +105,8 @@
     "selectCity": "Select City",
     "selectDistrict": "Select District (Optional)",
     "setDefault": "Set as default address",
-    "addNew": "Add New Address"
+    "addNew": "Add New Address",
+    "default":"Default"
   },
   "Footer": {
     "description": "At our restaurant, we offer a dining experience that combines high quality and distinct taste, using the best fresh ingredients under the supervision of a specialized team to ensure the highest standards of hygiene and quality.",

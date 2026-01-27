@@ -16,6 +16,7 @@ import { getAuthErrorMessage } from '@/lib/auth/error-handler';
 import type { AuthStep, ProfileUpdateRequest } from '@/types/auth';
 import { useCartMerge } from '@/hooks/useCartMerge';
 import { useWishlistMerge } from '@/hooks/useWishlistMerge';
+import { useAddressMerge } from '@/hooks/useAddressMerge';
 
 interface UseAuthFlowHandlersOptions {
     step: AuthStep;
@@ -72,6 +73,7 @@ export function useAuthFlowHandlers({
     const { setAuth, setProfile } = useAuthStore();
     const { mergeGuestCartAfterAuth } = useCartMerge();
     const { mergeGuestWishlistAfterAuth } = useWishlistMerge();
+    const { mergeGuestAddressAfterAuth } = useAddressMerge();
 
     // Step 1: Send OTP
     const handlePhoneSubmit = useCallback(
@@ -148,10 +150,11 @@ export function useAuthFlowHandlers({
                     setAuth(response.customer, response.token);
                 } else {
                     setAuth(response.customer, response.token);
-                    // Merge both cart and wishlist after login
+                    // Merge cart, wishlist, and addresses after login
                     await Promise.all([
                         mergeGuestCartAfterAuth(),
                         mergeGuestWishlistAfterAuth(),
+                        mergeGuestAddressAfterAuth(),
                     ]);
                 }
 
@@ -234,10 +237,11 @@ export function useAuthFlowHandlers({
                     await storeService.updateProfile(updatePayload);
 
                 setProfile(updatedProfile);
-                // Merge both cart and wishlist after signup
+                // Merge cart, wishlist, and addresses after signup
                 await Promise.all([
                     mergeGuestCartAfterAuth(),
                     mergeGuestWishlistAfterAuth(),
+                    mergeGuestAddressAfterAuth(),
                 ]);
 
                 authStorage.clearAuthFlow();

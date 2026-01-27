@@ -97,9 +97,24 @@ export default function SubHeader() {
                                     <span>
                                         {t('deliveryTo')}{' '}
                                         <span className="font-bold">
-                                            ({deliveryAddress.name})
+                                            (
+                                            {deliveryAddress.label ||
+                                                deliveryAddress.name ||
+                                                'Address'}
+                                            )
                                         </span>{' '}
-                                        {deliveryAddress.formatted}
+                                        {deliveryAddress.formatted || (
+                                            <>
+                                                {deliveryAddress.street}
+                                                {(deliveryAddress.building ||
+                                                    deliveryAddress.building_number) &&
+                                                    `, ${deliveryAddress.building || deliveryAddress.building_number}`}
+                                                {', '}
+                                                {deliveryAddress.city_name ||
+                                                    deliveryAddress.city ||
+                                                    ''}
+                                            </>
+                                        )}
                                     </span>
                                 </div>
                                 {orderTime === 'later' && scheduledTime && (
@@ -172,11 +187,26 @@ export default function SubHeader() {
                                     <span className="font-medium">
                                         {t('deliveryTo')}{' '}
                                         <span className="text-theme-primary font-bold">
-                                            ({deliveryAddress.name})
+                                            (
+                                            {deliveryAddress.label ||
+                                                deliveryAddress.name ||
+                                                'Address'}
+                                            )
                                         </span>
                                     </span>
                                     <p className="text-gray-600 text-xs mt-1">
-                                        {deliveryAddress.formatted}
+                                        {deliveryAddress.formatted || (
+                                            <>
+                                                {deliveryAddress.street}
+                                                {(deliveryAddress.building ||
+                                                    deliveryAddress.building_number) &&
+                                                    `, ${deliveryAddress.building || deliveryAddress.building_number}`}
+                                                {', '}
+                                                {deliveryAddress.city_name ||
+                                                    deliveryAddress.city ||
+                                                    ''}
+                                            </>
+                                        )}
                                     </p>
                                 </div>
                             </div>

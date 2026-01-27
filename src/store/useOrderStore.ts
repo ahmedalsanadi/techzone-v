@@ -7,15 +7,9 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 export type OrderType = 'delivery' | 'pickup' | 'dineIn' | 'carPickup';
 export type OrderTime = 'now' | 'later';
 
-export interface DeliveryAddress {
-    id: string;
-    name: string;
-    formatted: string;
-    latitude: number;
-    longitude: number;
-    notes?: string;
-    isDefault?: boolean;
-}
+import { Address } from '@/types/address';
+
+export type DeliveryAddress = Address;
 
 interface OrderState {
     orderType: OrderType | null;

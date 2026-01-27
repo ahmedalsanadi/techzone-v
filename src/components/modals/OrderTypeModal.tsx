@@ -10,9 +10,15 @@ import {
     OrderTime,
     getScheduledTimeAsDate,
 } from '@/store/useOrderStore';
+import { useAddressStore } from '@/store/useAddressStore';
+import { useAuthStore } from '@/store/useAuthStore';
+import { storeService } from '@/services/store-service';
+import { Address } from '@/types/address';
 import AddressModal from './AddressModal';
 import { cn } from '@/lib/utils';
 import { DeliveryAddress } from '@/store/useOrderStore';
+import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
 
 interface OrderTypeModalProps {
     isOpen: boolean;
@@ -32,17 +38,94 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
         setOrderTime,
     } = useOrderStore();
 
+    const { isAuthenticated } = useAuthStore();
+    const {
+        addresses: guestAddresses,
+        addAddress: addGuestAddress,
+        updateAddress: updateGuestAddress,
+    } = useAddressStore();
+
+    const [savedAddresses, setSavedAddresses] = useState<Address[]>([]);
+    const [isLoadingAddresses, setIsLoadingAddresses] = useState(false);
+    const [retryCount, setRetryCount] = useState(0);
+
     // Convert scheduledTime from string to Date if needed
     const scheduledTime = getScheduledTimeAsDate(scheduledTimeRaw);
 
     const [showAddressModal, setShowAddressModal] = useState(false);
-    const [editingAddress, setEditingAddress] =
-        useState<DeliveryAddress | null>(null);
+    const [editingAddress, setEditingAddress] = useState<Address | null>(null);
     const [showDateTimePicker, setShowDateTimePicker] = useState(false);
     const [tempDate, setTempDate] = useState('');
     const [tempTime, setTempTime] = useState('');
     const modalRef = useRef<HTMLDivElement>(null);
     const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+    // Fetch addresses
+    useEffect(() => {
+        if (!isOpen || orderType !== 'delivery') return;
+
+        let isMounted = true;
+
+        if (isAuthenticated) {
+            const fetchAddresses = async () => {
+                if (retryCount === 0) setIsLoadingAddresses(true);
+
+                try {
+                    const data = await storeService.getAddresses();
+                    if (!isMounted) return;
+
+                    setSavedAddresses(data);
+
+                    // If no address is selected in useOrderStore, but we have addresses,
+                    // pick the default one
+                    if (!deliveryAddress && data.length > 0) {
+                        const defaultAddr =
+                            data.find((a) => a.is_default) || data[0];
+                        setDeliveryAddress(defaultAddr as any);
+                    }
+                    setIsLoadingAddresses(false);
+                    setRetryCount(0); // Reset on success
+                } catch (error) {
+                    console.error('Failed to fetch addresses:', error);
+
+                    // Small retry logic for transient 500 errors after login
+                    if (retryCount < 2 && isMounted) {
+                        console.log(
+                            `[OrderTypeModal] Retrying address fetch... (${retryCount + 1}/2)`,
+                        );
+                        setTimeout(() => {
+                            if (isMounted) setRetryCount((prev) => prev + 1);
+                        }, 1500);
+                    } else {
+                        setIsLoadingAddresses(false);
+                    }
+                }
+            };
+            fetchAddresses();
+        } else {
+            // For guest, use addresses from useAddressStore
+            setSavedAddresses(guestAddresses);
+            if (!deliveryAddress && guestAddresses.length > 0) {
+                const defaultAddr =
+                    guestAddresses.find((a) => a.is_default) ||
+                    guestAddresses[0];
+                setDeliveryAddress(defaultAddr as any);
+            }
+            setIsLoadingAddresses(false);
+        }
+
+        return () => {
+            isMounted = false;
+        };
+    }, [
+        isOpen,
+        orderType,
+        isAuthenticated,
+        guestAddresses,
+        deliveryAddress,
+        setDeliveryAddress,
+        retryCount,
+    ]);
 
     // Focus trap and keyboard navigation
     useEffect(() => {
@@ -83,17 +166,66 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
         setShowAddressModal(true);
     };
 
-    const handleEditAddress = () => {
-        if (deliveryAddress) {
-            setEditingAddress(deliveryAddress);
-            setShowAddressModal(true);
-        }
+    const handleEditAddress = (address: Address) => {
+        setEditingAddress(address);
+        setShowAddressModal(true);
     };
 
-    const handleAddressSave = (address: DeliveryAddress) => {
-        setDeliveryAddress(address);
-        setShowAddressModal(false);
-        setEditingAddress(null);
+    const handleSelectAddress = (address: Address) => {
+        setDeliveryAddress(address as any);
+    };
+
+    const handleAddressSave = async (addressData: any) => {
+        try {
+            if (isAuthenticated) {
+                if (editingAddress) {
+                    const updated = await storeService.updateAddress(
+                        editingAddress.id,
+                        addressData,
+                    );
+                    setDeliveryAddress(updated as any);
+                    toast.success(t('addressSaved') || 'Address updated');
+                } else {
+                    const created =
+                        await storeService.createAddress(addressData);
+                    setDeliveryAddress(created as any);
+                    toast.success(t('addressSaved') || 'Address added');
+                }
+                // Refresh list
+                const data = await storeService.getAddresses();
+                setSavedAddresses(data);
+            } else {
+                // For guest
+                if (editingAddress) {
+                    updateGuestAddress({
+                        ...addressData,
+                        id: editingAddress.id,
+                    });
+                    setDeliveryAddress({
+                        ...addressData,
+                        id: editingAddress.id,
+                    });
+                } else {
+                    // Generate a temp ID for guest address
+                    const newAddress = { ...addressData, id: Date.now() };
+                    // If guest already has an address, replace it (per requirement: only one for guests)
+                    if (guestAddresses.length > 0) {
+                        updateGuestAddress(newAddress);
+                    } else {
+                        addGuestAddress(newAddress);
+                    }
+                    setDeliveryAddress(newAddress);
+                }
+                toast.success(
+                    t('addressSaved') || 'Address saved successfully',
+                );
+            }
+            setShowAddressModal(false);
+            setEditingAddress(null);
+        } catch (error) {
+            console.error('Failed to save address:', error);
+            toast.error(t('addressSaveError') || 'Failed to save address');
+        }
     };
 
     const handleTimeSelect = (time: OrderTime) => {
@@ -245,49 +377,125 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
 
                         {/* Delivery Address Section - Only show if delivery is selected */}
                         {orderType === 'delivery' && (
-                            <div>
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                                    {t('deliveryAddress') || 'Delivery Address'}
-                                </h3>
-                                {deliveryAddress ? (
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="text-lg font-semibold text-gray-900">
+                                        {t('deliveryAddress') ||
+                                            'Delivery Address'}
+                                    </h3>
+                                    {savedAddresses.length > 0 && (
+                                        <button
+                                            onClick={handleAddAddress}
+                                            className="text-theme-primary text-sm font-bold flex items-center gap-1 hover:underline">
+                                            <Plus className="w-4 h-4" />
+                                            {t('addNew') || 'Add New'}
+                                        </button>
+                                    )}
+                                </div>
+
+                                {isLoadingAddresses ? (
+                                    <div className="flex items-center justify-center p-8 bg-gray-50 rounded-xl border border-gray-100">
+                                        <Loader2 className="w-6 h-6 text-theme-primary animate-spin" />
+                                    </div>
+                                ) : savedAddresses.length > 0 ? (
                                     <div className="space-y-3">
-                                        <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                            <div className="flex items-start gap-3">
-                                                <MapPin className="w-5 h-5 text-theme-primary shrink-0 mt-0.5" />
-                                                <div className="flex-1">
-                                                    <p className="text-sm font-bold text-theme-primary mb-1">
-                                                        ({deliveryAddress.name})
-                                                    </p>
-                                                    <p className="text-sm text-gray-700 leading-relaxed">
-                                                        {
-                                                            deliveryAddress.formatted
-                                                        }
-                                                    </p>
-                                                    {deliveryAddress.notes && (
-                                                        <p className="text-xs text-gray-500 mt-1">
-                                                            {
-                                                                deliveryAddress.notes
-                                                            }
+                                        {savedAddresses.map((addr) => (
+                                            <div
+                                                key={addr.id}
+                                                onClick={() =>
+                                                    handleSelectAddress(addr)
+                                                }
+                                                className={cn(
+                                                    'p-4 rounded-xl border-2 transition-all cursor-pointer group relative',
+                                                    deliveryAddress?.id ===
+                                                        addr.id
+                                                        ? 'bg-theme-primary/5 border-theme-primary'
+                                                        : 'bg-white border-gray-100 hover:border-gray-200',
+                                                )}>
+                                                <div className="flex items-start gap-3">
+                                                    <div
+                                                        className={cn(
+                                                            'w-5 h-5 rounded-full border-2 mt-0.5 flex items-center justify-center shrink-0',
+                                                            deliveryAddress?.id ===
+                                                                addr.id
+                                                                ? 'border-theme-primary bg-theme-primary'
+                                                                : 'border-gray-300',
+                                                        )}>
+                                                        {deliveryAddress?.id ===
+                                                            addr.id && (
+                                                            <div className="w-2 h-2 bg-white rounded-full" />
+                                                        )}
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                            <span className="font-bold text-gray-900">
+                                                                {addr.label ||
+                                                                    addr.name ||
+                                                                    'Address'}
+                                                            </span>
+                                                            {addr.is_default && (
+                                                                <span className="text-[10px] bg-theme-primary/10 text-theme-primary px-2 py-0.5 rounded-full font-bold">
+                                                                    {t(
+                                                                        'default',
+                                                                    ) ||
+                                                                        'Default'}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <p className="text-sm text-gray-600 line-clamp-1">
+                                                            {addr.formatted || (
+                                                                <>
+                                                                    {
+                                                                        addr.street
+                                                                    }
+                                                                    {(addr.building ||
+                                                                        addr.building_number) &&
+                                                                        `, ${addr.building || addr.building_number}`}
+                                                                    {(addr.unit ||
+                                                                        addr.unit_number) &&
+                                                                        `, ${addr.unit || addr.unit_number}`}
+                                                                    {', '}
+                                                                    {addr.city_name ||
+                                                                        addr.city ||
+                                                                        ''}
+                                                                </>
+                                                            )}
                                                         </p>
-                                                    )}
+                                                        {(addr.description ||
+                                                            addr.notes) && (
+                                                            <p className="text-[10px] text-gray-400 mt-0.5 line-clamp-1 italic">
+                                                                {addr.description ||
+                                                                    addr.notes}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleEditAddress(
+                                                                addr,
+                                                            );
+                                                        }}
+                                                        className="p-2 opacity-0 group-hover:opacity-100 hover:bg-gray-100 rounded-lg transition-all">
+                                                        <Edit className="w-4 h-4 text-gray-400" />
+                                                    </button>
                                                 </div>
-                                                <button
-                                                    onClick={handleEditAddress}
-                                                    className="px-4 py-2 bg-theme-primary text-white text-sm font-medium rounded-lg hover:brightness-[0.95] transition-all flex items-center gap-2">
-                                                    <Edit className="w-4 h-4" />
-                                                    {t('edit') || 'Edit'}
-                                                </button>
                                             </div>
-                                        </div>
+                                        ))}
                                     </div>
                                 ) : (
                                     <button
                                         onClick={handleAddAddress}
-                                        className="w-full p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-theme-primary hover:bg-theme-primary/5 transition-all flex items-center justify-center gap-2 text-gray-600 hover:text-theme-primary">
-                                        <Plus className="w-5 h-5" />
-                                        <span className="font-medium">
-                                            {t('addAddress') || 'Add Address'}
-                                        </span>
+                                        className="w-full p-8 border-2 border-dashed border-gray-200 rounded-2xl hover:border-theme-primary hover:bg-theme-primary/5 transition-all group">
+                                        <div className="flex flex-col items-center gap-2">
+                                            <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-theme-primary/10 transition-colors">
+                                                <Plus className="w-6 h-6 text-gray-400 group-hover:text-theme-primary" />
+                                            </div>
+                                            <span className="font-bold text-gray-500 group-hover:text-theme-primary">
+                                                {t('addAddress') ||
+                                                    'Add Delivery Address'}
+                                            </span>
+                                        </div>
                                     </button>
                                 )}
                             </div>
