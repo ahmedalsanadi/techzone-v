@@ -110,5 +110,7 @@ If refactoring in the future, keep these constraints in mind:
 1. **Type Safety:** Always use the `Address` type from `@/types/address.ts`. Do not create local interfaces for addresses.
 2. **Snake Case:** The Libero API expects snake_case for payloads (`recipient_name`, `country_id`, `is_default`).
 3. **The "Single Guest Address" Rule:** While the store is an array, business logic currently enforces a single address for guests.
-4. **Auth Race Conditions:** Ensure `mergeGuestAddressAfterAuth` completes _before_ the UI tries to fetch the list to avoid duplicate or missing data.
-5. **Syncing Check:** Always verify if `is_default: true` is being handled correctly so that only one address has the flag.
+4. **Mandatory Geolocation:** `latitude` and `longitude` are MANDATORY for all address creation and update operations. They must be sent as `number` types to the API.
+5. **API Response Types:** Be aware that the API may return `latitude` and `longitude` as `string` types (e.g., `"24.71360000"`). Always use `Number()` when initializing UI components or map state.
+6. **Auth Race Conditions:** Ensure `mergeGuestAddressAfterAuth` completes _before_ the UI tries to fetch the list to avoid duplicate or missing data.
+7. **Syncing Check:** Always verify if `is_default: true` is being handled correctly so that only one address has the flag.

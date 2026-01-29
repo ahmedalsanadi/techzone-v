@@ -448,12 +448,12 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                                                     {
                                                                         addr.street
                                                                     }
-                                                                    {(addr.building ||
-                                                                        addr.building_number) &&
-                                                                        `, ${addr.building || addr.building_number}`}
-                                                                    {(addr.unit ||
-                                                                        addr.unit_number) &&
-                                                                        `, ${addr.unit || addr.unit_number}`}
+                                                                    {(addr.building_number ||
+                                                                        addr.building) &&
+                                                                        `, ${addr.building_number || addr.building}`}
+                                                                    {(addr.unit_number ||
+                                                                        addr.unit) &&
+                                                                        `, ${addr.unit_number || addr.unit}`}
                                                                     {', '}
                                                                     {addr.city_name ||
                                                                         addr.city ||

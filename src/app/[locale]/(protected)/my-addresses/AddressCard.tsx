@@ -70,11 +70,11 @@ export default function AddressCard({
                             {address.formatted || (
                                 <>
                                     {address.street}
-                                    {(address.building ||
-                                        address.building_number) &&
-                                        `, ${address.building || address.building_number}`}
-                                    {(address.unit || address.unit_number) &&
-                                        `, ${address.unit || address.unit_number}`}
+                                    {(address.building_number ||
+                                        address.building) &&
+                                        `, ${address.building_number || address.building}`}
+                                    {(address.unit_number || address.unit) &&
+                                        `, ${address.unit_number || address.unit}`}
                                     {', '}
                                     {address.city_name || address.city || ''}
                                 </>

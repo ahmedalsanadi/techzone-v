@@ -45,7 +45,10 @@ const AddressModal: React.FC<AddressModalProps> = ({
         [number, number] | null
     >(
         initialAddress?.latitude && initialAddress?.longitude
-            ? [initialAddress.latitude, initialAddress.longitude]
+            ? [
+                  Number(initialAddress.latitude),
+                  Number(initialAddress.longitude),
+              ]
             : DEFAULT_MAP_CENTER,
     );
     const [formattedAddress, setFormattedAddress] = useState('');
@@ -79,19 +82,17 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 try {
                     console.log('[AddressModal] Fetching countries...');
                     const data = await storeService.getCountries();
-                    console.log('[AddressModal] Countries response:', data);
                     setCountries(Array.isArray(data) ? data : []);
-                    // Default to first country if none selected
+
+                    // Only set default country if we're not editing (no initialAddress)
+                    // and no country is currently selected
                     if (
+                        !initialAddress &&
                         data &&
                         Array.isArray(data) &&
                         data.length > 0 &&
                         !selectedCountry
                     ) {
-                        console.log(
-                            '[AddressModal] Setting default country:',
-                            data[0].id,
-                        );
                         setSelectedCountry(data[0].id);
                     }
                 } catch (error) {
@@ -100,7 +101,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
             };
             fetchCountries();
         }
-    }, [isOpen]);
+    }, [isOpen, initialAddress]);
 
     // Fetch Cities when Country changes
     useEffect(() => {
@@ -108,22 +109,20 @@ const AddressModal: React.FC<AddressModalProps> = ({
             const fetchCities = async () => {
                 setIsLoadingLocations(true);
                 try {
-                    console.log(
-                        `[AddressModal] Fetching cities for country: ${selectedCountry}...`,
-                    );
                     const data = await storeService.getCities(
                         Number(selectedCountry),
                     );
-                    console.log('[AddressModal] Cities response:', data);
                     const citiesArray = Array.isArray(data) ? data : [];
                     setCities(citiesArray);
-                    if (
-                        initialAddress?.city_id &&
-                        citiesArray.some((c) => c.id === initialAddress.city_id)
-                    ) {
-                        setSelectedCity(initialAddress.city_id);
-                    } else {
-                        setSelectedCity('');
+
+                    // If we're editing, try to pick the correct city
+                    if (initialAddress?.city_id) {
+                        const hasInitialCity = citiesArray.some(
+                            (c) => c.id === initialAddress.city_id,
+                        );
+                        if (hasInitialCity && !selectedCity) {
+                            setSelectedCity(initialAddress.city_id);
+                        }
                     }
                 } catch (error) {
                     console.error('Failed to fetch cities:', error);
@@ -133,33 +132,30 @@ const AddressModal: React.FC<AddressModalProps> = ({
             };
             fetchCities();
         } else {
-            console.log(
-                '[AddressModal] Skipping cities fetch: no country selected',
-            );
             setCities([]);
             setSelectedCity('');
         }
-    }, [selectedCountry, initialAddress]);
+    }, [selectedCountry, initialAddress?.city_id]);
 
     // Fetch Districts when City changes
     useEffect(() => {
         if (selectedCity) {
             const fetchDistricts = async () => {
                 try {
-                    console.log(`[AddressModal] Fetching districts for city: ${selectedCity}...`);
                     const data = await storeService.getDistricts(
                         Number(selectedCity),
                     );
-                    console.log('[AddressModal] Districts response:', data);
                     const districtsArray = Array.isArray(data) ? data : [];
                     setDistricts(districtsArray);
-                    if (
-                        initialAddress?.district_id &&
-                        districtsArray.some((d) => d.id === initialAddress.district_id)
-                    ) {
-                        setSelectedDistrict(initialAddress.district_id);
-                    } else {
-                        setSelectedDistrict('');
+
+                    // If we're editing, try to pick the correct district
+                    if (initialAddress?.district_id) {
+                        const hasInitialDistrict = districtsArray.some(
+                            (d) => d.id === initialAddress.district_id,
+                        );
+                        if (hasInitialDistrict && !selectedDistrict) {
+                            setSelectedDistrict(initialAddress.district_id);
+                        }
                     }
                 } catch (error) {
                     console.error('Failed to fetch districts:', error);
@@ -167,11 +163,10 @@ const AddressModal: React.FC<AddressModalProps> = ({
             };
             fetchDistricts();
         } else {
-            console.log('[AddressModal] Skipping districts fetch: no city selected');
             setDistricts([]);
             setSelectedDistrict('');
         }
-    }, [selectedCity, initialAddress]);
+    }, [selectedCity, initialAddress?.district_id]);
 
     // Initialize form with existing address if editing
     useEffect(() => {
@@ -183,13 +178,23 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 setRecipientName(initialAddress.recipient_name || '');
                 setPhone(initialAddress.phone || '');
                 setAddressNotes(
-                    initialAddress.description || initialAddress.notes || '',
+                    initialAddress.notes || initialAddress.description || '',
                 );
                 setSelectedCountry(initialAddress.country_id || '');
-                // Cities and Districts are handled by their respective effects
+                // Note: selectedCity and selectedDistrict are reset here to trigger the effects
+                // that safely re-pick them from the fetched lists
+                setSelectedCity(initialAddress.city_id || '');
+                setSelectedDistrict(initialAddress.district_id || '');
+
                 setStreet(initialAddress.street || '');
-                setBuilding(initialAddress.building || '');
-                setUnit(initialAddress.unit || '');
+                setBuilding(
+                    initialAddress.building_number ||
+                        initialAddress.building ||
+                        '',
+                );
+                setUnit(
+                    initialAddress.unit_number || initialAddress.unit || '',
+                );
                 setPostalCode(initialAddress.postal_code || '');
                 setAdditionalNumber(initialAddress.additional_number || '');
                 setIsDefault(
@@ -200,16 +205,19 @@ const AddressModal: React.FC<AddressModalProps> = ({
 
                 if (initialAddress.latitude && initialAddress.longitude) {
                     setSelectedLocation([
-                        initialAddress.latitude,
-                        initialAddress.longitude,
+                        Number(initialAddress.latitude),
+                        Number(initialAddress.longitude),
                     ]);
                 }
-                setFormattedAddress(initialAddress.formatted || '');
+                setFormattedAddress(
+                    initialAddress.formatted || initialAddress.street || '',
+                );
             } else {
                 setAddressName('');
                 setRecipientName('');
                 setPhone('');
                 setAddressNotes('');
+                setSelectedCountry('');
                 setSelectedCity('');
                 setSelectedDistrict('');
                 setStreet('');
@@ -257,12 +265,14 @@ const AddressModal: React.FC<AddressModalProps> = ({
             additional_number: additionalNumber.trim(),
             description: addressNotes.trim(),
             is_default: isDefault,
-            // Keep mapping for UI compatibility
+            latitude: Number(selectedLocation?.[0] || 0),
+            longitude: Number(selectedLocation?.[1] || 0),
+            // Keep mapping for UI compatibility and consistency
             name: addressName.trim(),
             formatted: formattedAddress || street.trim(),
+            building_number: building.trim(),
+            unit_number: unit.trim(),
             notes: addressNotes.trim(),
-            latitude: selectedLocation?.[0],
-            longitude: selectedLocation?.[1],
         };
 
         onSave(addressData);
@@ -273,17 +283,8 @@ const AddressModal: React.FC<AddressModalProps> = ({
         (location: [number, number], formatted: string) => {
             setSelectedLocation(location);
             setFormattedAddress(formatted);
-
-            // Try to extract street if possible, but keep it manual for accuracy
-            if (!street && formatted) {
-                // Heuristic: take first part of formatted address as street
-                const parts = formatted.split(',');
-                if (parts.length > 0) {
-                    // setStreet(parts[0].trim()); // Better let user enter for API accuracy
-                }
-            }
         },
-        [street],
+        [],
     );
 
     const isValid =
@@ -291,7 +292,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
         phone.trim() &&
         selectedCountry &&
         selectedCity &&
-        street.trim();
+        street.trim() &&
+        selectedLocation &&
+        selectedLocation[0] !== 0;
 
     if (!isOpen) return null;
 

@@ -32,6 +32,8 @@ export interface Address {
     description?: string | null;
     notes?: string | null;
     is_default: boolean;
+    latitude: string | number;
+    longitude: string | number;
     // For convenience in UI
     country_name?: string;
     city_name?: string;
@@ -41,8 +43,6 @@ export interface Address {
     city?: string;
     district?: string;
     formatted?: string;
-    latitude?: number;
-    longitude?: number;
     name?: string;
     isDefault?: boolean;
 }
@@ -55,6 +55,8 @@ export interface CreateAddressRequest {
     city_id: number;
     district_id?: number;
     street: string;
+    latitude: number;
+    longitude: number;
     building?: string;
     unit?: string;
     postal_code?: string;

@@ -33,14 +33,17 @@ export function useAddressMerge() {
                     city_id: addr.city_id,
                     district_id: addr.district_id ?? undefined,
                     street: addr.street || addr.formatted || '',
-                    building: addr.building || undefined,
-                    unit: addr.unit || undefined,
+                    latitude: Number(addr.latitude) || 24.7136, // Fallback if missing, though AddressModal should provide it
+                    longitude: Number(addr.longitude) || 46.6753,
+                    building:
+                        addr.building || addr.building_number || undefined,
+                    unit: addr.unit || addr.unit_number || undefined,
                     postal_code: addr.postal_code || undefined,
                     additional_number: addr.additional_number || undefined,
                     description: addr.description || addr.notes || '',
                     is_default: addr.is_default || false,
                 };
-                return storeService.createAddress(payload);
+                return storeService.createAddress(payload as any);
             });
 
             await Promise.all(syncPromises);

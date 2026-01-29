@@ -92,9 +92,12 @@ export default function OrderTypeCard() {
                                                 {deliveryAddress.formatted || (
                                                     <>
                                                         {deliveryAddress.street}
-                                                        {(deliveryAddress.building ||
-                                                            deliveryAddress.building_number) &&
-                                                            `, ${deliveryAddress.building || deliveryAddress.building_number}`}
+                                                        {(deliveryAddress.building_number ||
+                                                            deliveryAddress.building) &&
+                                                            `, ${deliveryAddress.building_number || deliveryAddress.building}`}
+                                                        {(deliveryAddress.unit_number ||
+                                                            deliveryAddress.unit) &&
+                                                            `, ${deliveryAddress.unit_number || deliveryAddress.unit}`}
                                                         {', '}
                                                         {deliveryAddress.city_name ||
                                                             deliveryAddress.city ||
