@@ -10,17 +10,12 @@ import {
     OrderTime,
     getScheduledTimeAsDate,
 } from '@/store/useOrderStore';
-import { useAddressStore } from '@/store/useAddressStore';
 import { useAuthStore } from '@/store/useAuthStore';
 import { Address } from '@/types/address';
 import type { AddressFormSubmitPayload } from '@/types/address';
-import {
-    toCreateAddressRequest,
-    toUpdateAddressRequest,
-} from '@/types/address';
 import AddressModal from './AddressModal';
 import { cn } from '@/lib/utils';
-import { useAddresses, useAddressMutations } from '@/hooks/useAddresses';
+import { useAddressFlow } from '@/hooks/address/useAddressFlow';
 import {
     getAddressLabel,
     formatAddressForDisplay,
@@ -45,14 +40,12 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
         setScheduledTime,
         setOrderTime,
     } = useOrderStore();
-
     const { isAuthenticated } = useAuthStore();
-    const { guestAddress, setGuestAddress } = useAddressStore();
-
-    // React Query for Auth addresses
-    const { data: authAddresses = [], isLoading: isLoadingAuthAddresses } =
-        useAddresses();
-    const { createAddress, updateAddress } = useAddressMutations();
+    const {
+        addresses: displayAddresses,
+        isLoading: isLoadingAddresses,
+        saveAddress,
+    } = useAddressFlow();
 
     const [showAddressModal, setShowAddressModal] = useState(false);
     const [editingAddress, setEditingAddress] = useState<Address | null>(null);
@@ -62,21 +55,20 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
 
     const scheduledTime = getScheduledTimeAsDate(scheduledTimeRaw);
 
-    // Sync deliveryAddress from Auth list if not set
+    // Sync deliveryAddress from available list if not set
     useEffect(() => {
-        if (isAuthenticated && authAddresses.length > 0 && !deliveryAddress) {
-            const defaultAddr =
-                authAddresses.find((a) => a.is_default) || authAddresses[0];
-            setDeliveryAddress(defaultAddr);
-        } else if (!isAuthenticated && guestAddress && !deliveryAddress) {
-            setDeliveryAddress(guestAddress);
+        if (displayAddresses.length > 0 && !deliveryAddress) {
+            const prioritized = isAuthenticated
+                ? displayAddresses.find((a) => a.is_default) ||
+                  displayAddresses[0]
+                : displayAddresses[0];
+            setDeliveryAddress(prioritized);
         }
     }, [
-        isAuthenticated,
-        authAddresses,
-        guestAddress,
+        displayAddresses,
         deliveryAddress,
         setDeliveryAddress,
+        isAuthenticated,
     ]);
 
     // Prevent body scroll
@@ -101,26 +93,11 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
 
     const handleAddressSave = async (payload: AddressFormSubmitPayload) => {
         try {
-            if (isAuthenticated) {
-                if (editingAddress) {
-                    await updateAddress.mutateAsync({
-                        id: Number(editingAddress.id),
-                        data: toUpdateAddressRequest(payload),
-                    });
-                    toast.success(t('addressSaved') || 'Address updated');
-                } else {
-                    await createAddress.mutateAsync(
-                        toCreateAddressRequest(payload),
-                    );
-                    toast.success(t('addressSaved') || 'Address added');
-                }
-            } else {
-                // Guest logic: only one address allowed
-                const newAddress = { ...payload, id: Date.now() } as Address;
-                setGuestAddress(newAddress);
-                setDeliveryAddress(newAddress);
-                toast.success(t('addressSaved') || 'Guest address saved');
-            }
+            await saveAddress(
+                payload,
+                editingAddress ? Number(editingAddress.id) : undefined,
+            );
+            toast.success(t('addressSaved') || 'Address saved');
             setShowAddressModal(false);
         } catch (error) {
             console.error('Failed to save address:', error);
@@ -162,11 +139,6 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
 
     if (!isOpen) return null;
 
-    const displayAddresses = isAuthenticated
-        ? authAddresses
-        : guestAddress
-          ? [guestAddress]
-          : [];
     const canAddAddress = showAddNewAddressButton(
         isAuthenticated,
         displayAddresses.length,
@@ -180,7 +152,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
             />
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                 <div
-                    className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col"
+                    className="bg-white rounded-[40px] shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col"
                     onClick={(e) => e.stopPropagation()}>
                     <header className="flex items-center justify-between p-6 border-b border-gray-100">
                         <h2 className="text-xl font-bold text-gray-900">
@@ -188,13 +160,12 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                         </h2>
                         <button
                             onClick={onClose}
-                            className="p-2 hover:bg-gray-100 rounded-lg">
+                            className="p-2 hover:bg-gray-100 rounded-xl">
                             <ChevronRight className="w-5 h-5 text-gray-500" />
                         </button>
                     </header>
 
                     <div className="flex-1 overflow-y-auto p-6 space-y-8">
-                        {/* Order Type */}
                         <div>
                             <h3 className="text-lg font-semibold text-gray-900 mb-4">
                                 {t('selectOrderType')}
@@ -212,10 +183,10 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                         key={type}
                                         onClick={() => setOrderType(type)}
                                         className={cn(
-                                            'p-4 rounded-xl border-2 transition-all text-right',
+                                            'p-4 rounded-2xl border-2 transition-all text-right',
                                             orderType === type
-                                                ? 'bg-theme-primary/5 border-theme-primary text-theme-primary font-semibold'
-                                                : 'bg-gray-50 border-gray-200 hover:border-gray-300',
+                                                ? 'bg-theme-primary/5 border-theme-primary text-theme-primary font-bold shadow-sm'
+                                                : 'bg-gray-50 border-gray-100 hover:border-gray-200',
                                         )}>
                                         {t(type)}
                                     </button>
@@ -223,7 +194,6 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                             </div>
                         </div>
 
-                        {/* Addresses */}
                         {orderType === 'delivery' && (
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
@@ -234,15 +204,15 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                         displayAddresses.length > 0 && (
                                             <button
                                                 onClick={handleAddAddress}
-                                                className="text-theme-primary text-sm font-bold flex items-center gap-1">
+                                                className="text-theme-primary text-sm font-black flex items-center gap-1 hover:brightness-90 transition-all">
                                                 <Plus className="w-4 h-4" />{' '}
                                                 {t('addNew')}
                                             </button>
                                         )}
                                 </div>
 
-                                {isLoadingAuthAddresses ? (
-                                    <div className="flex justify-center p-8 bg-gray-50 rounded-xl">
+                                {isLoadingAddresses ? (
+                                    <div className="flex justify-center p-12 bg-gray-50 rounded-3xl">
                                         <Loader2 className="animate-spin text-theme-primary" />
                                     </div>
                                 ) : displayAddresses.length > 0 ? (
@@ -254,16 +224,16 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                                     setDeliveryAddress(addr)
                                                 }
                                                 className={cn(
-                                                    'p-4 rounded-xl border-2 transition-all cursor-pointer group relative',
+                                                    'p-5 rounded-3xl border-2 transition-all cursor-pointer group relative',
                                                     deliveryAddress?.id ===
                                                         addr.id
-                                                        ? 'bg-theme-primary/5 border-theme-primary'
+                                                        ? 'bg-theme-primary/5 border-theme-primary shadow-lg shadow-theme-primary/5'
                                                         : 'bg-white border-gray-100 hover:border-gray-200',
                                                 )}>
-                                                <div className="flex items-start gap-3">
+                                                <div className="flex items-center gap-4">
                                                     <div
                                                         className={cn(
-                                                            'w-5 h-5 rounded-full border-2 mt-0.5 flex items-center justify-center',
+                                                            'w-6 h-6 rounded-full border-2 transition-all flex items-center justify-center',
                                                             deliveryAddress?.id ===
                                                                 addr.id
                                                                 ? 'border-theme-primary bg-theme-primary'
@@ -293,7 +263,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                                                 addr,
                                                             );
                                                         }}
-                                                        className="p-2 opacity-0 group-hover:opacity-100">
+                                                        className="p-2.5 bg-gray-50 rounded-xl hover:bg-gray-100 opacity-0 group-hover:opacity-100 transition-all">
                                                         <Edit className="w-4 h-4 text-gray-400" />
                                                     </button>
                                                 </div>
@@ -303,9 +273,9 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                 ) : (
                                     <button
                                         onClick={handleAddAddress}
-                                        className="w-full p-8 border-2 border-dashed border-gray-200 rounded-2xl hover:border-theme-primary hover:bg-theme-primary/5 group">
-                                        <Plus className="w-8 h-8 mx-auto text-gray-300 group-hover:text-theme-primary mb-2" />
-                                        <span className="font-bold text-gray-400 group-hover:text-theme-primary">
+                                        className="w-full p-10 border-2 border-dashed border-gray-200 rounded-[32px] hover:border-theme-primary hover:bg-theme-primary/5 group transition-all">
+                                        <Plus className="w-8 h-8 mx-auto text-gray-300 group-hover:text-theme-primary mb-3" />
+                                        <span className="font-black text-gray-400 group-hover:text-theme-primary">
                                             {t('addAddress')}
                                         </span>
                                     </button>
@@ -313,7 +283,6 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                             </div>
                         )}
 
-                        {/* Order Time */}
                         <div className="space-y-4">
                             <h3 className="text-lg font-semibold text-gray-900">
                                 {t('selectOrderTime')}
@@ -327,10 +296,10 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                                 handleTimeSelect(time)
                                             }
                                             className={cn(
-                                                'p-4 rounded-xl border-2 transition-all text-right',
+                                                'p-4 rounded-2xl border-2 transition-all text-right',
                                                 orderTime === time
-                                                    ? 'bg-theme-primary/5 border-theme-primary text-theme-primary font-semibold'
-                                                    : 'bg-gray-50 border-gray-200 hover:border-gray-300',
+                                                    ? 'bg-theme-primary/5 border-theme-primary text-theme-primary font-bold shadow-sm'
+                                                    : 'bg-gray-50 border-gray-100 hover:border-gray-200',
                                             )}>
                                             {t(time)}
                                         </button>
@@ -339,10 +308,12 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                             </div>
 
                             {orderTime === 'later' && (
-                                <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <Clock className="w-5 h-5 text-theme-primary" />
-                                        <span className="text-sm font-medium">
+                                <div className="p-5 bg-gray-50 rounded-2xl border border-gray-100 flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <div className="p-2.5 bg-theme-primary/10 rounded-xl">
+                                            <Clock className="w-5 h-5 text-theme-primary" />
+                                        </div>
+                                        <span className="text-sm font-bold text-gray-700">
                                             {scheduledTime
                                                 ? scheduledTime.toLocaleString()
                                                 : t('selectDateTime')}
@@ -350,14 +321,14 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                     </div>
                                     <button
                                         onClick={openDateTimePicker}
-                                        className="text-theme-primary font-bold text-sm">
+                                        className="text-theme-primary font-black text-sm hover:underline">
                                         {t('change')}
                                     </button>
                                 </div>
                             )}
 
                             {showDateTimePicker && (
-                                <div className="p-4 bg-white border border-gray-100 rounded-xl shadow-inner space-y-4 animate-in slide-in-from-top-2">
+                                <div className="p-6 bg-white border border-gray-100 rounded-3xl shadow-xl space-y-4 animate-in slide-in-from-top-4 duration-300">
                                     <div className="grid grid-cols-2 gap-4">
                                         <input
                                             type="date"
@@ -365,7 +336,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                             onChange={(e) =>
                                                 setTempDate(e.target.value)
                                             }
-                                            className="w-full p-2 border rounded-lg"
+                                            className="w-full p-3 bg-gray-50 border-0 rounded-xl font-bold"
                                         />
                                         <input
                                             type="time"
@@ -373,20 +344,20 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                             onChange={(e) =>
                                                 setTempTime(e.target.value)
                                             }
-                                            className="w-full p-2 border rounded-lg"
+                                            className="w-full p-3 bg-gray-50 border-0 rounded-xl font-bold"
                                         />
                                     </div>
-                                    <div className="flex justify-end gap-2">
+                                    <div className="flex justify-end gap-3 pt-2">
                                         <button
                                             onClick={() =>
                                                 setShowDateTimePicker(false)
                                             }
-                                            className="px-4 py-2 text-gray-400 font-bold">
+                                            className="px-6 py-2.5 text-gray-400 font-bold hover:bg-gray-50 rounded-xl transition-all">
                                             {t('cancel')}
                                         </button>
                                         <button
                                             onClick={handleDateTimeSave}
-                                            className="px-6 py-2 bg-theme-primary text-white font-bold rounded-lg">
+                                            className="px-8 py-2.5 bg-theme-primary text-white font-black rounded-xl shadow-lg shadow-theme-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
                                             {t('save')}
                                         </button>
                                     </div>
@@ -398,7 +369,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                     <footer className="p-6 border-t border-gray-100">
                         <button
                             onClick={onClose}
-                            className="w-full bg-theme-primary text-white font-bold py-3.5 rounded-xl hover:brightness-95">
+                            className="w-full bg-theme-primary text-white font-black py-4 rounded-[20px] shadow-xl shadow-theme-primary/20 hover:brightness-95 active:scale-[0.98] transition-all">
                             {t('save')}
                         </button>
                     </footer>
@@ -407,7 +378,10 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
 
             <AddressModal
                 isOpen={showAddressModal}
-                onClose={() => setShowAddressModal(false)}
+                onClose={() => {
+                    setShowAddressModal(false);
+                    setEditingAddress(null);
+                }}
                 onSave={handleAddressSave}
                 initialAddress={editingAddress}
             />

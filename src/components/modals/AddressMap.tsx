@@ -1,7 +1,7 @@
 // src/components/modals/AddressMap.tsx
 'use client';
 
-import React, { useEffect, useCallback, useRef, memo } from 'react';
+import React, { useEffect, useCallback, useRef, memo, useState } from 'react';
 import {
     MapContainer,
     TileLayer,
@@ -12,26 +12,27 @@ import {
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { DEFAULT_MAP_ZOOM } from '@/lib/branches';
+import { DEFAULT_COORDINATES } from '@/lib/address/constants';
 
 // Initialize Leaflet icon once at module level
-const DEFAULT_ICON = typeof window !== 'undefined' 
-    ? L.icon({
-        iconUrl: '/images/leaflet/marker-icon.png',
-        iconRetinaUrl: '/images/leaflet/marker-icon-2x.png',
-        shadowUrl: '/images/leaflet/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41],
-    })
-    : null;
+const DEFAULT_ICON =
+    typeof window !== 'undefined'
+        ? L.icon({
+              iconUrl: '/images/leaflet/marker-icon.png',
+              iconRetinaUrl: '/images/leaflet/marker-icon-2x.png',
+              shadowUrl: '/images/leaflet/marker-shadow.png',
+              iconSize: [25, 41],
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+              shadowSize: [41, 41],
+          })
+        : null;
 
 if (typeof window !== 'undefined' && DEFAULT_ICON) {
     L.Marker.prototype.options.icon = DEFAULT_ICON;
 }
 
-// Use proxy URL instead of direct Nominatim URL
-const PROXY_BASE_URL = '/proxy'; // Updated to use proxy
+const PROXY_BASE_URL = '/proxy';
 const SEARCH_DEBOUNCE_MS = 800;
 
 interface AddressMapProps {
@@ -44,240 +45,194 @@ interface LocationSelectHandler {
     (location: [number, number], formatted: string): void;
 }
 
-// Reverse geocode a location through proxy
+// Reverse geocode proxy
 async function reverseGeocode(
-    lat: number, 
-    lng: number, 
-    signal?: AbortSignal
+    lat: number,
+    lng: number,
+    signal?: AbortSignal,
 ): Promise<string> {
     try {
-        // Use proxy endpoint with nominatim path
         const response = await fetch(
             `${PROXY_BASE_URL}/nominatim/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ar`,
-            { 
-                signal,
-                headers: {
-                    'Accept-Language': 'ar',
-                    'Content-Type': 'application/json',
-                }
-            }
+            { signal, headers: { 'Accept-Language': 'ar' } },
         );
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
         return data.display_name || `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
     } catch (error) {
-        if (error instanceof Error && error.name === 'AbortError') {
-            throw error;
-        }
-        console.error('Reverse geocoding error:', error);
+        if (error instanceof Error && error.name === 'AbortError') throw error;
         return `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
     }
 }
 
-// Forward geocode a search query through proxy
+// Forward geocode proxy
 async function forwardGeocode(
-    query: string, 
-    signal?: AbortSignal
+    query: string,
+    signal?: AbortSignal,
 ): Promise<{ lat: number; lon: number; display_name: string } | null> {
     try {
-        // Use proxy endpoint with nominatim path
         const response = await fetch(
             `${PROXY_BASE_URL}/nominatim/search?format=json&q=${encodeURIComponent(query)}&limit=1&accept-language=ar`,
-            { 
-                signal,
-                headers: {
-                    'Accept-Language': 'ar',
-                    'Content-Type': 'application/json',
-                }
-            }
+            { signal, headers: { 'Accept-Language': 'ar' } },
         );
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
         return data?.[0] || null;
     } catch (error) {
-        if (error instanceof Error && error.name === 'AbortError') {
-            throw error;
-        }
-        console.error('Geocoding error:', error);
+        if (error instanceof Error && error.name === 'AbortError') throw error;
         return null;
     }
 }
 
-// Map click handler component
-const MapClickHandler = memo(({ 
-    onSelect 
-}: { 
-    onSelect: LocationSelectHandler 
-}) => {
-    const abortControllerRef = useRef<AbortController | null>(null);
+const MapClickHandler = memo(
+    ({
+        onSelect,
+        setHasInteracted,
+    }: {
+        onSelect: LocationSelectHandler;
+        setHasInteracted: (v: boolean) => void;
+    }) => {
+        const abortControllerRef = useRef<AbortController | null>(null);
 
-    useMapEvents({
-        click: async (e) => {
-            // Cancel any pending request
-            abortControllerRef.current?.abort();
-            abortControllerRef.current = new AbortController();
-
-            const { lat, lng } = e.latlng;
-            try {
-                const formatted = await reverseGeocode(
-                    lat, 
-                    lng, 
-                    abortControllerRef.current.signal
-                );
-                onSelect([lat, lng], formatted);
-            } catch (error) {
-                if (error instanceof Error && error.name !== 'AbortError') {
-                    const formatted = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+        useMapEvents({
+            click: async (e) => {
+                setHasInteracted(true);
+                abortControllerRef.current?.abort();
+                abortControllerRef.current = new AbortController();
+                const { lat, lng } = e.latlng;
+                try {
+                    const formatted = await reverseGeocode(
+                        lat,
+                        lng,
+                        abortControllerRef.current.signal,
+                    );
                     onSelect([lat, lng], formatted);
+                } catch (error) {
+                    if (error instanceof Error && error.name !== 'AbortError') {
+                        onSelect(
+                            [lat, lng],
+                            `${lat.toFixed(6)}, ${lng.toFixed(6)}`,
+                        );
+                    }
                 }
-            }
-        },
-    });
+            },
+        });
 
-    useEffect(() => {
-        return () => {
-            abortControllerRef.current?.abort();
-        };
-    }, []);
+        useEffect(() => () => abortControllerRef.current?.abort(), []);
+        return null;
+    },
+);
 
-    return null;
-});
-MapClickHandler.displayName = 'MapClickHandler';
-
-// Map view updater component
 const MapViewUpdater = memo(({ center }: { center: [number, number] }) => {
     const map = useMap();
     const prevCenterRef = useRef(center);
-
     useEffect(() => {
-        // Only update if center actually changed
         if (
-            prevCenterRef.current[0] !== center[0] || 
+            prevCenterRef.current[0] !== center[0] ||
             prevCenterRef.current[1] !== center[1]
         ) {
             map.setView(center, map.getZoom());
             prevCenterRef.current = center;
         }
     }, [center, map]);
-
     return null;
 });
-MapViewUpdater.displayName = 'MapViewUpdater';
 
-// Map size invalidator for container visibility
 const MapSizeInvalidator = memo(() => {
     const map = useMap();
-    
     useEffect(() => {
-        const timer = setTimeout(() => map.invalidateSize(), 100);
+        const timer = setTimeout(() => map.invalidateSize(), 150);
         return () => clearTimeout(timer);
     }, [map]);
-
     return null;
 });
-MapSizeInvalidator.displayName = 'MapSizeInvalidator';
-
-// Search handler hook
-function useSearchHandler(
-    searchQuery: string | undefined,
-    onLocationSelect: LocationSelectHandler
-) {
-    const abortControllerRef = useRef<AbortController | null>(null);
-    const lastQueryRef = useRef<string>('');
-
-    useEffect(() => {
-        const trimmedQuery = searchQuery?.trim() || '';
-        
-        // Skip if query is empty or unchanged
-        if (!trimmedQuery || trimmedQuery === lastQueryRef.current) {
-            return;
-        }
-
-        const timer = setTimeout(async () => {
-            // Cancel any pending request
-            abortControllerRef.current?.abort();
-            abortControllerRef.current = new AbortController();
-
-            try {
-                const result = await forwardGeocode(
-                    trimmedQuery,
-                    abortControllerRef.current.signal
-                );
-
-                if (result) {
-                    const newLocation: [number, number] = [
-                        parseFloat(String(result.lat)),
-                        parseFloat(String(result.lon)),
-                    ];
-                    lastQueryRef.current = trimmedQuery;
-                    onLocationSelect(newLocation, result.display_name);
-                }
-            } catch (error) {
-                // Silently ignore abort errors
-            }
-        }, SEARCH_DEBOUNCE_MS);
-
-        return () => {
-            clearTimeout(timer);
-            abortControllerRef.current?.abort();
-        };
-    }, [searchQuery, onLocationSelect]);
-}
-
-// Loading placeholder component
-const MapLoadingPlaceholder = memo(() => (
-    <div className="w-full h-full bg-gray-100 animate-pulse rounded-2xl flex items-center justify-center">
-        <span className="text-sm text-gray-400">Loading map...</span>
-    </div>
-));
-MapLoadingPlaceholder.displayName = 'MapLoadingPlaceholder';
 
 const AddressMap: React.FC<AddressMapProps> = ({
     center,
     onLocationSelect,
     searchQuery,
 }) => {
-    // Stable callback reference
+    const [hasInteracted, setHasInteracted] = useState(false);
+
+    // Check if current center is the default (meaning no user pick yet)
+    const isDefaultLocation =
+        Math.abs(center[0] - DEFAULT_COORDINATES[0]) < 0.0001 &&
+        Math.abs(center[1] - DEFAULT_COORDINATES[1]) < 0.0001;
+
     const handleLocationSelect = useCallback<LocationSelectHandler>(
         (location, formatted) => {
+            setHasInteracted(true);
             onLocationSelect(location, formatted);
         },
-        [onLocationSelect]
+        [onLocationSelect],
     );
 
-    // Handle search geocoding
-    useSearchHandler(searchQuery, handleLocationSelect);
+    // Search Handler Logic
+    const abortRef = useRef<AbortController | null>(null);
+    const lastQueryRef = useRef('');
+    useEffect(() => {
+        const q = searchQuery?.trim() || '';
+        if (!q || q === lastQueryRef.current) return;
+        const timer = setTimeout(async () => {
+            abortRef.current?.abort();
+            abortRef.current = new AbortController();
+            try {
+                const res = await forwardGeocode(q, abortRef.current.signal);
+                if (res) {
+                    handleLocationSelect(
+                        [
+                            parseFloat(String(res.lat)),
+                            parseFloat(String(res.lon)),
+                        ],
+                        res.display_name,
+                    );
+                    lastQueryRef.current = q;
+                }
+            } catch {}
+        }, SEARCH_DEBOUNCE_MS);
+        return () => {
+            clearTimeout(timer);
+            abortRef.current?.abort();
+        };
+    }, [searchQuery, handleLocationSelect]);
 
-    // SSR guard
-    if (typeof window === 'undefined') {
-        return <MapLoadingPlaceholder />;
-    }
+    if (typeof window === 'undefined') return null;
 
     return (
-        <MapContainer
-            center={center}
-            zoom={DEFAULT_MAP_ZOOM}
-            className="w-full h-full rounded-2xl"
-            style={{ height: '100%', width: '100%', zIndex: 0 }}
-            scrollWheelZoom
-        >
-            <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            <MapViewUpdater center={center} />
-            <MapSizeInvalidator />
-            <MapClickHandler onSelect={handleLocationSelect} />
-            <Marker position={center} />
-        </MapContainer>
+        <div className="relative w-full h-full">
+            <MapContainer
+                center={center}
+                zoom={DEFAULT_MAP_ZOOM}
+                className="w-full h-full rounded-2xl"
+                style={{ height: '100%', width: '100%', zIndex: 0 }}
+                scrollWheelZoom>
+                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                <MapViewUpdater center={center} />
+                <MapSizeInvalidator />
+                <MapClickHandler
+                    onSelect={handleLocationSelect}
+                    setHasInteracted={setHasInteracted}
+                />
+                <Marker position={center} />
+            </MapContainer>
+
+            {/* Empty State / Interaction Prompt */}
+            {!hasInteracted && isDefaultLocation && (
+                <div className="absolute inset-0 z-[1000] flex items-center justify-center pointer-events-none p-6">
+                    <div className="bg-white/90 backdrop-blur-md px-6 py-4 rounded-3xl shadow-2xl border border-theme-primary/10 flex flex-col items-center gap-2 animate-bounce">
+                        <div className="w-10 h-10 bg-theme-primary/10 rounded-full flex items-center justify-center">
+                            <div className="w-3 h-3 bg-theme-primary rounded-full animate-ping" />
+                        </div>
+                        <p className="text-sm font-black text-theme-primary uppercase tracking-tight text-center">
+                            Pick Your Location on Map
+                        </p>
+                        <p className="text-[10px] text-gray-400 font-bold">
+                            Click anywhere to pinpoint your address
+                        </p>
+                    </div>
+                </div>
+            )}
+        </div>
     );
 };
 
