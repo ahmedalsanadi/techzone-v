@@ -115,7 +115,7 @@ So: **sync from guest to cloud happens only at login (existing user) or after si
 ### 3.3 Authenticated: After mutations
 
 - **Create:** `useAddressMutations.createAddress` — on success, invalidates `['addresses']` and, if the new address `is_default`, calls `setDeliveryAddress(newAddress)`.
-- **Update:** `useAddressMutations.updateAddress` — on success, invalidates `['addresses']` and `['address', id]`, and **always** calls `setDeliveryAddress(updatedAddress)` (so the SubHeader/checkout always shows the latest version of the address you edited).
+- **Update:** `useAddressMutations.updateAddress` — on success, invalidates `['addresses']` and `['address', id]`, and calls `setDeliveryAddress` only when the updated address is the one currently displayed or when it becomes default (via `getNextDeliveryAddressAfterMutation` in `src/lib/address/deliverySync.ts`).
 - **Delete:** `useAddressMutations.deleteAddress` — on success, invalidates `['addresses']`; if the deleted id is the current `deliveryAddress.id`, calls `setDeliveryAddress(null)`.
 
 There is **no** periodic refetch or sync timer; refetch happens when React Query considers data stale (see staleTime in [§4](#4-api-endpoints-caching-and-response-shapes)) or when cache is invalidated after mutations.
@@ -346,7 +346,8 @@ After create/update/delete, `queryClient.invalidateQueries({ queryKey: ['address
 | Display address (SubHeader, checkout) | useOrderStore.deliveryAddress; key `order-storage` |
 | Address list (auth) | useAddresses() → React Query ['addresses'] |
 | Single address (edit) | useAddress(id) → React Query ['address', id] |
-| Create/Update/Delete + sync to display | useAddressMutations in useAddresses.ts |
+| Create/Update/Delete + sync to display | useAddressMutations in useAddresses.ts; sync logic in lib/address/deliverySync.ts |
+| Address label/format display | lib/address/formatAddress.ts (getAddressLabel, formatAddressForDisplay, showAddNewAddressButton) |
 | Merge guest → cloud | useAddressMerge.mergeGuestAddressAfterAuth; called from useAuthFlowHandlers |
 | When merge runs | After OTP success (existing user) or after signup submit (new user) |
 | Protected route list | lib/auth/constants.ts PROTECTED_ROUTES (includes /my-addresses) |
@@ -361,7 +362,7 @@ After create/update/delete, `queryClient.invalidateQueries({ queryKey: ['address
 
 ### 10.1 Bad or risky practices
 
-- **updateAddress onSuccess always sets deliveryAddress:** In `useAddressMutations`, every update calls `setDeliveryAddress(updatedAddress)`. So editing any address (even a non-default one) overwrites the current delivery address with that edited one. If the user had selected a different address for delivery and then edits another, the “selected” delivery address changes without explicit user action. Safer: only set deliveryAddress when the updated address is the current deliveryAddress or when it becomes default.
+- **updateAddress onSuccess always sets deliveryAddress:** (Resolved: delivery sync is centralized in `getNextDeliveryAddressAfterMutation`; update only sets delivery when the edited address is the current one or becomes default.) If the user had selected a different address for delivery and then edits another, the “selected” delivery address changes without explicit user action. Safer: only set deliveryAddress when the updated address is the current deliveryAddress or when it becomes default.
 - **Guest id:** Guest address is given `id: Date.now()` in OrderTypeModal. If the user edits and saves again, a new id is assigned; any code that compares by id could treat it as a different address.
 - **useAddressMerge payload:** Uses `country_id: guestAddress.country_id || 1` and lat/lng fallbacks; no validation that country_id/city_id/district_id are valid for the backend.
 - **No retry or user feedback on merge failure:** If merge fails, guest address stays; only console.error. User is not told to try again or that the address was not synced.
@@ -388,12 +389,23 @@ After create/update/delete, `queryClient.invalidateQueries({ queryKey: ['address
 - **AddressModal:** Consider not calling onClose() inside handleSave; let the parent close after successful mutation so that on failure the modal stays open and the parent can show toast.
 - **Dependencies in useAddressMerge:** `mergeGuestAddressAfterAuth` depends on `guestAddress` from store; if merge runs before Zustand rehydration, guestAddress might be null. Ensure auth flow runs after stores are rehydrated (e.g. after first paint or a rehydration guard).
 - **StaleTime consistency:** useAddresses 5 min vs useAddress 10 min is intentional (list vs single). Document it in the hook so future changes don’t accidentally make single address fresher than list and cause confusion.
+- **AddressModal effect:** Map/search state is reset in a `useEffect` when `isOpen` or `activeAddress` changes; `setSelectedLocation`, `setFormattedAddress`, and `setSearchQuery` are deferred via `queueMicrotask` to satisfy the "no synchronous setState in effect" lint. If the lint rule changes, this can be simplified back to direct setState.
+
+### 10.4 Implemented (reference)
+
+- **deliverySync:** `getNextDeliveryAddressAfterMutation(options)` — used by `useAddressMutations` so `deliveryAddress` is only set when the mutated address is current or default.
+- **formatAddress:** `getAddressLabel`, `formatAddressForDisplay`, `showAddNewAddressButton` — used by SubHeader, OrderTypeCard, OrderTypeModal, AddressCard.
+- **Typed payload:** `AddressFormSubmitPayload`, `toCreateAddressRequest`, `toUpdateAddressRequest` — AddressModal and parents use these; guest merge uses `toCreateAddressRequest`.
+- **ConfirmModal:** Reusable modal; MyAddressesView uses it for delete (i18n: deleteTitle, deleteConfirm, confirmDelete, cancel).
+- **usePrefetchAddress:** MyAddressesView passes `onMouseEnter={() => prefetchAddress(address.id)}` to AddressCard.
+- **AddressModal onSave:** Awaits `onSave(payload)` (sync or async); closes only after success; on error modal stays open.
 
 ---
 
 ## Work log (reference)
 
 - **Jan 30, 2026:** Guest limited to one address; React Query for addresses; AddressModal fetches by id when editing (auth); mutations sync to useOrderStore; OrderTypeModal hides “Add new” for guest with address; i18n and this doc updated.
+- **Jan 30, 2026 (refactor):** Centralized delivery sync (deliverySync.ts); address display helpers (formatAddress.ts); typed AddressFormSubmitPayload and toCreateAddressRequest/toUpdateAddressRequest; ConfirmModal for delete; usePrefetchAddress and prefetch on hover; AddressModal async onSave and close-after-success; all `any` removed; i18n for MyAddresses and Address. Section 10: removed solved items where applicable; added 10.4 Implemented (reference).
 
 ---
 

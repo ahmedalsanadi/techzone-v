@@ -82,6 +82,7 @@
   },
   "Address": {
     "loading": "Loading...",
+    "fetchingLocationDetails": "Fetching accurate location details...",
     "addNewAddress": "Add New Address",
     "editAddress": "Edit Address",
     "searchAddress": "Search Address",
@@ -580,9 +581,19 @@
     "subtitle": "Manage your saved delivery addresses",
     "addNew": "Add New Address",
     "noAddresses": "No addresses saved yet",
+    "deleteTitle": "Delete address",
     "deleteConfirm": "Are you sure you want to delete this address?",
+    "confirmDelete": "Delete",
+    "cancel": "Cancel",
     "default": "Default",
-    "home": "Home"
+    "home": "Home",
+    "syncingWithCloud": "Syncing with Cloud...",
+    "deleteSuccess": "Address deleted successfully",
+    "deleteError": "Failed to delete address",
+    "defaultUpdated": "Default address updated",
+    "defaultError": "Failed to update default address",
+    "updateSuccess": "Address updated successfully",
+    "addSuccess": "Address added successfully"
   },
   "FAQ": {
     "title": "FAQ",

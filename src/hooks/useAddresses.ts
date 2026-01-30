@@ -4,14 +4,10 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { storeService } from '@/services/store-service';
-import {
-    Address,
-    CreateAddressRequest,
-    UpdateAddressRequest,
-} from '@/types/address';
+import { CreateAddressRequest, UpdateAddressRequest } from '@/types/address';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useOrderStore } from '@/store/useOrderStore';
-import { toast } from 'sonner';
+import { getNextDeliveryAddressAfterMutation } from '@/lib/address';
 
 /**
  * Hook to fetch all addresses for the authenticated user
@@ -42,26 +38,45 @@ export function useAddress(id: number | null) {
 }
 
 /**
- * Hook for address mutations (create, update, delete)
+ * Prefetch a single address (e.g. on hover before opening edit modal).
+ */
+export function usePrefetchAddress() {
+    const queryClient = useQueryClient();
+    const { isAuthenticated } = useAuthStore();
+
+    return (id: number) => {
+        if (!isAuthenticated) return;
+        queryClient.prefetchQuery({
+            queryKey: ['address', id],
+            queryFn: () => storeService.getAddress(id),
+            staleTime: 1000 * 60 * 10,
+        });
+    };
+}
+
+/**
+ * Hook for address mutations (create, update, delete).
+ * Uses centralized deliverySync so deliveryAddress is only updated when appropriate.
  */
 export function useAddressMutations() {
     const queryClient = useQueryClient();
     const { setDeliveryAddress } = useOrderStore();
 
-    // Create mutation
     const createMutation = useMutation({
         mutationFn: (data: CreateAddressRequest) =>
             storeService.createAddress(data),
         onSuccess: (newAddress) => {
             queryClient.invalidateQueries({ queryKey: ['addresses'] });
-            // Sync with order store for display purposes (subheader)
-            if (newAddress.is_default) {
-                setDeliveryAddress(newAddress);
-            }
+            const current = useOrderStore.getState().deliveryAddress;
+            const next = getNextDeliveryAddressAfterMutation({
+                event: 'created',
+                currentDeliveryAddress: current,
+                newAddress,
+            });
+            setDeliveryAddress(next);
         },
     });
 
-    // Update mutation
     const updateMutation = useMutation({
         mutationFn: ({
             id,
@@ -75,22 +90,27 @@ export function useAddressMutations() {
             queryClient.invalidateQueries({
                 queryKey: ['address', updatedAddress.id],
             });
-            // Always sync the updated address if it's the one currently selected or if it's default
-            setDeliveryAddress(updatedAddress);
+            const current = useOrderStore.getState().deliveryAddress;
+            const next = getNextDeliveryAddressAfterMutation({
+                event: 'updated',
+                currentDeliveryAddress: current,
+                updatedAddress,
+            });
+            setDeliveryAddress(next);
         },
     });
 
-    // Delete mutation
     const deleteMutation = useMutation({
         mutationFn: (id: number) => storeService.deleteAddress(id),
         onSuccess: (_, deletedId) => {
             queryClient.invalidateQueries({ queryKey: ['addresses'] });
-
-            // If the deleted address was the one being displayed in SubHeader, clear it
-            const currentSelected = useOrderStore.getState().deliveryAddress;
-            if (currentSelected && Number(currentSelected.id) === deletedId) {
-                setDeliveryAddress(null);
-            }
+            const current = useOrderStore.getState().deliveryAddress;
+            const next = getNextDeliveryAddressAfterMutation({
+                event: 'deleted',
+                currentDeliveryAddress: current,
+                deletedId,
+            });
+            setDeliveryAddress(next);
         },
     });
 

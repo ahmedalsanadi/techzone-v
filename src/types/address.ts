@@ -66,3 +66,70 @@ export interface CreateAddressRequest {
 }
 
 export type UpdateAddressRequest = Partial<CreateAddressRequest>;
+
+/**
+ * Form-level payload from AddressModal (may include display-only fields).
+ * Use toCreateAddressRequest / toUpdateAddressRequest before sending to API.
+ */
+export interface AddressFormSubmitPayload {
+    label: string;
+    recipient_name?: string;
+    phone: string;
+    country_id: number;
+    city_id: number;
+    district_id?: number | null;
+    street: string;
+    latitude: number;
+    longitude: number;
+    building?: string;
+    unit?: string;
+    postal_code?: string;
+    additional_number?: string;
+    description?: string;
+    is_default?: boolean;
+    // Display-only (dropped before API)
+    name?: string;
+    formatted?: string;
+    building_number?: string;
+    unit_number?: string;
+    notes?: string;
+}
+
+/**
+ * Normalize form payload to API CreateAddressRequest (snake_case, district_id as number | undefined).
+ */
+export function toCreateAddressRequest(
+    payload: AddressFormSubmitPayload,
+): CreateAddressRequest {
+    return {
+        label: payload.label,
+        recipient_name: payload.recipient_name || undefined,
+        phone: payload.phone,
+        country_id: payload.country_id,
+        city_id: payload.city_id,
+        district_id:
+            payload.district_id != null
+                ? Number(payload.district_id)
+                : undefined,
+        street: payload.street,
+        latitude: Number(payload.latitude),
+        longitude: Number(payload.longitude),
+        building: payload.building || undefined,
+        unit: payload.unit || undefined,
+        postal_code: payload.postal_code || undefined,
+        additional_number: payload.additional_number || undefined,
+        description: payload.description || undefined,
+        is_default: payload.is_default,
+    };
+}
+
+/**
+ * Normalize form payload to API UpdateAddressRequest (partial, drop display-only fields).
+ */
+export function toUpdateAddressRequest(
+    payload: AddressFormSubmitPayload,
+): UpdateAddressRequest {
+    const base = toCreateAddressRequest(payload);
+    const result: UpdateAddressRequest = { ...base };
+    return result;
+}

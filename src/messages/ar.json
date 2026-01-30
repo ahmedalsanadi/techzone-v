@@ -83,6 +83,7 @@
   },
   "Address": {
     "loading": "جاري التحميل...",
+    "fetchingLocationDetails": "جاري جلب تفاصيل الموقع بدقة...",
     "addNewAddress": "إضافة عنوان جديد",
     "editAddress": "تعديل العنوان",
     "searchAddress": "البحث عن العنوان",
@@ -583,9 +584,19 @@
     "subtitle": "إدارة عناوين التوصيل المسجلة لديك",
     "addNew": "اضافة عنوان جديد",
     "noAddresses": "لا توجد عناوين مسجلة بعد",
+    "deleteTitle": "حذف العنوان",
     "deleteConfirm": "هل أنت متأكد من حذف هذا العنوان؟",
+    "confirmDelete": "حذف",
+    "cancel": "إلغاء",
     "default": "افتراضي",
-    "home": "الرئيسية"
+    "home": "الرئيسية",
+    "syncingWithCloud": "جاري المزامنة مع السحابة...",
+    "deleteSuccess": "تم حذف العنوان بنجاح",
+    "deleteError": "فشل حذف العنوان",
+    "defaultUpdated": "تم تحديث العنوان الافتراضي",
+    "defaultError": "فشل تحديث العنوان الافتراضي",
+    "updateSuccess": "تم تحديث العنوان بنجاح",
+    "addSuccess": "تمت إضافة العنوان بنجاح"
   },
   "FAQ": {
     "title": "الأسئلة الشائعة",

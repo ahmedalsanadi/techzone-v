@@ -1,8 +1,8 @@
 // src/components/modals/OrderTypeModal.tsx
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { ChevronRight, MapPin, Clock, Plus, Edit, Loader2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ChevronRight, Clock, Plus, Edit, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import {
     useOrderStore,
@@ -13,9 +13,19 @@ import {
 import { useAddressStore } from '@/store/useAddressStore';
 import { useAuthStore } from '@/store/useAuthStore';
 import { Address } from '@/types/address';
+import type { AddressFormSubmitPayload } from '@/types/address';
+import {
+    toCreateAddressRequest,
+    toUpdateAddressRequest,
+} from '@/types/address';
 import AddressModal from './AddressModal';
 import { cn } from '@/lib/utils';
 import { useAddresses, useAddressMutations } from '@/hooks/useAddresses';
+import {
+    getAddressLabel,
+    formatAddressForDisplay,
+    showAddNewAddressButton,
+} from '@/lib/address';
 import { toast } from 'sonner';
 
 interface OrderTypeModalProps {
@@ -51,7 +61,6 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
     const [tempTime, setTempTime] = useState('');
 
     const scheduledTime = getScheduledTimeAsDate(scheduledTimeRaw);
-    const modalRef = useRef<HTMLDivElement>(null);
 
     // Sync deliveryAddress from Auth list if not set
     useEffect(() => {
@@ -90,24 +99,24 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
         setShowAddressModal(true);
     };
 
-    const handleAddressSave = async (addressData: any) => {
+    const handleAddressSave = async (payload: AddressFormSubmitPayload) => {
         try {
             if (isAuthenticated) {
                 if (editingAddress) {
                     await updateAddress.mutateAsync({
                         id: Number(editingAddress.id),
-                        data: addressData,
+                        data: toUpdateAddressRequest(payload),
                     });
                     toast.success(t('addressSaved') || 'Address updated');
                 } else {
-                    const created =
-                        await createAddress.mutateAsync(addressData);
-                    setDeliveryAddress(created);
+                    await createAddress.mutateAsync(
+                        toCreateAddressRequest(payload),
+                    );
                     toast.success(t('addressSaved') || 'Address added');
                 }
             } else {
                 // Guest logic: only one address allowed
-                const newAddress = { ...addressData, id: Date.now() };
+                const newAddress = { ...payload, id: Date.now() } as Address;
                 setGuestAddress(newAddress);
                 setDeliveryAddress(newAddress);
                 toast.success(t('addressSaved') || 'Guest address saved');
@@ -158,8 +167,10 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
         : guestAddress
           ? [guestAddress]
           : [];
-    const canAddAddress =
-        isAuthenticated || (!isAuthenticated && !guestAddress);
+    const canAddAddress = showAddNewAddressButton(
+        isAuthenticated,
+        displayAddresses.length,
+    );
 
     return (
         <>
@@ -265,13 +276,14 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                                     </div>
                                                     <div className="flex-1">
                                                         <div className="font-bold text-gray-900">
-                                                            {addr.label ||
-                                                                addr.name ||
-                                                                'Home'}
+                                                            {getAddressLabel(
+                                                                addr,
+                                                            )}
                                                         </div>
                                                         <p className="text-sm text-gray-500 line-clamp-1">
-                                                            {addr.formatted ||
-                                                                addr.street}
+                                                            {formatAddressForDisplay(
+                                                                addr,
+                                                            )}
                                                         </p>
                                                     </div>
                                                     <button

@@ -5,23 +5,35 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Plus, MapPin, Loader2, Home as HomeIcon } from 'lucide-react';
 import { Address } from '@/types/address';
+import type { AddressFormSubmitPayload } from '@/types/address';
+import {
+    toCreateAddressRequest,
+    toUpdateAddressRequest,
+} from '@/types/address';
 import AddressCard from './AddressCard';
 import AddressModal from '@/components/modals/AddressModal';
+import ConfirmModal from '@/components/modals/ConfirmModal';
 import { Button } from '@/components/ui/Button';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import { toast } from 'sonner';
-import { useAddresses, useAddressMutations } from '@/hooks/useAddresses';
+import {
+    useAddresses,
+    useAddressMutations,
+    usePrefetchAddress,
+} from '@/hooks/useAddresses';
 
 export default function MyAddressesView() {
     const t = useTranslations('MyAddresses');
 
-    // React Query for data fetching
-    const { data: addresses = [], isLoading, refetch } = useAddresses();
+    const { data: addresses = [], isLoading } = useAddresses();
     const { createAddress, updateAddress, deleteAddress } =
         useAddressMutations();
+    const prefetchAddress = usePrefetchAddress();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingAddress, setEditingAddress] = useState<Address | null>(null);
+    const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const handleAdd = () => {
         setEditingAddress(null);
@@ -33,43 +45,46 @@ export default function MyAddressesView() {
         setIsModalOpen(true);
     };
 
-    const handleDelete = async (id: number) => {
-        if (window.confirm(t('deleteConfirm'))) {
-            try {
-                await deleteAddress.mutateAsync(id);
-                toast.success('Address deleted successfully');
-            } catch (error) {
-                toast.error('Failed to delete address');
-            }
+    const handleDeleteClick = (id: number) => {
+        setDeleteTargetId(id);
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (deleteTargetId == null) return;
+        setIsDeleting(true);
+        try {
+            await deleteAddress.mutateAsync(deleteTargetId);
+            toast.success(t('deleteSuccess'));
+            setDeleteTargetId(null);
+        } catch {
+            toast.error(t('deleteError'));
+        } finally {
+            setIsDeleting(false);
         }
     };
 
     const handleSetDefault = async (id: number) => {
         try {
             await updateAddress.mutateAsync({ id, data: { is_default: true } });
-            toast.success('Default address updated');
-        } catch (error) {
-            toast.error('Failed to update default address');
+            toast.success(t('defaultUpdated'));
+        } catch {
+            toast.error(t('defaultError'));
         }
     };
 
-    const handleSave = async (addressData: any) => {
-        try {
-            if (editingAddress) {
-                await updateAddress.mutateAsync({
-                    id: Number(editingAddress.id),
-                    data: addressData,
-                });
-                toast.success('Address updated successfully');
-            } else {
-                await createAddress.mutateAsync(addressData);
-                toast.success('Address added successfully');
-            }
-            setIsModalOpen(false);
-        } catch (error) {
-            console.error('Save error:', error);
-            toast.error('Failed to save address');
+    const handleSave = async (payload: AddressFormSubmitPayload) => {
+        if (editingAddress) {
+            await updateAddress.mutateAsync({
+                id: Number(editingAddress.id),
+                data: toUpdateAddressRequest(payload),
+            });
+            toast.success(t('updateSuccess'));
+        } else {
+            await createAddress.mutateAsync(toCreateAddressRequest(payload));
+            toast.success(t('addSuccess'));
         }
+        setIsModalOpen(false);
+        setEditingAddress(null);
     };
 
     const breadcrumbs = [
@@ -111,7 +126,7 @@ export default function MyAddressesView() {
                     <div className="flex flex-col items-center gap-3">
                         <Loader2 className="w-10 h-10 text-theme-primary animate-spin" />
                         <span className="text-gray-400 font-bold tracking-widest uppercase text-xs">
-                            Syncing with Cloud...
+                            {t('syncingWithCloud')}
                         </span>
                     </div>
                 ) : addresses.length > 0 ? (
@@ -121,8 +136,9 @@ export default function MyAddressesView() {
                                 key={address.id}
                                 address={address}
                                 onEdit={handleEdit}
-                                onDelete={handleDelete}
+                                onDelete={handleDeleteClick}
                                 onSetDefault={handleSetDefault}
+                                onMouseEnter={() => prefetchAddress(address.id)}
                             />
                         ))}
                     </div>
@@ -156,6 +172,18 @@ export default function MyAddressesView() {
                 }}
                 onSave={handleSave}
                 initialAddress={editingAddress}
+            />
+
+            <ConfirmModal
+                isOpen={deleteTargetId != null}
+                onClose={() => setDeleteTargetId(null)}
+                title={t('deleteTitle')}
+                message={t('deleteConfirm')}
+                confirmLabel={t('confirmDelete')}
+                cancelLabel={t('cancel')}
+                variant="danger"
+                isLoading={isDeleting}
+                onConfirm={handleDeleteConfirm}
             />
         </div>
     );

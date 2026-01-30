@@ -4,7 +4,6 @@
 import React, {
     useState,
     useEffect,
-    useRef,
     useCallback,
     useMemo,
     useReducer,
@@ -14,17 +13,14 @@ import { useTranslations } from 'next-intl';
 import { DEFAULT_MAP_CENTER } from '@/lib/branches';
 import { cn } from '@/lib/utils';
 import dynamic from 'next/dynamic';
-import { storeService } from '@/services/store-service';
-import { Country, City, District, Address } from '@/types/address';
+import { Address, AddressFormSubmitPayload } from '@/types/address';
 import { useAuthStore } from '@/store/useAuthStore';
 import {
     useAddress,
-    useAddressMutations,
     useCountries,
     useCities,
     useDistricts,
 } from '@/hooks/useAddresses';
-import { toast } from 'sonner';
 
 // Lazy load map component
 const AddressMap = dynamic(() => import('./AddressMap'), {
@@ -40,7 +36,7 @@ const AddressMap = dynamic(() => import('./AddressMap'), {
 interface AddressModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (address: any) => void; // Kept for compatibility, but internally we use mutations
+    onSave: (payload: AddressFormSubmitPayload) => void | Promise<void>;
     initialAddress?: Address | null;
 }
 
@@ -252,7 +248,6 @@ const AddressModal: React.FC<AddressModalProps> = ({
 }) => {
     const t = useTranslations('Address');
     const { isAuthenticated } = useAuthStore();
-    const { createAddress, updateAddress } = useAddressMutations();
 
     // Determine if we need to fetch an address by ID record (Auth Edit)
     const shouldFetchAddress = !!(isAuthenticated && initialAddressProp?.id);
@@ -349,20 +344,26 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 },
             });
 
-            setSelectedLocation(getInitialMapLocation(activeAddress));
-            setFormattedAddress(
-                activeAddress.formatted || activeAddress.street || '',
-            );
+            // Defer map state update to avoid synchronous setState in effect (lint)
+            const location = getInitialMapLocation(activeAddress);
+            const formatted =
+                activeAddress.formatted || activeAddress.street || '';
+            queueMicrotask(() => {
+                setSelectedLocation(location);
+                setFormattedAddress(formatted);
+            });
         } else {
             dispatchForm({ type: 'RESET' });
             dispatchLocation({
                 type: 'RESET',
                 payload: { selectedCountry: countries[0]?.id || '' },
             });
-            setSelectedLocation(DEFAULT_MAP_CENTER);
-            setFormattedAddress('');
+            queueMicrotask(() => {
+                setSelectedLocation(DEFAULT_MAP_CENTER);
+                setFormattedAddress('');
+            });
         }
-        setSearchQuery('');
+        queueMicrotask(() => setSearchQuery(''));
     }, [isOpen, activeAddress, countries]);
 
     // Memoized validation
@@ -412,7 +413,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
     const handleSave = useCallback(async () => {
         if (!isValid) return;
 
-        const addressData = {
+        const payload: AddressFormSubmitPayload = {
             label: formState.addressName.trim(),
             recipient_name: formState.recipientName.trim(),
             phone: formState.phone.trim(),
@@ -428,9 +429,8 @@ const AddressModal: React.FC<AddressModalProps> = ({
             additional_number: formState.additionalNumber.trim(),
             description: formState.addressNotes.trim(),
             is_default: formState.isDefault,
-            latitude: selectedLocation?.[0] || 0,
-            longitude: selectedLocation?.[1] || 0,
-            // UI compatibility
+            latitude: selectedLocation?.[0] ?? 0,
+            longitude: selectedLocation?.[1] ?? 0,
             name: formState.addressName.trim(),
             formatted: formattedAddress || formState.street.trim(),
             building_number: formState.building.trim(),
@@ -438,11 +438,13 @@ const AddressModal: React.FC<AddressModalProps> = ({
             notes: formState.addressNotes.trim(),
         };
 
-        // If authenticated, we can optionally use the mutations here directly
-        // but to keep compatibility with existing components (OrderTypeModal, MyAddressesView),
-        // we pass it back to onSave which will handle the mutation or storage.
-        onSave(addressData);
-        onClose();
+        try {
+            const result = onSave(payload);
+            if (result && typeof result.then === 'function') await result;
+            onClose();
+        } catch {
+            // Leave modal open on error so user can fix and retry
+        }
     }, [
         isValid,
         formState,
@@ -494,7 +496,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
                             <div className="flex flex-col items-center justify-center py-24 gap-4">
                                 <Loader2 className="w-12 h-12 text-theme-primary animate-spin" />
                                 <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">
-                                    Fetching accurate location details...
+                                    {t('fetchingLocationDetails')}
                                 </p>
                             </div>
                         ) : (

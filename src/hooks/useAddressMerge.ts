@@ -7,6 +7,8 @@ import { useAddressStore } from '@/store/useAddressStore';
 import { storeService } from '@/services/store-service';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useOrderStore } from '@/store/useOrderStore';
+import type { AddressFormSubmitPayload } from '@/types/address';
+import { toCreateAddressRequest } from '@/types/address';
 
 export function useAddressMerge() {
     const { guestAddress, clearGuestAddress } = useAddressStore();
@@ -18,35 +20,35 @@ export function useAddressMerge() {
         if (!isAuthenticated || !guestAddress) return;
 
         try {
-            console.log(
-                '[useAddressMerge] Syncing guest address to account...',
-            );
-
-            const payload = {
+            const payload: AddressFormSubmitPayload = {
                 label: guestAddress.label || guestAddress.name || 'Home',
                 recipient_name: guestAddress.recipient_name || '',
                 phone: guestAddress.phone || '',
-                country_id: guestAddress.country_id || 1, // Default to SA if missing
+                country_id: guestAddress.country_id || 1,
                 city_id: guestAddress.city_id,
-                district_id: guestAddress.district_id ?? undefined,
+                district_id: guestAddress.district_id ?? null,
                 street: guestAddress.street || guestAddress.formatted || '',
                 latitude: Number(guestAddress.latitude) || 24.7136,
                 longitude: Number(guestAddress.longitude) || 46.6753,
                 building:
                     guestAddress.building ||
                     guestAddress.building_number ||
+                    '' ||
                     undefined,
                 unit:
-                    guestAddress.unit || guestAddress.unit_number || undefined,
+                    guestAddress.unit ||
+                    guestAddress.unit_number ||
+                    '' ||
+                    undefined,
                 postal_code: guestAddress.postal_code || undefined,
                 additional_number: guestAddress.additional_number || undefined,
                 description:
                     guestAddress.description || guestAddress.notes || '',
-                is_default: true, // Make the guest address default on account
+                is_default: true,
             };
 
             const createdAddress = await storeService.createAddress(
-                payload as any,
+                toCreateAddressRequest(payload),
             );
 
             // Sync with order store for display purposes (subheader)
