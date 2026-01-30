@@ -1,7 +1,7 @@
 // src/app/[locale]/(protected)/my-addresses/AddressCard.tsx
 'use client';
 
-import { MapPin, Trash2, Edit, Check, Phone } from 'lucide-react';
+import { MapPin, Trash2, Edit, Check, Phone, Loader2 } from 'lucide-react';
 import { Address } from '@/types/address';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
@@ -25,19 +25,33 @@ export default function AddressCard({
     const t = useTranslations('MyAddresses');
 
     const isDefault = address.is_default;
+    const isOptimistic = typeof address.id === 'number' && address.id < 0;
     const label = getAddressLabel(address);
     const formatted = formatAddressForDisplay(address);
 
     return (
         <div
-            onClick={() => !isDefault && onSetDefault(address.id)}
+            onClick={() =>
+                !isDefault && !isOptimistic && onSetDefault(address.id)
+            }
             onMouseEnter={onMouseEnter}
             className={cn(
-                'group relative bg-white rounded-2xl md:rounded-3xl p-5 md:p-6 border-2 transition-all cursor-pointer',
+                'group relative bg-white rounded-2xl md:rounded-3xl p-5 md:p-6 border-2 transition-all',
+                isOptimistic
+                    ? 'opacity-70 border-dashed border-theme-primary/30 cursor-wait animate-pulse'
+                    : 'cursor-pointer',
                 isDefault
                     ? 'border-theme-primary shadow-lg shadow-theme-primary/10'
                     : 'border-gray-100 hover:border-theme-primary/30 shadow-sm',
             )}>
+            {isOptimistic && (
+                <div className="absolute top-2 right-2 flex items-center gap-1.5 bg-theme-primary/10 px-2 py-1 rounded-full">
+                    <Loader2 className="w-3 h-3 text-theme-primary animate-spin" />
+                    <span className="text-[10px] font-bold text-theme-primary uppercase tracking-tighter">
+                        Syncing...
+                    </span>
+                </div>
+            )}
             <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3 md:gap-4 flex-1">
                     <div
@@ -91,9 +105,9 @@ export default function AddressCard({
                             )}
                         </div>
 
-                        {(address.description || address.notes) && (
+                        {address.description && (
                             <p className="text-gray-400 text-xs mt-2 italic bg-gray-50/50 p-2 rounded-lg border border-dashed border-gray-200">
-                                "{address.description || address.notes}"
+                                "{address.description}"
                             </p>
                         )}
                     </div>

@@ -13,6 +13,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { DEFAULT_MAP_ZOOM } from '@/lib/branches';
 import { DEFAULT_COORDINATES } from '@/lib/address/constants';
+import { forwardGeocode, reverseGeocode } from '@/lib/address/geocoding';
 
 // Initialize Leaflet icon once at module level
 const DEFAULT_ICON =
@@ -32,7 +33,6 @@ if (typeof window !== 'undefined' && DEFAULT_ICON) {
     L.Marker.prototype.options.icon = DEFAULT_ICON;
 }
 
-const PROXY_BASE_URL = '/proxy';
 const SEARCH_DEBOUNCE_MS = 800;
 
 interface AddressMapProps {
@@ -41,55 +41,12 @@ interface AddressMapProps {
     searchQuery?: string;
 }
 
-interface LocationSelectHandler {
-    (location: [number, number], formatted: string): void;
-}
-
-// Reverse geocode proxy
-async function reverseGeocode(
-    lat: number,
-    lng: number,
-    signal?: AbortSignal,
-): Promise<string> {
-    try {
-        const response = await fetch(
-            `${PROXY_BASE_URL}/nominatim/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ar`,
-            { signal, headers: { 'Accept-Language': 'ar' } },
-        );
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const data = await response.json();
-        return data.display_name || `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-    } catch (error) {
-        if (error instanceof Error && error.name === 'AbortError') throw error;
-        return `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-    }
-}
-
-// Forward geocode proxy
-async function forwardGeocode(
-    query: string,
-    signal?: AbortSignal,
-): Promise<{ lat: number; lon: number; display_name: string } | null> {
-    try {
-        const response = await fetch(
-            `${PROXY_BASE_URL}/nominatim/search?format=json&q=${encodeURIComponent(query)}&limit=1&accept-language=ar`,
-            { signal, headers: { 'Accept-Language': 'ar' } },
-        );
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const data = await response.json();
-        return data?.[0] || null;
-    } catch (error) {
-        if (error instanceof Error && error.name === 'AbortError') throw error;
-        return null;
-    }
-}
-
 const MapClickHandler = memo(
     ({
         onSelect,
         setHasInteracted,
     }: {
-        onSelect: LocationSelectHandler;
+        onSelect: (loc: [number, number], formatted: string) => void;
         setHasInteracted: (v: boolean) => void;
     }) => {
         const abortControllerRef = useRef<AbortController | null>(null);
@@ -154,22 +111,21 @@ const AddressMap: React.FC<AddressMapProps> = ({
 }) => {
     const [hasInteracted, setHasInteracted] = useState(false);
 
-    // Check if current center is the default (meaning no user pick yet)
     const isDefaultLocation =
         Math.abs(center[0] - DEFAULT_COORDINATES[0]) < 0.0001 &&
         Math.abs(center[1] - DEFAULT_COORDINATES[1]) < 0.0001;
 
-    const handleLocationSelect = useCallback<LocationSelectHandler>(
-        (location, formatted) => {
+    const handleLocationSelect = useCallback(
+        (location: [number, number], formatted: string) => {
             setHasInteracted(true);
             onLocationSelect(location, formatted);
         },
         [onLocationSelect],
     );
 
-    // Search Handler Logic
     const abortRef = useRef<AbortController | null>(null);
     const lastQueryRef = useRef('');
+
     useEffect(() => {
         const q = searchQuery?.trim() || '';
         if (!q || q === lastQueryRef.current) return;
@@ -179,13 +135,7 @@ const AddressMap: React.FC<AddressMapProps> = ({
             try {
                 const res = await forwardGeocode(q, abortRef.current.signal);
                 if (res) {
-                    handleLocationSelect(
-                        [
-                            parseFloat(String(res.lat)),
-                            parseFloat(String(res.lon)),
-                        ],
-                        res.display_name,
-                    );
+                    handleLocationSelect([res.lat, res.lon], res.display_name);
                     lastQueryRef.current = q;
                 }
             } catch {}
@@ -216,9 +166,8 @@ const AddressMap: React.FC<AddressMapProps> = ({
                 <Marker position={center} />
             </MapContainer>
 
-            {/* Empty State / Interaction Prompt */}
             {!hasInteracted && isDefaultLocation && (
-                <div className="absolute inset-0 z-[1000] flex items-center justify-center pointer-events-none p-6">
+                <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none p-6">
                     <div className="bg-white/90 backdrop-blur-md px-6 py-4 rounded-3xl shadow-2xl border border-theme-primary/10 flex flex-col items-center gap-2 animate-bounce">
                         <div className="w-10 h-10 bg-theme-primary/10 rounded-full flex items-center justify-center">
                             <div className="w-3 h-3 bg-theme-primary rounded-full animate-ping" />

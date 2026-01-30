@@ -4,30 +4,20 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Plus, MapPin, Loader2, Home as HomeIcon } from 'lucide-react';
-import { Address } from '@/types/address';
-import type { AddressFormSubmitPayload } from '@/types/address';
-import {
-    toCreateAddressRequest,
-    toUpdateAddressRequest,
-} from '@/types/address';
+import { Address, AddressFormSubmitPayload } from '@/types/address';
 import AddressCard from './AddressCard';
 import AddressModal from '@/components/modals/AddressModal';
 import ConfirmModal from '@/components/modals/ConfirmModal';
 import { Button } from '@/components/ui/Button';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import { toast } from 'sonner';
-import {
-    useAddresses,
-    useAddressMutations,
-    usePrefetchAddress,
-} from '@/hooks/useAddresses';
+import { useAddressFlow } from '@/hooks/address/useAddressFlow';
+import { usePrefetchAddress } from '@/hooks/useAddresses';
 
 export default function MyAddressesView() {
     const t = useTranslations('MyAddresses');
-
-    const { data: addresses = [], isLoading } = useAddresses();
-    const { createAddress, updateAddress, deleteAddress } =
-        useAddressMutations();
+    const { addresses, isLoading, saveAddress, deleteAddress, setDefault } =
+        useAddressFlow();
     const prefetchAddress = usePrefetchAddress();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -53,7 +43,7 @@ export default function MyAddressesView() {
         if (deleteTargetId == null) return;
         setIsDeleting(true);
         try {
-            await deleteAddress.mutateAsync(deleteTargetId);
+            await deleteAddress(deleteTargetId);
             toast.success(t('deleteSuccess'));
             setDeleteTargetId(null);
         } catch {
@@ -65,7 +55,7 @@ export default function MyAddressesView() {
 
     const handleSetDefault = async (id: number) => {
         try {
-            await updateAddress.mutateAsync({ id, data: { is_default: true } });
+            await setDefault(id);
             toast.success(t('defaultUpdated'));
         } catch {
             toast.error(t('defaultError'));
@@ -73,18 +63,20 @@ export default function MyAddressesView() {
     };
 
     const handleSave = async (payload: AddressFormSubmitPayload) => {
-        if (editingAddress) {
-            await updateAddress.mutateAsync({
-                id: Number(editingAddress.id),
-                data: toUpdateAddressRequest(payload),
-            });
-            toast.success(t('updateSuccess'));
-        } else {
-            await createAddress.mutateAsync(toCreateAddressRequest(payload));
-            toast.success(t('addSuccess'));
+        // Type safe via buildPayload in modal
+        try {
+            await saveAddress(
+                payload,
+                editingAddress ? Number(editingAddress.id) : undefined,
+            );
+            toast.success(
+                editingAddress ? t('updateSuccess') : t('addSuccess'),
+            );
+            setIsModalOpen(false);
+            setEditingAddress(null);
+        } catch (error) {
+            toast.error('Failed to save address');
         }
-        setIsModalOpen(false);
-        setEditingAddress(null);
     };
 
     const breadcrumbs = [
@@ -138,7 +130,9 @@ export default function MyAddressesView() {
                                 onEdit={handleEdit}
                                 onDelete={handleDeleteClick}
                                 onSetDefault={handleSetDefault}
-                                onMouseEnter={() => prefetchAddress(address.id)}
+                                onMouseEnter={() =>
+                                    prefetchAddress(Number(address.id))
+                                }
                             />
                         ))}
                     </div>

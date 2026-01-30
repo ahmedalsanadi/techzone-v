@@ -14,6 +14,10 @@ export interface District {
     name: string;
 }
 
+/**
+ * Clean Address interface used across the application.
+ * Contains both current API fields and legacy fields for compatibility.
+ */
 export interface Address {
     id: number;
     label: string;
@@ -23,28 +27,53 @@ export interface Address {
     city_id: number;
     district_id: number | null;
     street: string;
-    building?: string | null;
-    building_number?: string | null;
-    unit?: string | null;
-    unit_number?: string | null;
-    postal_code?: string | null;
-    additional_number?: string | null;
-    description?: string | null;
-    notes?: string | null;
     is_default: boolean;
     latitude: string | number;
     longitude: string | number;
-    // For convenience in UI
+
+    // Optional / Context-specific fields
+    building?: string | null;
+    unit?: string | null;
+    postal_code?: string | null;
+    additional_number?: string | null;
+    description?: string | null;
+
+    // Legacy / External mapping compatibility
+    name?: string;
+    formatted?: string;
+    isDefault?: boolean;
+    building_number?: string | null;
+    unit_number?: string | null;
+    notes?: string | null;
     country_name?: string;
     city_name?: string;
     district_name?: string;
-    // Seen in some API responses
-    country?: string;
-    city?: string;
-    district?: string;
-    formatted?: string;
-    name?: string;
-    isDefault?: boolean;
+
+    // Normalized display helper fields (added by mapper)
+    display_label?: string;
+    display_address?: string;
+}
+
+/**
+ * Normalizes an address object from various sources (API, Local Storage, etc.)
+ * to a consistent structure. Useful for avoiding "notes || description" checks.
+ */
+export function normalizeAddress(
+    addr: Address | null | undefined,
+): Address | null {
+    if (!addr) return null;
+
+    return {
+        ...addr,
+        id: Number(addr.id),
+        label: addr.label || addr.name || 'Address',
+        is_default: !!(addr.is_default || addr.isDefault),
+        description: addr.description || addr.notes || '',
+        building: addr.building || addr.building_number || '',
+        unit: addr.unit || addr.unit_number || '',
+        latitude: Number(addr.latitude),
+        longitude: Number(addr.longitude),
+    };
 }
 
 export interface CreateAddressRequest {
@@ -105,8 +134,8 @@ export function toCreateAddressRequest(
         label: payload.label,
         recipient_name: payload.recipient_name || undefined,
         phone: payload.phone,
-        country_id: payload.country_id,
-        city_id: payload.city_id,
+        country_id: Number(payload.country_id),
+        city_id: Number(payload.city_id),
         district_id:
             payload.district_id != null
                 ? Number(payload.district_id)

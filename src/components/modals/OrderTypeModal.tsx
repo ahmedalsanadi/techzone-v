@@ -71,6 +71,11 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
         isAuthenticated,
     ]);
 
+    const isSelected = (addrId: number) => {
+        if (!deliveryAddress) return false;
+        return Number(deliveryAddress.id) === Number(addrId);
+    };
+
     // Prevent body scroll
     useEffect(() => {
         if (isOpen) {
@@ -225,8 +230,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                                 }
                                                 className={cn(
                                                     'p-5 rounded-3xl border-2 transition-all cursor-pointer group relative',
-                                                    deliveryAddress?.id ===
-                                                        addr.id
+                                                    isSelected(addr.id)
                                                         ? 'bg-theme-primary/5 border-theme-primary shadow-lg shadow-theme-primary/5'
                                                         : 'bg-white border-gray-100 hover:border-gray-200',
                                                 )}>
@@ -234,13 +238,13 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                                     <div
                                                         className={cn(
                                                             'w-6 h-6 rounded-full border-2 transition-all flex items-center justify-center',
-                                                            deliveryAddress?.id ===
-                                                                addr.id
+                                                            isSelected(addr.id)
                                                                 ? 'border-theme-primary bg-theme-primary'
                                                                 : 'border-gray-300',
                                                         )}>
-                                                        {deliveryAddress?.id ===
-                                                            addr.id && (
+                                                        {isSelected(
+                                                            addr.id,
+                                                        ) && (
                                                             <div className="w-2 h-2 bg-white rounded-full" />
                                                         )}
                                                     </div>

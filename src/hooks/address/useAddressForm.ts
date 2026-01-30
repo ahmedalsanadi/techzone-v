@@ -1,7 +1,11 @@
 'use client';
 
 import { useReducer, useMemo, useCallback } from 'react';
-import { Address, AddressFormSubmitPayload } from '@/types/address';
+import {
+    Address,
+    AddressFormSubmitPayload,
+    normalizeAddress,
+} from '@/types/address';
 
 export interface FormState {
     addressName: string;
@@ -62,6 +66,12 @@ const initialState: FormState = {
 export function useAddressForm(initialAddress?: Address | null) {
     const [state, dispatch] = useReducer(formReducer, initialState);
 
+    // Normalize if provided (though caller should have done it, we are safe here)
+    const normalized = useMemo(
+        () => normalizeAddress(initialAddress),
+        [initialAddress],
+    );
+
     const setField = useCallback(
         (field: keyof FormState) => (value: string | boolean) => {
             dispatch({ type: 'SET_FIELD', field, value });
@@ -96,7 +106,7 @@ export function useAddressForm(initialAddress?: Address | null) {
         selectedLocation: [number, number],
         formattedAddress: string,
     ): AddressFormSubmitPayload => {
-        const base = {
+        return {
             label: state.addressName.trim(),
             recipient_name: state.recipientName.trim(),
             phone: state.phone.trim(),
@@ -112,16 +122,8 @@ export function useAddressForm(initialAddress?: Address | null) {
             is_default: state.isDefault,
             latitude: Number(selectedLocation[0]),
             longitude: Number(selectedLocation[1]),
-        };
-
-        return {
-            ...base,
-            // UI compatibility fields
-            name: base.label,
-            formatted: formattedAddress || base.street,
-            building_number: base.building,
-            unit_number: base.unit,
-            notes: base.description,
+            // Backward compatibility for UI consumers if any
+            formatted: formattedAddress || state.street.trim(),
         };
     };
 
@@ -131,5 +133,6 @@ export function useAddressForm(initialAddress?: Address | null) {
         reset,
         isValid,
         buildPayload,
+        normalized,
     };
 }

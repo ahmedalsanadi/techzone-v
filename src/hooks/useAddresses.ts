@@ -4,7 +4,11 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { storeService } from '@/services/store-service';
-import { CreateAddressRequest, UpdateAddressRequest } from '@/types/address';
+import {
+    Address,
+    CreateAddressRequest,
+    UpdateAddressRequest,
+} from '@/types/address';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useOrderStore } from '@/store/useOrderStore';
 import { getNextDeliveryAddressAfterMutation } from '@/lib/address';
@@ -65,8 +69,39 @@ export function useAddressMutations() {
     const createMutation = useMutation({
         mutationFn: (data: CreateAddressRequest) =>
             storeService.createAddress(data),
+        onMutate: async (newAddressBatch) => {
+            // Cancel outgoing refetches
+            await queryClient.cancelQueries({ queryKey: ['addresses'] });
+
+            // Snapshot previous value
+            const previousAddresses = queryClient.getQueryData<Address[]>([
+                'addresses',
+            ]);
+
+            // Optimistically update (with temp ID)
+            const tempAddress = {
+                ...newAddressBatch,
+                id: -Date.now(), // Temp negative ID
+                is_default: !!newAddressBatch.is_default,
+            } as Address;
+
+            queryClient.setQueryData(['addresses'], (old: Address[] = []) => [
+                tempAddress,
+                ...old,
+            ]);
+
+            return { previousAddresses };
+        },
+        onError: (err, newAddress, context) => {
+            // Rollback on error
+            queryClient.setQueryData(['addresses'], context?.previousAddresses);
+        },
         onSuccess: (newAddress) => {
-            queryClient.invalidateQueries({ queryKey: ['addresses'] });
+            // Replace temp item with real one from server
+            queryClient.setQueryData(['addresses'], (old: Address[] = []) =>
+                old.map((a) => (a.id < 0 ? newAddress : a)),
+            );
+
             const current = useOrderStore.getState().deliveryAddress;
             const next = getNextDeliveryAddressAfterMutation({
                 event: 'created',
@@ -85,11 +120,38 @@ export function useAddressMutations() {
             id: number;
             data: UpdateAddressRequest;
         }) => storeService.updateAddress(id, data),
+        onMutate: async ({ id, data }) => {
+            await queryClient.cancelQueries({ queryKey: ['addresses'] });
+            const previousAddresses = queryClient.getQueryData<Address[]>([
+                'addresses',
+            ]);
+
+            // Optimistically update the list
+            queryClient.setQueryData(['addresses'], (old: Address[] = []) =>
+                old.map((a) =>
+                    Number(a.id) === id ? ({ ...a, ...data } as Address) : a,
+                ),
+            );
+
+            return { previousAddresses };
+        },
+        onError: (err, variables, context) => {
+            queryClient.setQueryData(['addresses'], context?.previousAddresses);
+        },
         onSuccess: (updatedAddress) => {
-            queryClient.invalidateQueries({ queryKey: ['addresses'] });
-            queryClient.invalidateQueries({
-                queryKey: ['address', updatedAddress.id],
-            });
+            // Refine with exact server data
+            queryClient.setQueryData(['addresses'], (old: Address[] = []) =>
+                old.map((a) =>
+                    Number(a.id) === Number(updatedAddress.id)
+                        ? updatedAddress
+                        : a,
+                ),
+            );
+            queryClient.setQueryData(
+                ['address', updatedAddress.id],
+                updatedAddress,
+            );
+
             const current = useOrderStore.getState().deliveryAddress;
             const next = getNextDeliveryAddressAfterMutation({
                 event: 'updated',
@@ -102,8 +164,22 @@ export function useAddressMutations() {
 
     const deleteMutation = useMutation({
         mutationFn: (id: number) => storeService.deleteAddress(id),
+        onMutate: async (id) => {
+            await queryClient.cancelQueries({ queryKey: ['addresses'] });
+            const previousAddresses = queryClient.getQueryData<Address[]>([
+                'addresses',
+            ]);
+
+            queryClient.setQueryData(['addresses'], (old: Address[] = []) =>
+                old.filter((a) => Number(a.id) !== id),
+            );
+
+            return { previousAddresses };
+        },
+        onError: (err, id, context) => {
+            queryClient.setQueryData(['addresses'], context?.previousAddresses);
+        },
         onSuccess: (_, deletedId) => {
-            queryClient.invalidateQueries({ queryKey: ['addresses'] });
             const current = useOrderStore.getState().deliveryAddress;
             const next = getNextDeliveryAddressAfterMutation({
                 event: 'deleted',
@@ -114,10 +190,43 @@ export function useAddressMutations() {
         },
     });
 
+    const setDefaultMutation = useMutation({
+        mutationFn: (id: number) =>
+            storeService.updateAddress(id, { is_default: true }),
+        onMutate: async (id) => {
+            await queryClient.cancelQueries({ queryKey: ['addresses'] });
+            const previousAddresses = queryClient.getQueryData<Address[]>([
+                'addresses',
+            ]);
+
+            queryClient.setQueryData(['addresses'], (old: Address[] = []) =>
+                old.map((a) => ({
+                    ...a,
+                    is_default: Number(a.id) === id,
+                })),
+            );
+
+            return { previousAddresses };
+        },
+        onError: (err, id, context) => {
+            queryClient.setQueryData(['addresses'], context?.previousAddresses);
+        },
+        onSuccess: (updatedAddress) => {
+            const current = useOrderStore.getState().deliveryAddress;
+            const next = getNextDeliveryAddressAfterMutation({
+                event: 'set_default',
+                currentDeliveryAddress: current,
+                updatedAddress,
+            });
+            setDeliveryAddress(next);
+        },
+    });
+
     return {
         createAddress: createMutation,
         updateAddress: updateMutation,
         deleteAddress: deleteMutation,
+        setDefaultAddress: setDefaultMutation,
     };
 }
 

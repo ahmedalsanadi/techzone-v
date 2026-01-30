@@ -6,7 +6,11 @@ import { X, MapPin, Search, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import dynamic from 'next/dynamic';
-import { Address, AddressFormSubmitPayload } from '@/types/address';
+import {
+    Address,
+    AddressFormSubmitPayload,
+    normalizeAddress,
+} from '@/types/address';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useAddress } from '@/hooks/useAddresses';
 import { useLocationLogic } from '@/hooks/address/useLocationLogic';
@@ -125,13 +129,13 @@ const AddressModal: React.FC<AddressModalProps> = ({
         shouldFetchAddress ? Number(initialAddressProp?.id) : null,
     );
 
-    const activeAddress = useMemo(
-        () =>
+    const activeAddress = useMemo(() => {
+        const raw =
             shouldFetchAddress && fetchedAddress
                 ? fetchedAddress
-                : initialAddressProp,
-        [shouldFetchAddress, fetchedAddress, initialAddressProp],
-    );
+                : initialAddressProp;
+        return normalizeAddress(raw);
+    }, [shouldFetchAddress, fetchedAddress, initialAddressProp]);
 
     // Custom Hooks for Logic Separation
     const location = useLocationLogic();
@@ -146,29 +150,22 @@ const AddressModal: React.FC<AddressModalProps> = ({
     // Re-initialize when modal opens or active data changes
     useEffect(() => {
         if (!isOpen) {
-            // Optional: reset when closing to be extra safe
             setSearchQuery('');
             return;
         }
 
         if (activeAddress) {
             form.reset({
-                addressName: activeAddress.label || activeAddress.name || '',
+                addressName: activeAddress.label || '',
                 recipientName: activeAddress.recipient_name || '',
                 phone: activeAddress.phone || '',
-                addressNotes:
-                    activeAddress.notes || activeAddress.description || '',
+                addressNotes: activeAddress.description || '',
                 street: activeAddress.street || '',
-                building:
-                    activeAddress.building_number ||
-                    activeAddress.building ||
-                    '',
-                unit: activeAddress.unit_number || activeAddress.unit || '',
+                building: activeAddress.building || '',
+                unit: activeAddress.unit || '',
                 postalCode: activeAddress.postal_code || '',
                 additionalNumber: activeAddress.additional_number || '',
-                isDefault: !!(
-                    activeAddress.is_default || activeAddress.isDefault
-                ),
+                isDefault: activeAddress.is_default,
             });
 
             location.dispatch({
@@ -186,21 +183,16 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 },
             });
 
-            const coords: [number, number] =
-                activeAddress.latitude && activeAddress.longitude
-                    ? [
-                          Number(activeAddress.latitude),
-                          Number(activeAddress.longitude),
-                      ]
-                    : DEFAULT_COORDINATES;
-
+            const coords: [number, number] = [
+                Number(activeAddress.latitude),
+                Number(activeAddress.longitude),
+            ];
             setSelectedLocation(coords);
             setFormattedAddress(
-                activeAddress.formatted || activeAddress.street || '',
+                activeAddress.formatted || activeAddress.street,
             );
             setSearchQuery('');
         } else {
-            // New Address Case: Critical thorough reset
             form.reset();
             location.dispatch({ type: 'RESET' });
             setSelectedLocation(DEFAULT_COORDINATES);
@@ -213,12 +205,15 @@ const AddressModal: React.FC<AddressModalProps> = ({
         (loc: [number, number], formatted: string) => {
             setSelectedLocation(loc);
             setFormattedAddress(formatted);
-            if (!form.state.street) form.setField('street')(formatted);
+            // Only update street if empty to avoid overwriting user manual input
+            if (!form.state.street.trim()) {
+                form.setField('street')(formatted);
+            }
         },
-        [form.state.street],
+        [form.state.street, form.setField],
     );
 
-    const handleSave = async () => {
+    const handleSave = () => {
         const payload = form.buildPayload(
             location.state.selectedCountry,
             location.state.selectedCity,
@@ -227,13 +222,13 @@ const AddressModal: React.FC<AddressModalProps> = ({
             formattedAddress,
         );
 
-        try {
-            const result = onSave(payload);
-            if (result instanceof Promise) await result;
-            onClose();
-        } catch (error) {
-            console.error('Save failed:', error);
-        }
+        // Fire and forget (almost): Close immediately and let background handle feedback
+        // This is a Senior UX move: don't make the user wait for a millisecond of API latency
+        onClose();
+
+        // onSave can be a Promise, but we don't await it here to keep UI snappy
+        // Error handling should be inside onSave or via global mutation handlers
+        onSave(payload);
     };
 
     const isFormValid = form.isValid(

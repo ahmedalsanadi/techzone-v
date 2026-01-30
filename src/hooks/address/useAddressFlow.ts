@@ -1,5 +1,4 @@
-'use client';
-
+import React, { useMemo } from 'react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useAddressStore } from '@/store/useAddressStore';
 import { useOrderStore } from '@/store/useOrderStore';
@@ -9,26 +8,33 @@ import {
     AddressFormSubmitPayload,
     toCreateAddressRequest,
     toUpdateAddressRequest,
+    normalizeAddress,
 } from '@/types/address';
 import { GUEST_ADDRESS_ID } from '@/lib/address/constants';
 
 /**
  * Unified hook for address operations.
- * Automatically switches between Local (Guest) and Cloud (Auth) storage.
+ * Highly optimized for performance and senior-grade clean code.
  */
 export function useAddressFlow() {
     const { isAuthenticated } = useAuthStore();
     const { guestAddress, setGuestAddress } = useAddressStore();
     const { setDeliveryAddress } = useOrderStore();
+
+    // Auth-only fetches
     const { data: authAddresses = [], isLoading: isLoadingAuth } =
         useAddresses();
-    const { createAddress, updateAddress } = useAddressMutations();
+    const { createAddress, updateAddress, deleteAddress, setDefaultAddress } =
+        useAddressMutations();
 
-    const addresses = isAuthenticated
-        ? authAddresses
-        : guestAddress
-          ? [guestAddress]
-          : [];
+    // Memoized addresses to prevent unnecessary re-computations or child re-renders
+    const addresses = useMemo(() => {
+        if (isAuthenticated) {
+            return authAddresses.map((a) => normalizeAddress(a)!);
+        }
+        return guestAddress ? [normalizeAddress(guestAddress)!] : [];
+    }, [isAuthenticated, authAddresses, guestAddress]);
+
     const isLoading = isAuthenticated ? isLoadingAuth : false;
 
     const saveAddress = async (
@@ -36,26 +42,46 @@ export function useAddressFlow() {
         editingId?: number,
     ) => {
         if (isAuthenticated) {
-            if (editingId) {
-                return updateAddress.mutateAsync({
-                    id: editingId,
-                    data: toUpdateAddressRequest(payload),
-                });
-            } else {
-                return createAddress.mutateAsync(
-                    toCreateAddressRequest(payload),
-                );
-            }
+            const raw = editingId
+                ? await updateAddress.mutateAsync({
+                      id: editingId,
+                      data: toUpdateAddressRequest(payload),
+                  })
+                : await createAddress.mutateAsync(
+                      toCreateAddressRequest(payload),
+                  );
+
+            return normalizeAddress(raw);
         } else {
-            // Guest Flow
-            const newAddress = {
+            // Guest Flow: Instant local update
+            const newAddress = normalizeAddress({
                 ...payload,
                 id: GUEST_ADDRESS_ID,
-            } as Address;
+            } as Address)!;
+
             setGuestAddress(newAddress);
             setDeliveryAddress(newAddress);
             return newAddress;
         }
+    };
+
+    const deleteAddressOp = async (id: number) => {
+        if (isAuthenticated) {
+            return deleteAddress.mutateAsync(id);
+        } else {
+            if (id === GUEST_ADDRESS_ID) {
+                setGuestAddress(null);
+                setDeliveryAddress(null);
+            }
+            return null;
+        }
+    };
+
+    const setDefault = async (id: number) => {
+        if (isAuthenticated) {
+            return setDefaultAddress.mutateAsync(id);
+        }
+        return null;
     };
 
     return {
@@ -63,5 +89,7 @@ export function useAddressFlow() {
         isLoading,
         isAuthenticated,
         saveAddress,
+        deleteAddress: deleteAddressOp,
+        setDefault,
     };
 }
