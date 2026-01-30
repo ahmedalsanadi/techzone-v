@@ -7,7 +7,11 @@ import { useState } from 'react';
 import { useBranchStore } from '@/store/useBranchStore';
 import { useOrderStore, getScheduledTimeAsDate } from '@/store/useOrderStore';
 import OrderTypeModal from '@/components/modals/OrderTypeModal';
-import { getAddressLabel, formatAddressForDisplay } from '@/lib/address';
+import {
+    getAddressLabel,
+    formatAddressForDisplay,
+    formatScheduledTime,
+} from '@/lib/address';
 
 export default function SubHeader() {
     const t = useTranslations('SubHeader');
@@ -39,19 +43,6 @@ export default function SubHeader() {
         }
     };
 
-    const formatScheduledTime = (date: Date) => {
-        const day = date.getDate();
-        const month = date.getMonth() + 1;
-        const year = date.getFullYear();
-        const hours = date.getHours();
-        const minutes = date.getMinutes();
-        const period = hours >= 12 ? 'م' : 'ص';
-        const displayHours = hours > 12 ? hours - 12 : hours === 0 ? 12 : hours;
-        return `لاحقاً ${day}/${month}/${year}، ${displayHours}:${minutes
-            .toString()
-            .padStart(2, '0')} ${period}`;
-    };
-
     const activeOrderType = orderType || 'delivery';
 
     const orderTypes = [
@@ -69,7 +60,6 @@ export default function SubHeader() {
             <div className="mt-4">
                 {/* Desktop Layout */}
                 <div className="hidden lg:flex bg-white rounded-t-xl h-16 items-center justify-between px-4 shadow-t-sm border-t border-gray-200">
-                    {/* Left: Branch and Order Type Label - Always in same position */}
                     <div className="flex items-center gap-4">
                         <button
                             onClick={handleBranchClick}
@@ -88,10 +78,8 @@ export default function SubHeader() {
                         </span>
                     </div>
 
-                    {/* Right: Order Type Buttons (when no address) or Order Details (when address saved) */}
                     <div className="flex items-center gap-4">
                         {activeOrderType === 'delivery' && deliveryAddress ? (
-                            // Show order details on right when address is saved
                             <>
                                 <div className="flex items-center gap-2 text-sm text-gray-700">
                                     <MapPin className="w-4 h-4 text-theme-primary" />
@@ -109,7 +97,10 @@ export default function SubHeader() {
                                     <div className="flex items-center gap-2 text-sm text-gray-700">
                                         <Clock className="w-4 h-4 text-theme-primary" />
                                         <span>
-                                            {formatScheduledTime(scheduledTime)}
+                                            {formatScheduledTime(
+                                                scheduledTime,
+                                                'ar',
+                                            )}
                                         </span>
                                     </div>
                                 )}
@@ -121,7 +112,6 @@ export default function SubHeader() {
                                 </button>
                             </>
                         ) : (
-                            // Show order type selection buttons on right when no address saved
                             <div className="flex items-center gap-2 flex-row-reverse">
                                 {orderTypes.map((type) => (
                                     <button
@@ -166,7 +156,6 @@ export default function SubHeader() {
                         </button>
                     </div>
 
-                    {/* Order Details on Mobile - Show when address is saved */}
                     {activeOrderType === 'delivery' && deliveryAddress && (
                         <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200 space-y-2">
                             <div className="flex items-start gap-2 text-sm text-gray-700">
@@ -190,7 +179,10 @@ export default function SubHeader() {
                                 <div className="flex items-center gap-2 text-sm text-gray-700">
                                     <Clock className="w-4 h-4 text-libero-red" />
                                     <span>
-                                        {formatScheduledTime(scheduledTime)}
+                                        {formatScheduledTime(
+                                            scheduledTime,
+                                            'ar',
+                                        )}
                                     </span>
                                 </div>
                             )}
@@ -204,7 +196,6 @@ export default function SubHeader() {
                         </div>
                     )}
 
-                    {/* Order Type Selection Buttons - Show when no address saved */}
                     {(!deliveryAddress || activeOrderType !== 'delivery') && (
                         <div className="w-full bg-white/10 p-1 rounded-xl border border-white/10 backdrop-blur-sm flex items-center flex-row-reverse">
                             {orderTypes.map((type) => (
@@ -231,7 +222,6 @@ export default function SubHeader() {
                 </div>
             </div>
 
-            {/* Order Type Modal */}
             <OrderTypeModal
                 isOpen={isOrderModalOpen}
                 onClose={() => setIsOrderModalOpen(false)}

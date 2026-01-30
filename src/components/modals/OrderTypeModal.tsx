@@ -19,6 +19,7 @@ import { useAddressFlow } from '@/hooks/address/useAddressFlow';
 import {
     getAddressLabel,
     formatAddressForDisplay,
+    formatScheduledTime,
     showAddNewAddressButton,
 } from '@/lib/address';
 import { toast } from 'sonner';
@@ -319,7 +320,10 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                         </div>
                                         <span className="text-sm font-bold text-gray-700">
                                             {scheduledTime
-                                                ? scheduledTime.toLocaleString()
+                                                ? formatScheduledTime(
+                                                      scheduledTime,
+                                                      'ar',
+                                                  )
                                                 : t('selectDateTime')}
                                         </span>
                                     </div>

@@ -7,4 +7,5 @@ export {
     formatAddressForDisplay,
     getAddressLabel,
     showAddNewAddressButton,
+    formatScheduledTime,
 } from './formatAddress';

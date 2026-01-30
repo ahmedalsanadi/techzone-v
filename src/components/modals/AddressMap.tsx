@@ -79,6 +79,7 @@ const MapClickHandler = memo(
         return null;
     },
 );
+MapClickHandler.displayName = 'MapClickHandler';
 
 const MapViewUpdater = memo(({ center }: { center: [number, number] }) => {
     const map = useMap();
@@ -94,6 +95,7 @@ const MapViewUpdater = memo(({ center }: { center: [number, number] }) => {
     }, [center, map]);
     return null;
 });
+MapViewUpdater.displayName = 'MapViewUpdater';
 
 const MapSizeInvalidator = memo(() => {
     const map = useMap();
@@ -103,6 +105,7 @@ const MapSizeInvalidator = memo(() => {
     }, [map]);
     return null;
 });
+MapSizeInvalidator.displayName = 'MapSizeInvalidator';
 
 const AddressMap: React.FC<AddressMapProps> = ({
     center,

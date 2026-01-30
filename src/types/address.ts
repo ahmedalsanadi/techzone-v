@@ -108,20 +108,20 @@ export interface AddressFormSubmitPayload {
     city_id: number;
     district_id?: number | null;
     street: string;
-    latitude: number;
-    longitude: number;
-    building?: string;
-    unit?: string;
-    postal_code?: string;
-    additional_number?: string;
-    description?: string;
+    latitude: number | string;
+    longitude: number | string;
+    building?: string | null;
+    unit?: string | null;
+    postal_code?: string | null;
+    additional_number?: string | null;
+    description?: string | null;
     is_default?: boolean;
     // Display-only (dropped before API)
     name?: string;
     formatted?: string;
-    building_number?: string;
-    unit_number?: string;
-    notes?: string;
+    building_number?: string | null;
+    unit_number?: string | null;
+    notes?: string | null;
 }
 
 /**

@@ -27,7 +27,7 @@ export function formatAddressForDisplay(
     if (building) parts.push(String(building));
     const unit = address.unit_number ?? address.unit ?? null;
     if (unit) parts.push(String(unit));
-    const city = address.city_name ?? address.city ?? '';
+    const city = address.city_name ?? '';
     if (city) parts.push(city);
     return parts.filter(Boolean).join(', ');
 }
@@ -42,4 +42,22 @@ export function showAddNewAddressButton(
 ): boolean {
     if (isAuthenticated) return true;
     return addressCount === 0;
+}
+/**
+ * Formats a Date object for the "Scheduled Time" display (e.g. "Tomorrow 10:00 AM").
+ */
+export function formatScheduledTime(date: Date, locale: string = 'ar'): string {
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+
+    if (locale === 'ar') {
+        const period = hours >= 12 ? 'م' : 'ص';
+        const displayHours = hours > 12 ? hours - 12 : hours === 0 ? 12 : hours;
+        return `${day}/${month}/${year}، ${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
+    }
+
+    return date.toLocaleString();
 }

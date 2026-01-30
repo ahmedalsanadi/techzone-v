@@ -154,51 +154,55 @@ const AddressModal: React.FC<AddressModalProps> = ({
             return;
         }
 
-        if (activeAddress) {
-            form.reset({
-                addressName: activeAddress.label || '',
-                recipientName: activeAddress.recipient_name || '',
-                phone: activeAddress.phone || '',
-                addressNotes: activeAddress.description || '',
-                street: activeAddress.street || '',
-                building: activeAddress.building || '',
-                unit: activeAddress.unit || '',
-                postalCode: activeAddress.postal_code || '',
-                additionalNumber: activeAddress.additional_number || '',
-                isDefault: activeAddress.is_default,
-            });
+        // Use queueMicrotask to avoid "cascading renders" error (setState in effect synchronously)
+        // This makes the update asynchronous and avoids blocking the main render loop
+        queueMicrotask(() => {
+            if (activeAddress) {
+                form.reset({
+                    addressName: activeAddress.label || '',
+                    recipientName: activeAddress.recipient_name || '',
+                    phone: activeAddress.phone || '',
+                    addressNotes: activeAddress.description || '',
+                    street: activeAddress.street || '',
+                    building: activeAddress.building || '',
+                    unit: activeAddress.unit || '',
+                    postalCode: activeAddress.postal_code || '',
+                    additionalNumber: activeAddress.additional_number || '',
+                    isDefault: activeAddress.is_default,
+                });
 
-            location.dispatch({
-                type: 'RESET',
-                payload: {
-                    selectedCountry: activeAddress.country_id
-                        ? Number(activeAddress.country_id)
-                        : '',
-                    selectedCity: activeAddress.city_id
-                        ? Number(activeAddress.city_id)
-                        : '',
-                    selectedDistrict: activeAddress.district_id
-                        ? Number(activeAddress.district_id)
-                        : '',
-                },
-            });
+                location.dispatch({
+                    type: 'RESET',
+                    payload: {
+                        selectedCountry: activeAddress.country_id
+                            ? Number(activeAddress.country_id)
+                            : '',
+                        selectedCity: activeAddress.city_id
+                            ? Number(activeAddress.city_id)
+                            : '',
+                        selectedDistrict: activeAddress.district_id
+                            ? Number(activeAddress.district_id)
+                            : '',
+                    },
+                });
 
-            const coords: [number, number] = [
-                Number(activeAddress.latitude),
-                Number(activeAddress.longitude),
-            ];
-            setSelectedLocation(coords);
-            setFormattedAddress(
-                activeAddress.formatted || activeAddress.street,
-            );
-            setSearchQuery('');
-        } else {
-            form.reset();
-            location.dispatch({ type: 'RESET' });
-            setSelectedLocation(DEFAULT_COORDINATES);
-            setFormattedAddress('');
-            setSearchQuery('');
-        }
+                const coords: [number, number] = [
+                    Number(activeAddress.latitude),
+                    Number(activeAddress.longitude),
+                ];
+                setSelectedLocation(coords);
+                setFormattedAddress(
+                    activeAddress.formatted || activeAddress.street,
+                );
+                setSearchQuery('');
+            } else {
+                form.reset();
+                location.dispatch({ type: 'RESET' });
+                setSelectedLocation(DEFAULT_COORDINATES);
+                setFormattedAddress('');
+                setSearchQuery('');
+            }
+        });
     }, [isOpen, activeAddress]);
 
     const handleLocationSelect = useCallback(

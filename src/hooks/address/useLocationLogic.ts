@@ -72,7 +72,9 @@ export function useLocationLogic(initialData?: Partial<LocationState>) {
     // Auto-select first country if none selected
     useEffect(() => {
         if (!state.selectedCountry && countries.length > 0) {
-            dispatch({ type: 'SET_COUNTRY', value: countries[0].id });
+            queueMicrotask(() => {
+                dispatch({ type: 'SET_COUNTRY', value: countries[0].id });
+            });
         }
     }, [countries, state.selectedCountry]);
 
