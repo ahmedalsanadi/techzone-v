@@ -6,62 +6,66 @@ import { useCallback } from 'react';
 import { useAddressStore } from '@/store/useAddressStore';
 import { storeService } from '@/services/store-service';
 import { useAuthStore } from '@/store/useAuthStore';
-import { toast } from 'sonner';
+import { useOrderStore } from '@/store/useOrderStore';
 
 export function useAddressMerge() {
-    const { addresses, clearAddresses } = useAddressStore();
+    const { guestAddress, clearGuestAddress } = useAddressStore();
     const { isAuthenticated } = useAuthStore();
+    const { setDeliveryAddress } = useOrderStore();
 
     const mergeGuestAddressAfterAuth = useCallback(async () => {
-        if (!isAuthenticated || addresses.length === 0) return;
+        // Only merge if authenticated and there is a guest address in local storage
+        if (!isAuthenticated || !guestAddress) return;
 
         try {
             console.log(
-                '[useAddressMerge] Syncing guest addresses to account...',
+                '[useAddressMerge] Syncing guest address to account...',
             );
 
-            // We only care about the most relevant address for now, or all of them.
-            // The user said "if he is not auth then he can only store one address"
-            // but the store currently supports multiple. Let's sync all.
+            const payload = {
+                label: guestAddress.label || guestAddress.name || 'Home',
+                recipient_name: guestAddress.recipient_name || '',
+                phone: guestAddress.phone || '',
+                country_id: guestAddress.country_id || 1, // Default to SA if missing
+                city_id: guestAddress.city_id,
+                district_id: guestAddress.district_id ?? undefined,
+                street: guestAddress.street || guestAddress.formatted || '',
+                latitude: Number(guestAddress.latitude) || 24.7136,
+                longitude: Number(guestAddress.longitude) || 46.6753,
+                building:
+                    guestAddress.building ||
+                    guestAddress.building_number ||
+                    undefined,
+                unit:
+                    guestAddress.unit || guestAddress.unit_number || undefined,
+                postal_code: guestAddress.postal_code || undefined,
+                additional_number: guestAddress.additional_number || undefined,
+                description:
+                    guestAddress.description || guestAddress.notes || '',
+                is_default: true, // Make the guest address default on account
+            };
 
-            const syncPromises = addresses.map(async (addr) => {
-                const payload = {
-                    label: addr.label || addr.name || 'Home',
-                    recipient_name: addr.recipient_name || '',
-                    phone: addr.phone || '',
-                    country_id: addr.country_id || 1, // Default to SA if missing
-                    city_id: addr.city_id,
-                    district_id: addr.district_id ?? undefined,
-                    street: addr.street || addr.formatted || '',
-                    latitude: Number(addr.latitude) || 24.7136, // Fallback if missing, though AddressModal should provide it
-                    longitude: Number(addr.longitude) || 46.6753,
-                    building:
-                        addr.building || addr.building_number || undefined,
-                    unit: addr.unit || addr.unit_number || undefined,
-                    postal_code: addr.postal_code || undefined,
-                    additional_number: addr.additional_number || undefined,
-                    description: addr.description || addr.notes || '',
-                    is_default: addr.is_default || false,
-                };
-                return storeService.createAddress(payload as any);
-            });
+            const createdAddress = await storeService.createAddress(
+                payload as any,
+            );
 
-            await Promise.all(syncPromises);
+            // Sync with order store for display purposes (subheader)
+            setDeliveryAddress(createdAddress);
 
             // Clear local storage after successful sync
-            clearAddresses();
+            clearGuestAddress();
+
             console.log(
-                '[useAddressMerge] Guest addresses synced and cleared from local storage.',
+                '[useAddressMerge] Guest address synced and cleared from local storage.',
             );
         } catch (error) {
             console.error(
-                '[useAddressMerge] Failed to sync guest addresses:',
+                '[useAddressMerge] Failed to sync guest address:',
                 error,
             );
-            // We don't toast error here to not interrupt login flow,
-            // but we keep the addresses in local storage for next attempt.
+            // We don't clear here so it can be retried or handled later
         }
-    }, [isAuthenticated, addresses, clearAddresses]);
+    }, [isAuthenticated, guestAddress, clearGuestAddress, setDeliveryAddress]);
 
     return { mergeGuestAddressAfterAuth };
 }

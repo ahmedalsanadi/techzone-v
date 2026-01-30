@@ -81,6 +81,7 @@
     "default": "Default"
   },
   "Address": {
+    "loading": "Loading...",
     "addNewAddress": "Add New Address",
     "editAddress": "Edit Address",
     "searchAddress": "Search Address",

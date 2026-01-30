@@ -1,7 +1,14 @@
 // src/components/modals/AddressModal.tsx
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback, useMemo, useReducer } from 'react';
+import React, {
+    useState,
+    useEffect,
+    useRef,
+    useCallback,
+    useMemo,
+    useReducer,
+} from 'react';
 import { X, MapPin, Search, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { DEFAULT_MAP_CENTER } from '@/lib/branches';
@@ -9,12 +16,21 @@ import { cn } from '@/lib/utils';
 import dynamic from 'next/dynamic';
 import { storeService } from '@/services/store-service';
 import { Country, City, District, Address } from '@/types/address';
+import { useAuthStore } from '@/store/useAuthStore';
+import {
+    useAddress,
+    useAddressMutations,
+    useCountries,
+    useCities,
+    useDistricts,
+} from '@/hooks/useAddresses';
+import { toast } from 'sonner';
 
 // Lazy load map component
 const AddressMap = dynamic(() => import('./AddressMap'), {
     ssr: false,
     loading: () => (
-        <div className="w-full h-full bg-gray-100 animate-pulse rounded-2xl flex items-center justify-center">
+        <div className="w-full h-full bg-gray-50 flex items-center justify-center">
             <span className="text-sm text-gray-400">Loading map...</span>
         </div>
     ),
@@ -24,33 +40,8 @@ const AddressMap = dynamic(() => import('./AddressMap'), {
 interface AddressModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (address: AddressFormData) => void;
+    onSave: (address: any) => void; // Kept for compatibility, but internally we use mutations
     initialAddress?: Address | null;
-}
-
-interface AddressFormData {
-    id?: number | string;
-    label: string;
-    recipient_name: string;
-    phone: string;
-    country_id: number;
-    city_id: number;
-    district_id: number | null;
-    street: string;
-    building: string;
-    unit: string;
-    postal_code: string;
-    additional_number: string;
-    description: string;
-    is_default: boolean;
-    latitude: number;
-    longitude: number;
-    // UI compatibility fields
-    name: string;
-    formatted: string;
-    building_number: string;
-    unit_number: string;
-    notes: string;
 }
 
 interface FormState {
@@ -106,16 +97,33 @@ const formReducer = (state: FormState, action: FormAction): FormState => {
     }
 };
 
-const locationReducer = (state: LocationState, action: LocationAction): LocationState => {
+const locationReducer = (
+    state: LocationState,
+    action: LocationAction,
+): LocationState => {
     switch (action.type) {
         case 'SET_COUNTRY':
-            return { ...state, selectedCountry: action.value, selectedCity: '', selectedDistrict: '' };
+            return {
+                ...state,
+                selectedCountry: action.value,
+                selectedCity: '',
+                selectedDistrict: '',
+            };
         case 'SET_CITY':
-            return { ...state, selectedCity: action.value, selectedDistrict: '' };
+            return {
+                ...state,
+                selectedCity: action.value,
+                selectedDistrict: '',
+            };
         case 'SET_DISTRICT':
             return { ...state, selectedDistrict: action.value };
         case 'RESET':
-            return { selectedCountry: '', selectedCity: '', selectedDistrict: '', ...action.payload };
+            return {
+                selectedCountry: '',
+                selectedCity: '',
+                selectedDistrict: '',
+                ...action.payload,
+            };
         default:
             return state;
     }
@@ -142,143 +150,14 @@ const initialLocationState: LocationState = {
 };
 
 // Helper to extract initial location from address
-const getInitialMapLocation = (address: Address | null | undefined): [number, number] => {
+const getInitialMapLocation = (
+    address: Address | null | undefined,
+): [number, number] => {
     if (address?.latitude && address?.longitude) {
         return [Number(address.latitude), Number(address.longitude)];
     }
     return DEFAULT_MAP_CENTER;
 };
-
-// Custom hooks
-function useLocationData(
-    isOpen: boolean,
-    locationState: LocationState,
-    initialAddress: Address | null | undefined,
-    dispatchLocation: React.Dispatch<LocationAction>
-) {
-    const [countries, setCountries] = useState<Country[]>([]);
-    const [cities, setCities] = useState<City[]>([]);
-    const [districts, setDistricts] = useState<District[]>([]);
-    const [isLoadingLocations, setIsLoadingLocations] = useState(false);
-    
-    const abortControllerRef = useRef<AbortController | null>(null);
-    const initializedRef = useRef(false);
-
-    // Fetch countries on open
-    useEffect(() => {
-        if (!isOpen) {
-            initializedRef.current = false;
-            return;
-        }
-
-        const fetchCountries = async () => {
-            try {
-                const data = await storeService.getCountries();
-                const countriesArray = Array.isArray(data) ? data : [];
-                setCountries(countriesArray);
-
-                // Set default country only if not editing and not yet set
-                if (!initialAddress && countriesArray.length > 0 && !locationState.selectedCountry) {
-                    dispatchLocation({ type: 'SET_COUNTRY', value: countriesArray[0].id });
-                }
-            } catch (error) {
-                console.error('Failed to fetch countries:', error);
-            }
-        };
-
-        if (!initializedRef.current) {
-            initializedRef.current = true;
-            fetchCountries();
-        }
-    }, [isOpen, initialAddress, locationState.selectedCountry, dispatchLocation]);
-
-    // Fetch cities when country changes
-    useEffect(() => {
-        if (!locationState.selectedCountry) {
-            setCities([]);
-            return;
-        }
-
-        const fetchCities = async () => {
-            setIsLoadingLocations(true);
-            try {
-                const data = await storeService.getCities(Number(locationState.selectedCountry));
-                const citiesArray = Array.isArray(data) ? data : [];
-                setCities(citiesArray);
-
-                // Auto-select initial city if editing
-                if (initialAddress?.city_id) {
-                    const targetCityId = Number(initialAddress.city_id);
-                    if (citiesArray.some((c) => c.id === targetCityId)) {
-                        dispatchLocation({ type: 'SET_CITY', value: targetCityId });
-                    }
-                }
-            } catch (error) {
-                console.error('Failed to fetch cities:', error);
-            } finally {
-                setIsLoadingLocations(false);
-            }
-        };
-
-        fetchCities();
-    }, [locationState.selectedCountry, initialAddress?.city_id, dispatchLocation]);
-
-    // Fetch districts when city changes
-    useEffect(() => {
-        if (!locationState.selectedCity) {
-            setDistricts([]);
-            return;
-        }
-
-        const fetchDistricts = async () => {
-            try {
-                const data = await storeService.getDistricts(Number(locationState.selectedCity));
-                const districtsArray = Array.isArray(data) ? data : [];
-                setDistricts(districtsArray);
-
-                // Auto-select initial district if editing
-                if (initialAddress?.district_id) {
-                    const targetDistrictId = Number(initialAddress.district_id);
-                    if (districtsArray.some((d) => d.id === targetDistrictId)) {
-                        dispatchLocation({ type: 'SET_DISTRICT', value: targetDistrictId });
-                    }
-                }
-            } catch (error) {
-                console.error('Failed to fetch districts:', error);
-            }
-        };
-
-        fetchDistricts();
-    }, [locationState.selectedCity, initialAddress?.district_id, dispatchLocation]);
-
-    // Cleanup
-    useEffect(() => {
-        return () => {
-            abortControllerRef.current?.abort();
-        };
-    }, []);
-
-    return { countries, cities, districts, isLoadingLocations };
-}
-
-function useBodyScrollLock(isOpen: boolean) {
-    useEffect(() => {
-        if (isOpen) {
-            document.body.style.overflow = 'hidden';
-            // Trigger resize for map
-            const timer = setTimeout(() => {
-                window.dispatchEvent(new Event('resize'));
-            }, 300);
-            return () => {
-                clearTimeout(timer);
-                document.body.style.overflow = '';
-            };
-        }
-        return () => {
-            document.body.style.overflow = '';
-        };
-    }, [isOpen]);
-}
 
 // Sub-components
 interface InputFieldProps {
@@ -346,12 +225,13 @@ const SelectField: React.FC<SelectFieldProps> = ({
         </label>
         <select
             value={value}
-            onChange={(e) => onChange(e.target.value ? Number(e.target.value) : '')}
+            onChange={(e) =>
+                onChange(e.target.value ? Number(e.target.value) : '')
+            }
             disabled={disabled}
-            className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-theme-primary outline-none font-semibold appearance-none disabled:opacity-50"
-        >
+            className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-theme-primary outline-none font-semibold appearance-none disabled:opacity-50">
             {placeholder && <option value="">{placeholder}</option>}
-            {options.map((opt) => (
+            {options?.map((opt) => (
                 <option key={opt.id} value={opt.id}>
                     {opt.name}
                 </option>
@@ -368,72 +248,122 @@ const AddressModal: React.FC<AddressModalProps> = ({
     isOpen,
     onClose,
     onSave,
-    initialAddress,
+    initialAddress: initialAddressProp,
 }) => {
     const t = useTranslations('Address');
+    const { isAuthenticated } = useAuthStore();
+    const { createAddress, updateAddress } = useAddressMutations();
+
+    // Determine if we need to fetch an address by ID record (Auth Edit)
+    const shouldFetchAddress = !!(isAuthenticated && initialAddressProp?.id);
+    const { data: fetchedAddress, isLoading: isFetchingAddress } = useAddress(
+        shouldFetchAddress ? Number(initialAddressProp?.id) : null,
+    );
+
+    // Final address data to use for population
+    const activeAddress = useMemo(() => {
+        if (shouldFetchAddress && fetchedAddress) return fetchedAddress;
+        return initialAddressProp;
+    }, [shouldFetchAddress, fetchedAddress, initialAddressProp]);
 
     // Form state with reducer
     const [formState, dispatchForm] = useReducer(formReducer, initialFormState);
-    const [locationState, dispatchLocation] = useReducer(locationReducer, initialLocationState);
+    const [locationState, dispatchLocation] = useReducer(
+        locationReducer,
+        initialLocationState,
+    );
 
     // Map-related state
     const [searchQuery, setSearchQuery] = useState('');
-    const [selectedLocation, setSelectedLocation] = useState<[number, number]>(
-        () => getInitialMapLocation(initialAddress)
-    );
+    const [selectedLocation, setSelectedLocation] =
+        useState<[number, number]>(DEFAULT_MAP_CENTER);
     const [formattedAddress, setFormattedAddress] = useState('');
 
-    // Lock body scroll
-    useBodyScrollLock(isOpen);
-
-    // Fetch location data
-    const { countries, cities, districts, isLoadingLocations } = useLocationData(
-        isOpen,
-        locationState,
-        initialAddress,
-        dispatchLocation
+    // React Query Location Data
+    const { data: countries = [] } = useCountries();
+    const { data: cities = [], isLoading: isLoadingCities } = useCities(
+        locationState.selectedCountry
+            ? Number(locationState.selectedCountry)
+            : null,
     );
+    const { data: districts = [], isLoading: isLoadingDistricts } =
+        useDistricts(
+            locationState.selectedCity
+                ? Number(locationState.selectedCity)
+                : null,
+        );
 
-    // Initialize form when modal opens or initialAddress changes
+    // Lock body scroll
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => window.dispatchEvent(new Event('resize')), 300);
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [isOpen]);
+
+    // Initialize/Reset form
     useEffect(() => {
         if (!isOpen) return;
 
-        if (initialAddress) {
+        if (activeAddress) {
             dispatchForm({
                 type: 'RESET',
                 payload: {
-                    addressName: initialAddress.label || initialAddress.name || '',
-                    recipientName: initialAddress.recipient_name || '',
-                    phone: initialAddress.phone || '',
-                    addressNotes: initialAddress.notes || initialAddress.description || '',
-                    street: initialAddress.street || '',
-                    building: initialAddress.building_number || initialAddress.building || '',
-                    unit: initialAddress.unit_number || initialAddress.unit || '',
-                    postalCode: initialAddress.postal_code || '',
-                    additionalNumber: initialAddress.additional_number || '',
-                    isDefault: initialAddress.is_default || initialAddress.isDefault || false,
+                    addressName:
+                        activeAddress.label || activeAddress.name || '',
+                    recipientName: activeAddress.recipient_name || '',
+                    phone: activeAddress.phone || '',
+                    addressNotes:
+                        activeAddress.notes || activeAddress.description || '',
+                    street: activeAddress.street || '',
+                    building:
+                        activeAddress.building_number ||
+                        activeAddress.building ||
+                        '',
+                    unit: activeAddress.unit_number || activeAddress.unit || '',
+                    postalCode: activeAddress.postal_code || '',
+                    additionalNumber: activeAddress.additional_number || '',
+                    isDefault: !!(
+                        activeAddress.is_default || activeAddress.isDefault
+                    ),
                 },
             });
 
             dispatchLocation({
                 type: 'RESET',
                 payload: {
-                    selectedCountry: initialAddress.country_id ? Number(initialAddress.country_id) : '',
-                    selectedCity: initialAddress.city_id ? Number(initialAddress.city_id) : '',
-                    selectedDistrict: initialAddress.district_id ? Number(initialAddress.district_id) : '',
+                    selectedCountry: activeAddress.country_id
+                        ? Number(activeAddress.country_id)
+                        : countries[0]?.id || '',
+                    selectedCity: activeAddress.city_id
+                        ? Number(activeAddress.city_id)
+                        : '',
+                    selectedDistrict: activeAddress.district_id
+                        ? Number(activeAddress.district_id)
+                        : '',
                 },
             });
 
-            setSelectedLocation(getInitialMapLocation(initialAddress));
-            setFormattedAddress(initialAddress.formatted || initialAddress.street || '');
+            setSelectedLocation(getInitialMapLocation(activeAddress));
+            setFormattedAddress(
+                activeAddress.formatted || activeAddress.street || '',
+            );
         } else {
             dispatchForm({ type: 'RESET' });
-            dispatchLocation({ type: 'RESET' });
+            dispatchLocation({
+                type: 'RESET',
+                payload: { selectedCountry: countries[0]?.id || '' },
+            });
             setSelectedLocation(DEFAULT_MAP_CENTER);
             setFormattedAddress('');
         }
         setSearchQuery('');
-    }, [isOpen, initialAddress]);
+    }, [isOpen, activeAddress, countries]);
 
     // Memoized validation
     const isValid = useMemo(() => {
@@ -460,28 +390,37 @@ const AddressModal: React.FC<AddressModalProps> = ({
         (location: [number, number], formatted: string) => {
             setSelectedLocation(location);
             setFormattedAddress(formatted);
+            // Optionally auto-fill street if empty
+            if (!formState.street) {
+                dispatchForm({
+                    type: 'SET_FIELD',
+                    field: 'street',
+                    value: formatted,
+                });
+            }
         },
-        []
+        [formState.street],
     );
 
     const handleFieldChange = useCallback(
         (field: keyof FormState) => (value: string | boolean) => {
             dispatchForm({ type: 'SET_FIELD', field, value });
         },
-        []
+        [],
     );
 
-    const handleSave = useCallback(() => {
+    const handleSave = useCallback(async () => {
         if (!isValid) return;
 
-        const addressData: AddressFormData = {
-            id: initialAddress?.id,
+        const addressData = {
             label: formState.addressName.trim(),
             recipient_name: formState.recipientName.trim(),
             phone: formState.phone.trim(),
             country_id: Number(locationState.selectedCountry),
             city_id: Number(locationState.selectedCity),
-            district_id: locationState.selectedDistrict ? Number(locationState.selectedDistrict) : null,
+            district_id: locationState.selectedDistrict
+                ? Number(locationState.selectedDistrict)
+                : null,
             street: formState.street.trim(),
             building: formState.building.trim(),
             unit: formState.unit.trim(),
@@ -499,243 +438,310 @@ const AddressModal: React.FC<AddressModalProps> = ({
             notes: formState.addressNotes.trim(),
         };
 
+        // If authenticated, we can optionally use the mutations here directly
+        // but to keep compatibility with existing components (OrderTypeModal, MyAddressesView),
+        // we pass it back to onSave which will handle the mutation or storage.
         onSave(addressData);
         onClose();
-    }, [isValid, formState, locationState, selectedLocation, formattedAddress, initialAddress?.id, onSave, onClose]);
-
-    const handleBackdropClick = useCallback(() => {
-        onClose();
-    }, [onClose]);
-
-    const stopPropagation = useCallback((e: React.MouseEvent) => {
-        e.stopPropagation();
-    }, []);
+    }, [
+        isValid,
+        formState,
+        locationState,
+        selectedLocation,
+        formattedAddress,
+        onSave,
+        onClose,
+    ]);
 
     if (!isOpen) return null;
 
     return (
         <>
-            {/* Backdrop */}
             <div
-                className="fixed inset-0 bg-black/50 z-50 backdrop-blur-sm"
-                onClick={handleBackdropClick}
+                className="fixed inset-0 bg-black/50 z-50 backdrop-blur-sm transition-opacity"
+                onClick={onClose}
                 aria-hidden="true"
             />
 
-            {/* Modal Container */}
             <div
                 className="fixed inset-0 z-50 flex items-center justify-center p-2 md:p-4"
                 role="dialog"
-                aria-modal="true"
-            >
+                aria-modal="true">
                 <div
-                    className="bg-white rounded-3xl shadow-2xl w-full max-w-6xl max-h-[95vh] overflow-hidden flex flex-col"
-                    onClick={stopPropagation}
-                >
+                    className="bg-white rounded-3xl shadow-2xl w-full max-w-6xl max-h-[95vh] overflow-hidden flex flex-col relative"
+                    onClick={(e) => e.stopPropagation()}>
                     {/* Header */}
                     <header className="flex items-center justify-between p-4 md:p-6 border-b border-gray-100">
                         <button
                             onClick={onClose}
                             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                            aria-label={t('close')}
-                        >
+                            aria-label={t('close')}>
                             <X className="w-5 h-5 text-gray-500" />
                         </button>
                         <h2 className="text-lg md:text-xl font-bold text-gray-900">
-                            {initialAddress ? t('editAddress') : t('addNewAddress')}
+                            {isFetchingAddress
+                                ? t('loading')
+                                : activeAddress
+                                  ? t('editAddress')
+                                  : t('addNewAddress')}
                         </h2>
                         <div className="w-9" aria-hidden="true" />
                     </header>
 
                     {/* Content */}
                     <main className="flex-1 overflow-y-auto p-4 md:p-6">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-                            {/* Form Section */}
-                            <div className="space-y-6">
-                                {/* Map Search */}
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">
-                                        {t('searchAddress')}
-                                    </label>
-                                    <div className="relative">
-                                        <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                        <input
-                                            type="text"
-                                            value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
-                                            placeholder={t('searchPlaceholder')}
-                                            className="w-full pr-10 pl-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-theme-primary outline-none transition-all"
+                        {isFetchingAddress ? (
+                            <div className="flex flex-col items-center justify-center py-24 gap-4">
+                                <Loader2 className="w-12 h-12 text-theme-primary animate-spin" />
+                                <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">
+                                    Fetching accurate location details...
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+                                {/* Form Section */}
+                                <div className="space-y-6">
+                                    {/* Map Search */}
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">
+                                            {t('searchAddress')}
+                                        </label>
+                                        <div className="relative">
+                                            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                            <input
+                                                type="text"
+                                                value={searchQuery}
+                                                onChange={(e) =>
+                                                    setSearchQuery(
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                placeholder={t(
+                                                    'searchPlaceholder',
+                                                )}
+                                                className="w-full pr-10 pl-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-theme-primary outline-none transition-all"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Form Grid */}
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <InputField
+                                            label={t('addressName')}
+                                            value={formState.addressName}
+                                            onChange={handleFieldChange(
+                                                'addressName',
+                                            )}
+                                            required
+                                            placeholder={t(
+                                                'addressNamePlaceholder',
+                                            )}
+                                            className="sm:col-span-2"
                                         />
+
+                                        <InputField
+                                            label={t('recipientName')}
+                                            value={formState.recipientName}
+                                            onChange={handleFieldChange(
+                                                'recipientName',
+                                            )}
+                                        />
+
+                                        <InputField
+                                            label={t('phone')}
+                                            value={formState.phone}
+                                            onChange={handleFieldChange(
+                                                'phone',
+                                            )}
+                                            required
+                                            type="tel"
+                                            dir="ltr"
+                                            placeholder="05xxxx..."
+                                        />
+
+                                        <SelectField
+                                            label={t('country')}
+                                            value={
+                                                locationState.selectedCountry
+                                            }
+                                            onChange={(v) =>
+                                                dispatchLocation({
+                                                    type: 'SET_COUNTRY',
+                                                    value: v,
+                                                })
+                                            }
+                                            options={countries}
+                                            required
+                                        />
+
+                                        <SelectField
+                                            label={t('city')}
+                                            value={locationState.selectedCity}
+                                            onChange={(v) =>
+                                                dispatchLocation({
+                                                    type: 'SET_CITY',
+                                                    value: v,
+                                                })
+                                            }
+                                            options={cities}
+                                            placeholder={t('selectCity')}
+                                            required
+                                            disabled={isLoadingCities}
+                                            isLoading={isLoadingCities}
+                                        />
+
+                                        <SelectField
+                                            label={t('district')}
+                                            value={
+                                                locationState.selectedDistrict
+                                            }
+                                            onChange={(v) =>
+                                                dispatchLocation({
+                                                    type: 'SET_DISTRICT',
+                                                    value: v,
+                                                })
+                                            }
+                                            options={districts}
+                                            placeholder={t('selectDistrict')}
+                                            className="sm:col-span-2"
+                                            disabled={isLoadingDistricts}
+                                            isLoading={isLoadingDistricts}
+                                        />
+
+                                        <InputField
+                                            label={t('street')}
+                                            value={formState.street}
+                                            onChange={handleFieldChange(
+                                                'street',
+                                            )}
+                                            required
+                                            className="sm:col-span-2"
+                                        />
+
+                                        <InputField
+                                            label={t('building')}
+                                            value={formState.building}
+                                            onChange={handleFieldChange(
+                                                'building',
+                                            )}
+                                        />
+
+                                        <InputField
+                                            label={t('unit')}
+                                            value={formState.unit}
+                                            onChange={handleFieldChange('unit')}
+                                        />
+
+                                        <InputField
+                                            label={t('postalCode')}
+                                            value={formState.postalCode}
+                                            onChange={handleFieldChange(
+                                                'postalCode',
+                                            )}
+                                        />
+
+                                        <InputField
+                                            label={t('additionalNumber')}
+                                            value={formState.additionalNumber}
+                                            onChange={handleFieldChange(
+                                                'additionalNumber',
+                                            )}
+                                        />
+
+                                        {/* Notes */}
+                                        <div className="sm:col-span-2">
+                                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 pl-1">
+                                                {t('addressNotes')}
+                                            </label>
+                                            <textarea
+                                                value={formState.addressNotes}
+                                                onChange={(e) =>
+                                                    handleFieldChange(
+                                                        'addressNotes',
+                                                    )(e.target.value)
+                                                }
+                                                placeholder={t(
+                                                    'addressNotesPlaceholder',
+                                                )}
+                                                rows={2}
+                                                className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-theme-primary outline-none resize-none"
+                                            />
+                                        </div>
+
+                                        {/* Default Checkbox - Only for Auth */}
+                                        {isAuthenticated && (
+                                            <div className="sm:col-span-2 flex items-center gap-3 py-2">
+                                                <input
+                                                    type="checkbox"
+                                                    id="set-default"
+                                                    checked={
+                                                        formState.isDefault
+                                                    }
+                                                    onChange={(e) =>
+                                                        handleFieldChange(
+                                                            'isDefault',
+                                                        )(e.target.checked)
+                                                    }
+                                                    className="w-5 h-5 rounded border-gray-300 text-theme-primary focus:ring-theme-primary"
+                                                />
+                                                <label
+                                                    htmlFor="set-default"
+                                                    className="text-sm font-bold text-gray-700 cursor-pointer">
+                                                    {t('setDefault')}
+                                                </label>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
-                                {/* Form Grid */}
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <InputField
-                                        label={t('addressName')}
-                                        value={formState.addressName}
-                                        onChange={handleFieldChange('addressName')}
-                                        required
-                                        placeholder={t('addressNamePlaceholder')}
-                                        className="sm:col-span-2"
-                                    />
-
-                                    <InputField
-                                        label={t('recipientName')}
-                                        value={formState.recipientName}
-                                        onChange={handleFieldChange('recipientName')}
-                                    />
-
-                                    <InputField
-                                        label={t('phone')}
-                                        value={formState.phone}
-                                        onChange={handleFieldChange('phone')}
-                                        required
-                                        type="tel"
-                                        dir="ltr"
-                                        placeholder="05xxxx..."
-                                    />
-
-                                    <SelectField
-                                        label={t('country')}
-                                        value={locationState.selectedCountry}
-                                        onChange={(v) => dispatchLocation({ type: 'SET_COUNTRY', value: v })}
-                                        options={countries}
-                                        required
-                                    />
-
-                                    <SelectField
-                                        label={t('city')}
-                                        value={locationState.selectedCity}
-                                        onChange={(v) => dispatchLocation({ type: 'SET_CITY', value: v })}
-                                        options={cities}
-                                        placeholder={t('selectCity')}
-                                        required
-                                        disabled={isLoadingLocations}
-                                        isLoading={isLoadingLocations}
-                                    />
-
-                                    <SelectField
-                                        label={t('district')}
-                                        value={locationState.selectedDistrict}
-                                        onChange={(v) => dispatchLocation({ type: 'SET_DISTRICT', value: v })}
-                                        options={districts}
-                                        placeholder={t('selectDistrict')}
-                                        className="sm:col-span-2"
-                                    />
-
-                                    <InputField
-                                        label={t('street')}
-                                        value={formState.street}
-                                        onChange={handleFieldChange('street')}
-                                        required
-                                        className="sm:col-span-2"
-                                    />
-
-                                    <InputField
-                                        label={t('building')}
-                                        value={formState.building}
-                                        onChange={handleFieldChange('building')}
-                                    />
-
-                                    <InputField
-                                        label={t('unit')}
-                                        value={formState.unit}
-                                        onChange={handleFieldChange('unit')}
-                                    />
-
-                                    <InputField
-                                        label={t('postalCode')}
-                                        value={formState.postalCode}
-                                        onChange={handleFieldChange('postalCode')}
-                                    />
-
-                                    <InputField
-                                        label={t('additionalNumber')}
-                                        value={formState.additionalNumber}
-                                        onChange={handleFieldChange('additionalNumber')}
-                                    />
-
-                                    {/* Notes */}
-                                    <div className="sm:col-span-2">
-                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 pl-1">
-                                            {t('addressNotes')}
-                                        </label>
-                                        <textarea
-                                            value={formState.addressNotes}
-                                            onChange={(e) => handleFieldChange('addressNotes')(e.target.value)}
-                                            placeholder={t('addressNotesPlaceholder')}
-                                            rows={2}
-                                            className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-theme-primary outline-none resize-none"
+                                {/* Map Section */}
+                                <div className="flex flex-col gap-4">
+                                    <div className="h-[300px] lg:h-full min-h-[400px] rounded-[32px] overflow-hidden relative border-4 border-gray-50 shadow-inner">
+                                        <AddressMap
+                                            center={selectedLocation}
+                                            onLocationSelect={
+                                                handleLocationSelect
+                                            }
+                                            searchQuery={searchQuery}
                                         />
+                                        <div className="absolute top-4 start-4 z-10 bg-white/90 backdrop-blur px-4 py-2 rounded-2xl shadow-sm border border-white flex items-center gap-2">
+                                            <MapPin className="w-4 h-4 text-theme-primary" />
+                                            <span className="text-[10px] font-black uppercase text-gray-500 tracking-tight">
+                                                Live Map Selection
+                                            </span>
+                                        </div>
                                     </div>
 
-                                    {/* Default Checkbox */}
-                                    <div className="sm:col-span-2 flex items-center gap-3 py-2">
-                                        <input
-                                            type="checkbox"
-                                            id="set-default"
-                                            checked={formState.isDefault}
-                                            onChange={(e) => handleFieldChange('isDefault')(e.target.checked)}
-                                            className="w-5 h-5 rounded border-gray-300 text-theme-primary focus:ring-theme-primary"
-                                        />
-                                        <label
-                                            htmlFor="set-default"
-                                            className="text-sm font-bold text-gray-700 cursor-pointer"
-                                        >
-                                            {t('setDefault')}
-                                        </label>
-                                    </div>
+                                    {formattedAddress && (
+                                        <div className="p-4 bg-theme-primary/5 rounded-2xl border border-theme-primary/10 flex items-start gap-3">
+                                            <MapPin className="w-5 h-5 text-theme-primary shrink-0 mt-0.5" />
+                                            <p className="text-sm text-theme-primary/80 font-medium leading-relaxed">
+                                                {formattedAddress}
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
-
-                            {/* Map Section */}
-                            <div className="flex flex-col gap-4">
-                                <div className="h-[300px] lg:h-full min-h-[400px] rounded-[32px] overflow-hidden relative border-4 border-gray-50 shadow-inner">
-                                    <AddressMap
-                                        center={selectedLocation}
-                                        onLocationSelect={handleLocationSelect}
-                                        searchQuery={searchQuery}
-                                    />
-                                    <div className="absolute top-4 start-4 z-10 bg-white/90 backdrop-blur px-4 py-2 rounded-2xl shadow-sm border border-white flex items-center gap-2">
-                                        <MapPin className="w-4 h-4 text-theme-primary" />
-                                        <span className="text-[10px] font-black uppercase text-gray-500 tracking-tight">
-                                            Live Map Selection
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {formattedAddress && (
-                                    <div className="p-4 bg-theme-primary/5 rounded-2xl border border-theme-primary/10 flex items-start gap-3">
-                                        <MapPin className="w-5 h-5 text-theme-primary shrink-0 mt-0.5" />
-                                        <p className="text-sm text-theme-primary/80 font-medium leading-relaxed">
-                                            {formattedAddress}
-                                        </p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
+                        )}
                     </main>
 
                     {/* Footer */}
                     <footer className="p-4 md:p-6 border-t border-gray-100 flex items-center justify-end gap-3">
                         <button
                             onClick={onClose}
-                            className="px-6 py-3 text-gray-500 font-bold rounded-xl hover:bg-gray-100 transition-colors"
-                        >
+                            className="px-6 py-3 text-gray-500 font-bold rounded-xl hover:bg-gray-100 transition-colors">
                             {t('cancel')}
                         </button>
                         <button
                             onClick={handleSave}
-                            disabled={!isValid}
+                            disabled={!isValid || isFetchingAddress}
                             className={cn(
                                 'px-10 py-3 font-black rounded-xl transition-all shadow-lg',
-                                isValid
+                                isValid && !isFetchingAddress
                                     ? 'bg-theme-primary text-white hover:brightness-95 shadow-theme-primary/20 active:scale-95'
-                                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                            )}
-                        >
-                            {initialAddress ? t('save') : t('addNew')}
+                                    : 'bg-gray-100 text-gray-400 cursor-not-allowed',
+                            )}>
+                            {activeAddress ? t('save') : t('addNew')}
                         </button>
                     </footer>
                 </div>

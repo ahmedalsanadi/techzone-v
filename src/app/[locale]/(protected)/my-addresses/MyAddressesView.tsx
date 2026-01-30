@@ -1,40 +1,27 @@
 // src/app/[locale]/(protected)/my-addresses/MyAddressesView.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Plus, MapPin, Loader2, Home as HomeIcon } from 'lucide-react';
-import { storeService } from '@/services/store-service';
 import { Address } from '@/types/address';
 import AddressCard from './AddressCard';
 import AddressModal from '@/components/modals/AddressModal';
 import { Button } from '@/components/ui/Button';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import { toast } from 'sonner';
+import { useAddresses, useAddressMutations } from '@/hooks/useAddresses';
 
 export default function MyAddressesView() {
     const t = useTranslations('MyAddresses');
-    const [addresses, setAddresses] = useState<Address[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+
+    // React Query for data fetching
+    const { data: addresses = [], isLoading, refetch } = useAddresses();
+    const { createAddress, updateAddress, deleteAddress } =
+        useAddressMutations();
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingAddress, setEditingAddress] = useState<Address | null>(null);
-
-    const fetchAddresses = async () => {
-        setIsLoading(true);
-        try {
-            const data = await storeService.getAddresses();
-            setAddresses(data);
-        } catch (error) {
-            console.error('Failed to fetch addresses:', error);
-            toast.error('Failed to load addresses');
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchAddresses();
-    }, []);
 
     const handleAdd = () => {
         setEditingAddress(null);
@@ -47,11 +34,10 @@ export default function MyAddressesView() {
     };
 
     const handleDelete = async (id: number) => {
-        if (confirm(t('deleteConfirm'))) {
+        if (window.confirm(t('deleteConfirm'))) {
             try {
-                await storeService.deleteAddress(id);
+                await deleteAddress.mutateAsync(id);
                 toast.success('Address deleted successfully');
-                fetchAddresses();
             } catch (error) {
                 toast.error('Failed to delete address');
             }
@@ -60,9 +46,8 @@ export default function MyAddressesView() {
 
     const handleSetDefault = async (id: number) => {
         try {
-            await storeService.updateAddress(id, { is_default: true });
+            await updateAddress.mutateAsync({ id, data: { is_default: true } });
             toast.success('Default address updated');
-            fetchAddresses();
         } catch (error) {
             toast.error('Failed to update default address');
         }
@@ -71,16 +56,15 @@ export default function MyAddressesView() {
     const handleSave = async (addressData: any) => {
         try {
             if (editingAddress) {
-                await storeService.updateAddress(
-                    editingAddress.id,
-                    addressData,
-                );
+                await updateAddress.mutateAsync({
+                    id: Number(editingAddress.id),
+                    data: addressData,
+                });
                 toast.success('Address updated successfully');
             } else {
-                await storeService.createAddress(addressData);
+                await createAddress.mutateAsync(addressData);
                 toast.success('Address added successfully');
             }
-            fetchAddresses();
             setIsModalOpen(false);
         } catch (error) {
             console.error('Save error:', error);
@@ -95,12 +79,10 @@ export default function MyAddressesView() {
 
     return (
         <div className="mt-4 space-y-6 md:space-y-8">
-            {/* Breadcrumbs */}
             <div className="px-1">
                 <Breadcrumbs items={breadcrumbs} />
             </div>
 
-            {/* Header Section */}
             <div className="bg-white rounded-2xl md:rounded-[32px] p-6 md:p-10 shadow-sm border border-gray-100 flex flex-col md:flex-row items-center md:items-end justify-between gap-6 overflow-hidden relative">
                 <div className="absolute top-0 start-0 w-32 h-32 bg-theme-primary/5 rounded-full -ms-16 -mt-16" />
 
@@ -124,7 +106,6 @@ export default function MyAddressesView() {
                 </Button>
             </div>
 
-            {/* Content Section */}
             <div className="bg-gray-50/50 rounded-2xl md:rounded-[40px] p-4 md:p-10 lg:p-12 border border-blue-50/50 min-h-[400px] flex flex-col items-center justify-center">
                 {isLoading ? (
                     <div className="flex flex-col items-center gap-3">
@@ -167,10 +148,12 @@ export default function MyAddressesView() {
                 )}
             </div>
 
-            {/* Address Modal */}
             <AddressModal
                 isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setEditingAddress(null);
+                }}
                 onSave={handleSave}
                 initialAddress={editingAddress}
             />
