@@ -2,11 +2,12 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { X, MapPin, Search, Loader2, ChevronDown, Check } from 'lucide-react';
+import { X, MapPin, Search, Check } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import dynamic from 'next/dynamic';
+import { SearchableSelect } from '@/components/ui/SearchableSelect';
 import {
     Address,
     AddressFormSubmitPayload,
@@ -67,54 +68,6 @@ const InputField: React.FC<{
             placeholder={placeholder}
             className="w-full px-4 py-3 sm:py-3.5 min-h-[48px] rounded-xl sm:rounded-2xl bg-gray-50 border border-gray-200 focus:border-theme-primary focus:ring-2 focus:ring-theme-primary/20 outline-none transition-all font-semibold text-base"
         />
-    </div>
-);
-
-const SelectField: React.FC<{
-    label: string;
-    value: number | '';
-    onChange: (value: number | '') => void;
-    options: Array<{ id: number; name: string }>;
-    placeholder?: string;
-    required?: boolean;
-    disabled?: boolean;
-    isLoading?: boolean;
-    className?: string;
-}> = ({
-    label,
-    value,
-    onChange,
-    options,
-    placeholder,
-    required,
-    disabled,
-    isLoading,
-    className,
-}) => (
-    <div className={cn('relative', className)}>
-        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 pl-1">
-            {label} {required && '*'}
-        </label>
-        <div className="relative">
-            <select
-                value={value === '' ? '' : String(value)}
-                onChange={(e) =>
-                    onChange(e.target.value ? Number(e.target.value) : '')
-                }
-                disabled={disabled}
-                className="w-full ps-4 pe-10 py-3 sm:py-3.5 min-h-[48px] rounded-xl sm:rounded-2xl bg-gray-50 border border-gray-200 focus:border-theme-primary focus:ring-2 focus:ring-theme-primary/20 outline-none font-semibold appearance-none disabled:opacity-50 cursor-pointer text-base text-gray-900">
-                {placeholder && <option value="">{placeholder}</option>}
-                {options?.map((opt) => (
-                    <option key={opt.id} value={opt.id}>
-                        {opt.name}
-                    </option>
-                ))}
-            </select>
-            <ChevronDown className="absolute end-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none rtl:rotate-180" />
-            {isLoading && (
-                <Loader2 className="absolute end-10 top-1/2 -translate-y-1/2 w-5 h-5 animate-spin text-theme-primary" />
-            )}
-        </div>
     </div>
 );
 
@@ -392,7 +345,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                             type="tel"
                                             dir="ltr"
                                         />
-                                        <SelectField
+                                        <SearchableSelect
                                             label={t('country')}
                                             value={
                                                 location.state.selectedCountry
@@ -404,9 +357,13 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                                 })
                                             }
                                             options={location.countries}
+                                            placeholder={t('selectCountry')}
+                                            searchPlaceholder={t(
+                                                'searchOptionPlaceholder',
+                                            )}
                                             required
                                         />
-                                        <SelectField
+                                        <SearchableSelect
                                             label={t('city')}
                                             value={location.state.selectedCity}
                                             onChange={(v) =>
@@ -417,11 +374,14 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                             }
                                             options={location.cities}
                                             placeholder={t('selectCity')}
+                                            searchPlaceholder={t(
+                                                'searchOptionPlaceholder',
+                                            )}
                                             required
                                             isLoading={location.isLoadingCities}
                                             disabled={location.isLoadingCities}
                                         />
-                                        <SelectField
+                                        <SearchableSelect
                                             label={t('district')}
                                             value={
                                                 location.state.selectedDistrict
@@ -434,6 +394,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                             }
                                             options={location.districts}
                                             placeholder={t('selectDistrict')}
+                                            searchPlaceholder={t(
+                                                'searchOptionPlaceholder',
+                                            )}
                                             className="sm:col-span-2"
                                             isLoading={
                                                 location.isLoadingDistricts

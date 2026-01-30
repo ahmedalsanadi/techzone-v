@@ -111,6 +111,7 @@
     "selectCountry": "اختر الدولة",
     "selectCity": "اختر المدينة",
     "selectDistrict": "اختر الحي (اختياري)",
+    "searchOptionPlaceholder": "مثال: المملكة العربية السعودية",
     "setDefault": "تعيين كعنوان افتراضي",
     "addNew": "إضافة عنوان جديد"
   },

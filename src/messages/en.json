@@ -111,6 +111,7 @@
     "selectCountry": "Select Country",
     "selectCity": "Select City",
     "selectDistrict": "Select District (Optional)",
+    "searchOptionPlaceholder": "e.g. United Kingdom",
     "setDefault": "Set as default address",
     "addNew": "Add New Address",
     "default": "Default"
