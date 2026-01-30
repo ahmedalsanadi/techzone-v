@@ -84,7 +84,7 @@ export default function SubHeader() {
                             <>
                                 <div className="flex items-center gap-2 text-sm text-gray-700 min-w-0 max-w-full">
                                     <MapPin className="w-4 h-4 shrink-0 text-theme-primary" />
-                                    <span className="truncate">
+                                    <span className="truncate block whitespace-nowrap">
                                         {t('deliveryTo')}{' '}
                                         <span className="font-bold">
                                             ({getAddressLabel(deliveryAddress)})
@@ -163,19 +163,22 @@ export default function SubHeader() {
 
                     {activeOrderType === 'delivery' && deliveryAddress && (
                         <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-sm border border-gray-200 space-y-2 relative z-10">
-                            <div className="flex items-start gap-2 sm:gap-3 text-sm text-gray-700 pointer-events-none">
-                                <MapPin className="w-4 h-4 text-theme-primary shrink-0 mt-0.5" />
+                            <div className="flex items-center gap-2 sm:gap-3 text-sm text-gray-700 pointer-events-none min-w-0">
+                                <MapPin className="w-4 h-4 text-theme-primary shrink-0" />
                                 <div className="flex-1 min-w-0">
-                                    <span className="font-medium">
-                                        {t('deliveryTo')}{' '}
-                                        <span className="text-theme-primary font-bold">
-                                            ({getAddressLabel(deliveryAddress)})
+                                    <p className="text-gray-700 text-xs sm:text-sm truncate leading-snug">
+                                        <span className="font-medium">
+                                            {t('deliveryTo')}{' '}
+                                            <span className="text-theme-primary font-bold">
+                                                ({getAddressLabel(deliveryAddress)})
+                                            </span>
+                                            {' · '}
                                         </span>
-                                    </span>
-                                    <p className="text-gray-600 text-xs sm:text-sm mt-1 line-clamp-2 wrap-break-word leading-snug">
-                                        {formatAddressForDisplay(
-                                            deliveryAddress,
-                                        )}
+                                        <span className="text-gray-600">
+                                            {formatAddressForDisplay(
+                                                deliveryAddress,
+                                            )}
+                                        </span>
                                     </p>
                                 </div>
                             </div>
