@@ -34,17 +34,21 @@ export default function PageContainer({
 
     return (
         <main className="min-h-screen flex flex-col relative">
-            {/*-------- Theme primary bg header ----------- */}
+            {/*-------- Theme primary bg header - fixed height so blue bar never grows; z-20 so it stays above content ----------- */}
             <nav
-                className={`bg-theme-primary transition-all duration-300 ${
+                className={`bg-theme-primary transition-all duration-300 relative z-20 overflow-visible flex flex-col shrink-0 ${
                     showSubHeader ? 'h-[190px] lg:h-[140px]' : 'h-[75px]'
-                } flex flex-col`}>
-                <div className="container mx-auto px-4 py-4 flex-1 flex flex-col">
+                }`}>
+                <div className="container mx-auto px-4 py-4 flex-1 flex flex-col min-h-0">
                     <Navbar />
                     {showSubHeader && <SubHeader />}
                 </div>
             </nav>
-            <div className="container mx-auto px-4 flex-1">{children}</div>
+            {/*-------- Content overlaps bottom of nav when subheader shown so half of subheader sits on white ----------- */}
+            <div
+                className={`container mx-auto px-4 flex-1 ${showSubHeader ? '-mt-16 lg:-mt-12 pt-16 lg:pt-12 bg-white' : ''}`}>
+                {children}
+            </div>
             <FloatingButtons />
             <Footer />
         </main>

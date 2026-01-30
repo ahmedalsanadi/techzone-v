@@ -62,8 +62,9 @@ export default function SubHeader() {
                 <div className="hidden lg:flex bg-white rounded-t-xl h-16 items-center justify-between px-4 shadow-t-sm border-t border-gray-200">
                     <div className="flex items-center gap-4">
                         <button
+                            type="button"
                             onClick={handleBranchClick}
-                            className="flex items-center gap-2 hover:bg-gray-50 p-2 rounded-lg transition-colors duration-200 group"
+                            className="flex items-center gap-2 hover:bg-gray-50 p-2 rounded-lg transition-colors duration-200 group cursor-pointer"
                             aria-label={branchName}>
                             <div className="size-8 rounded-full border border-gray-200 flex items-center justify-center bg-gray-50">
                                 <Building2 className="size-4.5 text-gray-500" />
@@ -107,8 +108,9 @@ export default function SubHeader() {
                                     </div>
                                 )}
                                 <button
+                                    type="button"
                                     onClick={() => setIsOrderModalOpen(true)}
-                                    className="px-3 py-1.5 bg-theme-primary/10 text-theme-primary text-xs font-medium rounded-lg hover:bg-theme-primary/20 transition-colors flex items-center gap-1">
+                                    className="px-3 py-1.5 bg-theme-primary/10 text-theme-primary text-xs font-medium rounded-lg hover:bg-theme-primary/20 transition-colors flex items-center gap-1 cursor-pointer">
                                     <Edit className="w-3.5 h-3.5" />
                                     {t('edit')}
                                 </button>
@@ -141,27 +143,27 @@ export default function SubHeader() {
                     </div>
                 </div>
 
-                {/* Mobile Layout - compact radii and padding for small screens */}
-                <div className="lg:hidden flex flex-col gap-2 sm:gap-3 md:gap-4">
-                    <div className="bg-white rounded-lg sm:rounded-xl h-12 sm:h-14 flex items-center px-3 sm:px-4 shadow-sm border border-gray-200">
+                {/* Mobile Layout - relative z-10 so buttons stay on top and receive touches on small screens */}
+                <div className="lg:hidden flex flex-col gap-2 sm:gap-3 md:gap-4 relative z-10">
+                    <div className="bg-white rounded-lg sm:rounded-xl h-12 sm:h-14 flex items-center px-3 sm:px-4 shadow-sm border border-gray-200 min-h-[48px]">
                         <button
                             type="button"
                             onClick={handleBranchClick}
-                            className="flex items-center gap-2 w-full min-h-[44px] touch-manipulation"
+                            className="flex items-center gap-2 w-full min-h-[48px] -m-2 p-2 touch-manipulation cursor-pointer rounded-lg active:bg-gray-50/80"
                             aria-label={branchName}>
-                            <div className="size-7 sm:size-8 rounded-full border border-gray-200 flex items-center justify-center bg-gray-50 shrink-0">
+                            <div className="size-7 sm:size-8 rounded-full border border-gray-200 flex items-center justify-center bg-gray-50 shrink-0 pointer-events-none">
                                 <Building2 className="size-4 sm:size-4.5 text-gray-500" />
                             </div>
-                            <span className="text-gray-900 font-semibold text-xs sm:text-sm truncate">
+                            <span className="text-gray-900 font-semibold text-xs sm:text-sm truncate pointer-events-none">
                                 {branchName}
                             </span>
-                            <ChevronDown className="size-3.5 text-gray-500 ml-auto shrink-0" />
+                            <ChevronDown className="size-3.5 text-gray-500 ml-auto shrink-0 pointer-events-none" />
                         </button>
                     </div>
 
                     {activeOrderType === 'delivery' && deliveryAddress && (
-                        <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-sm border border-gray-200 space-y-2">
-                            <div className="flex items-start gap-2 sm:gap-3 text-sm text-gray-700">
+                        <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-sm border border-gray-200 space-y-2 relative z-10">
+                            <div className="flex items-start gap-2 sm:gap-3 text-sm text-gray-700 pointer-events-none">
                                 <MapPin className="w-4 h-4 text-theme-primary shrink-0 mt-0.5" />
                                 <div className="flex-1 min-w-0">
                                     <span className="font-medium">
@@ -179,7 +181,7 @@ export default function SubHeader() {
                             </div>
 
                             {orderTime === 'later' && scheduledTime && (
-                                <div className="flex items-center gap-2 text-sm text-gray-700">
+                                <div className="flex items-center gap-2 text-sm text-gray-700 pointer-events-none">
                                     <Clock className="w-4 h-4 text-theme-primary shrink-0" />
                                     <span>
                                         {formatScheduledTime(
@@ -193,7 +195,7 @@ export default function SubHeader() {
                             <button
                                 type="button"
                                 onClick={() => setIsOrderModalOpen(true)}
-                                className="w-full mt-2 min-h-[44px] px-3 py-2.5 bg-theme-primary/10 text-theme-primary text-xs sm:text-sm font-medium rounded-lg hover:bg-theme-primary/20 transition-colors flex items-center justify-center gap-1 touch-manipulation">
+                                className="w-full mt-2 min-h-[48px] px-3 py-2.5 bg-theme-primary/10 text-theme-primary text-xs sm:text-sm font-medium rounded-lg hover:bg-theme-primary/20 transition-colors flex items-center justify-center gap-1 touch-manipulation cursor-pointer active:bg-theme-primary/20">
                                 <Edit className="w-3.5 h-3.5 shrink-0" />
                                 {t('edit')}
                             </button>
@@ -201,7 +203,7 @@ export default function SubHeader() {
                     )}
 
                     {(!deliveryAddress || activeOrderType !== 'delivery') && (
-                        <div className="w-full bg-white/10 p-1 rounded-lg sm:rounded-xl border border-white/10 backdrop-blur-sm flex items-center flex-row-reverse">
+                        <div className="w-full bg-white/10 p-1 rounded-lg sm:rounded-xl border border-white/10 backdrop-blur-sm flex items-center flex-row-reverse relative z-10">
                             {orderTypes.map((type) => (
                                 <button
                                     key={type.id}
@@ -210,8 +212,8 @@ export default function SubHeader() {
                                         handleOrderTypeClick(type.id)
                                     }
                                     className={`
-                                        flex-1 min-h-[44px] rounded-lg text-xs font-bold 
-                                        transition-all duration-200 cursor-pointer touch-manipulation
+                                        flex-1 min-h-[48px] rounded-lg text-xs font-bold 
+                                        transition-all duration-200 cursor-pointer touch-manipulation active:scale-[0.98]
                                         ${
                                             activeOrderType === type.id
                                                 ? 'bg-white text-theme-primary shadow-sm'
