@@ -36,7 +36,9 @@ export default function AddressCard({
             }
             onMouseEnter={onMouseEnter}
             className={cn(
-                'group relative bg-white rounded-2xl md:rounded-3xl p-5 md:p-6 border-2 transition-all',
+                'group relative bg-white border-2 transition-all',
+                'rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl',
+                'p-3 sm:p-4 md:p-5 lg:p-6',
                 isOptimistic
                     ? 'opacity-70 border-dashed border-theme-primary/30 cursor-wait animate-pulse'
                     : 'cursor-pointer',
@@ -45,25 +47,25 @@ export default function AddressCard({
                     : 'border-gray-100 hover:border-theme-primary/30 shadow-sm',
             )}>
             {isOptimistic && (
-                <div className="absolute top-2 right-2 flex items-center gap-1.5 bg-theme-primary/10 px-2 py-1 rounded-full">
+                <div className="absolute top-2 end-2 flex items-center gap-1.5 bg-theme-primary/10 px-2 py-1 rounded-full">
                     <Loader2 className="w-3 h-3 text-theme-primary animate-spin" />
                     <span className="text-[10px] font-bold text-theme-primary uppercase tracking-tighter">
                         Syncing...
                     </span>
                 </div>
             )}
-            <div className="flex items-start justify-between gap-4">
-                <div className="flex items-start gap-3 md:gap-4 flex-1">
+            <div className="flex items-start justify-between gap-3 sm:gap-4">
+                <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
                     <div
                         className={cn(
-                            'mt-1 w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors',
+                            'mt-0.5 sm:mt-1 w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0 transition-colors',
                             isDefault
                                 ? 'bg-theme-primary/10'
                                 : 'bg-gray-50 group-hover:bg-theme-primary/5',
                         )}>
                         <MapPin
                             className={cn(
-                                'w-5 h-5 md:w-6 md:h-6',
+                                'w-5 h-5 sm:w-5 md:w-6 md:h-6',
                                 isDefault
                                     ? 'text-theme-primary'
                                     : 'text-gray-400 group-hover:text-theme-primary/70',
@@ -71,71 +73,74 @@ export default function AddressCard({
                         />
                     </div>
 
-                    <div className="flex flex-col gap-1 flex-1 overflow-hidden">
-                        <div className="flex items-center gap-2">
-                            <h3 className="font-bold text-gray-900 text-base md:text-lg truncate">
+                    <div className="flex flex-col gap-1 flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap pe-8 sm:pe-9">
+                            <h3 className="font-bold text-gray-900 text-sm sm:text-base md:text-lg truncate min-w-0 flex-1">
                                 {label}
                             </h3>
                             {isDefault && (
-                                <span className="bg-theme-primary text-white text-[10px] md:text-xs font-black px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0">
+                                <span className="bg-theme-primary text-white text-[10px] sm:text-xs font-black px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-full uppercase tracking-wider shrink-0">
                                     {t('default')}
                                 </span>
                             )}
                         </div>
 
-                        <p className="text-gray-500 text-sm md:text-md leading-relaxed line-clamp-2 pr-2">
+                        <p className="text-gray-500 text-xs sm:text-sm md:text-base leading-snug line-clamp-2 mt-0.5 wrap-break-word">
                             {formatted}
                         </p>
 
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2">
+                        <div className="flex flex-wrap items-center gap-x-3 sm:gap-x-4 gap-y-1 mt-2">
                             {address.phone && (
-                                <div className="flex items-center gap-1.5 text-gray-400">
-                                    <Phone className="w-3 h-3" />
+                                <div className="flex items-center gap-1.5 text-gray-500 min-w-0">
+                                    <Phone className="w-3.5 h-3.5 shrink-0 text-gray-400" />
                                     <span
                                         dir="ltr"
-                                        className="text-xs font-semibold">
+                                        className="text-xs sm:text-sm font-semibold truncate">
                                         {address.phone}
                                     </span>
                                 </div>
                             )}
                             {address.recipient_name && (
-                                <span className="text-xs text-gray-400 font-medium">
+                                <span className="text-xs sm:text-sm text-gray-500 font-medium truncate max-w-[140px] sm:max-w-none">
                                     {address.recipient_name}
                                 </span>
                             )}
                         </div>
 
                         {address.description && (
-                            <p className="text-gray-400 text-xs mt-2 italic bg-gray-50/50 p-2 rounded-lg border border-dashed border-gray-200">
-                                "{address.description}"
+                            <p className="text-gray-500 text-xs mt-2 italic bg-gray-50/80 p-2 sm:p-2.5 rounded-lg sm:rounded-xl border border-dashed border-gray-200 line-clamp-2">
+                                &quot;{address.description}&quot;
                             </p>
                         )}
                     </div>
                 </div>
 
                 <div
-                    className="flex flex-col gap-2 shrink-0"
+                    className="flex flex-col gap-1.5 sm:gap-2 shrink-0"
                     onClick={(e) => e.stopPropagation()}>
                     <button
+                        type="button"
                         onClick={() => onEdit(address)}
-                        className="p-2 md:p-2.5 rounded-xl bg-gray-50 text-gray-500 hover:bg-theme-primary/10 hover:text-theme-primary transition-all active:scale-90"
-                        title="Edit">
-                        <Edit className="w-4 h-4 md:w-5 md:h-5" />
+                        className="min-w-[44px] min-h-[44px] flex items-center justify-center p-2 rounded-lg sm:rounded-xl bg-gray-50 text-gray-500 hover:bg-theme-primary/10 hover:text-theme-primary transition-all active:scale-95 touch-manipulation"
+                        title="Edit"
+                        aria-label="Edit address">
+                        <Edit className="w-4 h-4 sm:w-5 sm:h-5" />
                     </button>
                     <button
+                        type="button"
                         onClick={() => onDelete(address.id)}
-                        className="p-2 md:p-2.5 rounded-xl bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-500 transition-all active:scale-90"
-                        title="Delete">
-                        <Trash2 className="w-4 h-4 md:w-5 md:h-5" />
+                        className="min-w-[44px] min-h-[44px] flex items-center justify-center p-2 rounded-lg sm:rounded-xl bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-500 transition-all active:scale-95 touch-manipulation"
+                        title="Delete"
+                        aria-label="Delete address">
+                        <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
                     </button>
                 </div>
             </div>
 
-            {/* Default Indicator (Overlay or subtle check) */}
             {isDefault && (
-                <div className="absolute top-3 end-3 md:top-4 md:end-4">
-                    <div className="w-5 h-5 md:w-6 md:h-6 bg-theme-primary rounded-full flex items-center justify-center text-white shadow-sm ring-4 ring-white">
-                        <Check className="w-3 h-3 md:w-4 md:h-4 stroke-2" />
+                <div className="absolute top-2.5 end-2.5 sm:top-3 sm:end-3 md:top-4 md:end-4">
+                    <div className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 bg-theme-primary rounded-full flex items-center justify-center text-white shadow-sm ring-2 ring-white">
+                        <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 stroke-2" />
                     </div>
                 </div>
             )}

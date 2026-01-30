@@ -170,8 +170,8 @@ const AddressMap: React.FC<AddressMapProps> = ({
             </MapContainer>
 
             {!hasInteracted && isDefaultLocation && (
-                <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none p-6">
-                    <div className="bg-white/90 backdrop-blur-md px-6 py-4 rounded-3xl shadow-2xl border border-theme-primary/10 flex flex-col items-center gap-2 animate-bounce">
+                <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none p-4 sm:p-6">
+                    <div className="bg-white/95 backdrop-blur-md px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl md:rounded-3xl shadow-2xl border border-theme-primary/10 flex flex-col items-center gap-2">
                         <div className="w-10 h-10 bg-theme-primary/10 rounded-full flex items-center justify-center">
                             <div className="w-3 h-3 bg-theme-primary rounded-full animate-ping" />
                         </div>

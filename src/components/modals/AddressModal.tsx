@@ -2,8 +2,9 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { X, MapPin, Search, Loader2 } from 'lucide-react';
+import { X, MapPin, Search, Loader2, ChevronDown, Check } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import dynamic from 'next/dynamic';
 import {
@@ -64,7 +65,7 @@ const InputField: React.FC<{
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
-            className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-theme-primary focus:ring-4 focus:ring-theme-primary/5 outline-none transition-all font-semibold"
+            className="w-full px-4 py-3 sm:py-3.5 min-h-[48px] rounded-xl sm:rounded-2xl bg-gray-50 border border-gray-200 focus:border-theme-primary focus:ring-2 focus:ring-theme-primary/20 outline-none transition-all font-semibold text-base"
         />
     </div>
 );
@@ -94,23 +95,26 @@ const SelectField: React.FC<{
         <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 pl-1">
             {label} {required && '*'}
         </label>
-        <select
-            value={value}
-            onChange={(e) =>
-                onChange(e.target.value ? Number(e.target.value) : '')
-            }
-            disabled={disabled}
-            className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-theme-primary outline-none font-semibold appearance-none disabled:opacity-50">
-            {placeholder && <option value="">{placeholder}</option>}
-            {options?.map((opt) => (
-                <option key={opt.id} value={opt.id}>
-                    {opt.name}
-                </option>
-            ))}
-        </select>
-        {isLoading && (
-            <Loader2 className="absolute left-10 top-[38px] w-4 h-4 animate-spin text-theme-primary" />
-        )}
+        <div className="relative">
+            <select
+                value={value === '' ? '' : String(value)}
+                onChange={(e) =>
+                    onChange(e.target.value ? Number(e.target.value) : '')
+                }
+                disabled={disabled}
+                className="w-full ps-4 pe-10 py-3 sm:py-3.5 min-h-[48px] rounded-xl sm:rounded-2xl bg-gray-50 border border-gray-200 focus:border-theme-primary focus:ring-2 focus:ring-theme-primary/20 outline-none font-semibold appearance-none disabled:opacity-50 cursor-pointer text-base text-gray-900">
+                {placeholder && <option value="">{placeholder}</option>}
+                {options?.map((opt) => (
+                    <option key={opt.id} value={opt.id}>
+                        {opt.name}
+                    </option>
+                ))}
+            </select>
+            <ChevronDown className="absolute end-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none rtl:rotate-180" />
+            {isLoading && (
+                <Loader2 className="absolute end-10 top-1/2 -translate-y-1/2 w-5 h-5 animate-spin text-theme-primary" />
+            )}
+        </div>
     </div>
 );
 
@@ -149,13 +153,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
 
     // Re-initialize when modal opens or active data changes
     useEffect(() => {
-        if (!isOpen) {
-            setSearchQuery('');
-            return;
-        }
+        if (!isOpen) return;
 
         // Use queueMicrotask to avoid "cascading renders" error (setState in effect synchronously)
-        // This makes the update asynchronous and avoids blocking the main render loop
         queueMicrotask(() => {
             if (activeAddress) {
                 form.reset({
@@ -203,18 +203,21 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 setSearchQuery('');
             }
         });
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- reset only when isOpen or activeAddress changes
     }, [isOpen, activeAddress]);
+
 
     const handleLocationSelect = useCallback(
         (loc: [number, number], formatted: string) => {
             setSelectedLocation(loc);
             setFormattedAddress(formatted);
+            toast.success(t('locationSelected'), { duration: 2000 });
             // Only update street if empty to avoid overwriting user manual input
             if (!form.state.street.trim()) {
                 form.setField('street')(formatted);
             }
         },
-        [form.state.street, form.setField],
+        [form, t],
     );
 
     const handleSave = () => {
@@ -250,46 +253,100 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 onClick={onClose}
             />
             <div
-                className="fixed inset-0 z-50 flex items-center justify-center p-2 md:p-4"
+                className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-5"
                 role="dialog"
                 aria-modal="true">
                 <div
-                    className="bg-white rounded-[40px] shadow-2xl w-full max-w-6xl max-h-[95vh] overflow-hidden flex flex-col relative"
+                    className={cn(
+                        'bg-white shadow-2xl w-full max-w-6xl overflow-hidden flex flex-col relative',
+                        'max-h-[88vh] sm:max-h-[90vh]',
+                        'rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl',
+                    )}
                     onClick={(e) => e.stopPropagation()}>
-                    <header className="flex items-center justify-between p-6 border-b border-gray-100">
+                    <header className="flex items-center justify-between p-4 sm:p-5 md:p-6 border-b border-gray-100 shrink-0">
                         <button
                             onClick={onClose}
-                            className="p-2 hover:bg-gray-100 rounded-xl transition-colors">
+                            className="p-2 hover:bg-gray-100 rounded-lg sm:rounded-xl transition-colors touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
+                            aria-label={t('close')}>
                             <X className="w-5 h-5 text-gray-500" />
                         </button>
-                        <h2 className="text-xl font-bold text-gray-900">
+                        <h2 className="text-base sm:text-lg md:text-xl font-bold text-gray-900">
                             {isFetchingAddress
-                                ? t('loading')
+                                ? t('fetchingAddress')
                                 : activeAddress
                                   ? t('editAddress')
                                   : t('addNewAddress')}
                         </h2>
-                        <div className="w-9" />
+                        <div className="w-9 min-w-[44px]" />
                     </header>
 
-                    <main className="flex-1 overflow-y-auto p-6">
+                    <main className="flex-1 overflow-y-auto p-4 sm:p-5 md:p-6 min-h-[40vh] sm:min-h-[480px]">
                         {isFetchingAddress ? (
-                            <div className="flex flex-col items-center justify-center py-24 gap-4">
-                                <Loader2 className="w-12 h-12 text-theme-primary animate-spin" />
-                                <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">
-                                    {t('fetchingLocationDetails')}
-                                </p>
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8 h-full">
+                                <div className="space-y-4 sm:space-y-6">
+                                    <div className="h-10 sm:h-12 rounded-lg sm:rounded-xl bg-gray-100 animate-pulse" />
+                                    <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                                        {[1, 2, 3, 4, 5, 6].map((i) => (
+                                            <div
+                                                key={i}
+                                                className={cn(
+                                                    'h-12 sm:h-14 rounded-lg sm:rounded-xl bg-gray-100 animate-pulse',
+                                                    i === 1 || i === 2
+                                                        ? 'sm:col-span-2'
+                                                        : '',
+                                                )}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="flex flex-col gap-3 sm:gap-4 order-first lg:order-0">
+                                    <div className="h-[220px] sm:h-[280px] lg:min-h-[400px] rounded-lg sm:rounded-2xl bg-gray-100 animate-pulse shrink-0" />
+                                    <div className="h-16 sm:h-20 rounded-lg sm:rounded-xl bg-gray-100/80 animate-pulse" />
+                                </div>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                <div className="space-y-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
+                                {/* Map column first on mobile so user sees location feedback immediately */}
+                                <div className="flex flex-col gap-3 sm:gap-4 order-first lg:order-0">
+                                    {/* Location selected card - visible so user knows selection was made */}
+                                    {formattedAddress && (
+                                        <div className="p-3 sm:p-4 bg-theme-primary/5 rounded-lg sm:rounded-xl border border-theme-primary/10 flex items-start gap-2 sm:gap-3 shrink-0">
+                                            <Check className="w-4 h-4 sm:w-5 sm:h-5 text-theme-primary shrink-0 mt-0.5" />
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-[10px] sm:text-xs font-bold uppercase text-theme-primary/80 tracking-wider mb-0.5">
+                                                    {t('locationSelected')}
+                                                </p>
+                                                <p className="text-xs sm:text-sm text-theme-primary/90 font-medium leading-snug line-clamp-2">
+                                                    {formattedAddress}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
+                                    <div className="flex-1 min-h-[220px] sm:min-h-[280px] lg:min-h-[400px] rounded-lg sm:rounded-2xl overflow-hidden relative shadow-inner border border-gray-100">
+                                        <AddressMap
+                                            center={selectedLocation}
+                                            onLocationSelect={
+                                                handleLocationSelect
+                                            }
+                                            searchQuery={searchQuery}
+                                        />
+                                        <div className="absolute top-3 start-3 z-10 bg-white/95 backdrop-blur px-3 py-1.5 rounded-xl shadow-sm border border-gray-100 flex items-center gap-2">
+                                            <MapPin className="w-3.5 h-3.5 text-theme-primary" />
+                                            <span className="text-[10px] font-bold uppercase text-gray-500 tracking-tight">
+                                                {t('locationSelected')}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4 sm:space-y-6">
                                     {/* Map Search */}
                                     <div>
                                         <label className="block text-sm font-bold text-gray-700 mb-2">
                                             {t('searchAddress')}
                                         </label>
                                         <div className="relative">
-                                            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                                             <input
                                                 type="text"
                                                 value={searchQuery}
@@ -301,7 +358,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                                 placeholder={t(
                                                     'searchPlaceholder',
                                                 )}
-                                                className="w-full pr-10 pl-4 py-3 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-theme-primary/10 outline-none transition-all"
+                                                className="w-full pr-10 pl-4 py-3 sm:py-3.5 border border-gray-200 rounded-xl sm:rounded-2xl focus:ring-2 focus:ring-theme-primary/20 outline-none transition-all text-base"
                                             />
                                         </div>
                                     </div>
@@ -428,7 +485,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                                     )(e.target.value)
                                                 }
                                                 rows={2}
-                                                className="w-full px-4 py-3 rounded-2xl bg-gray-50 border border-gray-100 focus:border-theme-primary outline-none resize-none"
+                                                className="w-full px-4 py-3 rounded-xl sm:rounded-2xl bg-gray-50 border border-gray-200 focus:border-theme-primary focus:ring-2 focus:ring-theme-primary/20 outline-none resize-none text-base min-h-[80px]"
                                             />
                                         </div>
                                         {isAuthenticated && (
@@ -455,51 +512,26 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                         )}
                                     </div>
                                 </div>
-
-                                {/* Map Section */}
-                                <div className="flex flex-col gap-4">
-                                    <div className="flex-1 min-h-[400px] rounded-[40px] overflow-hidden relative shadow-inner border border-gray-100">
-                                        <AddressMap
-                                            center={selectedLocation}
-                                            onLocationSelect={
-                                                handleLocationSelect
-                                            }
-                                            searchQuery={searchQuery}
-                                        />
-                                        <div className="absolute top-4 start-4 z-10 bg-white/80 backdrop-blur px-3 py-1.5 rounded-2xl shadow-sm flex items-center gap-2">
-                                            <div className="w-2 h-2 rounded-full bg-theme-primary animate-pulse" />
-                                            <span className="text-[10px] font-black uppercase text-gray-500 tracking-wider">
-                                                Map Live Selection
-                                            </span>
-                                        </div>
-                                    </div>
-                                    {formattedAddress && (
-                                        <div className="p-4 bg-theme-primary/5 rounded-3xl border border-theme-primary/10 flex items-start gap-3">
-                                            <MapPin className="w-5 h-5 text-theme-primary shrink-0 mt-0.5" />
-                                            <p className="text-sm text-theme-primary/80 font-medium">
-                                                {formattedAddress}
-                                            </p>
-                                        </div>
-                                    )}
-                                </div>
                             </div>
                         )}
                     </main>
 
-                    <footer className="p-6 border-t border-gray-100 flex items-center justify-end gap-3">
+                    <footer className="p-4 sm:p-5 md:p-6 border-t border-gray-100 flex items-center justify-end gap-3 shrink-0">
                         <button
+                            type="button"
                             onClick={onClose}
-                            className="px-6 py-3 text-gray-400 font-bold rounded-2xl hover:bg-gray-50 transition-colors">
+                            className="min-h-[48px] px-6 py-3 text-gray-500 font-bold rounded-lg sm:rounded-xl hover:bg-gray-100 transition-colors touch-manipulation">
                             {t('cancel')}
                         </button>
                         <button
+                            type="button"
                             onClick={handleSave}
                             disabled={!isFormValid || isFetchingAddress}
                             className={cn(
-                                'px-12 py-3.5 font-black rounded-2xl transition-all shadow-xl',
+                                'min-h-[48px] px-8 sm:px-10 py-3 font-black rounded-lg sm:rounded-xl transition-all shadow-lg touch-manipulation',
                                 isFormValid && !isFetchingAddress
-                                    ? 'bg-theme-primary text-white hover:scale-[1.02] shadow-theme-primary/20 active:scale-95'
-                                    : 'bg-gray-100 text-gray-300 cursor-not-allowed',
+                                    ? 'bg-theme-primary text-white hover:brightness-95 shadow-theme-primary/20 active:scale-[0.98]'
+                                    : 'bg-gray-100 text-gray-400 cursor-not-allowed border-none',
                             )}>
                             {activeAddress ? t('save') : t('addNew')}
                         </button>

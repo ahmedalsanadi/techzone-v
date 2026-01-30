@@ -78,19 +78,21 @@ export default function SubHeader() {
                         </span>
                     </div>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 min-w-0 flex-1 justify-end">
                         {activeOrderType === 'delivery' && deliveryAddress ? (
                             <>
-                                <div className="flex items-center gap-2 text-sm text-gray-700">
-                                    <MapPin className="w-4 h-4 text-theme-primary" />
-                                    <span>
+                                <div className="flex items-center gap-2 text-sm text-gray-700 min-w-0 max-w-full">
+                                    <MapPin className="w-4 h-4 shrink-0 text-theme-primary" />
+                                    <span className="truncate">
                                         {t('deliveryTo')}{' '}
                                         <span className="font-bold">
                                             ({getAddressLabel(deliveryAddress)})
                                         </span>{' '}
-                                        {formatAddressForDisplay(
-                                            deliveryAddress,
-                                        )}
+                                        <span className="text-gray-600">
+                                            {formatAddressForDisplay(
+                                                deliveryAddress,
+                                            )}
+                                        </span>
                                     </span>
                                 </div>
                                 {orderTime === 'later' && scheduledTime && (
@@ -139,35 +141,36 @@ export default function SubHeader() {
                     </div>
                 </div>
 
-                {/* Mobile Layout */}
-                <div className="lg:hidden flex flex-col gap-4">
-                    <div className="bg-white rounded-xl h-14 flex items-center px-4 shadow-sm border border-gray-200">
+                {/* Mobile Layout - compact radii and padding for small screens */}
+                <div className="lg:hidden flex flex-col gap-2 sm:gap-3 md:gap-4">
+                    <div className="bg-white rounded-lg sm:rounded-xl h-12 sm:h-14 flex items-center px-3 sm:px-4 shadow-sm border border-gray-200">
                         <button
+                            type="button"
                             onClick={handleBranchClick}
-                            className="flex items-center gap-2 w-full"
+                            className="flex items-center gap-2 w-full min-h-[44px] touch-manipulation"
                             aria-label={branchName}>
-                            <div className="size-8 rounded-full border border-gray-200 flex items-center justify-center bg-gray-50 shrink-0">
-                                <Building2 className="size-4.5 text-gray-500" />
+                            <div className="size-7 sm:size-8 rounded-full border border-gray-200 flex items-center justify-center bg-gray-50 shrink-0">
+                                <Building2 className="size-4 sm:size-4.5 text-gray-500" />
                             </div>
-                            <span className="text-gray-900 font-semibold text-sm truncate">
+                            <span className="text-gray-900 font-semibold text-xs sm:text-sm truncate">
                                 {branchName}
                             </span>
-                            <ChevronDown className="size-3.5 text-gray-500 ml-auto" />
+                            <ChevronDown className="size-3.5 text-gray-500 ml-auto shrink-0" />
                         </button>
                     </div>
 
                     {activeOrderType === 'delivery' && deliveryAddress && (
-                        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200 space-y-2">
-                            <div className="flex items-start gap-2 text-sm text-gray-700">
-                                <MapPin className="w-4 h-4 text-libero-red shrink-0 mt-0.5" />
-                                <div className="flex-1">
+                        <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-sm border border-gray-200 space-y-2">
+                            <div className="flex items-start gap-2 sm:gap-3 text-sm text-gray-700">
+                                <MapPin className="w-4 h-4 text-theme-primary shrink-0 mt-0.5" />
+                                <div className="flex-1 min-w-0">
                                     <span className="font-medium">
                                         {t('deliveryTo')}{' '}
                                         <span className="text-theme-primary font-bold">
                                             ({getAddressLabel(deliveryAddress)})
                                         </span>
                                     </span>
-                                    <p className="text-gray-600 text-xs mt-1">
+                                    <p className="text-gray-600 text-xs sm:text-sm mt-1 line-clamp-2 wrap-break-word leading-snug">
                                         {formatAddressForDisplay(
                                             deliveryAddress,
                                         )}
@@ -177,7 +180,7 @@ export default function SubHeader() {
 
                             {orderTime === 'later' && scheduledTime && (
                                 <div className="flex items-center gap-2 text-sm text-gray-700">
-                                    <Clock className="w-4 h-4 text-libero-red" />
+                                    <Clock className="w-4 h-4 text-theme-primary shrink-0" />
                                     <span>
                                         {formatScheduledTime(
                                             scheduledTime,
@@ -188,25 +191,27 @@ export default function SubHeader() {
                             )}
 
                             <button
+                                type="button"
                                 onClick={() => setIsOrderModalOpen(true)}
-                                className="w-full mt-2 px-3 py-2 bg-theme-primary/10 text-theme-primary text-xs font-medium rounded-lg hover:bg-theme-primary/20 transition-colors flex items-center justify-center gap-1">
-                                <Edit className="w-3.5 h-3.5" />
+                                className="w-full mt-2 min-h-[44px] px-3 py-2.5 bg-theme-primary/10 text-theme-primary text-xs sm:text-sm font-medium rounded-lg hover:bg-theme-primary/20 transition-colors flex items-center justify-center gap-1 touch-manipulation">
+                                <Edit className="w-3.5 h-3.5 shrink-0" />
                                 {t('edit')}
                             </button>
                         </div>
                     )}
 
                     {(!deliveryAddress || activeOrderType !== 'delivery') && (
-                        <div className="w-full bg-white/10 p-1 rounded-xl border border-white/10 backdrop-blur-sm flex items-center flex-row-reverse">
+                        <div className="w-full bg-white/10 p-1 rounded-lg sm:rounded-xl border border-white/10 backdrop-blur-sm flex items-center flex-row-reverse">
                             {orderTypes.map((type) => (
                                 <button
                                     key={type.id}
+                                    type="button"
                                     onClick={() =>
                                         handleOrderTypeClick(type.id)
                                     }
                                     className={`
-                                        flex-1 h-10 rounded-lg text-xs font-bold 
-                                        transition-all duration-200 cursor-pointer 
+                                        flex-1 min-h-[44px] rounded-lg text-xs font-bold 
+                                        transition-all duration-200 cursor-pointer touch-manipulation
                                         ${
                                             activeOrderType === type.id
                                                 ? 'bg-white text-theme-primary shadow-sm'

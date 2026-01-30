@@ -78,11 +78,14 @@
     "time": "Time",
     "selectDateTime": "Select Date & Time",
     "addNew": "Add New",
-    "default": "Default"
+    "default": "Default",
+    "addressSaved": "Address saved"
   },
   "Address": {
     "loading": "Loading...",
+    "fetchingAddress": "Loading address...",
     "fetchingLocationDetails": "Fetching accurate location details...",
+    "locationSelected": "Location selected",
     "addNewAddress": "Add New Address",
     "editAddress": "Edit Address",
     "searchAddress": "Search Address",
