@@ -30,7 +30,8 @@ if (typeof window !== 'undefined' && DEFAULT_ICON) {
     L.Marker.prototype.options.icon = DEFAULT_ICON;
 }
 
-const NOMINATIM_BASE_URL = 'https://nominatim.openstreetmap.org';
+// Use proxy URL instead of direct Nominatim URL
+const PROXY_BASE_URL = '/proxy'; // Updated to use proxy
 const SEARCH_DEBOUNCE_MS = 800;
 
 interface AddressMapProps {
@@ -43,17 +44,29 @@ interface LocationSelectHandler {
     (location: [number, number], formatted: string): void;
 }
 
-// Reverse geocode a location
+// Reverse geocode a location through proxy
 async function reverseGeocode(
     lat: number, 
     lng: number, 
     signal?: AbortSignal
 ): Promise<string> {
     try {
+        // Use proxy endpoint with nominatim path
         const response = await fetch(
-            `${NOMINATIM_BASE_URL}/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ar`,
-            { signal }
+            `${PROXY_BASE_URL}/nominatim/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ar`,
+            { 
+                signal,
+                headers: {
+                    'Accept-Language': 'ar',
+                    'Content-Type': 'application/json',
+                }
+            }
         );
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         return data.display_name || `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
     } catch (error) {
@@ -65,16 +78,28 @@ async function reverseGeocode(
     }
 }
 
-// Forward geocode a search query
+// Forward geocode a search query through proxy
 async function forwardGeocode(
     query: string, 
     signal?: AbortSignal
 ): Promise<{ lat: number; lon: number; display_name: string } | null> {
     try {
+        // Use proxy endpoint with nominatim path
         const response = await fetch(
-            `${NOMINATIM_BASE_URL}/search?format=json&q=${encodeURIComponent(query)}&limit=1&accept-language=ar`,
-            { signal }
+            `${PROXY_BASE_URL}/nominatim/search?format=json&q=${encodeURIComponent(query)}&limit=1&accept-language=ar`,
+            { 
+                signal,
+                headers: {
+                    'Accept-Language': 'ar',
+                    'Content-Type': 'application/json',
+                }
+            }
         );
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         return data?.[0] || null;
     } catch (error) {
