@@ -1,12 +1,11 @@
 //src/services/store-config.ts
 import { cache } from 'react';
 import { storeService } from './store-service';
-import { StoreConfig, Category } from './types';
+import { cmsService } from './cms-service';
+import { StoreConfig, Category, CMSPage } from './types';
 
 /**
  * Single source of truth for Store Configuration in Server Components.
- * React's `cache` handles per-request deduplication.
- * Next.js's Data Cache (inside storeService) handles cross-request persistence.
  */
 export const getStoreConfig = cache(async (): Promise<StoreConfig | null> => {
     try {
@@ -27,6 +26,19 @@ export const getStoreCategories = cache(async (): Promise<Category[]> => {
         return categories || [];
     } catch (error) {
         console.error('[StoreCategories] Dedicated fetch failed:', error);
+        return [];
+    }
+});
+
+/**
+ * Single source of truth for CMS Pages in Server Components.
+ */
+export const getStorePages = cache(async (): Promise<CMSPage[]> => {
+    try {
+        const pages = await cmsService.getPages();
+        return pages || [];
+    } catch (error) {
+        console.error('[StorePages] Dedicated fetch failed:', error);
         return [];
     }
 });
