@@ -14,7 +14,11 @@ export const branchCookies = {
      */
     setBranchId(branchId: number | string): void {
         if (typeof window === 'undefined') return;
-        document.cookie = `${BRANCH_COOKIES.BRANCH_ID}=${branchId}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax`;
+        const secure =
+            typeof window !== 'undefined' && window.location.protocol === 'https:'
+                ? '; Secure'
+                : '';
+        document.cookie = `${BRANCH_COOKIES.BRANCH_ID}=${branchId}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax${secure}`;
     },
 
     /**
@@ -45,6 +49,10 @@ export const branchCookies = {
     clearBranchId(): void {
         if (typeof window === 'undefined') return;
         const expireDate = 'Thu, 01 Jan 1970 00:00:00 GMT';
-        document.cookie = `${BRANCH_COOKIES.BRANCH_ID}=; path=/; expires=${expireDate}`;
+        const secure =
+            typeof window !== 'undefined' && window.location.protocol === 'https:'
+                ? '; Secure'
+                : '';
+        document.cookie = `${BRANCH_COOKIES.BRANCH_ID}=; path=/; expires=${expireDate}; SameSite=Lax${secure}`;
     },
 };

@@ -29,7 +29,7 @@ export default async function proxy(request: NextRequest) {
 
     // Check profile completion status from cookie
     const isProfileComplete =
-        request.cookies.get('isProfileComplete')?.value === 'true';
+        request.cookies.get(AUTH_COOKIES.PROFILE_COMPLETE)?.value === 'true';
 
     // Redirect to auth if protected route and no token
     if (isProtected && !token && !isAuthPage) {

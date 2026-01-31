@@ -7,6 +7,7 @@ import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { getQueryClient } from '@/lib/getQueryClient';
 import { storeService } from '@/services/store-service';
 import { generateCollectionStructuredData } from '@/lib/metadata';
+import { resolveSiteIdentity } from '@/lib/tenant/resolve-site';
 import OffersView from '@/components/pages/collections/OffersView';
 import OffersPageSkeleton from './OffersPageSkeleton';
 
@@ -26,6 +27,7 @@ export async function generateMetadata({
     const { locale } = await params;
     const { collection_id } = await searchParams;
     const t = await getTranslations({ locale, namespace: 'Collections' });
+    const site = await resolveSiteIdentity();
 
     let collectionName: string | undefined;
     if (collection_id) {
@@ -50,10 +52,11 @@ export async function generateMetadata({
         description: collectionName
             ? t('descriptionWithCollection', { collection: collectionName })
             : t('description'),
+        metadataBase: new URL(site.url),
         alternates: {
             canonical: collection_id
-                ? `/offers?collection_id=${collection_id}`
-                : '/offers',
+                ? `${site.url}/offers?collection_id=${collection_id}`
+                : `${site.url}/offers`,
         },
     };
 }
@@ -69,6 +72,7 @@ export default async function OffersPage({
     const filters = await searchParams;
     const t = await getTranslations({ locale, namespace: 'Collections' });
     const queryClient = getQueryClient();
+    const site = await resolveSiteIdentity();
 
     // Fetch collections once - cached at service level
     const collections = await storeService.getCollections();
@@ -97,11 +101,9 @@ export default async function OffersPage({
             (c) => c.id === Number(filters.collection_id),
         );
         if (collection) {
-            const siteUrl =
-                process.env.NEXT_PUBLIC_SITE_URL || 'https://localhost:3000';
             structuredData = generateCollectionStructuredData(
                 productsResult.data,
-                siteUrl,
+                site.url,
                 collection.name,
             );
         }

@@ -18,6 +18,12 @@ export const env = {
 
     siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://fasto.vercel.app',
 
+    // Tenant resolution
+    storeDefaultKey: process.env.STORE_DEFAULT_KEY || '',
+    storeDomainMap: process.env.STORE_DOMAIN_MAP || '',
+    allowDefaultStoreKeyInProd:
+        process.env.ALLOW_DEFAULT_STORE_KEY_IN_PROD === 'true',
+
     // Environment
     isDev: process.env.NODE_ENV === 'development',
     isProd: process.env.NODE_ENV === 'production',

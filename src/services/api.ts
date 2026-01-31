@@ -2,6 +2,7 @@
 import { env } from '@/config/env';
 import { ApiResponse } from './types';
 import { getBaseHeaders } from './utils';
+import { parseDomainMap, resolveStoreKeyFromHost } from '@/lib/tenant';
 
 /**
  * Custom Error class for API failures.
@@ -112,10 +113,40 @@ export async function fetchLiberoFull<T>(
     const timeoutId = setTimeout(() => controller.abort(), 30000);
 
     try {
+        const initWithNext = init as RequestInit & {
+            next?: { revalidate?: number; tags?: string[] };
+        };
+        let nextOptions = initWithNext.next ? { ...initWithNext.next } : undefined;
+
+        if (typeof window === 'undefined') {
+            try {
+                const { headers: nextHeaders } = await import('next/headers');
+                const requestHeaders = await nextHeaders();
+                const host = requestHeaders.get('host');
+                const { storeKey } = resolveStoreKeyFromHost(host, {
+                    defaultStoreKey: env.storeDefaultKey || env.liberoApiKey,
+                    domainMap: parseDomainMap(env.storeDomainMap),
+                    allowDefault: env.isDev || env.allowDefaultStoreKeyInProd,
+                });
+
+                if (storeKey) {
+                    const existingTags = nextOptions?.tags || [];
+                    const tenantTag = `tenant:${storeKey}`;
+                    nextOptions = {
+                        ...(nextOptions || {}),
+                        tags: Array.from(new Set([...existingTags, tenantTag])),
+                    };
+                }
+            } catch {
+                /* No-op */
+            }
+        }
+
         const response = await fetch(url.toString(), {
             ...init,
             headers,
             signal: controller.signal,
+            ...(nextOptions ? { next: nextOptions } : {}),
         });
         clearTimeout(timeoutId);
 

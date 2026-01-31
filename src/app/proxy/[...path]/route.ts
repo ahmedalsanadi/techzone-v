@@ -5,6 +5,7 @@ import { getBaseHeaders } from '@/services/utils';
 import { env } from '@/config/env';
 import { PROTECTED_API_ENDPOINTS, AUTH_COOKIES } from '@/lib/auth';
 import { BRANCH_COOKIES } from '@/lib/branches/constants';
+import { parseDomainMap, resolveStoreKeyFromHost } from '@/lib/tenant';
 
 async function handleRequest(
     request: NextRequest,
@@ -44,10 +45,25 @@ async function handleRequest(
         isProtected,
     );
 
-    // Always inject X-Store-Key from server-side env (never from client)
-    // This ensures the API key is never exposed in browser devtools
     if (!isNominatim) {
-        headers.set('X-Store-Key', env.liberoApiKey);
+        const host = request.headers.get('host');
+        const { storeKey } = resolveStoreKeyFromHost(host, {
+            defaultStoreKey: env.storeDefaultKey || env.liberoApiKey,
+            domainMap: parseDomainMap(env.storeDomainMap),
+            allowDefault: env.isDev || env.allowDefaultStoreKeyInProd,
+        });
+
+        if (!storeKey) {
+            return NextResponse.json(
+                {
+                    message:
+                        'Store not resolved for this domain. Provide a valid subdomain or domain mapping.',
+                },
+                { status: 404 },
+            );
+        }
+
+        headers.set('X-Store-Key', storeKey);
     } else {
         // Special headers for Nominatim compatibility and policy
         headers.set(

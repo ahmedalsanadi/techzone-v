@@ -7,6 +7,7 @@ import { Product, StoreConfig } from '@/services/types';
 export function generateProductStructuredData(
     product: Product,
     siteUrl: string,
+    storeName?: string,
 ) {
     if (!product) return null;
 
@@ -19,7 +20,7 @@ export function generateProductStructuredData(
         sku: product.id,
         brand: {
             '@type': 'Brand',
-            name: siteConfig.name,
+            name: storeName || siteConfig.name,
         },
         offers: {
             '@type': 'Offer',
@@ -34,7 +35,7 @@ export function generateProductStructuredData(
             // Add platform information
             availableAtOrFrom: {
                 '@type': 'Place',
-                name: siteConfig.name,
+                name: storeName || siteConfig.name,
                 url: siteUrl,
             },
             validFrom: new Date().toISOString(),
@@ -99,9 +100,12 @@ export function generateOrganizationStructuredData(
 ) {
     if (!storeConfig) return null;
 
+    const schemaType =
+        storeConfig.store.store_type === 'restaurant' ? 'Restaurant' : 'Store';
+
     return {
         '@context': 'https://schema.org',
-        '@type': 'Restaurant',
+        '@type': schemaType,
         name: storeConfig.store.name,
         description: storeConfig.store.slogan,
         url: siteUrl,

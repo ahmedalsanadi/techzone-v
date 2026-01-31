@@ -4,7 +4,7 @@ import ProductDetails from '@/components/pages/products/ProductDetails';
 import { Metadata } from 'next';
 import { generateProductStructuredData } from '@/lib/metadata';
 import { storeService } from '@/services/store-service';
-import { siteConfig } from '@/config/site';
+import { resolveSiteIdentity } from '@/lib/tenant/resolve-site';
 
 interface Props {
     params: Promise<{ slug: string; locale: string }>;
@@ -15,6 +15,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     try {
         const product = await storeService.getProduct(slug);
+        const site = await resolveSiteIdentity();
 
         if (!product) {
             return { title: 'Product Not Found' };
@@ -26,6 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         return {
             title,
             description,
+            metadataBase: new URL(site.url),
             openGraph: {
                 title,
                 description,
@@ -33,10 +35,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
                 images: [{ url: product.cover_image_url }],
             },
             alternates: {
-                canonical: `/products/${slug}`,
+                canonical: `${site.url}/products/${slug}`,
                 languages: {
-                    en: `/en/products/${slug}`,
-                    ar: `/ar/products/${slug}`,
+                    en: `${site.url}/en/products/${slug}`,
+                    ar: `${site.url}/ar/products/${slug}`,
                 },
             },
         };
@@ -59,9 +61,11 @@ export default async function ProductPage({ params }: Props) {
         notFound();
     }
 
+    const site = await resolveSiteIdentity();
     const structuredData = generateProductStructuredData(
         product,
-        siteConfig.url,
+        site.url,
+        site.name,
     );
 
     return (

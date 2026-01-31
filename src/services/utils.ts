@@ -1,6 +1,8 @@
+//src/services/utils.ts
 import { env } from '@/config/env';
 import { AUTH_COOKIES } from '@/lib/auth/constants';
 import { BRANCH_COOKIES } from '@/lib/branches/constants';
+import { parseDomainMap, resolveStoreKeyFromHost } from '@/lib/tenant';
 
 /**
  * Standardize header construction for both server-side and client-side requests.
@@ -23,7 +25,7 @@ export async function getBaseHeaders(
             const { cookies } = await import('next/headers');
             const cookieStore = await cookies();
             branchId = cookieStore.get(BRANCH_COOKIES.BRANCH_ID)?.value;
-        } catch (e) {
+        } catch {
             /* No-op */
         }
     } else {
@@ -33,7 +35,7 @@ export async function getBaseHeaders(
             if (parts.length === 2) {
                 branchId = parts.pop()?.split(';').shift()?.trim();
             }
-        } catch (e) {
+        } catch {
             /* No-op */
         }
     }
@@ -45,7 +47,24 @@ export async function getBaseHeaders(
     // Only add X-Store-Key on server-side
     // On client-side, the proxy will inject it from server env (not exposed to browser)
     if (typeof window === 'undefined') {
-        headers.set('X-Store-Key', env.liberoApiKey);
+        try {
+            const { headers: nextHeaders } = await import('next/headers');
+            const requestHeaders = await nextHeaders();
+            const host = requestHeaders.get('host');
+            const { storeKey } = resolveStoreKeyFromHost(host, {
+                defaultStoreKey: env.storeDefaultKey || env.liberoApiKey,
+                domainMap: parseDomainMap(env.storeDomainMap),
+                allowDefault: env.isDev || env.allowDefaultStoreKeyInProd,
+            });
+
+            if (storeKey) {
+                headers.set('X-Store-Key', storeKey);
+            }
+        } catch {
+            if ((env.isDev || env.allowDefaultStoreKeyInProd) && env.liberoApiKey) {
+                headers.set('X-Store-Key', env.liberoApiKey);
+            }
+        }
     }
 
     if (contentType && !contentType.includes('multipart/form-data')) {
@@ -62,7 +81,7 @@ export async function getBaseHeaders(
             try {
                 const { cookies } = await import('next/headers');
                 const cookieStore = await cookies();
-                token = cookieStore.get('accessToken')?.value;
+                token = cookieStore.get(AUTH_COOKIES.ACCESS_TOKEN)?.value;
             } catch (e) {
                 /* No-op */
                 console.error(e);

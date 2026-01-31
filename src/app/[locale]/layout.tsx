@@ -8,13 +8,13 @@ import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { Geist, Geist_Mono, IBM_Plex_Sans_Arabic } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
-import { siteConfig } from '@/config/site';
+import { resolveSiteIdentity } from '@/lib/tenant/resolve-site';
 
 import '@/app/globals.css';
 import PageContainer from '@/components/layouts/PageContainer';
 import { ServiceUnavailableFallback } from '@/components/layouts/service-unavailable-fallback';
 import { QueryProvider } from '@/components/providers/QueryProvider';
-import { getStoreCategories } from '@/services/store-config';
+import { getStoreCategories, getStorePages } from '@/services/store-config';
 import { getServerStoreConfig } from '@/lib/server/store-config';
 import { StoreProvider } from '@/components/providers/StoreProvider';
 import { ThemeStyles } from '@/components/providers/ThemeStyles';
@@ -43,64 +43,45 @@ const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
 });
 
 /* -------------------------------------------------------------------------- */
-/*                               STATIC METADATA                               */
+/*                               DYNAMIC METADATA                              */
 /* -------------------------------------------------------------------------- */
-/**
- * ⚠️ IMPORTANT:
- * - MUST be static
- * - MUST NOT call APIs
- * - MUST NOT depend on tenant data
- * This prevents title flicker and slow navigation.
- */
-export const metadata: Metadata = {
-    title: {
-        default: siteConfig.name, // "Fasto"
-        template: `%s | ${siteConfig.name}`, // "Products | Fasto"
-    },
-    description: siteConfig.description,
-    metadataBase: new URL(siteConfig.url),
-    openGraph: {
-        siteName: siteConfig.name,
-        type: 'website',
-        images: [{ url: '/og-image.png' }],
-    },
-    twitter: {
-        card: 'summary_large_image',
-    },
-    robots: {
-        index: true,
-        follow: true,
-    },
-    alternates: {
-        languages: {
-            en: '/en',
-            ar: '/ar',
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+    const { locale } = await params;
+    const site = await resolveSiteIdentity();
+
+    return {
+        title: {
+            default: site.name,
+            template: `%s | ${site.name}`,
         },
-    },
-};
+        description: site.description,
+        metadataBase: new URL(site.url),
+        openGraph: {
+            siteName: site.name,
+            type: 'website',
+            images: [{ url: site.ogImage }],
+        },
+        twitter: {
+            card: 'summary_large_image',
+        },
+        robots: {
+            index: true,
+            follow: true,
+        },
+        alternates: {
+            canonical: `${site.url}/${locale}`,
+            languages: {
+                en: `${site.url}/en`,
+                ar: `${site.url}/ar`,
+            },
+        },
+    };
+}
 
-//this maybe used laterly dont remove it at all
-// export async function generateMetadata(): Promise<Metadata> {
-//   const site = await resolveSiteIdentity();
-
-//   return {
-//     title: {
-//       default: site.name,
-//       template: `%s | ${site.name}`,
-//     },
-//     description: site.description,
-//     metadataBase: new URL(site.url),
-//     openGraph: {
-//       siteName: site.name,
-//       images: [site.ogImage],
-//       type: 'website',
-//     },
-//     robots: {
-//       index: true,
-//       follow: true,
-//     },
-//   };
-// }
 
 /* -------------------------------------------------------------------------- */
 /*                                   LAYOUT                                   */
@@ -122,9 +103,10 @@ export default async function RootLayout({
 
     // Tenant config (UI + branding only, NOT metadata)
     // Using shared server context ensures single fetch per request
-    const [storeConfig, categories] = await Promise.all([
+    const [storeConfig, categories, cmsPages] = await Promise.all([
         getServerStoreConfig(),
         getStoreCategories(),
+        getStorePages(),
     ]);
 
     return (
@@ -164,14 +146,16 @@ export default async function RootLayout({
                 ) : (
                     <ThemeProvider
                         attribute="class"
-                        defaultTheme="light"
+                        defaultTheme=
+                        "light"
                         enableSystem>
                         <NextIntlClientProvider
                             locale={locale}
                             messages={messages}>
                             <StoreProvider
                                 config={storeConfig}
-                                categories={categories}>
+                                categories={categories}
+                                cmsPages={cmsPages}>
                                 <QueryProvider>
                                     <PageContainer>{children}</PageContainer>
                                     <ToasterContainer isArabic={isArabic} />

@@ -1,13 +1,26 @@
 import { siteConfig } from '@/config/site';
-import { getTenantFromHeaders } from './get-tenant';
+import { getServerStoreConfig } from '@/lib/server/store-config';
+import { getTenantContext } from './get-tenant';
 
 export async function resolveSiteIdentity() {
-  const tenant = await getTenantFromHeaders(); 
+    const storeConfig = await getServerStoreConfig();
+    const { origin } = await getTenantContext();
 
-  return {
-    name: tenant.name ?? siteConfig.name,
-    description: tenant.description ?? siteConfig.description,
-    ogImage: tenant.ogImage ?? siteConfig.ogImage,
-    url: siteConfig.url,
-  };
+    const name = storeConfig?.store?.name || siteConfig.name;
+    const description =
+        storeConfig?.store?.description ||
+        storeConfig?.store?.slogan ||
+        siteConfig.description;
+    const ogImage =
+        storeConfig?.theme?.icon_url ||
+        storeConfig?.theme?.logo_url ||
+        storeConfig?.store?.logo_url ||
+        siteConfig.ogImage;
+
+    return {
+        name,
+        description,
+        ogImage,
+        url: origin || siteConfig.url,
+    };
 }
