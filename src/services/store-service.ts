@@ -6,6 +6,7 @@ import {
     Category,
     Collection,
 } from './types';
+import { CACHE_STRATEGY, CACHE_TAGS } from '@/config/cache';
 import type { CustomerProfile, ProfileUpdateRequest } from '@/types/auth';
 import type {
     Address,
@@ -25,11 +26,10 @@ export const storeService = {
      */
     getConfig: () =>
         fetchLibero<StoreConfig>('/store/config', {
-            // next: {
-            //     revalidate: 3600, // Cache for 1 hour
-            //     tags: ['store-config'],
-            // },
-            next: { revalidate: 0 }, // No cache
+            next: {
+                revalidate: CACHE_STRATEGY.STORE_CONFIG,
+                tags: [CACHE_TAGS.STORE_CONFIG],
+            },
         }),
 
     /**
@@ -39,8 +39,8 @@ export const storeService = {
         fetchLibero<Category[]>('/store/categories', {
             params: { tree },
             next: {
-                revalidate: 0, // Cache for 1 hour
-                tags: ['categories'],
+                revalidate: CACHE_STRATEGY.CATEGORIES_TREE,
+                tags: [CACHE_TAGS.CATEGORIES],
             },
         }),
 
@@ -52,7 +52,7 @@ export const storeService = {
     ): Promise<{ data: Product[]; meta: PaginationMeta }> {
         const response = await fetchLiberoFull<Product[]>('/store/products', {
             params,
-            next: { revalidate: 300 }, // Cache products for 5 minutes
+            next: { revalidate: CACHE_STRATEGY.PRODUCTS_LIST },
         });
 
         const per_page = Number(params?.per_page) || 8;
@@ -74,7 +74,7 @@ export const storeService = {
      */
     getProduct: (slug: string) =>
         fetchLibero<Product>(`/store/products/${slug}`, {
-            next: { revalidate: 300 }, // Cache product for 5 minutes
+            next: { revalidate: CACHE_STRATEGY.PRODUCT_SINGLE },
         }),
 
     /**
@@ -82,7 +82,7 @@ export const storeService = {
      */
     getCategory: (slug: string) =>
         fetchLibero<Category>(`/store/categories/${slug}`, {
-            next: { revalidate: 300 }, // Cache category for 1 hour
+            next: { revalidate: CACHE_STRATEGY.CATEGORIES_TREE },
         }),
 
     /**
@@ -91,8 +91,8 @@ export const storeService = {
     getCollections: () =>
         fetchLibero<Collection[]>('/store/collections', {
             next: {
-                revalidate: 300, // Cache collections for 1 hour
-                tags: ['collections'],
+                revalidate: CACHE_STRATEGY.COLLECTIONS,
+                tags: [CACHE_TAGS.COLLECTIONS],
             },
         }),
 
@@ -191,7 +191,7 @@ export const storeService = {
      */
     getCountries: () =>
         fetchLibero<Country[]>('/store/locations/countries', {
-            next: { revalidate: 86400 }, // Cache for 24 hours
+            next: { revalidate: CACHE_STRATEGY.COUNTRIES_CITIES },
         }),
 
     /**
@@ -200,7 +200,7 @@ export const storeService = {
     getCities: (countryId: number) =>
         fetchLibero<City[]>('/store/locations/cities', {
             params: { country_id: countryId },
-            next: { revalidate: 86400 }, // Cache for 24 hours
+            next: { revalidate: CACHE_STRATEGY.COUNTRIES_CITIES },
         }),
 
     /**
@@ -209,6 +209,6 @@ export const storeService = {
     getDistricts: (cityId: number) =>
         fetchLibero<District[]>('/store/locations/districts', {
             params: { city_id: cityId },
-            next: { revalidate: 86400 }, // Cache for 24 hours
+            next: { revalidate: CACHE_STRATEGY.COUNTRIES_CITIES },
         }),
 };

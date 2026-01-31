@@ -37,7 +37,10 @@ export interface SocialChannel {
 
 export interface StoreInfo {
     name: string;
+    slug?: string;
+    store_key?: string;
     slogan: string;
+    description?: string;
     logo_url: string;
     default_language: string;
     default_currency: string;
@@ -47,6 +50,14 @@ export interface StoreInfo {
         title: string;
     }> | null;
     social_channels: SocialChannel[];
+    custom_links?: Array<{
+        title: string;
+        url: string;
+    }> | null;
+    app_links?: Array<{
+        title: string;
+        url: string;
+    }> | null;
     products_type: string;
     store_type: string;
     phone?: string;
@@ -250,3 +261,15 @@ export type {
     AuthResponse,
     SendOtpResponse,
 } from '@/types/auth';
+export interface CMSPage {
+    id: number;
+    title: string;
+    slug: string;
+    description?: string;
+    type: 'html' | 'text';
+    content?: string;
+    show_in_menu: boolean;
+    show_in_footer: boolean;
+    created_at?: string;
+    updated_at?: string;
+}
