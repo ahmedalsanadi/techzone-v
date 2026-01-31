@@ -26,7 +26,7 @@ The system follows a **Facade Pattern** via `useAddressFlow`. It acts as a singl
 - **Key Exports**:
     - `interface Address`: The standardized internal model.
     - `interface AddressFormSubmitPayload`: The intermediate shape used by the form before being sent to the API.
-    - `normalizeAddress(addr)`: **Critical Function.** It maps legacy fields (like `notes`, `name`, `building_number`) to standardized fields (`description`, `label`, `building`). It also ensures numeric IDs and coordinates. Used everywhere data enters the system.
+    - `normalizeAddress(addr)`: **Critical Function.** It maps legacy and backend-flattened fields (like `country`, `city`, `district`, `notes`, `building_number`) to standardized fields. It ensures that even if the API returns IDs or names in different formats, the UI always sees a consistent `Address` object with populated `country_name`, `city_name`, and `district_name`. Used everywhere data enters the system.
     - `toCreateAddressRequest(payload)`: Converts the UI payload into the exact snake_case structure the Libero API expects.
 
 ### 📂 `src/hooks/` — Business Logic
@@ -154,4 +154,3 @@ The system is fully localized (Arabic/English). Key namespaces:
 **Q: Where is the default map location defined?** In `src/lib/address/constants.ts` (currently pointing to Riyadh, Saudi Arabia).
 
 ---
-

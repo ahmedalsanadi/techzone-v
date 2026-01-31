@@ -31,6 +31,14 @@ export interface Address {
     latitude: string | number;
     longitude: string | number;
 
+    // Backend flattened fields
+    country?: string;
+    city?: string;
+    district?: string;
+    building_number?: string | null;
+    unit_number?: string | null;
+    notes?: string | null;
+
     // Optional / Context-specific fields
     building?: string | null;
     unit?: string | null;
@@ -42,9 +50,6 @@ export interface Address {
     name?: string;
     formatted?: string;
     isDefault?: boolean;
-    building_number?: string | null;
-    unit_number?: string | null;
-    notes?: string | null;
     country_name?: string;
     city_name?: string;
     district_name?: string;
@@ -69,10 +74,16 @@ export function normalizeAddress(
         label: addr.label || addr.name || 'Address',
         is_default: !!(addr.is_default || addr.isDefault),
         description: addr.description || addr.notes || '',
+        notes: addr.notes || addr.description || '',
         building: addr.building || addr.building_number || '',
+        building_number: addr.building_number || addr.building || '',
         unit: addr.unit || addr.unit_number || '',
+        unit_number: addr.unit_number || addr.unit || '',
         latitude: Number(addr.latitude),
         longitude: Number(addr.longitude),
+        country_name: addr.country_name || addr.country || '',
+        city_name: addr.city_name || addr.city || '',
+        district_name: addr.district_name || addr.district || '',
     };
 }
 
