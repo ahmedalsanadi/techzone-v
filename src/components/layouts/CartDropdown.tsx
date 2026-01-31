@@ -156,7 +156,10 @@ const CartDropdown = () => {
                                                     )
                                                         .map(
                                                             ([k, v]) =>
-                                                                `${k.replace(/_/g, ' ')}: ${v}`,
+                                                                `${k.replace(
+                                                                    /_/g,
+                                                                    ' ',
+                                                                )}: ${v}`,
                                                         )
                                                         .join(', ')}
                                                 </p>

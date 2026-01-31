@@ -170,7 +170,11 @@ export default function SubHeader() {
                                         <span className="font-medium">
                                             {t('deliveryTo')}{' '}
                                             <span className="text-theme-primary font-bold">
-                                                ({getAddressLabel(deliveryAddress)})
+                                                (
+                                                {getAddressLabel(
+                                                    deliveryAddress,
+                                                )}
+                                                )
                                             </span>
                                             {' · '}
                                         </span>

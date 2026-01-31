@@ -23,12 +23,13 @@ export default function NavItem({
     id,
 }: NavItemProps) {
     const { setModalOpen } = useBranchStore();
-    const activeStyles = 'bg-white rounded-lg shadow-xl border border-white/20';
+    const activeStyles =
+        'bg-white rounded-xl shadow-sm border border-white/30';
     const inactiveStyles =
-        'rounded-lg cursor-pointer hover:bg-white/10 transition-colors group border border-transparent';
+        'rounded-xl cursor-pointer hover:bg-white/10 transition-colors group border border-transparent';
 
-    const textActiveStyles = 'text-libero-red font-bold';
-    const textInactiveStyles = 'text-white group-hover:font-bold';
+    const textActiveStyles = 'text-libero-red font-semibold';
+    const textInactiveStyles = 'text-white/90 group-hover:text-white';
 
     const iconFilter = isActive
         ? 'invert(32%) sepia(34%) saturate(1476%) hue-rotate(326deg) brightness(89%) contrast(88%)'
@@ -46,7 +47,7 @@ export default function NavItem({
         <Link
             href={href}
             onClick={handleClick}
-            className={`flex gap-2 items-center justify-center py-1.5 px-3 ${
+            className={`flex gap-2 items-center justify-center py-1.5 px-2.5 ${
                 isActive ? activeStyles : inactiveStyles
             }`}
             aria-current={isActive ? 'page' : undefined}>
@@ -59,7 +60,7 @@ export default function NavItem({
                 className={!isActive ? iconFilter : ''}
             />
             <span
-                className={`text-sm text-center text-nowrap inline-flex flex-col items-center ${
+                className={`text-[13px] text-center text-nowrap inline-flex flex-col items-center ${
                     isActive ? textActiveStyles : textInactiveStyles
                 }`}>
                 <span

@@ -1,7 +1,7 @@
 //src/components/layouts/navbar.tsx
 'use client';
 import { usePathname } from '@/i18n/navigation';
-import { Search, Menu } from 'lucide-react';
+import { Search, Menu, ChevronDown } from 'lucide-react';
 import { NAV_ITEMS } from '@/config/navigation';
 
 import NavItem from './NavItem';
@@ -12,7 +12,7 @@ import CartDropdown from './CartDropdown';
 import NotificationDropdown from './NotificationDropdown';
 import LanguageSwitcher from './LanguageSwitcher';
 
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useUiStore } from '@/store/useUiStore';
 import MobileSidebar from './MobileSidebar';
 // import LogoImage from '@/components/layouts/LogoImage';
@@ -20,17 +20,25 @@ import { useStore } from '@/components/providers/StoreProvider';
 // import { siteConfig } from '@/config/site';
 // import FastoLogo from './FastoLogo';
 import LogoImage from './LogoImage';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
+} from '../ui/DropdownMenu';
+import { Link } from '@/i18n/navigation';
 
 export default function Navbar() {
     const pathname = usePathname();
     const t = useTranslations('Navbar');
+    const locale = useLocale();
     const { toggleMobileMenu } = useUiStore();
     const { config, cmsPages } = useStore();
     const menuCMSPages = cmsPages.filter((p) => p.show_in_menu);
+    const pagesLabel = locale === 'ar' ? 'الصفحات' : 'Pages';
 
     return (
-        <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
                 {/*-------- Hamburger (Mobile Only) ----------- */}
                 <button
                     onClick={toggleMobileMenu}
@@ -48,7 +56,7 @@ export default function Navbar() {
             </div>
 
             {/*-------- Navlist----------- */}
-            <div className="hidden lg:flex items-center gap-2 pt-1 text-nowrap">
+            <div className="hidden lg:flex flex-1 items-center justify-center gap-1.5 pt-1 text-nowrap">
                 {NAV_ITEMS.map((item) => {
                     const isActive =
                         item.href === '/'
@@ -67,20 +75,33 @@ export default function Navbar() {
                         />
                     );
                 })}
-                {menuCMSPages.map((page) => (
-                    <NavItem
-                        key={page.id}
-                        id={String(page.id)}
-                        label={page.title}
-                        href={`/${page.slug}`}
-                        icon="/images/svgs/4grid-squares-icon.svg"
-                        isActive={pathname.startsWith(`/${page.slug}`)}
-                    />
-                ))}
+
+                {menuCMSPages.length > 0 && (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <button className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-semibold text-white hover:bg-white/10 transition-colors">
+                                <span>{pagesLabel}</span>
+                                <ChevronDown className="h-4 w-4 opacity-80" />
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                            align="start"
+                            className="min-w-[220px] rounded-2xl border border-gray-100 bg-white p-2 shadow-xl">
+                            {menuCMSPages.map((page) => (
+                                <Link
+                                    key={page.id}
+                                    href={`/${page.slug}`}
+                                    className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900">
+                                    {page.title}
+                                </Link>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                )}
             </div>
 
             {/*-------- Search----------- */}
-            <div className="hidden lg:flex items-center mt-2">
+            <div className="hidden lg:flex items-center mt-1">
                 <Input
                     type="text"
                     placeholder={t('searchPlaceholder')}
@@ -92,7 +113,7 @@ export default function Navbar() {
                             className="opacity-40"
                         />
                     }
-                    containerClassName="w-[356px]"
+                    containerClassName="w-[280px] xl:w-[340px]"
                 />
             </div>
 
