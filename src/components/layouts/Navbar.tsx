@@ -25,7 +25,8 @@ export default function Navbar() {
     const pathname = usePathname();
     const t = useTranslations('Navbar');
     const { toggleMobileMenu } = useUiStore();
-    const { config } = useStore();
+    const { config, cmsPages } = useStore();
+    const menuCMSPages = cmsPages.filter((p) => p.show_in_menu);
 
     return (
         <div className="flex items-center justify-between">
@@ -44,11 +45,6 @@ export default function Navbar() {
                         config?.store?.logo_url || '/images/svgs/logo-icon.svg'
                     }
                 />
-
-                    {/* <FastoLogo
-                        brandName="Fasto"
-                        brandLogo="/images/svgs/logo-icon.svg"
-                    /> */}
             </div>
 
             {/*-------- Navlist----------- */}
@@ -71,6 +67,16 @@ export default function Navbar() {
                         />
                     );
                 })}
+                {menuCMSPages.map((page) => (
+                    <NavItem
+                        key={page.id}
+                        id={String(page.id)}
+                        label={page.title}
+                        href={`/${page.slug}`}
+                        icon="/images/svgs/4grid-squares-icon.svg"
+                        isActive={pathname.startsWith(`/${page.slug}`)}
+                    />
+                ))}
             </div>
 
             {/*-------- Search----------- */}

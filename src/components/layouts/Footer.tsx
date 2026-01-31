@@ -8,7 +8,6 @@ import FooterColumn from './footer/FooterColumn';
 import AppBadge from './footer/AppBadge';
 import PaymentBadge from './footer/PaymentBadge';
 
-
 // Import data
 import {
     footerSections,
@@ -23,11 +22,13 @@ import { useStore } from '@/components/providers/StoreProvider';
 
 const Footer = () => {
     const t = useTranslations('Footer');
-    const { categories , config} = useStore();
+    const { categories, config, cmsPages } = useStore();
 
     const footerCategories = categories
         .filter((cat) => cat.show_in_menu)
         .slice(0, 5);
+
+    const footerCMSPages = cmsPages.filter((page) => page.show_in_footer);
 
     const dynamicFooterSections = footerSections.map((section) => {
         if (section.titleKey === 'sections.categories') {
@@ -37,6 +38,24 @@ const Footer = () => {
                     label: cat.name,
                     href: `/categories/${cat.slug || cat.id}`,
                 })),
+            };
+        }
+        if (section.titleKey === 'sections.about') {
+            return {
+                ...section,
+                links: [
+                    ...footerCMSPages.map((page) => ({
+                        label: page.title,
+                        href: `/${page.slug}`,
+                    })),
+                    // Fallback or additional hardcoded links if any
+                    ...section.links.filter(
+                        (l) =>
+                            !footerCMSPages.some(
+                                (p) => p.slug === l.href.split('/').pop(),
+                            ),
+                    ),
+                ].slice(0, 5), // Limit to 5 links
             };
         }
         return section;

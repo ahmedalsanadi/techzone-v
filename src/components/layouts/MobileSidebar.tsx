@@ -24,10 +24,11 @@ export default function MobileSidebar() {
     const pathname = usePathname();
     const locale = useLocale();
     const isArabic = locale === 'ar';
-    const { config } = useStore();
+    const { config, cmsPages } = useStore();
     const { isAuthenticated, user, logout } = useAuthStore();
     const { setGuestMode, clearCart } = useCartStore();
-    const { setGuestMode: setWishlistGuestMode, clearWishlist } = useWishlistStore();
+    const { setGuestMode: setWishlistGuestMode, clearWishlist } =
+        useWishlistStore();
 
     const handleLogout = async () => {
         // Always clear local state first
@@ -121,6 +122,23 @@ export default function MobileSidebar() {
                                 </div>
                             );
                         })}
+                        {cmsPages
+                            .filter((p) => p.show_in_menu)
+                            .map((page) => (
+                                <div
+                                    key={page.id}
+                                    onClick={() => setMobileMenuOpen(false)}>
+                                    <NavItem
+                                        id={String(page.id)}
+                                        label={page.title}
+                                        href={`/${page.slug}`}
+                                        icon="/images/svgs/4grid-squares-icon.svg"
+                                        isActive={pathname.startsWith(
+                                            `/${page.slug}`,
+                                        )}
+                                    />
+                                </div>
+                            ))}
                     </nav>
                 </div>
 
