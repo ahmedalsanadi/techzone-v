@@ -8,13 +8,14 @@ import React, {
     useEffect,
     useRef,
 } from 'react';
-import { StoreConfig, Category } from '@/services/types';
+import { StoreConfig, Category, CMSPage } from '@/services/types';
 import { useCartStore } from '@/store/useCartStore';
 import { isValidColor, generateThemeVariables } from '@/lib/theme-utils';
 
 interface StoreContextType {
     config: StoreConfig;
     categories: Category[];
+    cmsPages: CMSPage[];
 }
 
 const StoreContext = createContext<StoreContextType | null>(null);
@@ -23,10 +24,12 @@ export function StoreProvider({
     children,
     config,
     categories,
+    cmsPages,
 }: {
     children: React.ReactNode;
     config: StoreConfig;
     categories: Category[];
+    cmsPages: CMSPage[];
 }) {
     // Track previous theme colors to avoid unnecessary updates
     const prevThemeRef = useRef<string | null>(null);
@@ -78,7 +81,7 @@ export function StoreProvider({
     }, [config]);
 
     return (
-        <StoreContext.Provider value={{ config, categories }}>
+        <StoreContext.Provider value={{ config, categories, cmsPages }}>
             {children}
         </StoreContext.Provider>
     );
