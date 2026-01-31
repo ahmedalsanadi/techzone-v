@@ -23,11 +23,11 @@ export function formatAddressForDisplay(
     if (!address) return '';
     if (address.formatted?.trim()) return address.formatted.trim();
     const parts: string[] = [address.street || ''];
-    const building = address.building_number ?? address.building ?? null;
+    const building = address.building || address.building_number || null;
     if (building) parts.push(String(building));
-    const unit = address.unit_number ?? address.unit ?? null;
+    const unit = address.unit || address.unit_number || null;
     if (unit) parts.push(String(unit));
-    const city = address.city_name ?? address.city ?? '';
+    const city = address.city_name || address.city || '';
     if (city) parts.push(city);
     return parts.filter(Boolean).join(', ');
 }

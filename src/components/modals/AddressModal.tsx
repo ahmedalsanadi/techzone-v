@@ -18,6 +18,7 @@ import { useAddress } from '@/hooks/useAddresses';
 import { useLocationLogic } from '@/hooks/address/useLocationLogic';
 import { useAddressForm } from '@/hooks/address/useAddressForm';
 import { DEFAULT_COORDINATES } from '@/lib/address/constants';
+import { formatAddressForDisplay } from '@/lib/address';
 
 // Lazy load map component
 const AddressMap = dynamic(() => import('./AddressMap'), {
@@ -144,9 +145,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
                     Number(activeAddress.longitude),
                 ];
                 setSelectedLocation(coords);
-                setFormattedAddress(
-                    activeAddress.formatted || activeAddress.street,
-                );
+                setFormattedAddress(formatAddressForDisplay(activeAddress));
                 setSearchQuery('');
             } else {
                 form.reset();
@@ -158,7 +157,6 @@ const AddressModal: React.FC<AddressModalProps> = ({
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps -- reset only when isOpen or activeAddress changes
     }, [isOpen, activeAddress]);
-
 
     const handleLocationSelect = useCallback(
         (loc: [number, number], formatted: string) => {
