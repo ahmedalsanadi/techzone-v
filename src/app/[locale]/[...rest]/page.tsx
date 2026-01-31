@@ -7,4 +7,4 @@ export default function CatchAllPage() {
 
 // Force static generation for this route
 export const dynamic = 'force-static';
-export const revalidate = false;
+export const revalidate = 0;

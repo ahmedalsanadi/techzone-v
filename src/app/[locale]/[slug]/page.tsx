@@ -7,7 +7,6 @@ import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import { getTranslations } from 'next-intl/server';
 import { FileText, Clock, AlertCircle } from 'lucide-react';
 import { sanitizeHTML } from '@/lib/sanitize';
-import { CACHE_STRATEGY } from '@/config/cache';
 import { resolveSiteIdentity } from '@/lib/tenant/resolve-site';
 
 interface Props {
@@ -196,6 +195,6 @@ export default async function CMSPageDetail({ params }: Props) {
     );
 }
 
-// ISR configuration - Using unified strategy
-export const revalidate = CACHE_STRATEGY.CMS_PAGE_SINGLE;
+// ISR configuration - keep literal for Next segment config validation
+export const revalidate = 604800;
 export const dynamicParams = true;
