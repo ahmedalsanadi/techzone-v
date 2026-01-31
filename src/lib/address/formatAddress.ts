@@ -27,7 +27,7 @@ export function formatAddressForDisplay(
     if (building) parts.push(String(building));
     const unit = address.unit_number ?? address.unit ?? null;
     if (unit) parts.push(String(unit));
-    const city = address.city_name ?? '';
+    const city = address.city_name ?? address.city ?? '';
     if (city) parts.push(city);
     return parts.filter(Boolean).join(', ');
 }

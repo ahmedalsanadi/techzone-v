@@ -8,6 +8,7 @@ import {
     Address,
     CreateAddressRequest,
     UpdateAddressRequest,
+    normalizeAddress,
 } from '@/types/address';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useOrderStore } from '@/store/useOrderStore';
@@ -108,7 +109,7 @@ export function useAddressMutations() {
                 currentDeliveryAddress: current,
                 newAddress,
             });
-            setDeliveryAddress(next);
+            setDeliveryAddress(normalizeAddress(next));
         },
     });
 
@@ -158,7 +159,7 @@ export function useAddressMutations() {
                 currentDeliveryAddress: current,
                 updatedAddress,
             });
-            setDeliveryAddress(next);
+            setDeliveryAddress(normalizeAddress(next));
         },
     });
 
@@ -218,7 +219,7 @@ export function useAddressMutations() {
                 currentDeliveryAddress: current,
                 updatedAddress,
             });
-            setDeliveryAddress(next);
+            setDeliveryAddress(normalizeAddress(next));
         },
     });
 
