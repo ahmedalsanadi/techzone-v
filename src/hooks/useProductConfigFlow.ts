@@ -11,6 +11,7 @@ import type { Product } from '@/services/types';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import { useProductConfigContext } from '@/components/providers/ProductConfigProvider';
+import { track } from '@vercel/analytics';
 
 const PRODUCT_CACHE_TTL = 1000 * 60 * 5;
 
@@ -90,8 +91,16 @@ export function useProductConfigFlow() {
             }
 
             if (requiresConfiguration(detail)) {
+                track('product_config_required', {
+                    productId: detail.id,
+                    slug: detail.slug,
+                });
                 openWithProduct(detail);
             } else {
+                track('product_direct_add', {
+                    productId: detail.id,
+                    slug: detail.slug,
+                });
                 addBasicItem(detail);
             }
         } catch {

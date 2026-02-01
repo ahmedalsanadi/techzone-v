@@ -54,9 +54,34 @@ const CartPage = () => {
 
     if (isLoading && items.length === 0) {
         return (
-            <div className="min-h-[70vh] flex flex-col items-center justify-center px-4 text-center">
-                <div className="w-16 h-16 border-4 border-theme-primary border-t-transparent rounded-full animate-spin mb-6" />
-                <p className="text-gray-500">
+            <div className="container mx-auto px-4 py-8 md:py-12">
+                <div className="h-8 w-48 bg-gray-100 rounded-xl animate-pulse mb-8" />
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                    <div className="lg:col-span-2 space-y-4">
+                        {[0, 1, 2].map((idx) => (
+                            <div
+                                key={idx}
+                                className="bg-white border border-gray-100 p-4 md:p-5 rounded-2xl flex items-center gap-4 shadow-sm">
+                                <div className="w-20 h-20 md:w-28 md:h-28 bg-gray-100 rounded-xl animate-pulse shrink-0" />
+                                <div className="flex-1 space-y-3">
+                                    <div className="h-4 w-3/5 bg-gray-100 rounded-lg animate-pulse" />
+                                    <div className="h-3 w-2/5 bg-gray-100 rounded-lg animate-pulse" />
+                                    <div className="h-3 w-1/3 bg-gray-100 rounded-lg animate-pulse" />
+                                </div>
+                                <div className="w-28 h-10 bg-gray-100 rounded-lg animate-pulse shrink-0" />
+                            </div>
+                        ))}
+                    </div>
+                    <div className="lg:col-span-1">
+                        <div className="bg-white border border-gray-100 rounded-[32px] p-6 md:p-8 shadow-sm space-y-4">
+                            <div className="h-5 w-32 bg-gray-100 rounded-lg animate-pulse" />
+                            <div className="h-4 w-full bg-gray-100 rounded-lg animate-pulse" />
+                            <div className="h-4 w-full bg-gray-100 rounded-lg animate-pulse" />
+                            <div className="h-10 w-full bg-gray-100 rounded-xl animate-pulse mt-4" />
+                        </div>
+                    </div>
+                </div>
+                <p className="text-gray-500 text-sm mt-6">
                     {t('loading') || 'Loading your cart...'}
                 </p>
             </div>
@@ -154,12 +179,12 @@ const CartPage = () => {
                         return (
                             <div
                                 key={item.id}
-                                className="bg-white border border-gray-100 p-4 md:p-6 rounded-3xl flex items-center gap-4 md:gap-6 shadow-sm hover:shadow-md transition-shadow">
+                                className="bg-white border border-gray-100 p-4 md:p-5 rounded-2xl flex flex-col md:flex-row md:items-center gap-4 md:gap-6 shadow-sm hover:shadow-md transition-shadow">
                                 {/* Product Image - Clickable */}
                                 {productUrl ? (
                                     <Link
                                         href={productUrl}
-                                        className="relative w-20 h-20 md:w-28 md:h-28 bg-gray-50 rounded-2xl overflow-hidden shrink-0 hover:opacity-90 transition-opacity">
+                                        className="relative w-20 h-20 md:w-28 md:h-28 bg-gray-50 rounded-xl overflow-hidden shrink-0 hover:opacity-90 transition-opacity">
                                         <Image
                                             src={item.image}
                                             alt={item.name}
@@ -168,7 +193,7 @@ const CartPage = () => {
                                         />
                                     </Link>
                                 ) : (
-                                    <div className="relative w-20 h-20 md:w-28 md:h-28 bg-gray-50 rounded-2xl overflow-hidden shrink-0">
+                                    <div className="relative w-20 h-20 md:w-28 md:h-28 bg-gray-50 rounded-xl overflow-hidden shrink-0">
                                         <Image
                                             src={item.image}
                                             alt={item.name}
@@ -321,9 +346,9 @@ const CartPage = () => {
                                     </div>
 
                                     <div
-                                        className="flex items-center gap-4"
+                                        className="flex flex-wrap items-center gap-3 w-full md:w-auto"
                                         onClick={(e) => e.stopPropagation()}>
-                                        <div className="flex items-center bg-gray-50 rounded-xl border border-gray-100 p-1">
+                                        <div className="flex items-center bg-gray-50 rounded-lg border border-gray-100 p-1 shrink-0">
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();

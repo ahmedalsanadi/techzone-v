@@ -1,14 +1,15 @@
 // src/components/pages/search/SearchContent.tsx
 'use client';
 
-import React, { useMemo, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { storeService } from '@/services/store-service';
 import ProductsGrid from '@/components/pages/products/ProductsGrid';
 import ProductsSorting from '@/components/pages/products/ProductsSorting';
 import { useTranslations } from 'next-intl';
 import { useProductConfigFlow } from '@/hooks/useProductConfigFlow';
 import { requiresConfiguration } from '@/lib/products/requirements';
+import { prefetchNextProductsPage } from '@/lib/products/prefetch';
 
 interface SearchContentProps {
     initialQuery?: string;
@@ -18,6 +19,7 @@ const SearchContent = ({ initialQuery }: SearchContentProps) => {
     const t = useTranslations('Search');
     const { loadingProductId, handleAddClick, prefetchProduct } =
         useProductConfigFlow();
+    const queryClient = useQueryClient();
     const [sort, setSort] = useState<string | undefined>(undefined);
     const [order, setOrder] = useState<string | undefined>(undefined);
     const [page, setPage] = useState('1');
@@ -37,6 +39,15 @@ const SearchContent = ({ initialQuery }: SearchContentProps) => {
         queryFn: () => storeService.getProducts(filters),
         enabled: !!filters.search, // Only search if there's a query
     });
+
+    useEffect(() => {
+        if (!filters.search) return;
+        void prefetchNextProductsPage({
+            queryClient,
+            filters,
+            pagination: productsResult?.meta,
+        });
+    }, [queryClient, filters, productsResult?.meta, filters.search]);
 
     const handleSortChange = (
         sort: string | undefined,

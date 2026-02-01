@@ -44,7 +44,7 @@ interface CartStore {
 
 function transformApiCartItemToLocal(item: ApiCartItem): CartItem {
     // Generate a stable local ID based on the product composition
-    const localId = generateCartItemId(item.product.id, {
+    const compositeId = generateCartItemId(item.product.id, {
         variantId: item.variant?.id,
         addons: item.addons?.map((a) => ({
             id: a.addon_item_id,
@@ -53,6 +53,7 @@ function transformApiCartItemToLocal(item: ApiCartItem): CartItem {
         customFields: item.custom_fields,
         notes: item.notes,
     });
+    const localId = `api-${item.id}-${compositeId}`;
 
     // Transform addons back to local format
     const addons: Record<number, Record<number, number>> = {};

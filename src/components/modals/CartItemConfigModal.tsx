@@ -9,6 +9,7 @@ import { cartService } from '@/services/cart-service';
 import { storeService } from '@/services/store-service';
 import { generateCartItemId } from '@/lib/cart/utils';
 import { useCartActions } from '@/hooks/useCartActions';
+import CurrencySymbol from '@/components/ui/CurrencySymbol';
 import { validateRequiredSelections } from '@/lib/products/requirements';
 import AddonSelector from '@/components/pages/products/product-details/AddonSelector';
 import VariantSelector from '@/components/pages/products/product-details/VariantSelector';
@@ -103,6 +104,10 @@ export default function CartItemConfigModal({
         });
         return Number(currentPrice) + totalAddonsPrice;
     };
+
+    const unitPrice = calculateTotalPrice();
+    const quantity = item?.quantity || 1;
+    const totalPrice = unitPrice * quantity;
 
     const handleSave = async () => {
         if (!item || !activeProduct) return;
@@ -287,7 +292,19 @@ export default function CartItemConfigModal({
                         )}
                     </main>
 
-                    <footer className="p-4 sm:p-5 md:p-6 border-t border-gray-100 flex items-center justify-end gap-3 shrink-0">
+                    <footer className="p-4 sm:p-5 md:p-6 border-t border-gray-100 flex items-center justify-between gap-3 shrink-0">
+                        <div className="text-sm text-gray-500">
+                            <span className="font-semibold text-gray-700">
+                                {t('price')}:
+                            </span>{' '}
+                            <span className="font-bold text-gray-900">
+                                {totalPrice}
+                            </span>{' '}
+                            <CurrencySymbol className="inline-block w-3.5 h-3.5" />
+                            <span className="text-xs text-gray-400 ml-2">
+                                {t('perQuantity')} × {quantity}
+                            </span>
+                        </div>
                         <button
                             type="button"
                             onClick={onClose}

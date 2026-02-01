@@ -1,8 +1,8 @@
 // src/components/pages/categories/CategoryContent.tsx
 'use client';
 
-import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { storeService } from '@/services/store-service';
 import { Category } from '@/services/types';
 import SubCategorySelection from '@/components/pages/products/SubCategorySelection';
@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { useProductConfigFlow } from '@/hooks/useProductConfigFlow';
 import { requiresConfiguration } from '@/lib/products/requirements';
 import { useTranslations } from 'next-intl';
+import { prefetchNextProductsPage } from '@/lib/products/prefetch';
 
 import { useParams, useSearchParams } from 'next/navigation';
 import { useRouter, usePathname } from '@/i18n/navigation';
@@ -25,6 +26,7 @@ interface CategoryContentProps {
 const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
     const t = useTranslations('Category');
     const { categories: allCategories } = useStore();
+    const queryClient = useQueryClient();
     const params = useParams();
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -88,6 +90,18 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
         staleTime: 1000 * 60 * 5, // 5 minutes
         retry: 1,
     });
+
+    useEffect(() => {
+        if (!currentCategory?.id) return;
+        void prefetchNextProductsPage({
+            queryClient,
+            filters: {
+                ...filters,
+                category_id: currentCategory?.id.toString(),
+            },
+            pagination: productsResult?.meta,
+        });
+    }, [queryClient, filters, currentCategory?.id, productsResult?.meta]);
 
     const isInternalLoading = isLoading && !productsResult;
 
