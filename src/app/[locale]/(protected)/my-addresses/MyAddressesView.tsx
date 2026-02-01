@@ -1,7 +1,7 @@
 // src/app/[locale]/(protected)/my-addresses/MyAddressesView.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { Plus, MapPin, Loader2, Home as HomeIcon } from 'lucide-react';
 import { Address, AddressFormSubmitPayload } from '@/types/address';
@@ -25,21 +25,21 @@ export default function MyAddressesView() {
     const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    const handleAdd = () => {
+    const handleAdd = useCallback(() => {
         setEditingAddress(null);
         setIsModalOpen(true);
-    };
+    }, []);
 
-    const handleEdit = (address: Address) => {
+    const handleEdit = useCallback((address: Address) => {
         setEditingAddress(address);
         setIsModalOpen(true);
-    };
+    }, []);
 
-    const handleDeleteClick = (id: number) => {
+    const handleDeleteClick = useCallback((id: number) => {
         setDeleteTargetId(id);
-    };
+    }, []);
 
-    const handleDeleteConfirm = async () => {
+    const handleDeleteConfirm = useCallback(async () => {
         if (deleteTargetId == null) return;
         setIsDeleting(true);
         try {
@@ -51,38 +51,43 @@ export default function MyAddressesView() {
         } finally {
             setIsDeleting(false);
         }
-    };
+    }, [deleteTargetId, deleteAddress, t]);
 
-    const handleSetDefault = async (id: number) => {
-        try {
-            await setDefault(id);
-            toast.success(t('defaultUpdated'));
-        } catch {
-            toast.error(t('defaultError'));
-        }
-    };
+    const handleSetDefault = useCallback(
+        async (id: number) => {
+            try {
+                await setDefault(id);
+                toast.success(t('defaultUpdated'));
+            } catch {
+                toast.error(t('defaultError'));
+            }
+        },
+        [setDefault, t],
+    );
 
-    const handleSave = async (payload: AddressFormSubmitPayload) => {
-        // Type safe via buildPayload in modal
-        try {
-            await saveAddress(
-                payload,
-                editingAddress ? Number(editingAddress.id) : undefined,
-            );
-            toast.success(
-                editingAddress ? t('updateSuccess') : t('addSuccess'),
-            );
-            setIsModalOpen(false);
-            setEditingAddress(null);
-        } catch {
-            toast.error('Failed to save address');
-        }
-    };
+    const handleSave = useCallback(
+        async (payload: AddressFormSubmitPayload) => {
+            try {
+                await saveAddress(
+                    payload,
+                    editingAddress ? Number(editingAddress.id) : undefined,
+                );
+                toast.success(
+                    editingAddress ? t('updateSuccess') : t('addSuccess'),
+                );
+                setIsModalOpen(false);
+                setEditingAddress(null);
+            } catch {
+                toast.error('Failed to save address');
+            }
+        },
+        [saveAddress, editingAddress, t],
+    );
 
-    const breadcrumbs = [
-        { label: t('home'), href: '/' },
-        { label: t('title') },
-    ];
+    const breadcrumbs = useMemo(
+        () => [{ label: t('home'), href: '/' }, { label: t('title') }],
+        [t],
+    );
 
     return (
         <div className="mt-4 space-y-4 sm:space-y-6 md:space-y-8">

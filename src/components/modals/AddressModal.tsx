@@ -1,7 +1,7 @@
 // src/components/modals/AddressModal.tsx
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import { X, MapPin, Search, Check } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
@@ -37,40 +37,44 @@ interface AddressModalProps {
     initialAddress?: Address | null;
 }
 
-// Sub-components
-const InputField: React.FC<{
-    label: string;
-    value: string;
-    onChange: (value: string) => void;
-    required?: boolean;
-    type?: string;
-    placeholder?: string;
-    dir?: string;
-    className?: string;
-}> = ({
-    label,
-    value,
-    onChange,
-    required,
-    type = 'text',
-    placeholder,
-    dir,
-    className,
-}) => (
-    <div className={className}>
-        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 pl-1">
-            {label} {required && '*'}
-        </label>
-        <input
-            type={type}
-            dir={dir}
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder={placeholder}
-            className="w-full px-4 py-3 sm:py-3.5 min-h-[48px] rounded-xl sm:rounded-2xl bg-gray-50 border border-gray-200 focus:border-theme-primary focus:ring-2 focus:ring-theme-primary/20 outline-none transition-all font-semibold text-base"
-        />
-    </div>
+// Sub-components moved outside and memoized
+const InputField = memo(
+    ({
+        label,
+        value,
+        onChange,
+        required,
+        type = 'text',
+        placeholder,
+        dir,
+        className,
+    }: {
+        label: string;
+        value: string;
+        onChange: (value: string) => void;
+        required?: boolean;
+        type?: string;
+        placeholder?: string;
+        dir?: string;
+        className?: string;
+    }) => (
+        <div className={className}>
+            <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 pl-1">
+                {label} {required && '*'}
+            </label>
+            <input
+                type={type}
+                dir={dir}
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                placeholder={placeholder}
+                className="w-full px-4 py-3 sm:py-3.5 min-h-[48px] rounded-xl sm:rounded-2xl bg-gray-50 border border-gray-200 focus:border-theme-primary focus:ring-2 focus:ring-theme-primary/20 outline-none transition-all font-semibold text-base"
+            />
+        </div>
+    ),
 );
+
+InputField.displayName = 'InputField';
 
 const AddressModal: React.FC<AddressModalProps> = ({
     isOpen,
