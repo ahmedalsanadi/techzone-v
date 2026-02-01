@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, Clock, Plus, Edit, Loader2 } from 'lucide-react';
+import { ChevronRight, Clock, Plus, Edit } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import {
     useOrderStore,
@@ -225,8 +225,21 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                 </div>
 
                                 {isLoadingAddresses ? (
-                                    <div className="flex justify-center p-8 sm:p-12 bg-gray-50 rounded-lg sm:rounded-xl">
-                                        <Loader2 className="animate-spin text-theme-primary" />
+                                    <div className="space-y-2 sm:space-y-3">
+                                        {[1, 2, 3].map((i) => (
+                                            <div
+                                                key={i}
+                                                className="p-3 sm:p-4 md:p-5 rounded-lg sm:rounded-xl md:rounded-2xl border-2 border-gray-100 bg-white animate-pulse">
+                                                <div className="flex items-center gap-3 sm:gap-4">
+                                                    <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-gray-200" />
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="h-4 sm:h-5 w-28 bg-gray-200 rounded" />
+                                                        <div className="h-3 sm:h-4 w-48 bg-gray-100 rounded mt-2" />
+                                                    </div>
+                                                    <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gray-100 rounded-lg" />
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
                                 ) : displayAddresses.length > 0 ? (
                                     <div className="space-y-2 sm:space-y-3">

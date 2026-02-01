@@ -151,7 +151,7 @@ export function useAuthFlowHandlers({
                 } else {
                     setAuth(response.customer, response.token);
                     // Merge cart, wishlist, and addresses after login
-                    await Promise.all([
+                    await Promise.allSettled([
                         mergeGuestCartAfterAuth(),
                         mergeGuestWishlistAfterAuth(),
                         mergeGuestAddressAfterAuth(),
@@ -238,7 +238,7 @@ export function useAuthFlowHandlers({
 
                 setProfile(updatedProfile);
                 // Merge cart, wishlist, and addresses after signup
-                await Promise.all([
+                await Promise.allSettled([
                     mergeGuestCartAfterAuth(),
                     mergeGuestWishlistAfterAuth(),
                     mergeGuestAddressAfterAuth(),

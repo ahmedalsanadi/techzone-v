@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Plus, MapPin, Loader2, Home as HomeIcon } from 'lucide-react';
+import { Plus, MapPin, Home as HomeIcon } from 'lucide-react';
 import { Address, AddressFormSubmitPayload } from '@/types/address';
 import AddressCard from './AddressCard';
 import AddressModal from '@/components/modals/AddressModal';
@@ -108,11 +108,27 @@ export default function MyAddressesView() {
 
             <div className="bg-gray-50/50 rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl p-3 sm:p-4 md:p-6 lg:p-8 xl:p-10 border border-gray-100/80 min-h-[260px] sm:min-h-[320px] md:min-h-[400px] flex flex-col items-center justify-center">
                 {isLoading ? (
-                    <div className="flex flex-col items-center gap-3 py-8 sm:py-12">
-                        <Loader2 className="w-10 h-10 text-theme-primary animate-spin" />
-                        <span className="text-gray-500 font-bold tracking-widest uppercase text-xs">
-                            {t('syncingWithCloud')}
-                        </span>
+                    <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
+                        {[1, 2, 3, 4].map((i) => (
+                            <div
+                                key={i}
+                                className="bg-white border-2 border-gray-100 rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl p-3 sm:p-4 md:p-5 lg:p-6 animate-pulse">
+                                <div className="flex items-start justify-between gap-3 sm:gap-4">
+                                    <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
+                                        <div className="w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg sm:rounded-xl bg-gray-100" />
+                                        <div className="flex-1">
+                                            <div className="h-4 sm:h-5 w-28 bg-gray-200 rounded" />
+                                            <div className="h-3 sm:h-4 w-48 bg-gray-100 rounded mt-2" />
+                                            <div className="h-3 w-32 bg-gray-100 rounded mt-2" />
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <div className="w-10 h-10 bg-gray-100 rounded-lg" />
+                                        <div className="w-10 h-10 bg-gray-100 rounded-lg" />
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 ) : addresses.length > 0 ? (
                     <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
