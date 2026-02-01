@@ -176,6 +176,7 @@
     "dishName": "Dish Name",
     "save": "Save {amount}",
     "addToCart": "Add to Cart",
+    "customize": "Customize",
     "noProducts": "No products available currently",
     "previous": "Previous",
     "next": "Next"
@@ -184,12 +185,14 @@
     "title": "Featured Products",
     "more": "More",
     "addToCart": "Add to Cart",
+    "customize": "Customize",
     "save": "Save {amount}"
   },
   "NewArrivals": {
     "title": "New Arrivals",
     "more": "More",
     "addToCart": "Add to Cart",
+    "customize": "Customize",
     "save": "Save {amount}"
   },
   "Product": {
@@ -239,7 +242,14 @@
     "customFields": "Additional Information",
     "variantRequired": "Please select a variant",
     "select": "Select...",
-    "completeSelection": "Complete Selection"
+    "completeSelection": "Complete Selection",
+    "customize": "Customize",
+    "requiredSelections": "Required selections",
+    "moreOptionsHint": "More options available on the product page",
+    "viewDetails": "View details",
+    "loadProductError": "Unable to load product details",
+    "cancel": "Cancel",
+    "close": "Close"
   },
   "Orders": {
     "title": "My Orders",
@@ -318,7 +328,12 @@
     "addError": "Failed to add product to cart",
     "removeError": "Failed to remove product from cart",
     "updateError": "Failed to update quantity",
-    "removed": "Product removed from cart"
+    "removed": "Product removed from cart",
+    "needsConfigTitle": "Some items need configuration",
+    "needsConfigDesc": "Review these items before they can be added to your cart.",
+    "configure": "Configure",
+    "needsConfigToast": "Some items need configuration before adding to your cart.",
+    "clearPending": "Clear pending items"
   },
   "Wishlist": {
     "title": "Wishlist",
@@ -344,6 +359,7 @@
     "products": "Products",
     "items_count": "items",
     "addToCart": "Add to Cart",
+    "customize": "Customize",
     "no_products": "No products found in this category"
   },
   "Search": {
@@ -353,7 +369,9 @@
     "search_products": "Search Products",
     "items_found": "Items found",
     "no_query": "Please enter a search term",
-    "no_results": "Sorry, no results found for your query"
+    "no_results": "Sorry, no results found for your query",
+    "addToCart": "Add to Cart",
+    "customize": "Customize"
   },
   "Contact": {
     "title": "Contact Us",
@@ -478,7 +496,9 @@
     "selectCollectionToViewProducts": "Select a collection above to view products",
     "noCollections": "No collections available at the moment",
     "errorLoadingCollections": "Failed to load collections. Please try again later.",
-    "home": "Home"
+    "home": "Home",
+    "addToCart": "Add to Cart",
+    "customize": "Customize"
   },
   "Payment": {
     "title": "Payment",

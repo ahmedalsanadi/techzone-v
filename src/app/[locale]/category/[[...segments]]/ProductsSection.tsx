@@ -7,7 +7,8 @@ import ProductCard from '@/components/ui/ProductCard';
 import type { Product } from '@/services/types';
 import { TRANSITIONS, MIN_HEIGHTS } from './constants';
 import ProductsSkeleton from './ProductsSkeleton';
-import { useCartActions } from '@/hooks/useCartActions';
+import { useProductConfigFlow } from '@/hooks/useProductConfigFlow';
+import { requiresConfiguration } from '@/lib/products/requirements';
 
 interface ProductsSectionProps {
     products: Product[];
@@ -26,7 +27,8 @@ export default function ProductsSection({
     isFetching,
 }: ProductsSectionProps) {
     const t = useTranslations('Category');
-    const { addToCart } = useCartActions();
+    const { loadingProductId, handleAddClick, prefetchProduct } =
+        useProductConfigFlow();
 
     // Generate a unique key from products to trigger animations on change
     const productsKey = useMemo(
@@ -91,23 +93,17 @@ export default function ProductsSection({
                                         href={`/products/${p.slug}`}
                                         productId={p.id}
                                         productSlug={p.slug}
-                                        addToCartLabel={t('addToCart')}
+                                        addToCartLabel={
+                                            requiresConfiguration(p)
+                                                ? t('customize') || 'Customize'
+                                                : t('addToCart')
+                                        }
                                         priority={isAboveFold}
-                                        onAddToCartClick={() => {
-                                            addToCart({
-                                                id: String(p.id),
-                                                name: p.title,
-                                                image: p.cover_image_url,
-                                                price: p.price,
-                                                categoryId: String(
-                                                    p.categories?.[0]?.id || '',
-                                                ),
-                                                metadata: {
-                                                    productId: p.id,
-                                                    productSlug: p.slug,
-                                                },
-                                            });
-                                        }}
+                                        onAddToCartClick={() =>
+                                            handleAddClick(p)
+                                        }
+                                        isAdding={loadingProductId === p.id}
+                                        onPrefetch={() => prefetchProduct(p)}
                                     />
                                 </div>
                             );

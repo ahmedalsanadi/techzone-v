@@ -17,6 +17,7 @@ export interface CartItem {
 
 interface CartStore {
     items: CartItem[];
+    pendingItems: CartItem[];
     // API-related state
     cartId: number | null;
     isGuestMode: boolean;
@@ -36,6 +37,9 @@ interface CartStore {
     setGuestMode: (isGuest: boolean) => void;
     setCartFromAPI: (cart: ApiCart) => void;
     getGuestCartItems: () => CartItem[];
+    setPendingItems: (items: CartItem[]) => void;
+    clearPendingItems: () => void;
+    clearPendingByProductId: (productId: number) => void;
 }
 
 function transformApiCartItemToLocal(item: ApiCartItem): CartItem {
@@ -126,6 +130,7 @@ export const useCartStore = create<CartStore>()(
     persist(
         (set, get) => ({
             items: [],
+            pendingItems: [],
             cartId: null,
             isGuestMode: true, // Default to guest mode
             isLoading: false,
@@ -241,25 +246,30 @@ export const useCartStore = create<CartStore>()(
                 }
                 return [];
             },
+            setPendingItems: (items) => {
+                set({ pendingItems: items });
+            },
+            clearPendingItems: () => {
+                set({ pendingItems: [] });
+            },
+            clearPendingByProductId: (productId) => {
+                set({
+                    pendingItems: get().pendingItems.filter(
+                        (item) => item.metadata?.productId !== productId,
+                    ),
+                });
+            },
         }),
         {
             name: 'fasto-cart-storage',
             // CRITICAL: Only persist when in guest mode
             // Authenticated users should NOT have cart persisted to localStorage
             // Their cart is managed by the API
-            partialize: (state) => {
-                // Only persist if in guest mode
-                if (state.isGuestMode) {
-                    return {
-                        items: state.items,
-                        isGuestMode: state.isGuestMode,
-                    };
-                }
-                // Don't persist anything when authenticated
-                return {
-                    isGuestMode: state.isGuestMode,
-                };
-            },
+            partialize: (state) => ({
+                ...(state.isGuestMode ? { items: state.items } : {}),
+                pendingItems: state.pendingItems,
+                isGuestMode: state.isGuestMode,
+            }),
         },
     ),
 );

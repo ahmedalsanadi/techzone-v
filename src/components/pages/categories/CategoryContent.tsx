@@ -10,6 +10,9 @@ import ProductsGrid from '@/components/pages/products/ProductsGrid';
 // import { useTranslations } from 'next-intl';
 import CategoryTabs from '@/components/pages/products/CategoryTabs';
 import { cn } from '@/lib/utils';
+import { useProductConfigFlow } from '@/hooks/useProductConfigFlow';
+import { requiresConfiguration } from '@/lib/products/requirements';
+import { useTranslations } from 'next-intl';
 
 import { useParams, useSearchParams } from 'next/navigation';
 import { useRouter, usePathname } from '@/i18n/navigation';
@@ -20,12 +23,14 @@ interface CategoryContentProps {
 }
 
 const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
-    // const t = useTranslations('Category');
+    const t = useTranslations('Category');
     const { categories: allCategories } = useStore();
     const params = useParams();
     const searchParams = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
+    const { loadingProductId, handleAddClick, prefetchProduct } =
+        useProductConfigFlow();
 
     const slug = params.slug as string;
     const page = searchParams.get('page') || '1';
@@ -204,6 +209,14 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
                             currentPage={Number(page)}
                             pagination={productsResult?.meta}
                             onPageChange={handlePageChange}
+                            onAddToCart={handleAddClick}
+                            getAddToCartLabel={(product) =>
+                                requiresConfiguration(product)
+                                    ? t('customize') || 'Customize'
+                                    : t('addToCart') || 'Add to cart'
+                            }
+                            isAddingProductId={loadingProductId}
+                            onPrefetchProduct={prefetchProduct}
                         />
                     )}
                 </div>

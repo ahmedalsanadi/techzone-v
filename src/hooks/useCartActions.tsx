@@ -9,8 +9,7 @@ import { toast } from 'sonner';
 import { ShoppingCart } from 'lucide-react';
 import React from 'react';
 import { useRouter } from '@/i18n/navigation';
-import { transformLocalAddonsToApi } from '@/lib/cart/utils';
-import type { AddCartAddon } from '@/types/cart';
+import { transformCartItemToApiRequest } from '@/lib/cart/utils';
 
 export const useCartActions = () => {
     const addItem = useCartStore((state) => state.addItem);
@@ -18,6 +17,9 @@ export const useCartActions = () => {
     const removeItem = useCartStore((state) => state.removeItem);
     const updateQuantity = useCartStore((state) => state.updateQuantity);
     const isGuestMode = useCartStore((state) => state.isGuestMode);
+    const clearPendingByProductId = useCartStore(
+        (state) => state.clearPendingByProductId,
+    );
     const { isAuthenticated } = useAuthStore();
     const t = useTranslations('Cart');
     const router = useRouter();
@@ -36,30 +38,15 @@ export const useCartActions = () => {
                     throw new Error('Product ID is required');
                 }
 
-                // Transform addons to API format
-                const addons = transformLocalAddonsToApi(item.metadata?.addons);
-
-                // Prepare API request
-                const apiRequest = {
-                    product_id: productId,
-                    product_variant_id:
-                        item.metadata?.product_variant_id || null,
-                    quantity,
-                    ...(addons.length > 0 && { addons }),
-                    ...(item.metadata?.notes && { notes: item.metadata.notes }),
-                    ...(item.metadata?.custom_fields && {
-                        custom_fields: item.metadata.custom_fields,
-                    }),
-                    ...(item.metadata?.variant_options && {
-                        variant_options: item.metadata.variant_options,
-                    }),
-                };
+                const apiRequest = transformCartItemToApiRequest(item, quantity);
 
                 // Add item via API
                 await cartService.addItem(apiRequest);
 
                 // Sync cart with API to get updated state
                 await syncWithAPI();
+
+                clearPendingByProductId(productId);
 
                 toast.success(t('added', { name: item.name }), {
                     icon: (
@@ -81,6 +68,10 @@ export const useCartActions = () => {
         } else {
             // Guest mode: use local store
             addItem(item, quantity);
+            const productId = item.metadata?.productId;
+            if (productId && typeof productId === 'number') {
+                clearPendingByProductId(productId);
+            }
 
             toast.success(t('added', { name: item.name }), {
                 icon: <ShoppingCart size={18} className="text-theme-primary" />,

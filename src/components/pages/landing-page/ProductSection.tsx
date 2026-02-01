@@ -4,9 +4,10 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import ProductCard from '@/components/ui/ProductCard';
-import { useCartActions } from '@/hooks/useCartActions';
 import { Link } from '@/i18n/navigation';
 import { Product } from '@/services/types';
+import { useProductConfigFlow } from '@/hooks/useProductConfigFlow';
+import { requiresConfiguration } from '@/lib/products/requirements';
 
 interface ProductSectionProps {
     title: string;
@@ -22,7 +23,8 @@ const ProductSection: React.FC<ProductSectionProps> = ({
     translationNamespace = 'Promotions',
 }) => {
     const t = useTranslations(translationNamespace);
-    const { addToCart } = useCartActions();
+    const { loadingProductId, handleAddClick, prefetchProduct } =
+        useProductConfigFlow();
 
     // Don't render if no products
     if (!products || products.length === 0) {
@@ -91,20 +93,14 @@ const ProductSection: React.FC<ProductSectionProps> = ({
                                       })
                                     : undefined
                             }
-                            addToCartLabel={t('addToCart')}
-                            onAddToCartClick={() => {
-                                addToCart({
-                                    id: String(product.id),
-                                    name: product.title,
-                                    image: product.cover_image_url,
-                                    price: displayPrice,
-                                    categoryId,
-                                    metadata: {
-                                        productId: product.id, // CRITICAL: Required for API calls
-                                        productSlug: product.slug,
-                                    },
-                                });
-                            }}
+                            onAddToCartClick={() => handleAddClick(product)}
+                            isAdding={loadingProductId === product.id}
+                            addToCartLabel={
+                                requiresConfiguration(product)
+                                    ? t('customize') || 'Customize'
+                                    : t('addToCart')
+                            }
+                            onPrefetch={() => prefetchProduct(product)}
                         />
                     );
                 })}

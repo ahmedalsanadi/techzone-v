@@ -3,7 +3,7 @@
 
 import React from 'react';
 import DynamicImage from './DynamicImage';
-import { Heart, Plus, ShoppingBasket } from 'lucide-react';
+import { Heart, Plus, ShoppingBasket, Loader2 } from 'lucide-react';
 import CurrencySymbol from './CurrencySymbol';
 import { Link } from '@/i18n/navigation';
 import { useWishlistActions } from '@/hooks/useWishlistActions';
@@ -23,6 +23,8 @@ interface ProductCardProps {
     onWishlistClick?: (e: React.MouseEvent) => void; // Optional custom handler
     onAddToCartClick?: (e: React.MouseEvent) => void;
     onClick?: () => void;
+    isAdding?: boolean;
+    onPrefetch?: () => void;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -39,6 +41,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
     onWishlistClick,
     onAddToCartClick,
     onClick,
+    isAdding = false,
+    onPrefetch,
 }) => {
     const { toggleWishlist } = useWishlistActions();
     // Subscribe to items array to make it reactive
@@ -78,6 +82,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
     return (
         <div
             onClick={onClick}
+            onMouseEnter={onPrefetch}
+            onFocus={onPrefetch}
             className="bg-white border border-gray-100 rounded-xl overflow-hidden relative group shadow-sm flex flex-col h-full">
             {/* Wishlist Button */}
             <button
@@ -147,10 +153,21 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     onClick={(e) => {
                         e.stopPropagation();
                         e.preventDefault();
-                        onAddToCartClick?.(e);
+                        if (!isAdding) {
+                            onAddToCartClick?.(e);
+                        }
                     }}
-                    className="w-full bg-theme-primary/10 hover:bg-theme-primary hover:text-white text-theme-primary font-medium py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95 border border-theme-primary cursor-pointer group/btn">
-                    <Plus className="w-4 h-4 transition-transform group-hover/btn:rotate-90" />
+                    disabled={isAdding}
+                    className={`w-full font-medium py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95 border cursor-pointer group/btn ${
+                        isAdding
+                            ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                            : 'bg-theme-primary/10 hover:bg-theme-primary hover:text-white text-theme-primary border-theme-primary'
+                    }`}>
+                    {isAdding ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                        <Plus className="w-4 h-4 transition-transform group-hover/btn:rotate-90" />
+                    )}
                     <span className="text-sm">
                         {addToCartLabel || 'إضافة إلى السلة'}
                     </span>

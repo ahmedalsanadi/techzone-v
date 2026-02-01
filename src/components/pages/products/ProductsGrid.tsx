@@ -15,6 +15,9 @@ interface ProductsGridProps {
     pagination?: PaginationMeta;
     onPageChange?: (page: number) => void;
     onAddToCart?: (product: Product) => void;
+    getAddToCartLabel?: (product: Product) => string;
+    isAddingProductId?: number | null;
+    onPrefetchProduct?: (product: Product) => void;
     variant?: 'default' | 'compact';
 }
 
@@ -25,6 +28,9 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
     pagination,
     onPageChange,
     onAddToCart,
+    getAddToCartLabel,
+    isAddingProductId,
+    onPrefetchProduct,
     variant = 'default',
 }) => {
     const t = useTranslations('Promotions');
@@ -81,8 +87,12 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
                             href={`/products/${product.slug}`}
                             productId={product.id}
                             productSlug={product.slug}
-                            addToCartLabel={t('addToCart')}
+                            addToCartLabel={
+                                getAddToCartLabel?.(product) || t('addToCart')
+                            }
                             onAddToCartClick={() => onAddToCart?.(product)}
+                            isAdding={isAddingProductId === product.id}
+                            onPrefetch={() => onPrefetchProduct?.(product)}
                         />
                     ))}
                 </div>

@@ -1,96 +1,97 @@
 # Cart System Architecture & Flow Documentation
 
-This document provides a detailed technical overview of the Cart system implemented in the Fasto Ecommerce / Store Restaurants project.
+This document describes the cart system end‑to‑end, including product configuration rules, guest/auth flows, and data integrity safeguards.
 
 ## 1. System Overview
 
-The cart system is a hybrid solution designed to provide a seamless user experience across two distinct states:
+The cart system operates in two modes:
 
-- **Guest Mode**: Items are stored locally in `localStorage` using Zustand persistence.
-- **Authenticated Mode**: Items are synchronized with the backend API, ensuring data consistency across devices.
+- **Guest Mode**: Stored locally (Zustand + localStorage).
+- **Authenticated Mode**: API‑backed cart with sync on load.
+
+Key differences:
+
+- Guest items are **optimistic** and local.
+- Auth items are **authoritative** from the backend.
 
 ## 2. Core Components
 
-### A. State Management (`useCartStore.ts`)
+### A) State Management (`src/store/useCartStore.ts`)
 
-The central hub for cart data. It manages:
+Manages:
 
-- `items`: An array of `CartItem` objects.
-- `isGuestMode`: A boolean flag determining where data should be read from/written to.
-- `isLoading`: Manages pending API states.
-- `lastSyncedAt`: Timestamp to prevent redundant API calls (sync guard).
+- `items`: Active cart items (guest or API).
+- `pendingItems`: Items that require configuration before they can be merged.
+- `isGuestMode`: Decides local vs API operations.
+- `isLoading`, `lastSyncedAt`: sync guards.
 
-### B. Stable ID Generation (`lib/cart/utils.ts`)
+### B) Stable ID (`src/lib/cart/utils.ts`)
 
-A critical part of the system is the `generateCartItemId` function. It creates a deterministic, unique string for every unique product configuration.
+`generateCartItemId` builds deterministic IDs:
 
-- **Components of the ID**: `productId` + `variantId` + `sortedAddonIds` + `customFields`.
-- **Purpose**: Ensures that adding the exact same item twice (same addons, same size) increases the quantity instead of creating a duplicate entry in the cart.
+- `productId` + `variantId` + `addons` + `customFields` + `notes`
+- Prevents duplicate rows when the same configuration is added twice.
 
-### C. Unified Actions (`useCartActions.tsx`)
+### C) Unified Actions (`src/hooks/useCartActions.tsx`)
 
-A hook that abstracts the complexity of choosing between Local and API actions.
+- `addToCart`: local for guest, API for auth.
+- `updateItemQuantity`: local or `PATCH`.
+- `removeFromCart`: local or `DELETE`.
 
-- `addToCart()`: Checks `isGuestMode`. If true, updates local state. If false, calls `cartService.addItem()`.
-- `updateItemQuantity()`: Handles local updates or API `PATCH` requests.
-- `removeFromCart()`: Handles local removal or API `DELETE` requests.
+## 3. Product Configuration Flow (List vs Detail)
 
-## 3. The Lifecycle Stages
+### Listing Add‑to‑Cart
 
-### Stage 1: Guest Interaction (Unauthenticated)
+1. User clicks “Add” on a product card.
+2. Details are fetched (list is incomplete).
+3. If **required** selections exist, a **modal** opens:
+   - Required variant
+   - Required addon groups (`is_required` or `min_selected > 0`)
+   - Required custom fields
+4. Optional addons/custom fields are **not shown** in the modal.
+5. User can navigate to the product details page for optional selections.
 
-1. **Selection**: User selects a product.
-    - If the product has no variations/addons, they can add it directly from the grid.
-    - If it has variations/addons, the system redirects them to the **Product Details** page for configuration.
-2. **Stable ID Creation**: `generateCartItemId` is called to create a unique identifier for the specific selection.
-3. **Local Storage**: The item is added to the Zustand store and persisted to `localStorage`.
-4. **Price Estimation**: Total price is calculated locally based on the base price and selected addons' `extra_price`.
+### Product Detail Page
 
-### Stage 2: Authentication & Merging (`useCartMerge.ts`)
+Provides **full** configuration (all addons, all custom fields, notes).
 
-This is the most complex part of the flow, triggered after a successful login or signup.
+## 4. Guest Flow (Unauthenticated)
 
-1. **Detection**: `useCartMerge` checks if there are any items in the local guest cart.
-2. **Mode Switch**: `setGuestMode(false)` is called to prepare the store for API data.
-3. **Transformation**: Local items are transformed into the API-expected format (`GuestCartItem[]`).
-4. **Merge Request**: The `POST /cart/merge` endpoint is called with the guest items.
-5. **Backend Logic**: The server merges items based on "Smart Matching." If a guest item matches an existing item in the user's account, quantities are summed.
-6. **State Update**: The **response** from the merge request is used immediately to populate the cart UI, ensuring zero delay for the user.
+1. User adds items → stored locally.
+2. Items have stable IDs based on configuration.
+3. Price is estimated locally (base + addons).
 
-### Stage 3: Authenticated Mode (API Sync)
+## 5. Auth Merge Flow (`src/hooks/useCartMerge.ts`)
 
-1. **Source of Truth**: The Backend is now the master of all data.
-2. **Syncing**: Whenever a user opens the Cart Page or Dropdown, `syncWithAPI()` is called.
-    - **Sync Guard**: To optimize performance, if a sync happened in the last 2 seconds (e.g., during the merge), the request is skipped.
-3. **Price Finalization**: The local `price` field is overwritten with the server-calculated `total_price / quantity`. This accounts for complex server-side rules like "Flat Fee" vs "Per Unit" addons.
+On login/signup:
 
-## 4. Specific Functionalities Detail
+1. Guest items are checked for **required selections**.
+2. Invalid items are stored in `pendingItems` (not merged).
+3. Valid items are transformed and merged to API.
+4. `pendingItems` are surfaced as a warning (non‑blocking).
 
-### Addon Handling
+## 6. Auth Sync Flow
 
-Addons are handled via a complex metadata structure:
+When authenticated:
 
-- **Local Record**: `addons: { [groupId]: { [itemId]: quantity } }`.
-- **API Format**: `addons: Array<{ addon_item_id: number, quantity: number }>`.
-- **Utility**: `transformLocalAddonsToApi` handles the conversion between these two formats seamlessly.
+1. `syncWithAPI()` fetches authoritative cart.
+2. Local `price` is overwritten from server totals.
+3. Sync guard prevents repeated calls within 2 seconds.
 
-### Variation / Variety Handling
+## 7. Data Transform Summary
 
-- **Variants**: Handled via `product_variant_id`.
-- **Display**: The UI uses `item.metadata.variety.name` for display (e.g., "Large - Blue"). This is reconstructed from the API's `variant.title` during synchronization.
+| Field        | Local Source             | API Source                        |
+| :----------- | :----------------------- | :-------------------------------- |
+| **ID**       | Stable Config ID         | Reconstructed Stable ID           |
+| **Price**    | Estimated (Base+Addons)  | Exact (`total_price / quantity`)  |
+| **Quantity** | Local increment          | Server count                      |
+| **Metadata** | Selection payload        | Reconstructed from API response   |
 
-### UI Resilience
+## 8. Key Files
 
-- **Loading Guards**: `CartPage` and `CartDropdown` check `isLoading` while `items.length === 0`. This prevents "Empty Cart" messages from appearing while the API is still fetching data.
-- **Hydration Fix**: `isMounted` checks are used to ensure that server-side rendering doesn't mismatch with client-side `localStorage`.
-
-## 5. Summary of Data Transformation Logic
-
-| Field        | Source (Local)            | Source (API Sync)                 |
-| :----------- | :------------------------ | :-------------------------------- |
-| **ID**       | Stable Config ID          | Reconstructed Stable ID           |
-| **Price**    | Estimated (Base + Addons) | Exact (`total_price` from server) |
-| **Quantity** | Local Increment           | Server Count                      |
-| **Metadata** | Initial Selection         | Reconstructed from API Response   |
-
----
+- `src/store/useCartStore.ts`
+- `src/hooks/useCartActions.tsx`
+- `src/hooks/useCartMerge.ts`
+- `src/lib/cart/utils.ts`
+- `src/lib/cart/transform.ts`
+- `src/components/modals/ProductConfigModal.tsx`

@@ -5,10 +5,10 @@ import React from 'react';
 import ProductsHeader from './ProductsHeader';
 import ProductsGrid from './ProductsGrid';
 import { Product, PaginationMeta } from '@/services/types';
-import { generateCartItemId } from '@/lib/cart/utils';
-import { useCartActions } from '@/hooks/useCartActions';
 import { cn } from '@/lib/utils';
-import { useRouter } from '@/i18n/navigation';
+import { useProductConfigFlow } from '@/hooks/useProductConfigFlow';
+import { requiresConfiguration } from '@/lib/products/requirements';
+import { useTranslations } from 'next-intl';
 
 interface ProductsMainSectionProps {
     products: Product[];
@@ -31,9 +31,9 @@ export function ProductsMainSection({
     filters,
     onUpdateFilters,
 }: ProductsMainSectionProps) {
-    const { addToCart } = useCartActions();
-
-    const router = useRouter();
+    const t = useTranslations('Product');
+    const { loadingProductId, handleAddClick, prefetchProduct } =
+        useProductConfigFlow();
 
     return (
         <div className="lg:col-span-3 space-y-6 relative z-0">
@@ -65,30 +65,14 @@ export function ProductsMainSection({
                     onPageChange={(p) =>
                         onUpdateFilters({ ...filters, page: String(p) })
                     }
-                    onAddToCart={(product) => {
-                        // If product has variations or addons, redirect to details page
-                        if (
-                            product.is_variation ||
-                            (product.addons && product.addons.length > 0)
-                        ) {
-                            router.push(`/products/${product.slug}`);
-                            return;
-                        }
-
-                        addToCart({
-                            id: generateCartItemId(product.id, {}),
-                            name: product.title,
-                            image: product.cover_image_url || '',
-                            price: product.price,
-                            categoryId: String(
-                                product.categories?.[0]?.id || '',
-                            ),
-                            metadata: {
-                                productId: product.id,
-                                productSlug: product.slug,
-                            },
-                        });
-                    }}
+                    onAddToCart={handleAddClick}
+                    getAddToCartLabel={(product) =>
+                        requiresConfiguration(product)
+                            ? t('customize') || 'Customize'
+                            : t('addToCart') || 'Add to cart'
+                    }
+                    isAddingProductId={loadingProductId}
+                    onPrefetchProduct={prefetchProduct}
                 />
             </div>
         </div>

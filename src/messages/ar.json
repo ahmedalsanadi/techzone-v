@@ -175,6 +175,7 @@
     "dishName": "اسم الطبق",
     "save": "وفر {amount}",
     "addToCart": "اضافة إلى السلة",
+    "customize": "تخصيص",
     "noProducts": "لا توجد منتجات متوفرة حالياً",
     "previous": "السابق",
     "next": "التالي"
@@ -183,12 +184,14 @@
     "title": "المنتجات المميزة",
     "more": "المزيد",
     "addToCart": "اضافة إلى السلة",
+    "customize": "تخصيص",
     "save": "وفر {amount}"
   },
   "NewArrivals": {
     "title": "المنتجات الجديدة",
     "more": "المزيد",
     "addToCart": "اضافة إلى السلة",
+    "customize": "تخصيص",
     "save": "وفر {amount}"
   },
   "Product": {
@@ -238,7 +241,14 @@
     "customFields": "معلومات إضافية",
     "variantRequired": "يرجى اختيار مقاس",
     "select": "اختر...",
-    "completeSelection": "أكمل الاختيارات"
+    "completeSelection": "أكمل الاختيارات",
+    "customize": "تخصيص",
+    "requiredSelections": "الاختيارات المطلوبة",
+    "moreOptionsHint": "خيارات إضافية متاحة في صفحة المنتج",
+    "viewDetails": "عرض التفاصيل",
+    "loadProductError": "تعذر تحميل تفاصيل المنتج",
+    "cancel": "إلغاء",
+    "close": "إغلاق"
   },
   "Orders": {
     "title": "طلباتي",
@@ -317,7 +327,12 @@
     "addError": "فشل إضافة المنتج إلى السلة",
     "removeError": "فشل حذف المنتج من السلة",
     "updateError": "فشل تحديث الكمية",
-    "removed": "تم حذف المنتج من السلة"
+    "removed": "تم حذف المنتج من السلة",
+    "needsConfigTitle": "بعض العناصر تحتاج إلى تهيئة",
+    "needsConfigDesc": "يرجى مراجعة هذه العناصر قبل إضافتها إلى السلة.",
+    "configure": "تهيئة",
+    "needsConfigToast": "بعض العناصر تحتاج إلى تهيئة قبل إضافتها إلى السلة.",
+    "clearPending": "مسح العناصر المعلقة"
   },
   "Wishlist": {
     "title": "قائمة الرغبات",
@@ -343,6 +358,7 @@
     "products": "المنتجات",
     "items_count": "منتج",
     "addToCart": "إضافة للسلة",
+    "customize": "تخصيص",
     "no_products": "لا توجد منتجات في هذا القسم حالياً"
   },
   "Search": {
@@ -352,7 +368,9 @@
     "search_products": "ابحث عن المنتجات",
     "items_found": "عناصر تم العثور عليها",
     "no_query": "يرجى ادخال كلمة البحث",
-    "no_results": "عذراً، لم نجد نتائج لطلبك"
+    "no_results": "عذراً، لم نجد نتائج لطلبك",
+    "addToCart": "إضافة إلى السلة",
+    "customize": "تخصيص"
   },
   "Contact": {
     "title": "تواصل معنا",
@@ -480,7 +498,9 @@
     "selectCollectionToViewProducts": "اختر مجموعة أعلاه لعرض المنتجات",
     "noCollections": "لا توجد مجموعات متاحة في الوقت الحالي",
     "errorLoadingCollections": "فشل تحميل المجموعات. يرجى المحاولة مرة أخرى لاحقاً.",
-    "home": "الرئيسية"
+    "home": "الرئيسية",
+    "addToCart": "إضافة إلى السلة",
+    "customize": "تخصيص"
   },
   "Payment": {
     "title": "الدفع",

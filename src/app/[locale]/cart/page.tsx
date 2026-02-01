@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useSyncExternalStore } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useCartStore } from '@/store/useCartStore';
@@ -14,21 +14,22 @@ const CartPage = () => {
     const t = useTranslations('Cart');
     const {
         items,
+        pendingItems,
         getTotalPrice,
         getTotalItems,
         syncWithAPI,
         isLoading,
         isGuestMode,
+        clearPendingItems,
     } = useCartStore();
     const { isAuthenticated } = useAuthStore();
     const { updateItemQuantity, removeFromCart } = useCartActions();
     const router = useRouter();
-    const [isMounted, setIsMounted] = useState(false);
-
-    // Prevent hydration mismatch
-    useEffect(() => {
-        setIsMounted(true);
-    }, []);
+    const isMounted = useSyncExternalStore(
+        () => () => {},
+        () => true,
+        () => false,
+    );
 
     // CRITICAL: Only sync cart with API when authenticated
     // Guest users should only see local cart (no API calls)
@@ -43,7 +44,7 @@ const CartPage = () => {
     }, [isMounted, isAuthenticated, isGuestMode, syncWithAPI]);
 
     const handleCheckout = () => {
-        router.push('/checkout' as any);
+        router.push('/checkout');
     };
     if (!isMounted) return null;
 
@@ -94,6 +95,51 @@ const CartPage = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                 {/* Items List */}
                 <div className="lg:col-span-2 space-y-4">
+                    {pendingItems.length > 0 && (
+                        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 sm:p-5 text-amber-900">
+                            <h3 className="font-bold text-base mb-2">
+                                {t('needsConfigTitle') ||
+                                    'Some items need configuration'}
+                            </h3>
+                            <p className="text-sm text-amber-800 mb-3">
+                                {t('needsConfigDesc') ||
+                                    'Review these items before they can be added to your cart.'}
+                            </p>
+                            <div className="flex items-center justify-between gap-3 mb-3">
+                                <span className="text-xs text-amber-700">
+                                    {pendingItems.length} {t('items', { count: pendingItems.length })}
+                                </span>
+                                <button
+                                    type="button"
+                                    onClick={clearPendingItems}
+                                    className="text-xs font-bold text-amber-700 hover:text-amber-800 underline">
+                                    {t('clearPending') || 'Clear pending items'}
+                                </button>
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                {pendingItems.map((item) => {
+                                    const slug = item.metadata?.productSlug;
+                                    const url = slug
+                                        ? `/products/${slug}`
+                                        : '/products';
+                                    return (
+                                        <Link
+                                            key={item.id}
+                                            href={url}
+                                            className="flex items-center justify-between bg-white/60 border border-amber-100 rounded-xl px-3 py-2 text-sm font-medium hover:bg-white transition-colors">
+                                            <span className="truncate">
+                                                {item.name}
+                                            </span>
+                                            <span className="text-amber-700 font-bold">
+                                                {t('configure') ||
+                                                    'Configure'}
+                                            </span>
+                                        </Link>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
                     {items.map((item) => {
                         const productSlug = item.metadata?.productSlug;
                         const productUrl = productSlug

@@ -21,6 +21,7 @@ import { ThemeStyles } from '@/components/providers/ThemeStyles';
 import ToasterContainer from '@/components/layouts/ToasterContainer';
 import BranchSelectionModal from '@/components/modals/BranchSelectionModal';
 import BranchModalInitializer from '@/components/modals/BranchModalInitializer';
+import { ProductConfigProvider } from '@/components/providers/ProductConfigProvider';
 
 /* -------------------------------------------------------------------------- */
 /*                                   FONTS                                    */
@@ -157,7 +158,11 @@ export default async function RootLayout({
                                 categories={categories}
                                 cmsPages={cmsPages}>
                                 <QueryProvider>
-                                    <PageContainer>{children}</PageContainer>
+                                    <ProductConfigProvider>
+                                        <PageContainer>
+                                            {children}
+                                        </PageContainer>
+                                    </ProductConfigProvider>
                                     <ToasterContainer isArabic={isArabic} />
                                     <BranchSelectionModal />
                                     <BranchModalInitializer />

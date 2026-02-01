@@ -6,7 +6,8 @@ import ProductsGrid from '../products/ProductsGrid';
 import { Product, PaginationMeta } from '@/services/types';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
-import { useCartActions } from '@/hooks/useCartActions';
+import { useProductConfigFlow } from '@/hooks/useProductConfigFlow';
+import { requiresConfiguration } from '@/lib/products/requirements';
 
 interface OffersProductsSectionProps {
     products: Product[];
@@ -28,7 +29,8 @@ export function OffersProductsSection({
     onPageChange,
 }: OffersProductsSectionProps) {
     const t = useTranslations('Collections');
-    const { addToCart } = useCartActions();
+    const { loadingProductId, handleAddClick, prefetchProduct } =
+        useProductConfigFlow();
 
     return (
         <div className="space-y-6">
@@ -49,21 +51,14 @@ export function OffersProductsSection({
                     currentPage={currentPage}
                     pagination={pagination}
                     onPageChange={onPageChange}
-                    onAddToCart={(product) => {
-                        addToCart({
-                            id: String(product.id),
-                            name: product.title,
-                            image: product.cover_image_url || '',
-                            price: product.price,
-                            categoryId: String(
-                                product.categories?.[0]?.id || '',
-                            ),
-                            metadata: {
-                                productId: product.id, // CRITICAL: Required for API calls
-                                productSlug: product.slug,
-                            },
-                        });
-                    }}
+                    onAddToCart={handleAddClick}
+                    getAddToCartLabel={(product) =>
+                        requiresConfiguration(product)
+                            ? t('customize') || 'Customize'
+                            : t('addToCart') || 'Add to cart'
+                    }
+                    isAddingProductId={loadingProductId}
+                    onPrefetchProduct={prefetchProduct}
                 />
             </div>
         </div>

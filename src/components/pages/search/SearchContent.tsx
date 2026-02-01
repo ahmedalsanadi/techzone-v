@@ -1,12 +1,14 @@
 // src/components/pages/search/SearchContent.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { storeService } from '@/services/store-service';
 import ProductsGrid from '@/components/pages/products/ProductsGrid';
 import ProductsSorting from '@/components/pages/products/ProductsSorting';
 import { useTranslations } from 'next-intl';
+import { useProductConfigFlow } from '@/hooks/useProductConfigFlow';
+import { requiresConfiguration } from '@/lib/products/requirements';
 
 interface SearchContentProps {
     initialQuery?: string;
@@ -14,17 +16,21 @@ interface SearchContentProps {
 
 const SearchContent = ({ initialQuery }: SearchContentProps) => {
     const t = useTranslations('Search');
-    const [filters, setFilters] = useState({
-        search: initialQuery,
-        sort: undefined as string | undefined,
-        order: undefined as string | undefined,
-        page: '1',
-    });
+    const { loadingProductId, handleAddClick, prefetchProduct } =
+        useProductConfigFlow();
+    const [sort, setSort] = useState<string | undefined>(undefined);
+    const [order, setOrder] = useState<string | undefined>(undefined);
+    const [page, setPage] = useState('1');
 
-    // Update search filter if initialQuery changes
-    useEffect(() => {
-        setFilters((prev) => ({ ...prev, search: initialQuery, page: '1' }));
-    }, [initialQuery]);
+    const filters = useMemo(
+        () => ({
+            search: initialQuery,
+            sort,
+            order,
+            page,
+        }),
+        [initialQuery, sort, order, page],
+    );
 
     const { data: productsResult, isLoading } = useQuery({
         queryKey: ['products', filters],
@@ -36,11 +42,13 @@ const SearchContent = ({ initialQuery }: SearchContentProps) => {
         sort: string | undefined,
         order: string | undefined,
     ) => {
-        setFilters((prev) => ({ ...prev, sort, order, page: '1' }));
+        setSort(sort);
+        setOrder(order);
+        setPage('1');
     };
 
     const handlePageChange = (page: number) => {
-        setFilters((prev) => ({ ...prev, page: page.toString() }));
+        setPage(page.toString());
     };
 
     if (!filters.search) {
@@ -69,6 +77,14 @@ const SearchContent = ({ initialQuery }: SearchContentProps) => {
                 loading={isLoading}
                 pagination={productsResult?.meta}
                 onPageChange={handlePageChange}
+                onAddToCart={handleAddClick}
+                getAddToCartLabel={(product) =>
+                    requiresConfiguration(product)
+                        ? t('customize') || 'Customize'
+                        : t('addToCart') || 'Add to cart'
+                }
+                isAddingProductId={loadingProductId}
+                onPrefetchProduct={prefetchProduct}
             />
 
             {!isLoading && productsResult?.data.length === 0 && (
