@@ -30,6 +30,7 @@ export function useAddresses() {
 
 /**
  * Hook to fetch a single address by ID
+ * Note: Use this rarely, as useAddresses() already provides full data.
  */
 export function useAddress(id: number | null) {
     const { isAuthenticated } = useAuthStore();
@@ -38,30 +39,12 @@ export function useAddress(id: number | null) {
         queryKey: ['address', id],
         queryFn: () => storeService.getAddress(id!),
         enabled: isAuthenticated && id !== null,
-        staleTime: 1000 * 60 * 10, // 10 minutes
+        staleTime: 1000 * 60 * 10,
     });
 }
 
 /**
- * Prefetch a single address (e.g. on hover before opening edit modal).
- */
-export function usePrefetchAddress() {
-    const queryClient = useQueryClient();
-    const { isAuthenticated } = useAuthStore();
-
-    return (id: number) => {
-        if (!isAuthenticated) return;
-        queryClient.prefetchQuery({
-            queryKey: ['address', id],
-            queryFn: () => storeService.getAddress(id),
-            staleTime: 1000 * 60 * 10,
-        });
-    };
-}
-
-/**
  * Hook for address mutations (create, update, delete).
- * Uses centralized deliverySync so deliveryAddress is only updated when appropriate.
  */
 export function useAddressMutations() {
     const queryClient = useQueryClient();
@@ -203,9 +186,20 @@ export function useAddressMutations() {
     });
 
     const setDefaultMutation = useMutation({
-        mutationFn: (id: number) =>
-            storeService.updateAddress(id, { is_default: true }),
-        onMutate: async (id) => {
+        mutationFn: (address: Address) =>
+            storeService.updateAddress(address.id, {
+                ...address,
+                district_id: address.district_id ?? undefined,
+                building: address.building ?? undefined,
+                unit: address.unit ?? undefined,
+                postal_code: address.postal_code ?? undefined,
+                additional_number: address.additional_number ?? undefined,
+                description: address.description ?? undefined,
+                latitude: Number(address.latitude),
+                longitude: Number(address.longitude),
+                is_default: true,
+            }),
+        onMutate: async (target) => {
             await queryClient.cancelQueries({ queryKey: ['addresses'] });
             const previousAddresses = queryClient.getQueryData<Address[]>([
                 'addresses',
@@ -214,7 +208,7 @@ export function useAddressMutations() {
             queryClient.setQueryData(['addresses'], (old: Address[] = []) =>
                 old.map((a) => ({
                     ...a,
-                    is_default: Number(a.id) === id,
+                    is_default: Number(a.id) === target.id,
                 })),
             );
 
@@ -244,12 +238,13 @@ export function useAddressMutations() {
 }
 
 /**
- * Hook to fetch countries, cities, and districts (often cached longer)
+ * Location Helpers with high staleTime to prevent redundant fetches.
  */
-export function useCountries() {
+export function useCountries(enabled = true) {
     return useQuery({
         queryKey: ['countries'],
         queryFn: () => storeService.getCountries(),
+        enabled: enabled,
         staleTime: 1000 * 60 * 60 * 24, // 24 hours
     });
 }
@@ -258,8 +253,8 @@ export function useCities(countryId: number | null) {
     return useQuery({
         queryKey: ['cities', countryId],
         queryFn: () => storeService.getCities(countryId!),
-        enabled: countryId !== null,
-        staleTime: 1000 * 60 * 60 * 24, // 24 hours
+        enabled: !!countryId,
+        staleTime: 1000 * 60 * 60 * 24,
     });
 }
 
@@ -267,7 +262,7 @@ export function useDistricts(cityId: number | null) {
     return useQuery({
         queryKey: ['districts', cityId],
         queryFn: () => storeService.getDistricts(cityId!),
-        enabled: cityId !== null,
-        staleTime: 1000 * 60 * 60 * 24, // 24 hours
+        enabled: !!cityId,
+        staleTime: 1000 * 60 * 60 * 24,
     });
 }

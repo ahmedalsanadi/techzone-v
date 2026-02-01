@@ -9,18 +9,11 @@ interface AddressCardProps {
     address: Address;
     onEdit: (address: Address) => void;
     onDelete: (id: number) => void;
-    onSetDefault: (id: number) => void;
-    onMouseEnter?: () => void;
+    onSetDefault: (address: Address) => void;
 }
 
 const AddressCard = memo(
-    ({
-        address,
-        onEdit,
-        onDelete,
-        onSetDefault,
-        onMouseEnter,
-    }: AddressCardProps) => {
+    ({ address, onEdit, onDelete, onSetDefault }: AddressCardProps) => {
         const t = useTranslations('MyAddresses');
 
         const isDefault = address.is_default;
@@ -31,9 +24,8 @@ const AddressCard = memo(
         return (
             <div
                 onClick={() =>
-                    !isDefault && !isOptimistic && onSetDefault(address.id)
+                    !isDefault && !isOptimistic && onSetDefault(address)
                 }
-                onMouseEnter={onMouseEnter}
                 className={cn(
                     'group relative bg-white border-2 transition-all',
                     'rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl',

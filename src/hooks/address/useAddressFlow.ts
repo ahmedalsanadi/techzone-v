@@ -77,9 +77,9 @@ export function useAddressFlow() {
         }
     };
 
-    const setDefault = async (id: number) => {
+    const setDefault = async (address: Address) => {
         if (isAuthenticated) {
-            return setDefaultAddress.mutateAsync(id);
+            return setDefaultAddress.mutateAsync(address);
         }
         return null;
     };

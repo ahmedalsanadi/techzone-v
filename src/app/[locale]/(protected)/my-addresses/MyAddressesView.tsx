@@ -12,13 +12,11 @@ import { Button } from '@/components/ui/Button';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import { toast } from 'sonner';
 import { useAddressFlow } from '@/hooks/address/useAddressFlow';
-import { usePrefetchAddress } from '@/hooks/useAddresses';
 
 export default function MyAddressesView() {
     const t = useTranslations('MyAddresses');
     const { addresses, isLoading, saveAddress, deleteAddress, setDefault } =
         useAddressFlow();
-    const prefetchAddress = usePrefetchAddress();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingAddress, setEditingAddress] = useState<Address | null>(null);
@@ -54,9 +52,9 @@ export default function MyAddressesView() {
     }, [deleteTargetId, deleteAddress, t]);
 
     const handleSetDefault = useCallback(
-        async (id: number) => {
+        async (address: Address) => {
             try {
-                await setDefault(id);
+                await setDefault(address);
                 toast.success(t('defaultUpdated'));
             } catch {
                 toast.error(t('defaultError'));
@@ -136,9 +134,6 @@ export default function MyAddressesView() {
                                 onEdit={handleEdit}
                                 onDelete={handleDeleteClick}
                                 onSetDefault={handleSetDefault}
-                                onMouseEnter={() =>
-                                    prefetchAddress(Number(address.id))
-                                }
                             />
                         ))}
                     </div>
