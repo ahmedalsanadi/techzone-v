@@ -3,7 +3,7 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { Address } from '@/types/address';
+import { Address, normalizeAddress } from '@/types/address';
 
 /**
  * Store for managing guest addresses (local storage only).
@@ -21,22 +21,30 @@ export const useAddressStore = create<AddressState>()(
     persist(
         (set) => ({
             guestAddress: null,
-            setGuestAddress: (address) => set({ guestAddress: address }),
+            setGuestAddress: (address) =>
+                set({
+                    guestAddress: address ? normalizeAddress(address) : null,
+                }),
             clearGuestAddress: () => set({ guestAddress: null }),
         }),
         {
             name: 'guest-address-storage',
             version: ADDRESS_STORAGE_VERSION,
             storage: createJSONStorage(() => localStorage),
-            migrate: (persistedState: any, version: number) => {
+            migrate: (persistedState: unknown, version: number) => {
                 if (version < 2) {
                     // Handle migration from old array-based storage if needed
                     const oldState = persistedState as { addresses: Address[] };
                     return {
-                        guestAddress: oldState.addresses?.[0] || null,
+                        guestAddress: normalizeAddress(
+                            oldState.addresses?.[0] || null,
+                        ),
                     };
                 }
-                return persistedState as AddressState;
+                const state = persistedState as Partial<AddressState>;
+                return {
+                    guestAddress: normalizeAddress(state?.guestAddress || null),
+                };
             },
         },
     ),

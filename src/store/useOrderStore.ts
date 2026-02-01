@@ -7,7 +7,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 export type OrderType = 'delivery' | 'pickup' | 'dineIn' | 'carPickup';
 export type OrderTime = 'now' | 'later';
 
-import { Address } from '@/types/address';
+import { Address, normalizeAddress } from '@/types/address';
 
 export type DeliveryAddress = Address;
 
@@ -41,7 +41,12 @@ export const useOrderStore = create<OrderState>()(
             scheduledTime: null,
             orderTime: 'now',
             setOrderType: (type) => set({ orderType: type }),
-            setDeliveryAddress: (address) => set({ deliveryAddress: address }),
+            setDeliveryAddress: (address) =>
+                set({
+                    deliveryAddress: address
+                        ? normalizeAddress(address)
+                        : null,
+                }),
             setScheduledTime: (time) => set({ scheduledTime: time }),
             setOrderTime: (time) => set({ orderTime: time }),
             clearOrder: () =>
@@ -82,7 +87,9 @@ export const useOrderStore = create<OrderState>()(
                 const state = persistedState as Partial<PersistedState>;
                 return {
                     orderType: state?.orderType ?? null,
-                    deliveryAddress: state?.deliveryAddress ?? null,
+                    deliveryAddress: normalizeAddress(
+                        state?.deliveryAddress || null,
+                    ),
                     scheduledTime: state?.scheduledTime ?? null,
                     orderTime: state?.orderTime ?? 'now',
                     version: ORDER_STORAGE_VERSION,
