@@ -113,7 +113,7 @@ export default function Navbar() {
                             className="opacity-40"
                         />
                     }
-                    containerClassName="w-[280px] xl:w-[340px]"
+                    containerClassName="w-[270px] xl:w-[340px]"
                 />
             </div>
 
