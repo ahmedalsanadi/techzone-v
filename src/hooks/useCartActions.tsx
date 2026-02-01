@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 import { ShoppingCart } from 'lucide-react';
 import React from 'react';
 import { useRouter } from '@/i18n/navigation';
-import { transformCartItemToApiRequest } from '@/lib/cart/utils';
+import { transformCartItemToApiRequest, transformLocalAddonsToApi } from '@/lib/cart/utils';
 
 export const useCartActions = () => {
     const addItem = useCartStore((state) => state.addItem);
@@ -158,5 +158,78 @@ export const useCartActions = () => {
         }
     };
 
-    return { addToCart, removeFromCart, updateItemQuantity };
+    const updateItemConfiguration = async (
+        itemId: string,
+        newItem: Omit<CartItem, 'quantity'>,
+        quantity: number,
+    ) => {
+        const current = useCartStore
+            .getState()
+            .items.find((i) => i.id === itemId);
+
+        if (!current) return;
+
+        if (isAuthenticated && !isGuestMode) {
+            try {
+                const apiItemId = current.metadata?.apiItemId;
+                if (!apiItemId || typeof apiItemId !== 'number') {
+                    removeItem(itemId);
+                    addItem(newItem, quantity);
+                    return;
+                }
+
+                const currentVariant = current.metadata?.product_variant_id;
+                const nextVariant = newItem.metadata?.product_variant_id || null;
+
+                if (currentVariant === nextVariant) {
+                    const updateRequest = {
+                        addons: transformLocalAddonsToApi(
+                            newItem.metadata?.addons,
+                        ),
+                        ...(newItem.metadata?.notes && {
+                            notes: newItem.metadata.notes,
+                        }),
+                        ...(newItem.metadata?.custom_fields && {
+                            custom_fields: newItem.metadata.custom_fields,
+                        }),
+                    };
+                    await cartService.updateItem(apiItemId, updateRequest);
+                } else {
+                    const addRequest = transformCartItemToApiRequest(
+                        newItem,
+                        quantity,
+                    );
+                    await cartService.addItem(addRequest);
+                    await cartService.removeItem(apiItemId);
+                }
+
+                await syncWithAPI();
+
+                const productId = newItem.metadata?.productId;
+                if (productId && typeof productId === 'number') {
+                    clearPendingByProductId(productId);
+                }
+            } catch (error) {
+                console.error(
+                    'Failed to update item configuration via API:',
+                    error,
+                );
+                toast.error(t('updateError') || 'فشل تحديث الكمية');
+            }
+        } else {
+            removeItem(itemId);
+            addItem(newItem, quantity);
+            const productId = newItem.metadata?.productId;
+            if (productId && typeof productId === 'number') {
+                clearPendingByProductId(productId);
+            }
+        }
+    };
+
+    return {
+        addToCart,
+        removeFromCart,
+        updateItemQuantity,
+        updateItemConfiguration,
+    };
 };

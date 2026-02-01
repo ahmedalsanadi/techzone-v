@@ -249,7 +249,9 @@
     "viewDetails": "View details",
     "loadProductError": "Unable to load product details",
     "cancel": "Cancel",
-    "close": "Close"
+    "close": "Close",
+    "save": "Save",
+    "loading": "Loading..."
   },
   "Orders": {
     "title": "My Orders",
@@ -333,7 +335,8 @@
     "needsConfigDesc": "Review these items before they can be added to your cart.",
     "configure": "Configure",
     "needsConfigToast": "Some items need configuration before adding to your cart.",
-    "clearPending": "Clear pending items"
+    "clearPending": "Clear pending items",
+    "editItem": "Edit item"
   },
   "Wishlist": {
     "title": "Wishlist",

@@ -1,14 +1,15 @@
 'use client';
 
-import React, { useEffect, useSyncExternalStore } from 'react';
+import React, { useEffect, useState, useSyncExternalStore } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useCartStore } from '@/store/useCartStore';
 import { useCartActions } from '@/hooks/useCartActions';
 import { Link, useRouter } from '@/i18n/navigation';
-import { Trash2, Plus, Minus, ShoppingBag, ArrowRight } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Edit } from 'lucide-react';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
 import { useAuthStore } from '@/store/useAuthStore';
+import CartItemConfigModal from '@/components/modals/CartItemConfigModal';
 
 const CartPage = () => {
     const t = useTranslations('Cart');
@@ -24,6 +25,9 @@ const CartPage = () => {
     } = useCartStore();
     const { isAuthenticated } = useAuthStore();
     const { updateItemQuantity, removeFromCart } = useCartActions();
+    const [editingItem, setEditingItem] = useState<typeof items[number] | null>(
+        null,
+    );
     const router = useRouter();
     const isMounted = useSyncExternalStore(
         () => () => {},
@@ -84,7 +88,8 @@ const CartPage = () => {
     const total = getTotalPrice() + deliveryFee;
 
     return (
-        <div className="container mx-auto px-4 py-8 md:py-12">
+        <>
+            <div className="container mx-auto px-4 py-8 md:py-12">
             <h1 className="text-3xl md:text-4xl font-black text-gray-900 mb-10 flex items-center gap-3">
                 {t('title')}
                 <span className="text-sm font-medium text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
@@ -349,6 +354,17 @@ const CartPage = () => {
                                         </div>
 
                                         <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setEditingItem(item);
+                                            }}
+                                            disabled={isLoading}
+                                            className="text-gray-300 hover:text-theme-primary transition-colors p-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                                            <Edit size={20} />
+                                        </button>
+
+                                        <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 removeFromCart(item.id);
@@ -421,6 +437,14 @@ const CartPage = () => {
                 </div>
             </div>
         </div>
+            {editingItem && (
+                <CartItemConfigModal
+                    isOpen={!!editingItem}
+                    onClose={() => setEditingItem(null)}
+                    item={editingItem}
+                />
+            )}
+        </>
     );
 };
 

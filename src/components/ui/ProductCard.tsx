@@ -1,7 +1,7 @@
 //src/components/ui/ProductCard.tsx
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import DynamicImage from './DynamicImage';
 import { Heart, Plus, ShoppingBasket, Loader2 } from 'lucide-react';
 import CurrencySymbol from './CurrencySymbol';
@@ -44,7 +44,27 @@ const ProductCard: React.FC<ProductCardProps> = ({
     isAdding = false,
     onPrefetch,
 }) => {
+    const cardRef = useRef<HTMLDivElement | null>(null);
+    const hasPrefetchedRef = useRef(false);
     const { toggleWishlist } = useWishlistActions();
+    useEffect(() => {
+        if (!onPrefetch || !cardRef.current) return;
+        if (hasPrefetchedRef.current) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries.some((entry) => entry.isIntersecting)) {
+                    hasPrefetchedRef.current = true;
+                    onPrefetch();
+                    observer.disconnect();
+                }
+            },
+            { rootMargin: '200px' },
+        );
+
+        observer.observe(cardRef.current);
+        return () => observer.disconnect();
+    }, [onPrefetch]);
     // Subscribe to items array to make it reactive
     const wishlistItems = useWishlistStore((state) => state.items);
     const isInWishlistState = productId
@@ -81,6 +101,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
     return (
         <div
+            ref={cardRef}
             onClick={onClick}
             onMouseEnter={onPrefetch}
             onFocus={onPrefetch}
