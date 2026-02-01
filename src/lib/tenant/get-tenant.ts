@@ -43,6 +43,7 @@ export async function getTenantContext(): Promise<TenantRequestInfo> {
         defaultStoreKey: env.storeDefaultKey || env.liberoApiKey,
         domainMap: parseDomainMap(env.storeDomainMap),
         allowDefault: env.isDev || env.allowDefaultStoreKeyInProd,
+        allowDefaultOnPlatformHosts: env.allowDefaultStoreKeyOnPlatformHosts,
     });
 
     return {

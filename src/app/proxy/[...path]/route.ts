@@ -51,6 +51,7 @@ async function handleRequest(
             defaultStoreKey: env.storeDefaultKey || env.liberoApiKey,
             domainMap: parseDomainMap(env.storeDomainMap),
             allowDefault: env.isDev || env.allowDefaultStoreKeyInProd,
+            allowDefaultOnPlatformHosts: env.allowDefaultStoreKeyOnPlatformHosts,
         });
 
         if (!storeKey) {

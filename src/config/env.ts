@@ -23,6 +23,8 @@ export const env = {
     storeDomainMap: process.env.STORE_DOMAIN_MAP || '',
     allowDefaultStoreKeyInProd:
         process.env.ALLOW_DEFAULT_STORE_KEY_IN_PROD === 'true',
+    allowDefaultStoreKeyOnPlatformHosts:
+        process.env.ALLOW_DEFAULT_STORE_KEY_ON_PLATFORM_HOSTS === 'true',
 
     // Environment
     isDev: process.env.NODE_ENV === 'development',

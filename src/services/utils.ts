@@ -55,14 +55,21 @@ export async function getBaseHeaders(
                 defaultStoreKey: env.storeDefaultKey || env.liberoApiKey,
                 domainMap: parseDomainMap(env.storeDomainMap),
                 allowDefault: env.isDev || env.allowDefaultStoreKeyInProd,
+                allowDefaultOnPlatformHosts:
+                    env.allowDefaultStoreKeyOnPlatformHosts,
             });
 
             if (storeKey) {
                 headers.set('X-Store-Key', storeKey);
             }
         } catch {
-            if ((env.isDev || env.allowDefaultStoreKeyInProd) && env.liberoApiKey) {
-                headers.set('X-Store-Key', env.liberoApiKey);
+            const fallbackStoreKey =
+                env.storeDefaultKey || env.liberoApiKey || '';
+            if (
+                (env.isDev || env.allowDefaultStoreKeyInProd) &&
+                fallbackStoreKey
+            ) {
+                headers.set('X-Store-Key', fallbackStoreKey);
             }
         }
     }

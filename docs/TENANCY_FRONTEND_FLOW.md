@@ -102,6 +102,10 @@ These are the active variables after refactor:
   - If `true`, allows default store key in production.
   - Keep `false` for proper tenant isolation.
 
+- `ALLOW_DEFAULT_STORE_KEY_ON_PLATFORM_HOSTS`
+  - If `true`, allows default store key when running on platform hosts like `*.vercel.app`.
+  - Useful for production preview deployments without custom domains.
+
 ### File Map (Refactored)
 Tenant resolution:
 - `src/lib/tenant.ts` (parsing host → store key)

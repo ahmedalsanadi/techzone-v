@@ -3,6 +3,9 @@ export type TenantSource = 'domain-map' | 'subdomain' | 'default' | 'none';
 
 const RESERVED_SUBDOMAINS = new Set(['www', 'api']);
 
+export const isPlatformHost = (host: string) =>
+    host === 'vercel.app' || host.endsWith('.vercel.app');
+
 const isIpAddress = (host: string) =>
     /^\d{1,3}(\.\d{1,3}){3}$/.test(host);
 
@@ -12,7 +15,13 @@ export const normalizeHost = (host?: string | null) => {
 };
 
 export const getSubdomainFromHost = (host: string) => {
-    if (!host || host === 'localhost' || isIpAddress(host)) return null;
+    if (
+        !host ||
+        host === 'localhost' ||
+        isIpAddress(host) ||
+        isPlatformHost(host)
+    )
+        return null;
 
     if (host.endsWith('.localhost')) {
         const parts = host.split('.');
@@ -45,10 +54,15 @@ export const resolveStoreKeyFromHost = (
         defaultStoreKey?: string;
         domainMap?: Record<string, string>;
         allowDefault?: boolean;
+        allowDefaultOnPlatformHosts?: boolean;
     } = {},
 ): { storeKey: string | null; source: TenantSource } => {
     const normalizedHost = normalizeHost(host);
     if (!normalizedHost) return { storeKey: null, source: 'none' };
+    const isPlatform = isPlatformHost(normalizedHost);
+    const allowDefault =
+        !!options.allowDefault ||
+        (isPlatform && !!options.allowDefaultOnPlatformHosts);
 
     if (options.domainMap && options.domainMap[normalizedHost]) {
         return {
@@ -57,11 +71,13 @@ export const resolveStoreKeyFromHost = (
         };
     }
 
-    const subdomain = getSubdomainFromHost(normalizedHost);
-    if (subdomain)
-        return { storeKey: subdomain, source: 'subdomain' as TenantSource };
+    if (!isPlatform) {
+        const subdomain = getSubdomainFromHost(normalizedHost);
+        if (subdomain)
+            return { storeKey: subdomain, source: 'subdomain' as TenantSource };
+    }
 
-    if (options.allowDefault && options.defaultStoreKey) {
+    if (allowDefault && options.defaultStoreKey) {
         return {
             storeKey: options.defaultStoreKey,
             source: 'default' as TenantSource,
