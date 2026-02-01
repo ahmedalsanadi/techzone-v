@@ -119,13 +119,13 @@ export default async function CMSPageDetail({ params }: Props) {
         page.type === 'html' ? sanitizeHTML(page.content || '') : '';
 
     return (
-        <main className="min-h-screen bg-linear-to-b from-white to-gray-50/40 py-10 lg:py-16 relative overflow-hidden">
+        <section className="min-h-screen bg-linear-to-b from-white to-gray-50/40 py-10 lg:py-8 relative overflow-hidden">
             <div className="absolute inset-0 pointer-events-none -z-10">
                 <div className="absolute -top-24 -right-20 h-64 w-64 rounded-full bg-theme-primary/10 blur-[120px]" />
                 <div className="absolute top-1/3 -left-16 h-56 w-56 rounded-full bg-theme-secondary/10 blur-[120px]" />
             </div>
 
-            <div className="container mx-auto px-4 max-w-4xl">
+            <div className="container mx-auto px-4 mt-2  md:mt-16 ">
                 <Breadcrumbs items={breadcrumbItems} />
 
                 <article className="mt-6 lg:mt-10 space-y-8">
@@ -191,7 +191,7 @@ export default async function CMSPageDetail({ params }: Props) {
                     </footer>
                 </article>
             </div>
-        </main>
+        </section>
     );
 }
 
