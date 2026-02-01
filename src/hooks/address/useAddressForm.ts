@@ -1,11 +1,7 @@
 'use client';
 
-import { useReducer, useMemo, useCallback } from 'react';
-import {
-    Address,
-    AddressFormSubmitPayload,
-    normalizeAddress,
-} from '@/types/address';
+import { useReducer, useCallback } from 'react';
+import { AddressFormSubmitPayload } from '@/types/address';
 
 export interface FormState {
     addressName: string;
@@ -63,14 +59,8 @@ const initialState: FormState = {
 /**
  * Hook to manage address form state and validation.
  */
-export function useAddressForm(initialAddress?: Address | null) {
+export function useAddressForm() {
     const [state, dispatch] = useReducer(formReducer, initialState);
-
-    // Normalize if provided (though caller should have done it, we are safe here)
-    const normalized = useMemo(
-        () => normalizeAddress(initialAddress),
-        [initialAddress],
-    );
 
     const setField = useCallback(
         (field: keyof FormState) => (value: string | boolean) => {
@@ -133,6 +123,5 @@ export function useAddressForm(initialAddress?: Address | null) {
         reset,
         isValid,
         buildPayload,
-        normalized,
     };
 }

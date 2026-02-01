@@ -1,7 +1,7 @@
 // src/app/[locale]/(protected)/my-addresses/MyAddressesView.tsx
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Plus, MapPin, Loader2, Home as HomeIcon } from 'lucide-react';
 import { Address, AddressFormSubmitPayload } from '@/types/address';
@@ -23,21 +23,21 @@ export default function MyAddressesView() {
     const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    const handleAdd = useCallback(() => {
+    const handleAdd = () => {
         setEditingAddress(null);
         setIsModalOpen(true);
-    }, []);
+    };
 
-    const handleEdit = useCallback((address: Address) => {
+    const handleEdit = (address: Address) => {
         setEditingAddress(address);
         setIsModalOpen(true);
-    }, []);
+    };
 
-    const handleDeleteClick = useCallback((id: number) => {
+    const handleDeleteClick = (id: number) => {
         setDeleteTargetId(id);
-    }, []);
+    };
 
-    const handleDeleteConfirm = useCallback(async () => {
+    const handleDeleteConfirm = async () => {
         if (deleteTargetId == null) return;
         setIsDeleting(true);
         try {
@@ -49,43 +49,32 @@ export default function MyAddressesView() {
         } finally {
             setIsDeleting(false);
         }
-    }, [deleteTargetId, deleteAddress, t]);
+    };
 
-    const handleSetDefault = useCallback(
-        async (address: Address) => {
-            try {
-                await setDefault(address);
-                toast.success(t('defaultUpdated'));
-            } catch {
-                toast.error(t('defaultError'));
-            }
-        },
-        [setDefault, t],
-    );
+    const handleSetDefault = async (address: Address) => {
+        try {
+            await setDefault(address);
+            toast.success(t('defaultUpdated'));
+        } catch {
+            toast.error(t('defaultError'));
+        }
+    };
 
-    const handleSave = useCallback(
-        async (payload: AddressFormSubmitPayload) => {
-            try {
-                await saveAddress(
-                    payload,
-                    editingAddress ? Number(editingAddress.id) : undefined,
-                );
-                toast.success(
-                    editingAddress ? t('updateSuccess') : t('addSuccess'),
-                );
-                setIsModalOpen(false);
-                setEditingAddress(null);
-            } catch {
-                toast.error('Failed to save address');
-            }
-        },
-        [saveAddress, editingAddress, t],
-    );
+    const handleSave = async (payload: AddressFormSubmitPayload) => {
+        try {
+            await saveAddress(
+                payload,
+                editingAddress ? Number(editingAddress.id) : undefined,
+            );
+            toast.success(editingAddress ? t('updateSuccess') : t('addSuccess'));
+            setIsModalOpen(false);
+            setEditingAddress(null);
+        } catch {
+            toast.error('Failed to save address');
+        }
+    };
 
-    const breadcrumbs = useMemo(
-        () => [{ label: t('home'), href: '/' }, { label: t('title') }],
-        [t],
-    );
+    const breadcrumbs = [{ label: t('home'), href: '/' }, { label: t('title') }];
 
     return (
         <div className="mt-4 space-y-4 sm:space-y-6 md:space-y-8">
@@ -160,15 +149,17 @@ export default function MyAddressesView() {
                 )}
             </div>
 
-            <AddressModal
-                isOpen={isModalOpen}
-                onClose={() => {
-                    setIsModalOpen(false);
-                    setEditingAddress(null);
-                }}
-                onSave={handleSave}
-                initialAddress={editingAddress}
-            />
+            {isModalOpen && (
+                <AddressModal
+                    isOpen={isModalOpen}
+                    onClose={() => {
+                        setIsModalOpen(false);
+                        setEditingAddress(null);
+                    }}
+                    onSave={handleSave}
+                    initialAddress={editingAddress}
+                />
+            )}
 
             <ConfirmModal
                 isOpen={deleteTargetId != null}

@@ -236,10 +236,12 @@ export default function SubHeader() {
                 </div>
             </div>
 
-            <OrderTypeModal
-                isOpen={isOrderModalOpen}
-                onClose={() => setIsOrderModalOpen(false)}
-            />
+            {isOrderModalOpen && (
+                <OrderTypeModal
+                    isOpen={isOrderModalOpen}
+                    onClose={() => setIsOrderModalOpen(false)}
+                />
+            )}
         </>
     );
 }

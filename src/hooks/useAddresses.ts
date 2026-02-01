@@ -23,6 +23,7 @@ export function useAddresses() {
     return useQuery({
         queryKey: ['addresses'],
         queryFn: () => storeService.getAddresses(),
+        select: (data) => data.map((a) => normalizeAddress(a)!),
         enabled: isAuthenticated,
         staleTime: 1000 * 60 * 5, // 5 minutes
     });
@@ -38,6 +39,7 @@ export function useAddress(id: number | null) {
     return useQuery({
         queryKey: ['address', id],
         queryFn: () => storeService.getAddress(id!),
+        select: (data) => normalizeAddress(data),
         enabled: isAuthenticated && id !== null,
         staleTime: 1000 * 60 * 10,
     });
@@ -50,6 +52,27 @@ export function useAddressMutations() {
     const queryClient = useQueryClient();
     const { setDeliveryAddress } = useOrderStore();
 
+    const toUpdateRequestFromAddress = (
+        address: Address,
+    ): UpdateAddressRequest => ({
+        label: address.label,
+        recipient_name: address.recipient_name,
+        phone: address.phone,
+        country_id: Number(address.country_id),
+        city_id: Number(address.city_id),
+        district_id: address.district_id ?? undefined,
+        street: address.street,
+        latitude: Number(address.latitude),
+        longitude: Number(address.longitude),
+        building_number:
+            address.building || address.building_number || undefined,
+        unit_number: address.unit || address.unit_number || undefined,
+        postal_code: address.postal_code || undefined,
+        additional_number: address.additional_number || undefined,
+        notes: address.description || address.notes || undefined,
+        is_default: true,
+    });
+
     const createMutation = useMutation({
         mutationFn: (data: CreateAddressRequest) =>
             storeService.createAddress(data),
@@ -59,11 +82,11 @@ export function useAddressMutations() {
                 'addresses',
             ]);
 
-            const tempAddress = {
+            const tempAddress = normalizeAddress({
                 ...newAddressBatch,
                 id: -Date.now(),
                 is_default: !!newAddressBatch.is_default,
-            } as Address;
+            } as Address)!;
 
             queryClient.setQueryData(['addresses'], (old: Address[] = []) => [
                 tempAddress,
@@ -76,24 +99,25 @@ export function useAddressMutations() {
             queryClient.setQueryData(['addresses'], context?.previousAddresses);
         },
         onSuccess: (newAddress) => {
+            const normalized = normalizeAddress(newAddress) || newAddress;
             queryClient.setQueryData(['addresses'], (old: Address[] = []) => {
-                const updatedList = old.map((a) => (a.id < 0 ? newAddress : a));
-                if (newAddress.is_default) {
+                const updatedList = old.map((a) =>
+                    a.id < 0 ? normalized : a,
+                );
+                if (normalized.is_default) {
                     return updatedList.map((a) => ({
                         ...a,
-                        is_default: Number(a.id) === Number(newAddress.id),
+                        is_default: Number(a.id) === Number(normalized.id),
                     }));
                 }
                 return updatedList;
             });
 
-            queryClient.invalidateQueries({ queryKey: ['addresses'] });
-
             const current = useOrderStore.getState().deliveryAddress;
             const next = getNextDeliveryAddressAfterMutation({
                 event: 'created',
                 currentDeliveryAddress: current,
-                newAddress,
+                newAddress: normalized,
             });
             setDeliveryAddress(normalizeAddress(next));
         },
@@ -114,9 +138,12 @@ export function useAddressMutations() {
             ]);
 
             queryClient.setQueryData(['addresses'], (old: Address[] = []) =>
-                old.map((a) =>
-                    Number(a.id) === id ? ({ ...a, ...data } as Address) : a,
-                ),
+                old.map((a) => {
+                    if (Number(a.id) !== id) return a;
+                    return (
+                        normalizeAddress({ ...a, ...data } as Address) || a
+                    );
+                }),
             );
 
             return { previousAddresses };
@@ -125,32 +152,32 @@ export function useAddressMutations() {
             queryClient.setQueryData(['addresses'], context?.previousAddresses);
         },
         onSuccess: (updatedAddress) => {
+            const normalized = normalizeAddress(updatedAddress) || updatedAddress;
             queryClient.setQueryData(['addresses'], (old: Address[] = []) => {
                 const updatedList = old.map((a) =>
-                    Number(a.id) === Number(updatedAddress.id)
-                        ? updatedAddress
+                    Number(a.id) === Number(normalized.id)
+                        ? normalized
                         : a,
                 );
-                if (updatedAddress.is_default) {
+                if (normalized.is_default) {
                     return updatedList.map((a) => ({
                         ...a,
-                        is_default: Number(a.id) === Number(updatedAddress.id),
+                        is_default: Number(a.id) === Number(normalized.id),
                     }));
                 }
                 return updatedList;
             });
 
             queryClient.setQueryData(
-                ['address', updatedAddress.id],
-                updatedAddress,
+                ['address', normalized.id],
+                normalized,
             );
-            queryClient.invalidateQueries({ queryKey: ['addresses'] });
 
             const current = useOrderStore.getState().deliveryAddress;
             const next = getNextDeliveryAddressAfterMutation({
                 event: 'updated',
                 currentDeliveryAddress: current,
-                updatedAddress,
+                updatedAddress: normalized,
             });
             setDeliveryAddress(normalizeAddress(next));
         },
@@ -174,7 +201,6 @@ export function useAddressMutations() {
             queryClient.setQueryData(['addresses'], context?.previousAddresses);
         },
         onSuccess: (_, deletedId) => {
-            queryClient.invalidateQueries({ queryKey: ['addresses'] });
             const current = useOrderStore.getState().deliveryAddress;
             const next = getNextDeliveryAddressAfterMutation({
                 event: 'deleted',
@@ -187,18 +213,10 @@ export function useAddressMutations() {
 
     const setDefaultMutation = useMutation({
         mutationFn: (address: Address) =>
-            storeService.updateAddress(address.id, {
-                ...address,
-                district_id: address.district_id ?? undefined,
-                building: address.building ?? undefined,
-                unit: address.unit ?? undefined,
-                postal_code: address.postal_code ?? undefined,
-                additional_number: address.additional_number ?? undefined,
-                description: address.description ?? undefined,
-                latitude: Number(address.latitude),
-                longitude: Number(address.longitude),
-                is_default: true,
-            }),
+            storeService.updateAddress(
+                address.id,
+                toUpdateRequestFromAddress(address),
+            ),
         onMutate: async (target) => {
             await queryClient.cancelQueries({ queryKey: ['addresses'] });
             const previousAddresses = queryClient.getQueryData<Address[]>([
@@ -218,12 +236,23 @@ export function useAddressMutations() {
             queryClient.setQueryData(['addresses'], context?.previousAddresses);
         },
         onSuccess: (updatedAddress) => {
-            queryClient.invalidateQueries({ queryKey: ['addresses'] });
+            const normalized = normalizeAddress(updatedAddress) || updatedAddress;
+            queryClient.setQueryData(['addresses'], (old: Address[] = []) =>
+                old.map((a) =>
+                    Number(a.id) === Number(normalized.id)
+                        ? normalized
+                        : {
+                              ...a,
+                              is_default:
+                                  Number(a.id) === Number(normalized.id),
+                          },
+                ),
+            );
             const current = useOrderStore.getState().deliveryAddress;
             const next = getNextDeliveryAddressAfterMutation({
                 event: 'set_default',
                 currentDeliveryAddress: current,
-                updatedAddress,
+                updatedAddress: normalized,
             });
             setDeliveryAddress(normalizeAddress(next));
         },

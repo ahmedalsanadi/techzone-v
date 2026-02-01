@@ -30,7 +30,7 @@ export function useAddressFlow() {
     // Memoized addresses to prevent unnecessary re-computations or child re-renders
     const addresses = useMemo(() => {
         if (isAuthenticated) {
-            return authAddresses.map((a) => normalizeAddress(a)!);
+            return authAddresses;
         }
         return guestAddress ? [normalizeAddress(guestAddress)!] : [];
     }, [isAuthenticated, authAddresses, guestAddress]);

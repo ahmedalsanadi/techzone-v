@@ -56,27 +56,31 @@ const initialState: LocationState = {
 /**
  * Hook to manage dependent location dropdowns (Country -> City -> District).
  */
-export function useLocationLogic(initialData?: Partial<LocationState>) {
+export function useLocationLogic(
+    initialData?: Partial<LocationState>,
+    enabled: boolean = true,
+) {
     const [state, dispatch] = useReducer(locationReducer, {
         ...initialState,
         ...initialData,
     });
 
-    const { data: countries = [] } = useCountries();
+    const { data: countries = [] } = useCountries(enabled);
     const { data: cities = [], isLoading: isLoadingCities } = useCities(
-        state.selectedCountry ? Number(state.selectedCountry) : null,
+        enabled && state.selectedCountry ? Number(state.selectedCountry) : null,
     );
     const { data: districts = [], isLoading: isLoadingDistricts } =
-        useDistricts(state.selectedCity ? Number(state.selectedCity) : null);
+        useDistricts(
+            enabled && state.selectedCity ? Number(state.selectedCity) : null,
+        );
 
     // Auto-select first country if none selected
     useEffect(() => {
+        if (!enabled) return;
         if (!state.selectedCountry && countries.length > 0) {
-            queueMicrotask(() => {
-                dispatch({ type: 'SET_COUNTRY', value: countries[0].id });
-            });
+            dispatch({ type: 'SET_COUNTRY', value: countries[0].id });
         }
-    }, [countries, state.selectedCountry]);
+    }, [countries, state.selectedCountry, enabled]);
 
     return {
         state,

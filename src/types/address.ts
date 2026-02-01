@@ -73,11 +73,11 @@ export function normalizeAddress(
         id: Number(addr.id),
         label: addr.label || addr.name || 'Address',
         is_default: !!(addr.is_default || addr.isDefault),
-        description: addr.description || addr.notes || '',
+        description: addr.notes || addr.description || '',
         notes: addr.notes || addr.description || '',
-        building: addr.building || addr.building_number || '',
+        building: addr.building_number || addr.building || '',
         building_number: addr.building_number || addr.building || '',
-        unit: addr.unit || addr.unit_number || '',
+        unit: addr.unit_number || addr.unit || '',
         unit_number: addr.unit_number || addr.unit || '',
         latitude: Number(addr.latitude),
         longitude: Number(addr.longitude),
@@ -97,11 +97,11 @@ export interface CreateAddressRequest {
     street: string;
     latitude: number;
     longitude: number;
-    building?: string;
-    unit?: string;
+    building_number?: string;
+    unit_number?: string;
     postal_code?: string;
     additional_number?: string;
-    description?: string;
+    notes?: string;
     is_default?: boolean;
 }
 
@@ -154,11 +154,11 @@ export function toCreateAddressRequest(
         street: payload.street,
         latitude: Number(payload.latitude),
         longitude: Number(payload.longitude),
-        building: payload.building || undefined,
-        unit: payload.unit || undefined,
+        building_number: payload.building || undefined,
+        unit_number: payload.unit || undefined,
         postal_code: payload.postal_code || undefined,
         additional_number: payload.additional_number || undefined,
-        description: payload.description || undefined,
+        notes: payload.description || undefined,
         is_default: payload.is_default,
     };
 }

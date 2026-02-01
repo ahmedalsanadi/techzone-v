@@ -397,15 +397,17 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                 </div>
             </div>
 
-            <AddressModal
-                isOpen={showAddressModal}
-                onClose={() => {
-                    setShowAddressModal(false);
-                    setEditingAddress(null);
-                }}
-                onSave={handleAddressSave}
-                initialAddress={editingAddress}
-            />
+            {showAddressModal && (
+                <AddressModal
+                    isOpen={showAddressModal}
+                    onClose={() => {
+                        setShowAddressModal(false);
+                        setEditingAddress(null);
+                    }}
+                    onSave={handleAddressSave}
+                    initialAddress={editingAddress}
+                />
+            )}
         </>
     );
 };
