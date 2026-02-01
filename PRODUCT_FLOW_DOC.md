@@ -29,9 +29,8 @@ Why: list responses don’t include `variants`, `addons`, `custom_fields` in a r
 
 ### Local storage
 - **Guest cart items** are stored in localStorage via `useCartStore`.
-- **Pending items** (missing required selections after merge) are also persisted to localStorage.
 
-Why: guest users must keep cart between refreshes; pending items must be recoverable after login.
+Why: guest users must keep cart between refreshes.
 
 ### In-memory (React Query)
 - Product detail queries are cached by slug.
@@ -68,11 +67,11 @@ Why: optional configuration belongs in the full product experience.
 
 ### D) Guest → Auth Merge
 1. On login, we read guest cart.
-2. For each item, we fetch product detail and validate required selections.
-3. Valid items merge to API cart.
-4. Invalid items are kept as **pending** with a warning.
+2. Send a **single** merge request to the backend.
+3. Backend smart‑merges items and creates a cart if needed.
+4. We sync UI from the returned cart.
 
-Why: API rejects incomplete items; we keep them for user action instead of losing them.
+Why: backend already provides smart merge behavior. Avoids per‑item requests.
 
 ---
 
@@ -98,23 +97,25 @@ Why: API rejects incomplete items; we keep them for user action instead of losin
 - `src/components/modals/CartItemConfigModal.tsx`
   - Edit configuration for items already in cart.
 - `src/app/[locale]/cart/page.tsx`
-  - Cart UI, pending item warning, edit items.
+  - Cart UI, edit items, loading skeletons.
 
 ### Providers and Hooks
 - `src/components/providers/ProductConfigProvider.tsx`
   - Global modal instance for all list pages.
 - `src/hooks/useProductConfigFlow.ts`
-  - Fetch + cache product detail, open modal, prefetch.
+  - Fetch + cache product detail, open modal, prefetch, analytics.
 - `src/hooks/useCartActions.tsx`
   - Add/update/remove items for guest or auth.
 - `src/hooks/useCartMerge.ts`
-  - Merge guest items after login with validation.
+  - Merge guest items after login (single request).
 
 ### State and Utilities
 - `src/store/useCartStore.ts`
   - Cart state, guest mode, pending items.
 - `src/lib/products/requirements.ts`
   - Requirement checks and validation helper.
+- `src/lib/products/prefetch.ts`
+  - Prefetch next page for product lists.
 - `src/lib/cart/utils.ts`
   - Stable cart item ID + addon transform.
 - `src/lib/cart/transform.ts`
@@ -138,11 +139,7 @@ Why: API rejects incomplete items; we keep them for user action instead of losin
 - Selected addons
 - Custom fields
 - Notes
-
-### Pending Items (localStorage)
-- Same structure as guest items
-- Marked when missing required selections during merge
-
+ 
 Why: keep items safe and visible to user after login.
 
 ---
@@ -161,7 +158,7 @@ Why: keep items safe and visible to user after login.
 These are enforced:
 - In modal (`ProductConfigModal`)
 - In product detail page
-- During guest merge
+- During manual item edits in cart (`CartItemConfigModal`)
 
 ---
 
@@ -169,16 +166,18 @@ These are enforced:
 
 - Only fetch detail on demand.
 - Prefetch on hover/viewport to reduce wait.
+- Prefetch **next product page** after list fetch.
 - Cache detail in React Query + short localStorage TTL.
 - Single modal instance across all pages.
+- Track "configure required" vs "direct add" for UX analytics.
 
 ---
 
 ## 9) Error Handling & UX
 
 - If detail fetch fails → toast error, no modal.
-- If merge finds invalid items → warning + pending list in cart.
-- Users can edit pending items from cart.
+- Cart edit modal shows total price with quantity multiplier.
+- Skeletons used for cart loading state.
 
 ---
 
