@@ -45,28 +45,26 @@ interface UseAuthFlowHandlersOptions {
     isAuthenticated: boolean;
 }
 
-export function useAuthFlowHandlers({
-    step,
-    setStep,
-    loading,
-    setLoading,
-    isNewUser,
-    setIsNewUser,
-    phone,
-    setPhone,
-    tempToken,
-    setTempToken,
-    maskedPhone,
-    setMaskedPhone,
-    otpExpiresAt,
-    setOtpExpiresAt,
-    otp,
-    setOtp,
-    formData,
-    setFormData,
-    redirectTo,
-    isAuthenticated,
-}: UseAuthFlowHandlersOptions) {
+export function useAuthFlowHandlers(
+    options: UseAuthFlowHandlersOptions,
+) {
+    const {
+        step,
+        setStep,
+        setLoading,
+        isNewUser,
+        setIsNewUser,
+        phone,
+        tempToken,
+        setTempToken,
+        setMaskedPhone,
+        setOtpExpiresAt,
+        otp,
+        setOtp,
+        formData,
+        redirectTo,
+        isAuthenticated,
+    } = options;
     const t = useTranslations('Auth');
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -172,7 +170,7 @@ export function useAuthFlowHandlers({
                     );
                     authStorage.clearAuthFlow();
                     setIsNewUser(false);
-                    router.replace(redirectPath as any);
+                    router.replace(redirectPath);
                 }
             } catch (error) {
                 const message = getAuthErrorMessage(error, {
@@ -197,6 +195,7 @@ export function useAuthFlowHandlers({
             setAuth,
             mergeGuestCartAfterAuth,
             mergeGuestWishlistAfterAuth,
+            mergeGuestAddressAfterAuth,
             setLoading,
             setTempToken,
             setMaskedPhone,
@@ -257,7 +256,7 @@ export function useAuthFlowHandlers({
                 const redirectPath = normalizeRedirectPath(
                     redirectTo || searchParams.get('redirect'),
                 );
-                router.replace(redirectPath as any);
+                router.replace(redirectPath);
             } catch (error) {
                 const message = getAuthErrorMessage(error, {
                     defaultMessage:
@@ -268,11 +267,8 @@ export function useAuthFlowHandlers({
                     },
                 });
 
-                if (
-                    error instanceof Error &&
-                    ((error as any).status === 401 ||
-                        (error as any).status === 403)
-                ) {
+                const status = (error as { status?: number } | null)?.status;
+                if (error instanceof Error && (status === 401 || status === 403)) {
                     authStorage.clearAll();
                     setIsNewUser(false);
                     setStep('phone');
@@ -289,6 +285,7 @@ export function useAuthFlowHandlers({
             setProfile,
             mergeGuestCartAfterAuth,
             mergeGuestWishlistAfterAuth,
+            mergeGuestAddressAfterAuth,
             setTempToken,
             setMaskedPhone,
             setOtpExpiresAt,

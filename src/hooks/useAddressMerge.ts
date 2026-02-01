@@ -14,18 +14,36 @@ import type { Address } from '@/types/address';
 
 const normalizeCoord = (value: string | number) => Number(value).toFixed(5);
 const normalizeText = (value: string) => value.trim().toLowerCase();
+const normalizeOptionalText = (value?: string | null) =>
+    value ? normalizeText(value) : '';
 
 const findMatchingAddress = (list: Address[], target: Address) => {
     const targetStreet = normalizeText(target.street);
+    const targetBuilding = normalizeOptionalText(
+        target.building_number || target.building || undefined,
+    );
+    const targetUnit = normalizeOptionalText(
+        target.unit_number || target.unit || undefined,
+    );
     const targetLat = normalizeCoord(target.latitude);
     const targetLng = normalizeCoord(target.longitude);
     return list.find((addr) => {
         if (!addr.street || addr.latitude == null || addr.longitude == null)
             return false;
+        const addrBuilding = normalizeOptionalText(
+            addr.building_number || addr.building || undefined,
+        );
+        const addrUnit = normalizeOptionalText(
+            addr.unit_number || addr.unit || undefined,
+        );
         return (
             Number(addr.country_id) === Number(target.country_id) &&
             Number(addr.city_id) === Number(target.city_id) &&
             normalizeText(addr.street) === targetStreet &&
+            (targetBuilding && addrBuilding
+                ? targetBuilding === addrBuilding
+                : true) &&
+            (targetUnit && addrUnit ? targetUnit === addrUnit : true) &&
             normalizeCoord(addr.latitude) === targetLat &&
             normalizeCoord(addr.longitude) === targetLng
         );
@@ -63,7 +81,10 @@ export function useAddressMerge() {
             if (!addresses) {
                 addresses = await queryClient.fetchQuery({
                     queryKey: ['addresses'],
-                    queryFn: () => storeService.getAddresses(),
+                    queryFn: async () => {
+                        const data = await storeService.getAddresses();
+                        return data.map((addr) => normalizeAddress(addr)!);
+                    },
                     staleTime: 1000 * 60 * 5,
                 });
             }

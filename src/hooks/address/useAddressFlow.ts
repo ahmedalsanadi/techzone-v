@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useAddressStore } from '@/store/useAddressStore';
 import { useOrderStore } from '@/store/useOrderStore';
@@ -22,8 +22,12 @@ export function useAddressFlow() {
     const { setDeliveryAddress } = useOrderStore();
 
     // Auth-only fetches
-    const { data: authAddresses = [], isLoading: isLoadingAuth } =
-        useAddresses();
+    const {
+        data: authAddresses = [],
+        isLoading: isLoadingAuth,
+        isError: isErrorAuth,
+        refetch,
+    } = useAddresses();
     const { createAddress, updateAddress, deleteAddress, setDefaultAddress } =
         useAddressMutations();
 
@@ -36,6 +40,7 @@ export function useAddressFlow() {
     }, [isAuthenticated, authAddresses, guestAddress]);
 
     const isLoading = isAuthenticated ? isLoadingAuth : false;
+    const isError = isAuthenticated ? isErrorAuth : false;
 
     const saveAddress = async (
         payload: AddressFormSubmitPayload,
@@ -87,6 +92,8 @@ export function useAddressFlow() {
     return {
         addresses,
         isLoading,
+        isError,
+        refetch,
         isAuthenticated,
         saveAddress,
         deleteAddress: deleteAddressOp,

@@ -45,6 +45,8 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
     const {
         addresses: displayAddresses,
         isLoading: isLoadingAddresses,
+        isError: isErrorAddresses,
+        refetch: refetchAddresses,
         saveAddress,
     } = useAddressFlow();
 
@@ -240,6 +242,19 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                                 </div>
                                             </div>
                                         ))}
+                                    </div>
+                                ) : isErrorAddresses ? (
+                                    <div className="p-6 sm:p-8 bg-gray-50 rounded-lg sm:rounded-xl border border-gray-100 text-center space-y-3">
+                                        <p className="text-sm sm:text-base font-semibold text-gray-700">
+                                            {t('addressLoadFailed') ||
+                                                'Failed to load addresses'}
+                                        </p>
+                                        <button
+                                            type="button"
+                                            onClick={() => refetchAddresses()}
+                                            className="min-h-[44px] px-5 py-2.5 bg-white border border-gray-200 rounded-lg sm:rounded-xl text-sm font-bold text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition-all">
+                                            {t('retry') || 'Retry'}
+                                        </button>
                                     </div>
                                 ) : displayAddresses.length > 0 ? (
                                     <div className="space-y-2 sm:space-y-3">

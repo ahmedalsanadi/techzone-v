@@ -15,8 +15,15 @@ import { useAddressFlow } from '@/hooks/address/useAddressFlow';
 
 export default function MyAddressesView() {
     const t = useTranslations('MyAddresses');
-    const { addresses, isLoading, saveAddress, deleteAddress, setDefault } =
-        useAddressFlow();
+    const {
+        addresses,
+        isLoading,
+        isError,
+        refetch,
+        saveAddress,
+        deleteAddress,
+        setDefault,
+    } = useAddressFlow();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingAddress, setEditingAddress] = useState<Address | null>(null);
@@ -129,6 +136,27 @@ export default function MyAddressesView() {
                                 </div>
                             </div>
                         ))}
+                    </div>
+                ) : isError ? (
+                    <div className="flex flex-col items-center justify-center py-12 sm:py-16 md:py-20 text-center px-4">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-gray-100 flex items-center justify-center mb-4 sm:mb-6">
+                            <HomeIcon className="w-8 h-8 sm:w-10 sm:h-10 text-gray-400" />
+                        </div>
+                        <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">
+                            {t('loadErrorTitle') ||
+                                'Unable to load addresses'}
+                        </h3>
+                        <p className="text-gray-500 text-sm sm:text-base max-w-xs mb-6 sm:mb-8">
+                            {t('loadErrorSubtitle') ||
+                                'Check your connection and try again.'}
+                        </p>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => refetch()}
+                            className="min-h-[48px] rounded-lg sm:rounded-xl px-6 sm:px-8 touch-manipulation">
+                            {t('retry') || 'Retry'}
+                        </Button>
                     </div>
                 ) : addresses.length > 0 ? (
                     <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-6">

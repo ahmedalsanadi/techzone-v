@@ -93,6 +93,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
     const [selectedLocation, setSelectedLocation] =
         useState<[number, number]>(DEFAULT_COORDINATES);
     const [formattedAddress, setFormattedAddress] = useState('');
+    const hasShownLocationToastRef = useRef(false);
 
     const streetValueRef = useRef(form.state.street);
     useEffect(() => {
@@ -102,6 +103,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
     // Re-initialize when modal opens or active data changes
     useEffect(() => {
         if (!isOpen) return;
+        hasShownLocationToastRef.current = false;
         if (activeAddress) {
             form.reset({
                 addressName: activeAddress.label || '',
@@ -152,7 +154,10 @@ const AddressModal: React.FC<AddressModalProps> = ({
         (loc: [number, number], formatted: string) => {
             setSelectedLocation(loc);
             setFormattedAddress(formatted);
-            toast.success(t('locationSelected'), { duration: 2000 });
+            if (!hasShownLocationToastRef.current) {
+                toast.success(t('locationSelected'), { duration: 2000 });
+                hasShownLocationToastRef.current = true;
+            }
             // Only update street if empty to avoid overwriting user manual input
             if (!streetValueRef.current.trim()) {
                 form.setField('street')(formatted);
