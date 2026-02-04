@@ -4,12 +4,13 @@ import CheckoutCard from './CheckoutCard';
 interface PaymentMethod {
     id: number;
     name: string;
+    slug: string;
     isSelected: boolean;
 }
 
 interface PaymentMethodCardProps {
     methods: PaymentMethod[];
-    onChange?: () => void;
+    onChange: (slug: string) => void;
 }
 
 export default function PaymentMethodCard({
@@ -17,20 +18,12 @@ export default function PaymentMethodCard({
     onChange,
 }: PaymentMethodCardProps) {
     return (
-        <CheckoutCard
-            title="طريقة الدفع"
-            action={
-                <button
-                    onClick={onChange}
-                    className="bg-theme-primary/10 px-2.5 py-1.5 rounded-md flex items-center gap-1 text-theme-primary text-md font-medium hover:brightness-[0.95] transition-all">
-                    <span>تغيير</span>
-                    <ChevronLeft className="w-4 h-4" />
-                </button>
-            }>
+        <CheckoutCard title="طريقة الدفع">
             <div className="flex flex-wrap items-center gap-3 md:gap-4">
                 {methods.map((method) => (
                     <div
                         key={method.id}
+                        onClick={() => onChange(method.slug)}
                         className={`group relative flex-1 min-w-[80px] sm:flex-none sm:w-24 h-14 flex items-center justify-center rounded-lg cursor-pointer transition-all hover:scale-105
                         ${
                             method.isSelected

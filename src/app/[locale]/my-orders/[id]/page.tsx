@@ -1,6 +1,6 @@
 // src/app/[locale]/my-orders/[id]/page.tsx
 import { notFound } from 'next/navigation';
-import { getOrderById } from '../utils/services/order-services';
+import { orderService } from '@/services/order-service';
 import OrderDetailsView from '../utils/components/OrderDetailsView';
 
 export default async function OrderPage({
@@ -8,13 +8,15 @@ export default async function OrderPage({
 }: {
     params: Promise<{ locale: string; id: string }>;
 }) {
-    const {id } = await params;
+    const { id } = await params;
 
-    // Simulate fetching orders from an API
-    const order = await getOrderById(id);
-
-    if (!order) {
+    try {
+        const order = await orderService.getOrder(id);
+        if (!order) {
+            notFound();
+        }
+        return <OrderDetailsView order={order} />;
+    } catch (error) {
         notFound();
     }
-    return <OrderDetailsView order={order} />;
 }

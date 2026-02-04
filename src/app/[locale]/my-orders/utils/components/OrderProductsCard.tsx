@@ -3,7 +3,7 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { OrderItem } from '../services/order-services';
+import { OrderItem } from '@/types/orders';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
 
 interface OrderProductsCardProps {
@@ -32,8 +32,11 @@ export function OrderProductsCard({ items }: OrderProductsCardProps) {
                         {/* Product Image  */}
                         <div className="relative w-28 h-28 md:w-[140px] md:h-[140px] rounded-[32px] overflow-hidden shrink-0 shadow-sm border border-gray-50/50">
                             <Image
-                                src={item.image}
-                                alt={item.name}
+                                src={
+                                    item.product_image ||
+                                    '/images/placeholder.svg'
+                                }
+                                alt={item.product_title}
                                 fill
                                 className="object-cover group-hover:scale-105 transition-transform duration-700"
                             />
@@ -43,16 +46,16 @@ export function OrderProductsCard({ items }: OrderProductsCardProps) {
                             <div className="flex items-start justify-between gap-4">
                                 <div className="flex flex-col gap-1">
                                     <h4 className="text-lg md:text-xl font-black text-gray-900 leading-tight">
-                                        {item.name}
+                                        {item.product_title}
                                     </h4>
 
                                     {/* Addons List */}
                                     <div className="flex flex-col gap-0.5 mt-1">
-                                        {item.addons.map((addon, i) => (
+                                        {item.addons?.map((addon, i) => (
                                             <span
                                                 key={i}
                                                 className="text-[11px] md:text-[13px] font-bold text-gray-400 leading-tight">
-                                                {addon}
+                                                {addon.name} ({addon.price})
                                             </span>
                                         ))}
                                     </div>
@@ -61,21 +64,27 @@ export function OrderProductsCard({ items }: OrderProductsCardProps) {
                                 {/* Price Column (Top Left of Text) */}
                                 <div className="flex flex-col items-end shrink-0">
                                     <div className="flex items-center gap-1 font-black text-theme-primary text-xl">
-                                        <span>{item.price}</span>
+                                        <span>
+                                            {item.sale_unit_price ||
+                                                item.unit_price}
+                                        </span>
                                         <CurrencySymbol className="w-4 h-4" />
                                     </div>
-                                    {item.originalPrice && (
-                                        <span className="text-xs font-bold text-gray-300 line-through">
-                                            {item.originalPrice}
-                                        </span>
-                                    )}
+                                    {item.sale_unit_price &&
+                                        item.unit_price >
+                                            item.sale_unit_price && (
+                                            <span className="text-xs font-bold text-gray-300 line-through">
+                                                {item.unit_price}
+                                            </span>
+                                        )}
                                 </div>
                             </div>
 
                             {/* Quantity (Bottom Right) */}
                             <div className="mt-auto">
                                 <span className="text-sm font-black text-gray-900">
-                                    {item.quantity}
+                                    {item.quantity}{' '}
+                                    {t('products.quantity_unit') || 'x'}
                                 </span>
                             </div>
                         </div>

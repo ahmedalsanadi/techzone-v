@@ -55,7 +55,26 @@
     "deliveryTime": "وقت التوصيل",
     "pickupTime": "وقت الاستلام",
     "now": "الآن",
-    "later": "لاحقاً"
+    "later": "لاحقاً",
+    "pleaseSelectPaymentMethod": "الرجاء اختيار طريقة الدفع",
+    "orderCreatedSuccessfully": "تم إنشاء الطلب بنجاح",
+    "checkoutFailed": "فشل إتمام الطلب",
+    "orderSubtotal": "المجموع الفرعي",
+    "deliveryFee": "رسوم التوصيل",
+    "discount": "الخصم",
+    "asap": "بأسرع وقت",
+    "title": "الدفع",
+    "breadcrumbHome": "الرئيسية",
+    "breadcrumbCart": "السلة",
+    "breadcrumbCheckout": "الدفع",
+    "walletDiscountTitle": "هل تريد خصم المبلغ من المحفظة؟",
+    "walletBalanceLabel": "رصيدك في المحفظة:",
+    "yes": "نعم",
+    "no": "لا",
+    "submitOrder": "تقديم الطلب",
+    "paymentMethodTitle": "طريقة الدفع",
+    "summaryTitle": "ملخص الطلب",
+    "total": "الإجمالي"
   },
   "Order": {
     "orderType": "نوع الطلب",
@@ -263,6 +282,8 @@
     "details": "التفاصيل",
     "reorder": "إعادة الطلب",
     "reportProblem": "الإبلاغ عن مشكلة",
+    "loadMore": "تحميل المزيد",
+    "noOrders": "لا توجد طلبات سابقة",
     "navigation": {
       "home": "الرئيسية",
       "myOrders": "طلباتي"
@@ -271,7 +292,15 @@
       "rateOrder": "تقييم الطلب",
       "cancelOrder": "إلغاء الطلب",
       "reorder": "إعادة الطلب",
-      "reportProblem": "الإبلاغ عن مشكلة"
+      "reportProblem": "الإبلاغ عن مشكلة",
+      "cancelConfirmTitle": "إلغاء الطلب",
+      "cancelConfirmMessage": "هل أنت متأكد من رغبتك في إلغاء هذا الطلب؟",
+      "cancelSuccess": "تم إلغاء الطلب بنجاح",
+      "cancelError": "فشل إلغاء الطلب",
+      "reorderSuccess": "تمت إضافة المنتجات إلى السلة بنجاح",
+      "reorderError": "فشل إعادة الطلب",
+      "confirm": "تأكيد",
+      "back": "تراجع"
     },
     "courier": {
       "title": "طلبك في طريقه إليك!",
@@ -284,11 +313,16 @@
     },
     "status": {
       "delivered": "تم التوصيل",
-      "waiting": "في انتظار الموعد",
+      "waiting": "بانتظار الموافقة",
+      "waiting_payment": "بانتظار الدفع",
       "preparing": "قيد التحضير",
+      "ready": "جاهز للاستلام",
       "with_courier": "مع المندوب",
+      "completed": "مكتمل",
       "cancelled": "ملغي",
-      "timelineTitle": "تتبع حالة الطلب"
+      "rejected": "مرفوض",
+      "timelineTitle": "تتبع حالة الطلب",
+      "timelineReady": "جاهز للاستلام"
     },
     "summary": {
       "title": "تفاصيل الطلب",
@@ -298,11 +332,13 @@
       "address": "العنوان",
       "deliveryTime": "موعد الطلب",
       "totalAmount": "قيمة الطلب",
-      "paymentMethod": "طريقة الدفع"
+      "paymentMethod": "طريقة الدفع",
+      "asap": "بأسرع وقت"
     },
     "products": {
       "title": "المنتجات",
-      "unit": "منتج"
+      "unit": "منتج",
+      "quantity_unit": "عدد"
     }
   },
   "NotFound": {

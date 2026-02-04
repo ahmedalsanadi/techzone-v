@@ -2,6 +2,7 @@
 import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import WalletView from './WalletView';
+import { walletService } from '@/services/wallet-service';
 
 export async function generateMetadata({
     params,
@@ -21,8 +22,13 @@ export default async function WalletPage({
 }: {
     params: Promise<{ locale: string }>;
 }) {
-    // For demo purposes, using a mock balance
-    const balance = 35.0;
+    // Fetch real balance from the API
+    let balanceData = { balance: 0, pending_balance: 0, is_active: false };
+    try {
+        balanceData = await walletService.getBalance();
+    } catch (error) {
+        console.error('Failed to fetch wallet balance:', error);
+    }
 
-    return <WalletView balance={balance} />;
+    return <WalletView balance={balanceData.balance} />;
 }

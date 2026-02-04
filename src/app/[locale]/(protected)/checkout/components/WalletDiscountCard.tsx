@@ -3,11 +3,13 @@ import CheckoutCard from './CheckoutCard';
 interface WalletDiscountCardProps {
     balance: string;
     selected: 'yes' | 'no';
+    onChange: (value: 'yes' | 'no') => void;
 }
 
 export default function WalletDiscountCard({
     balance,
     selected,
+    onChange,
 }: WalletDiscountCardProps) {
     return (
         <CheckoutCard>
@@ -33,7 +35,7 @@ export default function WalletDiscountCard({
                         <input
                             type="radio"
                             checked={selected === value}
-                            readOnly
+                            onChange={() => onChange(value as 'yes' | 'no')}
                             className="sr-only peer"
                         />
                         <div className="w-5 h-5 rounded-full border-2 border-theme-primary peer-checked:bg-theme-primary flex items-center justify-center transition-all">

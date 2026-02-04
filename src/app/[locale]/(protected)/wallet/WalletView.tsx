@@ -7,81 +7,56 @@ import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import { WalletBalanceCard } from './WalletBalanceCard';
 import { TransactionList, Transaction } from './TransactionList';
 
+import { WalletTransaction, TransactionType } from '@/types/wallet';
+import { walletService } from '@/services/wallet-service';
+
 interface WalletViewProps {
     balance: number;
 }
 
 export default function WalletView({ balance }: WalletViewProps) {
     const t = useTranslations('Wallet');
+    const [transactions, setTransactions] = React.useState<Transaction[]>([]);
+    const [isLoading, setIsLoading] = React.useState(true);
 
     const breadcrumbItems = [
         { label: t('home'), href: '/' },
         { label: t('title') },
     ];
 
-    // Mock transactions
-    const transactions: Transaction[] = [
-        {
-            id: '1',
-            type: 'add',
-            title: t('addBalanceTitle'),
-            amount: 35.0,
-            date: '30/10/2024',
-        },
-        {
-            id: '2',
-            type: 'purchase',
-            title: '',
-            refNumber: '7863',
-            amount: 35.0,
-            date: '30/10/2024',
-        },
-        {
-            id: '3',
-            type: 'add',
-            title: t('addBalanceTitle'),
-            amount: 35.0,
-            date: '30/10/2024',
-        },
-        {
-            id: '4',
-            type: 'purchase',
-            title: '',
-            refNumber: '7863',
-            amount: 35.0,
-            date: '30/10/2024',
-        },
-        {
-            id: '5',
-            type: 'add',
-            title: t('addBalanceTitle'),
-            amount: 35.0,
-            date: '30/10/2024',
-        },
-        {
-            id: '6',
-            type: 'purchase',
-            title: '',
-            refNumber: '7863',
-            amount: 35.0,
-            date: '30/10/2024',
-        },
-        {
-            id: '7',
-            type: 'add',
-            title: t('addBalanceTitle'),
-            amount: 35.0,
-            date: '30/10/2024',
-        },
-        {
-            id: '8',
-            type: 'purchase',
-            title: '',
-            refNumber: '7863',
-            amount: 35.0,
-            date: '30/10/2024',
-        },
-    ];
+    React.useEffect(() => {
+        const fetchTransactions = async () => {
+            try {
+                const response = await walletService.getTransactions({
+                    page: 1,
+                    per_page: 20,
+                });
+                const mapped: Transaction[] = (response.data || []).map(
+                    (tx: WalletTransaction) => ({
+                        id: String(tx.id),
+                        type:
+                            tx.type === TransactionType.DEPOSIT ||
+                            tx.type === TransactionType.REFUND
+                                ? 'add'
+                                : 'purchase',
+                        title: tx.description,
+                        amount: Math.abs(tx.amount),
+                        date: new Date(tx.created_at).toLocaleDateString(
+                            'ar-SA',
+                        ),
+                        refNumber: String(tx.reference_id),
+                    }),
+                );
+                setTransactions(mapped);
+            } catch (error) {
+                console.error('Failed to fetch transactions:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchTransactions();
+    }, []);
 
     return (
         <main className="min-h-screen bg-gray-50/30 py-8">

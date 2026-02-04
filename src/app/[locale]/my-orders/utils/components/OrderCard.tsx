@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/Badge';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
 import { cn } from '@/lib/utils';
 
-import { Order } from '../services/order-services';
+import { Order, OrderStatus } from '@/types/orders';
 import { Link } from '@/i18n/navigation';
 
 interface OrderCardProps {
@@ -18,51 +18,107 @@ interface OrderCardProps {
 export default function OrderCard({ order }: OrderCardProps) {
     const t = useTranslations('Orders');
 
-    const statusConfig = {
-        delivered: {
-            bg: 'bg-[#E8F5E9]',
-            text: 'text-[#2E7D32]',
-            label: t('status.delivered'),
-        },
-        waiting: {
+    const statusConfig: Record<
+        string,
+        { bg: string; text: string; label: string }
+    > = {
+        WAITING_APPROVAL: {
             bg: 'bg-[#FFF8E1]',
             text: 'text-[#FBC02D]',
-            label: t('status.waiting'),
+            label: order.status_label || t('status.waiting'),
         },
-        preparing: {
+        WAITING_PAYMENT: {
+            bg: 'bg-[#FFF8E1]',
+            text: 'text-[#FBC02D]',
+            label: order.status_label || t('status.waiting_payment'),
+        },
+        PREPARING: {
             bg: 'bg-[#E3F2FD]',
             text: 'text-[#1976D2]',
-            label: t('status.preparing') || 'Preparing',
+            label: order.status_label || t('status.preparing'),
         },
-        with_courier: {
+        READY: {
+            bg: 'bg-[#E3F2FD]',
+            text: 'text-[#1976D2]',
+            label: order.status_label || t('status.ready'),
+        },
+        ON_THE_WAY: {
             bg: 'bg-[#E8F5E9]',
             text: 'text-[#2E7D32]',
-            label: t('status.with_courier') || 'With Courier',
+            label: order.status_label || t('status.with_courier'),
         },
-        cancelled: {
+        DELIVERED: {
+            bg: 'bg-[#E8F5E9]',
+            text: 'text-[#2E7D32]',
+            label: order.status_label || t('status.delivered'),
+        },
+        COMPLETED: {
+            bg: 'bg-[#E8F5E9]',
+            text: 'text-[#2E7D32]',
+            label: order.status_label || t('status.completed'),
+        },
+        CANCELLED: {
             bg: 'bg-red-50',
             text: 'text-red-600',
-            label: t('status.cancelled') || 'Cancelled',
+            label: order.status_label || t('status.cancelled'),
+        },
+        REJECTED: {
+            bg: 'bg-red-50',
+            text: 'text-red-600',
+            label: order.status_label || t('status.rejected'),
         },
     };
 
-    const currentStatus = statusConfig[order.status] || statusConfig.waiting;
+    const currentStatus = statusConfig[order.status] || {
+        bg: 'bg-gray-50',
+        text: 'text-gray-600',
+        label: order.status_label || order.status,
+    };
+
+    const [mounted, setMounted] = React.useState(false);
+
+    React.useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const { formattedDate, formattedTime } = React.useMemo(() => {
+        if (!mounted) return { formattedDate: '', formattedTime: '' };
+        try {
+            const dateObj = new Date(order.created_at);
+            return {
+                formattedDate: dateObj.toLocaleDateString('ar-SA', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                }),
+                formattedTime: dateObj.toLocaleTimeString('ar-SA', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true,
+                }),
+            };
+        } catch (e) {
+            return { formattedDate: '', formattedTime: '' };
+        }
+    }, [order.created_at, mounted]);
 
     return (
         <div className="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col gap-5 shadow-sm hover:shadow-md transition-all duration-300 ">
             {/* Header: Status, Rating and Order Number */}
             <div className="flex items-center justify-between gap-4 pt-2 pb-4 border-b border-gray-200">
                 <h3 className="text-lg md:text-2xl font-black text-gray-900 truncate">
-                    {t('orderNumber', { number: order.orderNumber })}
+                    {t('orderNumber', { number: order.id })}
                 </h3>
 
                 <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1 bg-[#F1F3F5] px-2.5 py-1.5 rounded-lg shrink-0">
-                        <span className="text-sm font-bold text-gray-700 leading-none">
-                            {order.rating.toFixed(1)}
-                        </span>
-                        <Star className="w-3.5 h-3.5 fill-[#FBC02D] text-[#FBC02D]" />
-                    </div>
+                    {order.review && (
+                        <div className="flex items-center gap-1 bg-[#F1F3F5] px-2.5 py-1.5 rounded-lg shrink-0">
+                            <span className="text-sm font-bold text-gray-700 leading-none">
+                                {order.review.rate.toFixed(1)}
+                            </span>
+                            <Star className="w-3.5 h-3.5 fill-[#FBC02D] text-[#FBC02D]" />
+                        </div>
+                    )}
 
                     <Badge
                         className={cn(
@@ -81,7 +137,7 @@ export default function OrderCard({ order }: OrderCardProps) {
                 <div className="flex items-center gap-3 text-gray-500">
                     <Store className="w-5 h-5 opacity-60" />
                     <span className="text-sm font-medium">
-                        {t('branch', { name: order.branchName })}
+                        {t('branch', { name: order.branch_name })}
                     </span>
                 </div>
 
@@ -91,8 +147,8 @@ export default function OrderCard({ order }: OrderCardProps) {
 
                     <span className="text-sm font-medium" dir="rtl">
                         {t('createdAt', {
-                            date: '22/11/2025',
-                            time: '10:00 م',
+                            date: formattedDate,
+                            time: formattedTime,
                         })}
                     </span>
                 </div>
@@ -103,11 +159,11 @@ export default function OrderCard({ order }: OrderCardProps) {
 
                     <div className="flex flex-col">
                         <span className="text-[11px] opacity-70 leading-tight">
-                            حي اليرموك، شارع النجاح، منزل رقم 42، الرياض 13243
+                            {order.metadata?.notes || order.notes || ''}
                         </span>
                         <span className="text-sm font-medium">
                             {t('deliveryTo', {
-                                location: order.deliveryLocation,
+                                location: order.fulfillment_label,
                             })}
                         </span>
                     </div>
@@ -119,7 +175,7 @@ export default function OrderCard({ order }: OrderCardProps) {
 
                     <div className="flex items-center gap-1">
                         <span className="text-lg font-black tracking-tight">
-                            {order.totalAmount.toFixed(2)}
+                            {order.total.toFixed(2)}
                         </span>
                         <CurrencySymbol className="w-4 h-4 me-1" />
                     </div>
@@ -128,7 +184,8 @@ export default function OrderCard({ order }: OrderCardProps) {
 
             {/* Actions */}
             <div className="flex items-center gap-3 mt-auto">
-                {order.status === 'delivered' ? (
+                {order.status === 'DELIVERED' ||
+                order.status === 'COMPLETED' ? (
                     <>
                         <Button
                             asChild

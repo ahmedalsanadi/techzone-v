@@ -55,7 +55,26 @@
     "deliveryTime": "Delivery Time",
     "pickupTime": "Pickup Time",
     "now": "Now",
-    "later": "Later"
+    "later": "Later",
+    "pleaseSelectPaymentMethod": "Please select a payment method",
+    "orderCreatedSuccessfully": "Order created successfully",
+    "checkoutFailed": "Checkout failed",
+    "orderSubtotal": "Order Subtotal",
+    "deliveryFee": "Delivery Fee",
+    "discount": "Discount",
+    "asap": "ASAP",
+    "title": "Checkout",
+    "breadcrumbHome": "Home",
+    "breadcrumbCart": "Cart",
+    "breadcrumbCheckout": "Checkout",
+    "walletDiscountTitle": "Do you want to apply wallet discount?",
+    "walletBalanceLabel": "Your wallet balance:",
+    "yes": "Yes",
+    "no": "No",
+    "submitOrder": "Submit Order",
+    "paymentMethodTitle": "Payment Method",
+    "summaryTitle": "Order Summary",
+    "total": "Total"
   },
   "Order": {
     "orderType": "Order Type",
@@ -264,6 +283,8 @@
     "details": "Details",
     "reorder": "Reorder",
     "reportProblem": "Report a Problem",
+    "loadMore": "Load More",
+    "noOrders": "No orders yet",
     "navigation": {
       "home": "Home",
       "myOrders": "My Orders"
@@ -272,7 +293,15 @@
       "rateOrder": "Rate Order",
       "cancelOrder": "Cancel Order",
       "reorder": "Reorder",
-      "reportProblem": "Report Problem"
+      "reportProblem": "Report Problem",
+      "cancelConfirmTitle": "Cancel Order",
+      "cancelConfirmMessage": "Are you sure you want to cancel this order?",
+      "cancelSuccess": "Order cancelled successfully",
+      "cancelError": "Failed to cancel order",
+      "reorderSuccess": "Items added to cart successfully",
+      "reorderError": "Failed to reorder",
+      "confirm": "Confirm",
+      "back": "Back"
     },
     "courier": {
       "title": "Your order is on its way!",
@@ -285,11 +314,16 @@
     },
     "status": {
       "delivered": "Delivered",
-      "waiting": "Waiting",
+      "waiting": "Waiting Approval",
+      "waiting_payment": "Waiting Payment",
       "preparing": "Preparing",
+      "ready": "Ready for Pickup",
       "with_courier": "With Courier",
+      "completed": "Completed",
       "cancelled": "Cancelled",
-      "timelineTitle": "Track Order Status"
+      "rejected": "Rejected",
+      "timelineTitle": "Track Order Status",
+      "timelineReady": "Ready for pickup"
     },
     "summary": {
       "title": "Order Details",
@@ -299,11 +333,13 @@
       "address": "Address",
       "deliveryTime": "Order Time",
       "totalAmount": "Order Total",
-      "paymentMethod": "Payment Method"
+      "paymentMethod": "Payment Method",
+      "asap": "ASAP"
     },
     "products": {
       "title": "Products",
-      "unit": "products"
+      "unit": "products",
+      "quantity_unit": "Qty"
     }
   },
   "NotFound": {

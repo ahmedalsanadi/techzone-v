@@ -5,7 +5,7 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { OrderStatusUpdate } from '../services/order-services';
+import { OrderStatusUpdate } from '@/types/orders';
 
 interface OrderStatusTimelineProps {
     timeline: OrderStatusUpdate[];
@@ -44,8 +44,8 @@ export function OrderStatusTimeline({ timeline }: OrderStatusTimelineProps) {
                                 item.active
                                     ? 'bg-green-100 border-green-600 shadow-lg shadow-green-200/50'
                                     : item.completed
-                                    ? 'bg-green-600 border-green-600'
-                                    : 'bg-white border-gray-200',
+                                      ? 'bg-green-600 border-green-600'
+                                      : 'bg-white border-gray-200',
                             )}>
                             {item.completed ? (
                                 <Check
@@ -67,8 +67,8 @@ export function OrderStatusTimeline({ timeline }: OrderStatusTimelineProps) {
                                     item.active
                                         ? 'text-green-700'
                                         : item.completed
-                                        ? 'text-gray-900'
-                                        : 'text-gray-500',
+                                          ? 'text-gray-900'
+                                          : 'text-gray-500',
                                 )}>
                                 {item.label}
                             </span>

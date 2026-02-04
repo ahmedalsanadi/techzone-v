@@ -1,11 +1,11 @@
-
 import MyOrdersView from './utils/components/MyOrdersView';
-import { getOrders } from './utils/services/order-services';
-
+import { orderService } from '@/services/order-service';
 
 export default async function MyOrdersPage() {
-    // Simulate fetching orders from an API
-    const orders = await getOrders();
+    // Fetch orders from the real API
+    const response = await orderService.getOrders({ page: 1, per_page: 10 });
+    const orders = response.data || [];
+    const meta = response.meta;
 
-    return <MyOrdersView orders={orders} />;
+    return <MyOrdersView initialOrders={orders} initialMeta={meta} />;
 }

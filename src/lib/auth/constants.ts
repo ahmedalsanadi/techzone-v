@@ -10,7 +10,8 @@ export const PROTECTED_ROUTES = [
     '/payment',
     '/profile',
     '/checkout',
-    '/my-addresses', // All address endpoints require authentication
+    '/my-addresses',
+    '/wallet',
 ] as const;
 
 /**
@@ -25,7 +26,8 @@ export const PROTECTED_API_ENDPOINTS = [
     '/store/profile/update',
     '/store/cart', // All cart endpoints require authentication
     '/store/cart/merge',
-    '/store/addresses'
+    '/store/addresses',
+    '/store/wallet',
 ] as const;
 
 /**
