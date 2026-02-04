@@ -4,7 +4,7 @@ import React from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Star, Store, Calendar, MapPin, Banknote, Info } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
+import { Badge, type BadgeVariant } from '@/components/ui/Badge';
 import { cn, formatCurrency } from '@/lib/utils';
 
 import { Order, OrderStatus } from '@/types/orders';
@@ -20,58 +20,52 @@ export default function OrderCard({ order }: OrderCardProps) {
 
     const statusConfig: Record<
         string,
-        { bg: string; text: string; label: string }
+        { variant: BadgeVariant; label: string }
     > = {
         WAITING_APPROVAL: {
-            bg: 'bg-[#FFF8E1]',
-            text: 'text-[#FBC02D]',
+            variant: 'warning',
             label: order.status_label || t('status.waiting'),
         },
         WAITING_PAYMENT: {
-            bg: 'bg-[#FFF8E1]',
-            text: 'text-[#FBC02D]',
+            variant: 'warning',
             label: order.status_label || t('status.waiting_payment'),
         },
         PREPARING: {
-            bg: 'bg-[#E3F2FD]',
-            text: 'text-[#1976D2]',
+            variant: 'info',
             label: order.status_label || t('status.preparing'),
         },
         READY: {
-            bg: 'bg-[#E3F2FD]',
-            text: 'text-[#1976D2]',
+            variant: 'info',
+            label: order.status_label || t('status.ready'),
+        },
+        PICKED_UP: {
+            variant: 'success',
             label: order.status_label || t('status.ready'),
         },
         ON_THE_WAY: {
-            bg: 'bg-[#E8F5E9]',
-            text: 'text-[#2E7D32]',
+            variant: 'success',
             label: order.status_label || t('status.with_courier'),
         },
         DELIVERED: {
-            bg: 'bg-[#E8F5E9]',
-            text: 'text-[#2E7D32]',
+            variant: 'success',
             label: order.status_label || t('status.delivered'),
         },
         COMPLETED: {
-            bg: 'bg-[#E8F5E9]',
-            text: 'text-[#2E7D32]',
+            variant: 'success',
             label: order.status_label || t('status.completed'),
         },
         CANCELLED: {
-            bg: 'bg-red-50',
-            text: 'text-red-600',
+            variant: 'destructive',
             label: order.status_label || t('status.cancelled'),
         },
         REJECTED: {
-            bg: 'bg-red-50',
-            text: 'text-red-600',
+            variant: 'destructive',
             label: order.status_label || t('status.rejected'),
         },
     };
 
     const currentStatus = statusConfig[order.status] || {
-        bg: 'bg-gray-50',
-        text: 'text-gray-600',
+        variant: 'secondary',
         label: order.status_label || order.status,
     };
 
@@ -121,11 +115,8 @@ export default function OrderCard({ order }: OrderCardProps) {
                     )}
 
                     <Badge
-                        className={cn(
-                            'px-4 py-1.5 rounded-lg border-none font-bold text-sm whitespace-nowrap',
-                            currentStatus.bg,
-                            currentStatus.text,
-                        )}>
+                        variant={currentStatus.variant}
+                        className="px-4 py-1.5 rounded-lg border-none font-bold text-sm whitespace-nowrap">
                         {currentStatus.label}
                     </Badge>
                 </div>
