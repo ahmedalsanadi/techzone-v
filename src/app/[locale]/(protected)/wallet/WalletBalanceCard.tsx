@@ -2,10 +2,10 @@
 'use client';
 
 import React from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import CurrencySymbol from '@/components/ui/CurrencySymbol';
+import { formatCurrency } from '@/lib/utils';
 
 interface WalletBalanceCardProps {
     balance: number;
@@ -15,6 +15,7 @@ export const WalletBalanceCard: React.FC<WalletBalanceCardProps> = ({
     balance,
 }) => {
     const t = useTranslations('Wallet');
+    const locale = useLocale();
 
     return (
         <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 relative overflow-hidden">
@@ -26,9 +27,8 @@ export const WalletBalanceCard: React.FC<WalletBalanceCardProps> = ({
                     </p>
                     <div className="flex items-center gap-1 justify-center ">
                         <span className="text-2xl md:text-4xl font-bold text-theme-primary">
-                            {balance.toFixed(2)}
+                            {formatCurrency(balance, locale)}
                         </span>
-                        <CurrencySymbol className="w-5 h-5 md:w-6 md:h-6 text-theme-primary" />
                     </div>
                 </div>
                 {/* Add Balance Button */}

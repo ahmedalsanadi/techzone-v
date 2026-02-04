@@ -1,12 +1,11 @@
 'use client';
 
 import React from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Star, Store, Calendar, MapPin, Banknote, Info } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import CurrencySymbol from '@/components/ui/CurrencySymbol';
-import { cn } from '@/lib/utils';
+import { cn, formatCurrency } from '@/lib/utils';
 
 import { Order, OrderStatus } from '@/types/orders';
 import { Link } from '@/i18n/navigation';
@@ -17,6 +16,7 @@ interface OrderCardProps {
 
 export default function OrderCard({ order }: OrderCardProps) {
     const t = useTranslations('Orders');
+    const locale = useLocale();
 
     const statusConfig: Record<
         string,
@@ -175,9 +175,8 @@ export default function OrderCard({ order }: OrderCardProps) {
 
                     <div className="flex items-center gap-1">
                         <span className="text-lg font-black tracking-tight">
-                            {order.total.toFixed(2)}
+                            {formatCurrency(order.total, locale)}
                         </span>
-                        <CurrencySymbol className="w-4 h-4 me-1" />
                     </div>
                 </div>
             </div>

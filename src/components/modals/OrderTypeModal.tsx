@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, Clock, Plus, Edit } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import {
     useOrderStore,
     OrderType,
@@ -31,6 +31,7 @@ interface OrderTypeModalProps {
 
 const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
     const t = useTranslations('Order');
+    const locale = useLocale();
     const {
         orderType,
         deliveryAddress,
@@ -192,18 +193,18 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                         'carPickup',
                                     ] as OrderType[]
                                 ).map((type) => (
-                                            <button
-                                                key={type}
-                                                type="button"
-                                                onClick={() => setOrderType(type)}
-                                                className={cn(
-                                                    'py-2.5 px-3 sm:py-3 sm:px-4 md:p-4 min-h-[40px] sm:min-h-[44px] md:min-h-[48px] rounded-lg sm:rounded-xl md:rounded-2xl border-2 transition-all text-right touch-manipulation text-xs sm:text-sm font-semibold leading-tight',
-                                                    orderType === type
-                                                        ? 'bg-theme-primary/5 border-theme-primary text-theme-primary font-bold shadow-sm'
-                                                        : 'bg-gray-50 border-gray-100 hover:border-gray-200 text-gray-700',
-                                                )}>
-                                                {t(type)}
-                                            </button>
+                                    <button
+                                        key={type}
+                                        type="button"
+                                        onClick={() => setOrderType(type)}
+                                        className={cn(
+                                            'py-2.5 px-3 sm:py-3 sm:px-4 md:p-4 min-h-[40px] sm:min-h-[44px] md:min-h-[48px] rounded-lg sm:rounded-xl md:rounded-2xl border-2 transition-all text-right touch-manipulation text-xs sm:text-sm font-semibold leading-tight',
+                                            orderType === type
+                                                ? 'bg-theme-primary/5 border-theme-primary text-theme-primary font-bold shadow-sm'
+                                                : 'bg-gray-50 border-gray-100 hover:border-gray-200 text-gray-700',
+                                        )}>
+                                        {t(type)}
+                                    </button>
                                 ))}
                             </div>
                         </div>
@@ -360,7 +361,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                             {scheduledTime
                                                 ? formatScheduledTime(
                                                       scheduledTime,
-                                                      'ar',
+                                                      locale,
                                                   )
                                                 : t('selectDateTime')}
                                         </span>

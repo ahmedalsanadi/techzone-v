@@ -11,3 +11,8 @@ export function isValidColor(color: string): boolean {
         /^rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)$/.test(color)
     );
 }
+
+export function formatCurrency(amount: number, locale: string = 'ar') {
+    // Standardizing on SAR for this project
+    return `${amount.toFixed(2)} ${locale === 'ar' ? '﷼' : 'SAR'}`;
+}

@@ -17,6 +17,8 @@ import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { useRouter } from '@/i18n/navigation';
 import { Loader2 } from 'lucide-react';
+import { formatCurrency } from '@/lib/utils';
+import { useLocale } from 'next-intl';
 
 export default function CheckoutPage() {
     const t = useTranslations('Checkout');
@@ -64,19 +66,30 @@ export default function CheckoutPage() {
     }, []);
 
     const handleCheckout = async () => {
-        if (!selectedPaymentMethod) {
-            toast.error(t('pleaseSelectPaymentMethod'));
-            return;
-        }
-
         if (orderType === 'delivery' && !deliveryAddress) {
             toast.error(t('pleaseSelectAddress'));
             return;
         }
 
+        const cartSubtotal = getTotalPrice();
+        const totalToPay = cartSubtotal + shippingFee - discount;
+        const willUseWallet = useWallet && walletBalance > 0;
+
+        // 1. Payment Validation
+        if (useWallet) {
+            if (walletBalance < totalToPay) {
+                toast.error(t('insufficientWalletBalance'));
+                return;
+            }
+            // If wallet is enough, we don't strictly need selectedPaymentMethod
+        } else if (!selectedPaymentMethod) {
+            toast.error(t('pleaseSelectPaymentMethod'));
+            return;
+        }
+
         setIsSubmitting(true);
         try {
-            // 1. Validate Cart
+            // 2. Validate Cart
             const validation = await cartService.validateCart();
             if (!validation.is_valid) {
                 toast.error(
@@ -85,7 +98,7 @@ export default function CheckoutPage() {
                 return;
             }
 
-            // 2. Map orderType to FulfillmentMethod
+            // 3. Map orderType to FulfillmentMethod
             const fulfillment_method =
                 orderType === 'delivery'
                     ? FulfillmentMethod.DELIVERY
@@ -102,10 +115,9 @@ export default function CheckoutPage() {
                 address_id: deliveryAddress?.id
                     ? Number(deliveryAddress.id)
                     : undefined,
-                payment_method:
-                    useWallet && walletBalance > 0
-                        ? 'wallet'
-                        : (selectedPaymentMethod as any),
+                payment_method: willUseWallet
+                    ? ('wallet' as const)
+                    : (selectedPaymentMethod as any),
                 customer_pickup_datetime:
                     orderTime === 'later' ? scheduledTime?.toISOString() : null,
                 notes: '',
@@ -122,16 +134,19 @@ export default function CheckoutPage() {
         }
     };
 
+    const locale = useLocale();
+
     const cartSubtotal = getTotalPrice();
-    const finalTotal = cartSubtotal + shippingFee - discount;
+    const finalTotal = Math.max(
+        0,
+        cartSubtotal + shippingFee - discount - (useWallet ? walletBalance : 0),
+    );
 
     if (isLoadingData) {
         return (
             <div className="container mx-auto min-h-screen py-12 flex flex-col items-center justify-center gap-4">
                 <Loader2 className="w-12 h-12 text-theme-primary animate-spin" />
-                <p className="text-gray-500 font-medium">
-                    {t('loading') || 'جاري تحميل البيانات...'}
-                </p>
+                <p className="text-gray-500 font-medium">{t('loading')}</p>
             </div>
         );
     }
@@ -159,7 +174,7 @@ export default function CheckoutPage() {
                     <OrderTypeCard />
 
                     <WalletDiscountCard
-                        balance={`${walletBalance} ﷼`}
+                        balance={formatCurrency(walletBalance, locale)}
                         selected={useWallet ? 'yes' : 'no'}
                         onChange={(val: 'yes' | 'no') =>
                             setUseWallet(val === 'yes')
@@ -187,18 +202,35 @@ export default function CheckoutPage() {
                         items={[
                             {
                                 label: t('orderSubtotal'),
-                                value: `﷼ ${cartSubtotal.toFixed(2)}`,
+                                value: formatCurrency(cartSubtotal, locale),
                             },
                             {
                                 label: t('deliveryFee'),
-                                value: `﷼ ${shippingFee.toFixed(2)}`,
+                                value: formatCurrency(shippingFee, locale),
                             },
                             {
                                 label: t('discount'),
-                                value: `﷼ ${discount.toFixed(2)}`,
+                                value: formatCurrency(discount, locale),
                             },
+                            ...(useWallet && walletBalance > 0
+                                ? [
+                                      {
+                                          label: t('walletDeduction'),
+                                          value: `- ${formatCurrency(
+                                              Math.min(
+                                                  cartSubtotal +
+                                                      shippingFee -
+                                                      discount,
+                                                  walletBalance,
+                                              ),
+                                              locale,
+                                          )}`,
+                                          isNegative: true,
+                                      },
+                                  ]
+                                : []),
                         ]}
-                        total={`﷼ ${finalTotal.toFixed(2)}`}
+                        total={formatCurrency(finalTotal, locale)}
                         onSubmit={handleCheckout}
                         isLoading={isSubmitting}
                         disabled={items.length === 0}

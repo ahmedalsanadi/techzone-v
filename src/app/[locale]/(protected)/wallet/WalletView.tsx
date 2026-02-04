@@ -24,7 +24,15 @@ export default function WalletView({ balance }: WalletViewProps) {
         { label: t('title') },
     ];
 
+    const [mounted, setMounted] = React.useState(false);
+
     React.useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    React.useEffect(() => {
+        if (!mounted) return;
+
         const fetchTransactions = async () => {
             try {
                 const response = await walletService.getTransactions({
@@ -43,6 +51,11 @@ export default function WalletView({ balance }: WalletViewProps) {
                         amount: Math.abs(tx.amount),
                         date: new Date(tx.created_at).toLocaleDateString(
                             'ar-SA',
+                            {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                            },
                         ),
                         refNumber: String(tx.reference_id),
                     }),
@@ -56,7 +69,7 @@ export default function WalletView({ balance }: WalletViewProps) {
         };
 
         fetchTransactions();
-    }, []);
+    }, [mounted]);
 
     return (
         <main className="min-h-screen bg-gray-50/30 py-8">

@@ -74,7 +74,10 @@
     "submitOrder": "Submit Order",
     "paymentMethodTitle": "Payment Method",
     "summaryTitle": "Order Summary",
-    "total": "Total"
+    "total": "Total",
+    "loading": "Loading data...",
+    "walletDeduction": "Wallet Deduction",
+    "insufficientWalletBalance": "Insufficient wallet balance for full payment"
   },
   "Order": {
     "orderType": "Order Type",

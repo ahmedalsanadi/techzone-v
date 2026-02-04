@@ -2,10 +2,9 @@
 'use client';
 
 import React from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { TrendingUp, TrendingDown } from 'lucide-react';
-import CurrencySymbol from '@/components/ui/CurrencySymbol';
-import { cn } from '@/lib/utils';
+import { cn, formatCurrency } from '@/lib/utils';
 
 export interface Transaction {
     id: string;
@@ -24,6 +23,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
     transactions,
 }) => {
     const t = useTranslations('Wallet');
+    const locale = useLocale();
 
     return (
         <div className="space-y-6">
@@ -64,9 +64,8 @@ export const TransactionList: React.FC<TransactionListProps> = ({
                                 )}
                                 <span>
                                     {tx.type === 'add' ? '+' : '-'}
-                                    {tx.amount.toFixed(2)}
+                                    {formatCurrency(tx.amount, locale)}
                                 </span>
-                                <CurrencySymbol className="w-4 h-4 md:w-5 md:h-5" />
                             </div>
                         </div>
 

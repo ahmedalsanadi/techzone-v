@@ -186,7 +186,9 @@ export default async function CMSPageDetail({ params }: Props) {
                         )}
                     </section>
 
-                    <footer className="text-center text-xs text-gray-400">
+                    <footer
+                        className="text-center text-xs text-gray-400"
+                        suppressHydrationWarning>
                         © {new Date().getFullYear()} {site.name}
                     </footer>
                 </article>

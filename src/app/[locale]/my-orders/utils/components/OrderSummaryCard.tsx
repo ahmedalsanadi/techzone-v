@@ -2,10 +2,9 @@
 'use client';
 
 import React from 'react';
-import { useTranslations } from 'next-intl';
-import Image from 'next/image';
 import { Order } from '@/types/orders';
-import CurrencySymbol from '@/components/ui/CurrencySymbol';
+import { formatCurrency } from '@/lib/utils';
+import { useLocale, useTranslations } from 'next-intl';
 
 interface OrderSummaryCardProps {
     order: Order;
@@ -13,6 +12,7 @@ interface OrderSummaryCardProps {
 
 export function OrderSummaryCard({ order }: OrderSummaryCardProps) {
     const t = useTranslations('Orders.summary');
+    const locale = useLocale();
     const [mounted, setMounted] = React.useState(false);
 
     React.useEffect(() => {
@@ -60,8 +60,7 @@ export function OrderSummaryCard({ order }: OrderSummaryCardProps) {
             label: t('totalAmount'),
             value: (
                 <div className="flex items-center gap-1 justify-end font-semibold text-gray-900">
-                    <span>{order.total.toFixed(2)}</span>
-                    <CurrencySymbol className="w-4 h-4" />
+                    <span>{formatCurrency(order.total, locale)}</span>
                 </div>
             ),
         },

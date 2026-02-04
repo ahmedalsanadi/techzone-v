@@ -74,7 +74,10 @@
     "submitOrder": "تقديم الطلب",
     "paymentMethodTitle": "طريقة الدفع",
     "summaryTitle": "ملخص الطلب",
-    "total": "الإجمالي"
+    "total": "الإجمالي",
+    "loading": "جاري تحميل البيانات...",
+    "walletDeduction": "خصم المحفظة",
+    "insufficientWalletBalance": "رصيد المحفظة غير كافٍ للدفع الكامل"
   },
   "Order": {
     "orderType": "نوع الطلب",

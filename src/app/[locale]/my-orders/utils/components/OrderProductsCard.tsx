@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { OrderItem } from '@/types/orders';
-import CurrencySymbol from '@/components/ui/CurrencySymbol';
+import { formatCurrency } from '@/lib/utils';
+import { useLocale, useTranslations } from 'next-intl';
 
 interface OrderProductsCardProps {
     items: OrderItem[];
@@ -12,6 +12,7 @@ interface OrderProductsCardProps {
 
 export function OrderProductsCard({ items }: OrderProductsCardProps) {
     const t = useTranslations('Orders');
+    const locale = useLocale();
 
     return (
         <div className="bg-white rounded-[32px] p-8 md:p-10 border border-gray-100/60 shadow-sm">
@@ -55,7 +56,12 @@ export function OrderProductsCard({ items }: OrderProductsCardProps) {
                                             <span
                                                 key={i}
                                                 className="text-[11px] md:text-[13px] font-bold text-gray-400 leading-tight">
-                                                {addon.name} ({addon.price})
+                                                {addon.name} (
+                                                {formatCurrency(
+                                                    addon.price,
+                                                    locale,
+                                                )}
+                                                )
                                             </span>
                                         ))}
                                     </div>
@@ -65,16 +71,21 @@ export function OrderProductsCard({ items }: OrderProductsCardProps) {
                                 <div className="flex flex-col items-end shrink-0">
                                     <div className="flex items-center gap-1 font-black text-theme-primary text-xl">
                                         <span>
-                                            {item.sale_unit_price ||
-                                                item.unit_price}
+                                            {formatCurrency(
+                                                item.sale_unit_price ||
+                                                    item.unit_price,
+                                                locale,
+                                            )}
                                         </span>
-                                        <CurrencySymbol className="w-4 h-4" />
                                     </div>
                                     {item.sale_unit_price &&
                                         item.unit_price >
                                             item.sale_unit_price && (
                                             <span className="text-xs font-bold text-gray-300 line-through">
-                                                {item.unit_price}
+                                                {formatCurrency(
+                                                    item.unit_price,
+                                                    locale,
+                                                )}
                                             </span>
                                         )}
                                 </div>

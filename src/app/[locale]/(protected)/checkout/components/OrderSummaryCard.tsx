@@ -1,7 +1,7 @@
-// src/components/checkout/OrderSummaryCard.tsx
 interface SummaryItem {
     label: string;
     value: string;
+    isNegative?: boolean;
 }
 
 import { Loader2 } from 'lucide-react';
@@ -33,7 +33,14 @@ export default function OrderSummaryCard({
             <div className="space-y-4 text-md font-medium">
                 {items.map((item, index) => (
                     <div key={index} className="flex justify-between">
-                        <span className="text-gray-600">{item.value}</span>
+                        <span
+                            className={
+                                item.isNegative
+                                    ? 'text-green-600 font-bold'
+                                    : 'text-gray-600'
+                            }>
+                            {item.value}
+                        </span>
                         <span className="text-gray-700">{item.label}</span>
                     </div>
                 ))}

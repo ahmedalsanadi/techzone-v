@@ -39,7 +39,14 @@ export default function MyOrdersView({
             });
 
             if (response.data) {
-                setOrders([...orders, ...response.data]);
+                setOrders((prev) => {
+                    const newOrders = response.data || [];
+                    const prevIds = new Set(prev.map((o) => o.id));
+                    const uniqueNewOrders = newOrders.filter(
+                        (o) => !prevIds.has(o.id),
+                    );
+                    return [...prev, ...uniqueNewOrders];
+                });
                 setMeta(response.meta);
             }
         } catch (error) {
