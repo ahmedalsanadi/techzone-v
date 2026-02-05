@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import { orderService } from '@/services/order-service';
 import OrderDetailsView from '../utils/components/OrderDetailsView';
 
+export const dynamic = 'force-dynamic';
+
 export default async function OrderPage({
     params,
 }: {
