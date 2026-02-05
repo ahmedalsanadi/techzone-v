@@ -4,6 +4,8 @@ import { getTranslations } from 'next-intl/server';
 import WalletView from './WalletView';
 import { walletService } from '@/services/wallet-service';
 
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata({
     params,
 }: {
