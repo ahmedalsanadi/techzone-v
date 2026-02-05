@@ -17,6 +17,7 @@ import {
 } from '@/types/orders';
 import { useCartStore } from '@/store/useCartStore';
 import { useOrderStore, getScheduledTimeAsDate } from '@/store/useOrderStore';
+import { useBranchStore } from '@/store/useBranchStore';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { useRouter } from '@/i18n/navigation';
@@ -34,10 +35,14 @@ export default function CheckoutPage() {
         scheduledTime: scheduledTimeRaw,
         orderTime,
     } = useOrderStore();
+    const { selectedBranchId } = useBranchStore();
 
     const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
     const [selectedPaymentMethodType, setSelectedPaymentMethodType] =
         useState<PaymentMethodType | null>(null);
+    const [selectedGatewaySlug, setSelectedGatewaySlug] = useState<
+        string | null
+    >(null);
     const [walletBalance, setWalletBalance] = useState<number>(0);
     const [useWallet, setUseWallet] = useState<boolean>(false);
     const [isLoadingData, setIsLoadingData] = useState(true);
@@ -55,8 +60,10 @@ export default function CheckoutPage() {
                     walletService.getBalance(),
                 ]);
                 setPaymentMethods(methods);
-                // Default to first available method that is not wallet
-                const defaultMethod = methods.find((m) => m.type !== 'wallet');
+                // Default to first available method that is not wallet and not epayment
+                const defaultMethod = methods.find(
+                    (m) => m.type !== 'wallet' && m.type !== 'epayment',
+                );
                 if (defaultMethod) {
                     setSelectedPaymentMethodType(defaultMethod.type);
                 }
@@ -111,7 +118,7 @@ export default function CheckoutPage() {
             const scheduledTime = getScheduledTimeAsDate(scheduledTimeRaw);
 
             // Mapping: epayment -> card, cod -> cod, wallet -> wallet
-            let payment_method: PaymentMethodType | 'card' = 'cod';
+            let payment_method: any = 'cod';
             const isFullyWallet = useWallet && walletBalance >= totalToPay;
 
             if (isFullyWallet) {
@@ -139,7 +146,20 @@ export default function CheckoutPage() {
             clearCart();
             router.push(`/my-orders/${response.id}`);
         } catch (error: any) {
-            toast.error(error.message || t('checkoutFailed'));
+            console.error('Checkout Error:', error);
+            // If API returns detailed validation errors, show the first one
+            const validationMessage =
+                error.data && typeof error.data === 'object'
+                    ? Object.values(error.data)[0]
+                    : null;
+
+            toast.error(
+                (Array.isArray(validationMessage)
+                    ? validationMessage[0]
+                    : (validationMessage as string)) ||
+                    error.message ||
+                    t('checkoutFailed'),
+            );
         } finally {
             setIsSubmitting(false);
         }
@@ -195,7 +215,24 @@ export default function CheckoutPage() {
                     <PaymentMethodCard
                         methods={paymentMethods}
                         selectedType={selectedPaymentMethodType}
-                        onChange={(type) => setSelectedPaymentMethodType(type)}
+                        selectedGatewaySlug={selectedGatewaySlug}
+                        onChange={(type) => {
+                            setSelectedPaymentMethodType(type);
+                            // Auto-select first gateway if switching to epayment
+                            if (type === 'epayment') {
+                                const epay = paymentMethods.find(
+                                    (m) => m.type === 'epayment',
+                                );
+                                if (epay?.gateways?.length) {
+                                    setSelectedGatewaySlug(
+                                        epay.gateways[0].slug,
+                                    );
+                                }
+                            } else {
+                                setSelectedGatewaySlug(null);
+                            }
+                        }}
+                        onGatewayChange={(slug) => setSelectedGatewaySlug(slug)}
                     />
 
                     <CouponCard />
