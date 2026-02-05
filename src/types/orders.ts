@@ -10,7 +10,8 @@ export type OrderStatus =
     | 'DELIVERED'
     | 'COMPLETED'
     | 'CANCELLED'
-    | 'REJECTED';
+    | 'REJECTED'
+    | number; // Added to handle numeric status codes from API
 
 export enum FulfillmentMethod {
     DELIVERY = 1,
@@ -22,9 +23,11 @@ export enum FulfillmentMethod {
 export type PaymentMethodSlug = 'cod' | 'wallet' | 'card';
 
 export interface OrderItemAddon {
-    id: number;
-    name: string;
+    addon_item_id: number;
     price: number;
+    quantity: number;
+    multiply_by_quantity?: boolean;
+    name?: string; // Optional since it might be missing in some responses
 }
 
 export interface OrderItem {
@@ -32,7 +35,7 @@ export interface OrderItem {
     product_id: number;
     product_variant_id: number | null;
     product_title: string;
-    product_type: string;
+    product_type: string | number;
     is_variation: boolean;
     quantity: number;
     unit_price: number;
@@ -63,6 +66,7 @@ export interface Order {
     items_subtotal: number;
     items_discount: number;
     items_total: number;
+    items_tax?: number;
     shipping_fee: number;
     cod_fee: number;
     subtotal: number;

@@ -61,8 +61,8 @@ export default function OrderDetailsView({
                     notes: item.notes || '',
                     addons:
                         item.addons?.map((a) => ({
-                            addon_item_id: Number(a.id),
-                            quantity: 1, // Default to 1 if not specified
+                            addon_item_id: a.addon_item_id,
+                            quantity: a.quantity || 1,
                         })) || [],
                 };
 
@@ -83,7 +83,8 @@ export default function OrderDetailsView({
                                 addons: item.addons?.reduce(
                                     (acc: any, addon: any) => {
                                         if (!acc[0]) acc[0] = {};
-                                        acc[0][addon.id] = 1;
+                                        acc[0][addon.addon_item_id] =
+                                            addon.quantity || 1;
                                         return acc;
                                     },
                                     {},
@@ -141,6 +142,26 @@ export default function OrderDetailsView({
         setMounted(true);
     }, []);
 
+    // Map numeric status to string key for internal logic
+    const statusMap: Record<number, OrderStatus> = {
+        1: 'WAITING_APPROVAL',
+        2: 'WAITING_PAYMENT',
+        3: 'PREPARING',
+        4: 'READY',
+        5: 'PICKED_UP',
+        6: 'ON_THE_WAY',
+        7: 'DELIVERED',
+        8: 'COMPLETED',
+        9: 'CANCELLED',
+        10: 'REJECTED',
+    };
+
+    const currentStatusKey = (
+        typeof order.status === 'number'
+            ? statusMap[order.status] || 'WAITING_APPROVAL'
+            : order.status
+    ) as OrderStatus;
+
     // Derived timeline if not provided by API
     const getTimeline = (): OrderStatusUpdate[] => {
         if (order.timeline && order.timeline.length > 0) return order.timeline;
@@ -153,14 +174,14 @@ export default function OrderDetailsView({
             'DELIVERED',
         ];
 
-        const currentIndex = statuses.indexOf(order.status);
+        const currentIndex = statuses.indexOf(currentStatusKey);
 
         return statuses.map((status, index) => {
             const isCompleted =
                 index < currentIndex ||
-                order.status === 'COMPLETED' ||
-                (order.status === 'DELIVERED' && index <= currentIndex);
-            const isActive = order.status === status;
+                currentStatusKey === 'COMPLETED' ||
+                (currentStatusKey === 'DELIVERED' && index <= currentIndex);
+            const isActive = currentStatusKey === status;
 
             // Map status to labels (simplified)
             const labels: Record<string, string> = {
@@ -179,9 +200,12 @@ export default function OrderDetailsView({
                       })
                     : undefined;
 
+            const statusStr =
+                typeof status === 'number' ? String(status) : status;
+
             return {
-                status,
-                label: labels[status] || status,
+                status: statusStr,
+                label: labels[statusStr] || statusStr,
                 completed: isCompleted,
                 active: isActive,
                 timestamp,
@@ -190,8 +214,8 @@ export default function OrderDetailsView({
     };
 
     const isCancelable =
-        order.status === 'WAITING_APPROVAL' ||
-        order.status === 'WAITING_PAYMENT';
+        currentStatusKey === 'WAITING_APPROVAL' ||
+        currentStatusKey === 'WAITING_PAYMENT';
 
     return (
         <section className="min-h-screen pb-16 pt-6 px-1 md:px-4 space-y-6">

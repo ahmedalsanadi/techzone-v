@@ -56,7 +56,9 @@ export function OrderProductsCard({ items }: OrderProductsCardProps) {
                                             <span
                                                 key={i}
                                                 className="text-[11px] md:text-[13px] font-bold text-gray-400 leading-tight">
-                                                {addon.name} (
+                                                {addon.name ||
+                                                    `${t('products.addon') || 'إضافة'} #${addon.addon_item_id}`}{' '}
+                                                ({addon.quantity} ×{' '}
                                                 {formatCurrency(
                                                     addon.price,
                                                     locale,

@@ -342,7 +342,8 @@
     "products": {
       "title": "Products",
       "unit": "products",
-      "quantity_unit": "Qty"
+      "quantity_unit": "Qty",
+      "addon": "Addon"
     }
   },
   "NotFound": {

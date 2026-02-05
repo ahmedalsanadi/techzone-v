@@ -341,7 +341,8 @@
     "products": {
       "title": "المنتجات",
       "unit": "منتج",
-      "quantity_unit": "عدد"
+      "quantity_unit": "عدد",
+      "addon": "إضافة"
     }
   },
   "NotFound": {
