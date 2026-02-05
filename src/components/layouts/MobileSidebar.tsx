@@ -131,10 +131,10 @@ export default function MobileSidebar() {
                                     <NavItem
                                         id={String(page.id)}
                                         label={page.title}
-                                        href={`/${page.slug}`}
+                                        href={`/pages/${page.slug}`}
                                         icon="/images/svgs/4grid-squares-icon.svg"
                                         isActive={pathname.startsWith(
-                                            `/${page.slug}`,
+                                            `/pages/${page.slug}`,
                                         )}
                                     />
                                 </div>

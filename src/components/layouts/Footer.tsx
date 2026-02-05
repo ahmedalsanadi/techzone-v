@@ -46,7 +46,7 @@ const Footer = () => {
                 links: [
                     ...footerCMSPages.map((page) => ({
                         label: page.title,
-                        href: `/${page.slug}`,
+                        href: `/pages/${page.slug}`,
                     })),
                     // Fallback or additional hardcoded links if any
                     ...section.links.filter(

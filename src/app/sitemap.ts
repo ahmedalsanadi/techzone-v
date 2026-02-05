@@ -29,9 +29,7 @@ function localizeRoutes(
 ): MetadataRoute.Sitemap {
     return routing.locales.flatMap((locale) =>
         routes.map((route) => ({
-            url: `${baseUrl}/${locale}${
-                route.path === '/' ? '' : route.path
-            }`,
+            url: `${baseUrl}/${locale}${route.path === '/' ? '' : route.path}`,
             lastModified: new Date(),
             priority: route.priority,
             changeFrequency: route.changeFrequency,
@@ -108,7 +106,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         const pages = await cmsService.getPages();
         cmsRoutes = localizeRoutes(
             pages.map((page) => ({
-                path: `/${page.slug}`,
+                path: `/pages/${page.slug}`,
                 priority: 0.5,
                 changeFrequency: 'monthly',
             })),

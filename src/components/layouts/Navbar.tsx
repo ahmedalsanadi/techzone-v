@@ -90,7 +90,7 @@ export default function Navbar() {
                             {menuCMSPages.map((page) => (
                                 <Link
                                     key={page.id}
-                                    href={`/${page.slug}`}
+                                    href={`/pages/${page.slug}`}
                                     className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900">
                                     {page.title}
                                 </Link>

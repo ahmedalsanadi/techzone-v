@@ -251,7 +251,7 @@ export async function fetchLiberoFull<T>(
                 result?.message ||
                 `Request failed with status ${response.status}`;
 
-            if (env.isDev) {
+            if (env.isDev && response.status !== 404) {
                 console.error(`[API Error] ${init.method || 'GET'} ${path}:`, {
                     status: response.status,
                     statusText: response.statusText,

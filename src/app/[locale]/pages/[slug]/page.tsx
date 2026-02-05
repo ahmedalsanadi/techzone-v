@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     try {
         const page = await cmsService.getPage(slug);
         const site = await resolveSiteIdentity();
-        const url = `${site.url}/${locale}/${slug}`;
+        const url = `${site.url}/${locale}/pages/${slug}`;
 
         return {
             title: page.title,
@@ -29,8 +29,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             alternates: {
                 canonical: url,
                 languages: {
-                    en: `${site.url}/en/${slug}`,
-                    ar: `${site.url}/ar/${slug}`,
+                    en: `${site.url}/en/pages/${slug}`,
+                    ar: `${site.url}/ar/pages/${slug}`,
                 },
             },
             openGraph: {
@@ -79,11 +79,26 @@ export default async function CMSPageDetail({ params }: Props) {
     // Safety check: Prevent fallback for existing static routes if any logic fails
     // (Next.js handles this by file priority, but for clarity)
 
+    // List of common file types/slugs that shouldn't trigger a CMS fetch
+    const ignoredSlugs = [
+        'favicon.ico',
+        'sitemap.xml',
+        'robots.txt',
+        'manifest.json',
+    ];
+    if (ignoredSlugs.includes(slug) || slug.includes('.')) {
+        notFound();
+    }
+
     let page;
     try {
         page = await cmsService.getPage(slug);
-    } catch (error) {
-        console.error('[CMSPage] Fetch failed:', error);
+    } catch (error: any) {
+        // Silently handle 404s (User error: wrong URL)
+        // Only log system errors (500, 503, etc.)
+        if (error?.status !== 404) {
+            console.error('[CMSPage] System error:', error?.message || error);
+        }
         notFound();
     }
 
@@ -93,7 +108,11 @@ export default async function CMSPageDetail({ params }: Props) {
 
     const breadcrumbItems = [
         { label: t('Product.home'), href: `/${locale}` },
-        { label: page.title, href: `/${locale}/${page.slug}`, active: true },
+        {
+            label: page.title,
+            href: `/${locale}/pages/${page.slug}`,
+            active: true,
+        },
     ];
 
     const pageTypeLabel =
