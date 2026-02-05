@@ -1,27 +1,21 @@
-import { createRequire } from 'module';
+//src/lib/sanitize.ts
+import sanitize from 'sanitize-html';
 
 /**
- * Server-side HTML Sanitization Utility
- * Specifically designed for Next.js Server Components.
+ * Senior-level HTML Sanitization Utility
  *
- * NOTE: We use createRequire here to bypass ESM/CJS bundling issues
- * that 'jsdom' encounters in modern Turbopack/Vercel environments.
+ * Performance: Uses 'sanitize-html', which is significantly faster and
+ * more memory-efficient than JSDOM/DOMPurify in Serverless environments.
+ *
+ * Safety: Implements a strict whitelist-based approach to prevent XSS.
  */
-const require = createRequire(import.meta.url);
-
-let purify: any;
-
 export const sanitizeHTML = (html: string) => {
-    try {
-        if (!purify) {
-            const { JSDOM } = require('jsdom');
-            const DOMPurify = require('dompurify');
-            const window = new JSDOM('').window;
-            purify = DOMPurify(window);
-        }
+    if (!html) return '';
 
-        return purify.sanitize(html, {
-            ALLOWED_TAGS: [
+    try {
+        return sanitize(html, {
+            // White-list of allowed HTML tags
+            allowedTags: [
                 'h1',
                 'h2',
                 'h3',
@@ -44,24 +38,28 @@ export const sanitizeHTML = (html: string) => {
                 'blockquote',
                 'hr',
             ],
-            ALLOWED_ATTR: [
-                'href',
-                'target',
-                'rel',
-                'src',
-                'alt',
-                'class',
-                'id',
-                'style',
-                'title',
-            ],
-            ADD_ATTR: ['rel', 'target'],
-            FORBID_TAGS: ['script', 'style', 'iframe', 'frame', 'object'],
-            FORBID_ATTR: ['onerror', 'onclick', 'onload'],
+            // White-list of allowed attributes per tag
+            allowedAttributes: {
+                a: ['href', 'target', 'rel', 'title'],
+                img: ['src', 'alt', 'width', 'height', 'class', 'style'],
+                '*': ['class', 'style', 'id'], // Allow basic styling on any tag
+            },
+            // Secure link handling
+            allowedSchemes: ['http', 'https', 'mailto', 'tel'],
+            transformTags: {
+                a: sanitize.simpleTransform('a', {
+                    target: '_blank',
+                    rel: 'noopener noreferrer',
+                }),
+            },
+            // Security: Prevent potential bypasses using uncommon protocols
+            allowProtocolRelative: false,
+            enforceHtmlBoundary: true,
         });
     } catch (error) {
         console.error('[Sanitize] Critical failure:', error);
-        // Fallback to raw content if sanitization fails (better than 500 error)
-        return html;
+        // Senior Safety Fallback: Return empty string on failure rather than raw HTML
+        // to prevent any accidental XSS if the sanitizer crashes.
+        return '';
     }
 };
