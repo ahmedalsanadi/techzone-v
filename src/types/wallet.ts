@@ -26,9 +26,7 @@ export interface WalletTransaction {
     amount: number;
     balance_before: number;
     balance_after: number;
-    reference_type: string;
-    reference_id: number;
+    reference: string;
     description: string;
-    status: TransactionStatus;
     created_at: string;
 }

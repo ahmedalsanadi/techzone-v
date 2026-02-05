@@ -102,6 +102,7 @@ export interface CreateOrderRequest {
     fulfillment_method: FulfillmentMethod;
     address_id?: number;
     payment_method: PaymentMethodSlug;
+    use_wallet?: boolean; // Added for combinable payment
     customer_pickup_datetime?: string | null;
     notes?: string;
 }
@@ -122,21 +123,20 @@ export interface PaymentGateway {
     name: string;
     slug: string;
     description: string;
-    logo: string;
+    logo: string | null;
     supports_libero: boolean;
     supports_direct: boolean;
 }
 
+export type PaymentMethodType = 'epayment' | 'cod' | 'wallet';
+
 export interface PaymentMethod {
-    id: number;
+    type: PaymentMethodType;
     name: string;
-    slug: PaymentMethodSlug;
     description: string;
-    logo: string;
-    gateway: {
-        id: number;
-        name: string;
-        slug: string;
-        logo: string;
-    };
+    icon: string;
+    available: boolean;
+    gateways?: PaymentGateway[]; // for epayment
+    max_amount?: number; // for cod
+    can_combine?: boolean; // for wallet
 }

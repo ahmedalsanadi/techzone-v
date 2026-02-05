@@ -10,7 +10,11 @@ import OrderSummaryCard from './components/OrderSummaryCard';
 import { orderService } from '@/services/order-service';
 import { walletService } from '@/services/wallet-service';
 import { cartService } from '@/services/cart-service';
-import { PaymentMethod, FulfillmentMethod } from '@/types/orders';
+import {
+    PaymentMethod,
+    FulfillmentMethod,
+    PaymentMethodType,
+} from '@/types/orders';
 import { useCartStore } from '@/store/useCartStore';
 import { useOrderStore, getScheduledTimeAsDate } from '@/store/useOrderStore';
 import { useTranslations } from 'next-intl';
@@ -32,9 +36,8 @@ export default function CheckoutPage() {
     } = useOrderStore();
 
     const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
-    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
-        string | null
-    >(null);
+    const [selectedPaymentMethodType, setSelectedPaymentMethodType] =
+        useState<PaymentMethodType | null>(null);
     const [walletBalance, setWalletBalance] = useState<number>(0);
     const [useWallet, setUseWallet] = useState<boolean>(false);
     const [isLoadingData, setIsLoadingData] = useState(true);
@@ -52,8 +55,10 @@ export default function CheckoutPage() {
                     walletService.getBalance(),
                 ]);
                 setPaymentMethods(methods);
-                if (methods.length > 0) {
-                    setSelectedPaymentMethod(methods[0].slug);
+                // Default to first available method that is not wallet
+                const defaultMethod = methods.find((m) => m.type !== 'wallet');
+                if (defaultMethod) {
+                    setSelectedPaymentMethodType(defaultMethod.type);
                 }
                 setWalletBalance(balance.balance);
             } catch (error) {
@@ -76,13 +81,8 @@ export default function CheckoutPage() {
         const willUseWallet = useWallet && walletBalance > 0;
 
         // 1. Payment Validation
-        if (useWallet) {
-            if (walletBalance < totalToPay) {
-                toast.error(t('insufficientWalletBalance'));
-                return;
-            }
-            // If wallet is enough, we don't strictly need selectedPaymentMethod
-        } else if (!selectedPaymentMethod) {
+        const isFullyWalletCovered = useWallet && walletBalance >= totalToPay;
+        if (!isFullyWalletCovered && !selectedPaymentMethodType) {
             toast.error(t('pleaseSelectPaymentMethod'));
             return;
         }
@@ -91,7 +91,7 @@ export default function CheckoutPage() {
         try {
             // 2. Validate Cart
             const validation = await cartService.validateCart();
-            if (!validation.is_valid) {
+            if (!validation.valid) {
                 toast.error(
                     validation.issues?.[0]?.message || t('checkoutFailed'),
                 );
@@ -110,14 +110,25 @@ export default function CheckoutPage() {
 
             const scheduledTime = getScheduledTimeAsDate(scheduledTimeRaw);
 
+            // Mapping: epayment -> card, cod -> cod, wallet -> wallet
+            let payment_method: PaymentMethodType | 'card' = 'cod';
+            const isFullyWallet = useWallet && walletBalance >= totalToPay;
+
+            if (isFullyWallet) {
+                payment_method = 'wallet';
+            } else if (selectedPaymentMethodType === 'epayment') {
+                payment_method = 'card';
+            } else if (selectedPaymentMethodType === 'cod') {
+                payment_method = 'cod';
+            }
+
             const payload = {
                 fulfillment_method,
                 address_id: deliveryAddress?.id
                     ? Number(deliveryAddress.id)
                     : undefined,
-                payment_method: willUseWallet
-                    ? ('wallet' as const)
-                    : (selectedPaymentMethod as any),
+                payment_method: payment_method as any,
+                use_wallet: useWallet,
                 customer_pickup_datetime:
                     orderTime === 'later' ? scheduledTime?.toISOString() : null,
                 notes: '',
@@ -182,15 +193,9 @@ export default function CheckoutPage() {
                     />
 
                     <PaymentMethodCard
-                        methods={paymentMethods.map((m) => ({
-                            id: m.id,
-                            name: m.name,
-                            slug: m.slug,
-                            isSelected: selectedPaymentMethod === m.slug,
-                        }))}
-                        onChange={(slug: string) =>
-                            setSelectedPaymentMethod(slug)
-                        }
+                        methods={paymentMethods}
+                        selectedType={selectedPaymentMethodType}
+                        onChange={(type) => setSelectedPaymentMethodType(type)}
                     />
 
                     <CouponCard />

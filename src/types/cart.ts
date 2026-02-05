@@ -118,7 +118,7 @@ export interface MergeGuestCartRequest {
  * Cart validation response
  */
 export interface CartValidationResponse {
-    is_valid: boolean;
+    valid: boolean;
     issues: Array<{
         item_id: number;
         product_id: number;

@@ -57,7 +57,7 @@ export default function WalletView({ balance }: WalletViewProps) {
                                 day: '2-digit',
                             },
                         ),
-                        refNumber: String(tx.reference_id),
+                        refNumber: tx.reference,
                     }),
                 );
                 setTransactions(mapped);

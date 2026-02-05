@@ -1,32 +1,37 @@
 # Store API Documentation
 
 ## Base Information
+
 - **Base URL**: `{{base_url}}`
-- **Required Headers**: 
-  - `X-Store-Key`: `{{store_key}}` (for all requests)
-  - `Accept`: `application/json` (for all requests)
-  - `Authorization`: `Bearer {{customer_token}}` (for customer-specific endpoints)
-  - `X-Branch-Id`: `{{branch_id}}` (for branch-specific operations)
+- **Required Headers**:
+    - `X-Store-Key`: `{{store_key}}` (for all requests)
+    - `Accept`: `application/json` (for all requests)
+    - `Authorization`: `Bearer {{customer_token}}` (for customer-specific endpoints)
+    - `X-Branch-Id`: `{{branch_id}}` (for branch-specific operations)
 
 ---
 
 ## 📦 Orders Endpoints
 
 ### 1. List Orders
+
 **GET** `{{base_url}}/store/orders`
 
 **Headers:**
+
 - `X-Store-Key`: `{{store_key}}`
 - `Authorization`: `Bearer {{customer_token}}`
 - `Accept`: `application/json`
 
 **Query Parameters:**
+
 - `page` (optional): Page number (default: 1)
 - `per_page` (optional): Items per page (default: 15)
 
 **Description:** Retrieve paginated list of customer orders.
 
 **Response Example:**
+
 ```json
 {
     "success": true,
@@ -42,14 +47,14 @@
             "fulfillment_label": "التوصيل للموقع",
             "items_count": 3,
             "total_quantity": 5,
-            "items_subtotal": 250.00,
-            "items_discount": 25.00,
-            "items_total": 225.00,
-            "shipping_fee": 15.00,
-            "cod_fee": 5.00,
-            "subtotal": 240.00,
-            "total": 245.00,
-            "wallet_deduction": 0.00,
+            "items_subtotal": 250.0,
+            "items_discount": 25.0,
+            "items_total": 225.0,
+            "shipping_fee": 15.0,
+            "cod_fee": 5.0,
+            "subtotal": 240.0,
+            "total": 245.0,
+            "wallet_deduction": 0.0,
             "customer_pickup_datetime": null,
             "items": [
                 {
@@ -60,12 +65,12 @@
                     "product_type": "simple",
                     "is_variation": false,
                     "quantity": 2,
-                    "unit_price": 25.00,
-                    "sale_unit_price": 20.00,
-                    "total_price": 40.00,
-                    "total_discount": 10.00,
+                    "unit_price": 25.0,
+                    "sale_unit_price": 20.0,
+                    "total_price": 40.0,
+                    "total_discount": 10.0,
                     "tax_rate": 15.0,
-                    "total_tax": 6.00,
+                    "total_tax": 6.0,
                     "addons": [],
                     "custom_fields": {},
                     "variant_options": [],
@@ -93,19 +98,23 @@
 ```
 
 ### 2. Order Details
+
 **GET** `{{base_url}}/store/orders/{id}`
 
 **Headers:**
+
 - `X-Store-Key`: `{{store_key}}`
 - `Authorization`: `Bearer {{customer_token}}`
 - `Accept`: `application/json`
 
 **URL Parameters:**
+
 - `id` (required): Order ID
 
 **Description:** Get detailed information about a specific order.
 
 **Response Example:**
+
 ```json
 {
     "success": true,
@@ -126,15 +135,15 @@
         "fulfillment_label": "التوصيل للموقع",
         "items_count": 3,
         "total_quantity": 5,
-        "items_subtotal": 250.00,
-        "items_discount": 25.00,
-        "items_total": 225.00,
+        "items_subtotal": 250.0,
+        "items_discount": 25.0,
+        "items_total": 225.0,
         "items_tax": 33.75,
-        "shipping_fee": 15.00,
-        "cod_fee": 5.00,
-        "subtotal": 240.00,
-        "total": 245.00,
-        "wallet_deduction": 50.00,
+        "shipping_fee": 15.0,
+        "cod_fee": 5.0,
+        "subtotal": 240.0,
+        "total": 245.0,
+        "wallet_deduction": 50.0,
         "customer_pickup_datetime": null,
         "items": [
             {
@@ -145,17 +154,17 @@
                 "product_type": "simple",
                 "is_variation": false,
                 "quantity": 2,
-                "unit_price": 25.00,
-                "sale_unit_price": 20.00,
-                "total_price": 40.00,
-                "total_discount": 10.00,
+                "unit_price": 25.0,
+                "sale_unit_price": 20.0,
+                "total_price": 40.0,
+                "total_discount": 10.0,
                 "tax_rate": 15.0,
-                "total_tax": 6.00,
+                "total_tax": 6.0,
                 "addons": [
                     {
                         "id": 1,
                         "name": "كريمة",
-                        "price": 3.00
+                        "price": 3.0
                     }
                 ],
                 "custom_fields": {},
@@ -175,9 +184,11 @@
 ```
 
 ### 3. Create Order (Checkout)
+
 **POST** `{{base_url}}/store/orders`
 
 **Headers:**
+
 - `X-Store-Key`: `{{store_key}}`
 - `X-Branch-Id`: `{{branch_id}}`
 - `Authorization`: `Bearer {{customer_token}}`
@@ -185,6 +196,7 @@
 - `Accept`: `application/json`
 
 **Request Body:**
+
 ```json
 {
     "fulfillment_method": 1,
@@ -196,24 +208,27 @@
 ```
 
 **Field Details:**
+
 - `fulfillment_method` (required): Delivery method
-  - `1` = Delivery to location
-  - `2` = Pickup from branch
-  - `3` = Curbside Pickup
-  - `4` = Dine-in
+    - `1` = Delivery to location
+    - `2` = Pickup from branch
+    - `3` = Curbside Pickup
+    - `4` = Dine-in
 - `payment_method` (required): Payment method
-  - `cod` = Cash on delivery
-  - `wallet` = Wallet payment
-  - `card` = Card payment (coming soon)
+    - `cod` = Cash on delivery
+    - `wallet` = Wallet payment
+    - `card` = Card payment (coming soon)
 - `address_id` (conditional): Address ID (required if fulfillment_method = 1)
 - `customer_pickup_datetime` (conditional): Pickup datetime in ISO format (required if fulfillment_method = 2 or 3)
 - `notes` (optional): Order notes (max 500 characters)
 
 **Validation Rules:**
+
 - `customer_pickup_datetime` must be a future date/time
 - `notes` maximum length: 500 characters
 
 **Response Example:**
+
 ```json
 {
     "success": true,
@@ -223,7 +238,7 @@
         "order_number": "ORD-2024-00123",
         "status": "WAITING_APPROVAL",
         "status_label": "بانتظار الموافقة",
-        "total": 245.00,
+        "total": 245.0,
         "estimated_delivery_time": "30-45 دقيقة",
         "payment_method": "cod",
         "created_at": "2024-01-15T10:30:00Z"
@@ -232,24 +247,29 @@
 ```
 
 ### 4. Cancel Order
+
 **POST** `{{base_url}}/store/orders/{id}/cancel`
 
 **Headers:**
+
 - `X-Store-Key`: `{{store_key}}`
 - `X-Branch-Id`: `{{branch_id}}`
 - `Authorization`: `Bearer {{customer_token}}`
 - `Accept`: `application/json`
 
 **URL Parameters:**
+
 - `id` (required): Order ID
 
 **Description:** Cancel an order if it's in a cancelable state.
 
 **Cancelable Statuses:**
+
 - `WAITING_APPROVAL` - Waiting for approval
 - `WAITING_PAYMENT` - Waiting for payment
 
 **Response Example:**
+
 ```json
 {
     "success": true,
@@ -264,6 +284,7 @@
 ```
 
 **Error Response (if not cancelable):**
+
 ```json
 {
     "success": false,
@@ -279,73 +300,92 @@
 ## 💳 Payment Methods Endpoints
 
 ### 1. Get Payment Methods
+
 **GET** `{{base_url}}/store/payment-methods`
 
 **Headers:**
+
 - `X-Store-Key`: `{{store_key}}`
 - `Accept`: `application/json`
 
 **Description:** Get available payment methods for the store. Only returns active payment methods from active gateways.
 
 **Response Example:**
+
 ```json
 {
     "success": true,
     "message": "تم جلب طرق الدفع بنجاح",
     "data": [
         {
-            "id": 1,
+            "type": "epayment",
+            "name": "الدفع الإلكتروني",
+            "description": "الدفع عبر بوابات الدفع الإلكترونية (بطاقة ائتمان، Apple Pay، إلخ)",
+            "icon": "credit-card",
+            "available": true,
+            "gateways": [
+                {
+                    "id": 1,
+                    "name": "Moyasar Gateway",
+                    "slug": "moyasar",
+                    "description": "Moyasar payment gateway for Saudi Arabia",
+                    "logo": null,
+                    "supports_libero": true,
+                    "supports_direct": true
+                },
+                {
+                    "id": 2,
+                    "name": "Hyperpay Gateway",
+                    "slug": "hyperpay",
+                    "description": "Hyperpay payment gateway",
+                    "logo": null,
+                    "supports_libero": true,
+                    "supports_direct": true
+                },
+                {
+                    "id": 3,
+                    "name": "PayPal Gateway",
+                    "slug": "paypal",
+                    "description": "PayPal payment gateway",
+                    "logo": null,
+                    "supports_libero": false,
+                    "supports_direct": true
+                }
+            ]
+        },
+        {
+            "type": "cod",
             "name": "الدفع عند الاستلام",
-            "slug": "cod",
             "description": "الدفع نقداً عند استلام الطلب",
-            "logo": "/images/payment/cod.png",
-            "gateway": {
-                "id": 1,
-                "name": "Cash on Delivery",
-                "slug": "cod-gateway",
-                "logo": "/images/gateways/cod.png"
-            }
+            "icon": "cash",
+            "available": true,
+            "max_amount": 5000
         },
         {
-            "id": 2,
-            "name": "المحفظة الإلكترونية",
-            "slug": "wallet",
+            "type": "wallet",
+            "name": "المحفظة",
             "description": "الدفع من رصيد المحفظة",
-            "logo": "/images/payment/wallet.png",
-            "gateway": {
-                "id": 2,
-                "name": "Wallet Payment",
-                "slug": "wallet-gateway",
-                "logo": "/images/gateways/wallet.png"
-            }
-        },
-        {
-            "id": 3,
-            "name": "البطاقة الإئتمانية",
-            "slug": "card",
-            "description": "الدفع باستخدام البطاقة الإئتمانية",
-            "logo": "/images/payment/credit-card.png",
-            "gateway": {
-                "id": 3,
-                "name": "Credit Card",
-                "slug": "card-gateway",
-                "logo": "/images/gateways/credit-card.png"
-            }
+            "icon": "wallet",
+            "available": true,
+            "can_combine": true
         }
     ]
 }
 ```
 
 ### 2. Get Payment Gateways
+
 **GET** `{{base_url}}/store/payment-gateways`
 
 **Headers:**
+
 - `X-Store-Key`: `{{store_key}}`
 - `Accept`: `application/json`
 
 **Description:** Get available payment gateways for the store. Only returns active gateways configured for this store.
 
 **Response Example:**
+
 ```json
 {
     "success": true,
@@ -353,28 +393,28 @@
     "data": [
         {
             "id": 1,
-            "name": "Cash on Delivery",
-            "slug": "cod-gateway",
-            "description": "Gateway for cash on delivery payments",
-            "logo": "/images/gateways/cod.png",
+            "name": "Moyasar Gateway",
+            "slug": "moyasar",
+            "description": "Moyasar payment gateway for Saudi Arabia",
+            "logo": "https://example.com/moyasar-logo.png",
             "supports_libero": true,
-            "supports_direct": false
+            "supports_direct": true
         },
         {
             "id": 2,
-            "name": "Wallet Payment",
-            "slug": "wallet-gateway",
-            "description": "Gateway for wallet payments",
-            "logo": "/images/gateways/wallet.png",
+            "name": "Hyperpay Gateway",
+            "slug": "hyperpay",
+            "description": "Hyperpay payment gateway",
+            "logo": "https://example.com/hyperpay-logo.png",
             "supports_libero": true,
             "supports_direct": true
         },
         {
             "id": 3,
-            "name": "Credit Card",
-            "slug": "card-gateway",
-            "description": "Gateway for credit card payments",
-            "logo": "/images/gateways/credit-card.png",
+            "name": "PayPal Gateway",
+            "slug": "paypal",
+            "description": "PayPal payment gateway",
+            "logo": "https://example.com/paypal-logo.png",
             "supports_libero": false,
             "supports_direct": true
         }
@@ -383,6 +423,7 @@
 ```
 
 **Field Descriptions:**
+
 - `supports_libero`: Whether the gateway supports Libero payment flow
 - `supports_direct`: Whether the gateway supports direct payment processing
 
@@ -391,9 +432,11 @@
 ## 💰 Wallet Endpoints
 
 ### 1. Get Wallet Balance
+
 **GET** `{{base_url}}/store/wallet`
 
 **Headers:**
+
 - `X-Store-Key`: `{{store_key}}`
 - `X-Branch-Id`: `{{branch_id}}`
 - `Authorization`: `Bearer {{customer_token}}`
@@ -402,87 +445,124 @@
 **Description:** Retrieve customer's wallet balance information.
 
 **Response Example:**
+
 ```json
 {
     "success": true,
     "message": "تم جلب رصيد المحفظة بنجاح",
     "data": {
-        "balance": 150.00,
-        "pending_balance": 25.00,
+        "balance": 1175,
+        "pending_balance": 0,
         "is_active": true
     }
 }
 ```
 
 **Field Descriptions:**
+
 - `balance`: Available balance for immediate use
 - `pending_balance`: Balance pending from recent transactions (not yet available)
 - `is_active`: Whether the wallet is active/enabled
 
 ### 2. Get Wallet Transactions
+
 **GET** `{{base_url}}/store/wallet/transactions`
 
 **Headers:**
+
 - `X-Store-Key`: `{{store_key}}`
 - `X-Branch-Id`: `{{branch_id}}`
 - `Authorization`: `Bearer {{customer_token}}`
 - `Accept`: `application/json`
 
 **Query Parameters:**
+
 - `per_page` (optional): Items per page (default: 15)
 - `page` (optional): Page number (default: 1)
 
 **Description:** Retrieve paginated list of wallet transactions.
 
 **Response Example:**
+
 ```json
 {
     "success": true,
     "message": "تم جلب حركات المحفظة بنجاح",
     "data": [
         {
-            "id": 1001,
+            "id": 5,
+            "amount": 100,
+            "balance_before": 1075,
+            "balance_after": 1175,
             "type": 1,
             "type_label": "إيداع",
-            "amount": 100.00,
-            "balance_before": 50.00,
-            "balance_after": 150.00,
-            "reference_type": "order_refund",
-            "reference_id": 123,
-            "description": "استرداد مبلغ من طلب #ORD-2024-00123",
-            "status": "completed",
-            "created_at": "2024-01-15T10:30:00Z"
+            "description": "هدية ترحيبية",
+            "reference": "ORD-3",
+            "created_at": "2026-02-04 18:00:42"
         },
         {
-            "id": 1002,
-            "type": 2,
-            "type_label": "سحب",
-            "amount": -50.00,
-            "balance_before": 150.00,
-            "balance_after": 100.00,
-            "reference_type": "order_payment",
-            "reference_id": 124,
-            "description": "دفع للطلب #ORD-2024-00124",
-            "status": "completed",
-            "created_at": "2024-01-14T15:45:00Z"
+            "id": 4,
+            "amount": 100,
+            "balance_before": 975,
+            "balance_after": 1075,
+            "type": 3,
+            "type_label": "استرداد",
+            "description": "تعويض عن تأخر التوصيل",
+            "reference": "ORD-2",
+            "created_at": "2026-02-04 18:00:42"
+        },
+        {
+            "id": 3,
+            "amount": 500,
+            "balance_before": 475,
+            "balance_after": 975,
+            "type": 1,
+            "type_label": "إيداع",
+            "description": "هدية ترحيبية",
+            "reference": "ORD-7",
+            "created_at": "2026-02-04 18:00:42"
+        },
+        {
+            "id": 2,
+            "amount": -25,
+            "balance_before": 500,
+            "balance_after": 475,
+            "type": 4,
+            "type_label": "تعديل",
+            "description": "تصحيح رصيد",
+            "reference": "ORD-4",
+            "created_at": "2026-02-04 18:00:42"
+        },
+        {
+            "id": 1,
+            "amount": 500,
+            "balance_before": 0,
+            "balance_after": 500,
+            "type": 1,
+            "type_label": "إيداع",
+            "description": "مكافأة الإحالة",
+            "reference": "ORD-3",
+            "created_at": "2026-02-04 18:00:42"
         }
     ],
     "meta": {
         "current_page": 1,
-        "last_page": 3,
+        "last_page": 1,
         "per_page": 15,
-        "total": 42
+        "total": 5
     }
 }
 ```
 
 **Transaction Types:**
+
 - `1` = إيداع (deposit) - Positive amount
 - `2` = سحب (withdrawal) - Negative amount
 - `3` = استرداد (refund) - Positive amount
 - `4` = تعديل (adjustment) - Can be positive or negative
 
 **Transaction Statuses:**
+
 - `pending` - Transaction is being processed
 - `completed` - Transaction completed successfully
 - `failed` - Transaction failed
@@ -493,6 +573,7 @@
 ## 🔧 Common Error Responses
 
 ### Authentication Error
+
 ```json
 {
     "success": false,
@@ -504,6 +585,7 @@
 ```
 
 ### Validation Error
+
 ```json
 {
     "success": false,
@@ -516,6 +598,7 @@
 ```
 
 ### Not Found Error
+
 ```json
 {
     "success": false,
