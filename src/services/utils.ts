@@ -2,7 +2,11 @@
 import { env } from '@/config/env';
 import { AUTH_COOKIES } from '@/lib/auth/constants';
 import { BRANCH_COOKIES } from '@/lib/branches/constants';
-import { parseDomainMap, resolveStoreKeyFromHost } from '@/lib/tenant';
+import {
+    parseDomainMap,
+    resolveStoreKeyFromHost,
+    resolveTenant,
+} from '@/lib/tenant';
 
 /**
  * Standardize header construction for both server-side and client-side requests.
@@ -51,13 +55,7 @@ export async function getBaseHeaders(
             const { headers: nextHeaders } = await import('next/headers');
             const requestHeaders = await nextHeaders();
             const host = requestHeaders.get('host');
-            const { storeKey } = resolveStoreKeyFromHost(host, {
-                defaultStoreKey: env.storeDefaultKey || env.liberoApiKey,
-                domainMap: parseDomainMap(env.storeDomainMap),
-                allowDefault: env.isDev || env.allowDefaultStoreKeyInProd,
-                allowDefaultOnPlatformHosts:
-                    env.allowDefaultStoreKeyOnPlatformHosts,
-            });
+            const { storeKey } = resolveTenant(host);
 
             if (storeKey) {
                 headers.set('X-Store-Key', storeKey);

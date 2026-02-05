@@ -2,7 +2,11 @@
 import { env } from '@/config/env';
 import { ApiResponse } from './types';
 import { getBaseHeaders } from './utils';
-import { parseDomainMap, resolveStoreKeyFromHost } from '@/lib/tenant';
+import {
+    parseDomainMap,
+    resolveStoreKeyFromHost,
+    resolveTenant,
+} from '@/lib/tenant';
 
 /**
  * Custom Error class for API failures.
@@ -80,7 +84,6 @@ export async function fetchLiberoFull<T>(
         // Absolute URL (direct API)
         url = new URL(`${baseUrl}${path}`);
     }
-    
 
     if (params) {
         Object.entries(params).forEach(([k, v]) => {
@@ -116,20 +119,16 @@ export async function fetchLiberoFull<T>(
         const initWithNext = init as RequestInit & {
             next?: { revalidate?: number; tags?: string[] };
         };
-        let nextOptions = initWithNext.next ? { ...initWithNext.next } : undefined;
+        let nextOptions = initWithNext.next
+            ? { ...initWithNext.next }
+            : undefined;
 
         if (typeof window === 'undefined') {
             try {
                 const { headers: nextHeaders } = await import('next/headers');
                 const requestHeaders = await nextHeaders();
                 const host = requestHeaders.get('host');
-                const { storeKey } = resolveStoreKeyFromHost(host, {
-                    defaultStoreKey: env.storeDefaultKey || env.liberoApiKey,
-                    domainMap: parseDomainMap(env.storeDomainMap),
-                    allowDefault: env.isDev || env.allowDefaultStoreKeyInProd,
-                    allowDefaultOnPlatformHosts:
-                        env.allowDefaultStoreKeyOnPlatformHosts,
-                });
+                const { storeKey } = resolveTenant(host);
 
                 if (storeKey) {
                     const existingTags = nextOptions?.tags || [];
@@ -164,7 +163,7 @@ export async function fetchLiberoFull<T>(
             try {
                 const jsonData = await response.json();
                 result = jsonData as ApiResponse<T>;
-                
+
                 // Validate result structure
                 if (!result || typeof result !== 'object') {
                     throw new ApiError(
@@ -178,21 +177,33 @@ export async function fetchLiberoFull<T>(
                 if (parseError instanceof ApiError) {
                     throw parseError;
                 }
-                
+
                 try {
                     const clonedResponse = response.clone();
                     const text = await clonedResponse.text();
                     throw new ApiError(
                         response.status,
                         'Invalid JSON response from server',
-                        { raw: text.substring(0, 200), parseError: parseError instanceof Error ? parseError.message : String(parseError) },
+                        {
+                            raw: text.substring(0, 200),
+                            parseError:
+                                parseError instanceof Error
+                                    ? parseError.message
+                                    : String(parseError),
+                        },
                     );
                 } catch (cloneError) {
                     // If clone also fails, throw generic error
                     throw new ApiError(
                         response.status,
                         'Invalid JSON response from server',
-                        { raw: 'Unable to read response body', parseError: parseError instanceof Error ? parseError.message : String(parseError) },
+                        {
+                            raw: 'Unable to read response body',
+                            parseError:
+                                parseError instanceof Error
+                                    ? parseError.message
+                                    : String(parseError),
+                        },
                     );
                 }
             }
@@ -236,8 +247,10 @@ export async function fetchLiberoFull<T>(
         // Check if API response indicates failure
         // Note: result.data can be null (e.g., logout endpoint), which is valid
         if (!response.ok || !result || !result.success) {
-            const errorMessage = result?.message || `Request failed with status ${response.status}`;
-            
+            const errorMessage =
+                result?.message ||
+                `Request failed with status ${response.status}`;
+
             if (env.isDev) {
                 console.error(`[API Error] ${init.method || 'GET'} ${path}:`, {
                     status: response.status,
@@ -251,11 +264,7 @@ export async function fetchLiberoFull<T>(
                 });
             }
 
-            throw new ApiError(
-                response.status,
-                errorMessage,
-                result?.data,
-            );
+            throw new ApiError(response.status, errorMessage, result?.data);
         }
 
         return result;

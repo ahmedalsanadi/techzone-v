@@ -5,7 +5,7 @@ import { getBaseHeaders } from '@/services/utils';
 import { env } from '@/config/env';
 import { PROTECTED_API_ENDPOINTS, AUTH_COOKIES } from '@/lib/auth';
 import { BRANCH_COOKIES } from '@/lib/branches/constants';
-import { parseDomainMap, resolveStoreKeyFromHost } from '@/lib/tenant';
+import { resolveTenant } from '@/lib/tenant';
 
 async function handleRequest(
     request: NextRequest,
@@ -48,13 +48,7 @@ async function handleRequest(
 
     if (!isNominatim) {
         const host = request.headers.get('host');
-        const { storeKey } = resolveStoreKeyFromHost(host, {
-            defaultStoreKey: env.storeDefaultKey || env.liberoApiKey,
-            domainMap: parseDomainMap(env.storeDomainMap),
-            allowDefault: env.isDev || env.allowDefaultStoreKeyInProd,
-            allowDefaultOnPlatformHosts:
-                env.allowDefaultStoreKeyOnPlatformHosts,
-        });
+        const { storeKey } = resolveTenant(host);
 
         if (!storeKey) {
             return NextResponse.json(

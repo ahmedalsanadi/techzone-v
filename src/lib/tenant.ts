@@ -1,4 +1,6 @@
 //src/lib/tenant.ts
+import { env } from '@/config/env';
+
 export type TenantSource = 'domain-map' | 'subdomain' | 'default' | 'none';
 
 const RESERVED_SUBDOMAINS = new Set(['www', 'api']);
@@ -6,8 +8,7 @@ const RESERVED_SUBDOMAINS = new Set(['www', 'api']);
 export const isPlatformHost = (host: string) =>
     host === 'vercel.app' || host.endsWith('.vercel.app');
 
-const isIpAddress = (host: string) =>
-    /^\d{1,3}(\.\d{1,3}){3}$/.test(host);
+const isIpAddress = (host: string) => /^\d{1,3}(\.\d{1,3}){3}$/.test(host);
 
 export const normalizeHost = (host?: string | null) => {
     if (!host) return null;
@@ -85,4 +86,17 @@ export const resolveStoreKeyFromHost = (
     }
 
     return { storeKey: null, source: 'none' as TenantSource };
+};
+
+/**
+ * Senior level helper to resolve tenant with full environment context.
+ * Centralizes the logic used by both API and tenant resolving middleware/helpers.
+ */
+export const resolveTenant = (host: string | null) => {
+    return resolveStoreKeyFromHost(host, {
+        defaultStoreKey: env.storeDefaultKey || env.liberoApiKey,
+        domainMap: parseDomainMap(env.storeDomainMap),
+        allowDefault: env.isDev || env.allowDefaultStoreKeyInProd,
+        allowDefaultOnPlatformHosts: env.allowDefaultStoreKeyOnPlatformHosts,
+    });
 };
