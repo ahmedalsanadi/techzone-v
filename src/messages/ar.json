@@ -690,5 +690,39 @@
         "answer": "نوفر خيارات دفع متنوعة تشمل الدفع عند الاستلام، البطاقات الائتمانية (فيزا وماستركارد)، ومدى، وأبل باي."
       }
     ]
+  },
+  "error": {
+    "title": "عذراً، حدث خطأ ما!",
+    "sorry": "نعتذر عن الإزعاج، حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.",
+    "tryAgain": "إعادة المحاولة",
+    "returnHome": "العودة للرئيسية"
+  },
+  "Reviews": {
+    "reviewsTitle": "التقييمات",
+    "overallRating": "التقييم العام",
+    "basedOnReviews": "بناءً على {count} تقييم",
+    "ratingDistribution": "توزيع التقييمات",
+    "sortBy": "ترتيب حسب",
+    "newest": "الأحدث",
+    "oldest": "الأقدم",
+    "highestRating": "الأعلى تقييماً",
+    "lowestRating": "الأقل تقييماً",
+    "showLess": "عرض أقل",
+    "showMore": "عرض المزيد",
+    "loadMore": "تحميل المزيد",
+    "noReviews": "لا توجد تقييمات لهذا المنتج بعد",
+    "beFirstToReview": "كن أول من يقيّم هذا المنتج",
+    "errorLoadingReviews": "فشل تحميل التقييمات",
+    "retrying": "جاري إعادة المحاولة...",
+    "retry": "إعادة المحاولة",
+    "readMore": "قراءة المزيد",
+    "pendingReview": "قيد المراجعة",
+    "reviewsCount": "عدد التقييمات",
+    "verifiedReviews": "تقييمات موثوقة",
+    "clearFilter": "مسح التصفية",
+    "verifiedPurchaseOnly": "تقييمات لعملاء حقيقيين",
+    "verifiedPurchaseDesc": "جميع التقييمات المعروضة هي لعملاء قاموا بشراء المنتج وتجربته بالفعل.",
+    "writeReview": "اكتب تقييماً",
+    "verifiedPurchase": "شراء مؤكد"
   }
 }

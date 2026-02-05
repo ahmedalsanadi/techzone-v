@@ -8,17 +8,30 @@ const Select = ({
     value,
     onValueChange,
     children,
+    leftIcon,
+    className,
 }: {
     value?: string;
     onValueChange?: (value: string) => void;
     children: React.ReactNode;
+    leftIcon?: React.ReactNode;
+    className?: string;
 }) => {
+    // We flatten the children to avoid fragments or other components inside the select
     return (
-        <div className="relative w-full group">
+        <div className={cn('relative w-full group', className)}>
+            {leftIcon && (
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 z-10">
+                    {leftIcon}
+                </div>
+            )}
             <select
                 value={value ?? ''}
                 onChange={(e) => onValueChange?.(e.target.value)}
-                className="w-full h-11 px-4 pr-10 text-sm bg-white border border-gray-200 rounded-xl appearance-none transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer hover:border-gray-300">
+                className={cn(
+                    'w-full h-11 px-4 pr-10 text-sm bg-white border border-gray-200 rounded-xl appearance-none transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer hover:border-gray-300',
+                    leftIcon && 'pl-10',
+                )}>
                 {children}
             </select>
             <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-transform duration-200 group-hover:translate-y-[-40%]">
@@ -28,6 +41,10 @@ const Select = ({
     );
 };
 
+/**
+ * These components are now simple wrappers to maintain API compatibility
+ * with Radix-like usage, but they don't render extra DOM nodes inside the select.
+ */
 const SelectTrigger = ({
     children,
     className,

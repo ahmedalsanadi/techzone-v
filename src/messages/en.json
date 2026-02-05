@@ -688,5 +688,39 @@
         "answer": "We provide various payment options including cash on delivery, credit cards (Visa and Mastercard), Mada, and Apple Pay."
       }
     ]
+  },
+  "error": {
+    "title": "Oops! Something went wrong",
+    "sorry": "We apologize for the inconvenience. An unexpected error has occurred.",
+    "tryAgain": "Try Again",
+    "returnHome": "Return Home"
+  },
+  "Reviews": {
+    "reviewsTitle": "Reviews",
+    "overallRating": "Overall Rating",
+    "basedOnReviews": "Based on {count} review(s)",
+    "ratingDistribution": "Rating Distribution",
+    "sortBy": "Sort by",
+    "newest": "Newest",
+    "oldest": "Oldest",
+    "highestRating": "Highest Rating",
+    "lowestRating": "Lowest Rating",
+    "showLess": "Show Less",
+    "showMore": "Show More",
+    "loadMore": "Load More",
+    "noReviews": "No reviews yet for this product",
+    "beFirstToReview": "Be the first to review this product",
+    "errorLoadingReviews": "Failed to load reviews",
+    "retrying": "Retrying...",
+    "retry": "Retry",
+    "readMore": "Read more",
+    "pendingReview": "Pending Review",
+    "reviewsCount": "Reviews Count",
+    "verifiedReviews": "Verified Reviews",
+    "clearFilter": "Clear Filter",
+    "verifiedPurchaseOnly": "Verified Purchase Only",
+    "verifiedPurchaseDesc": "All displayed reviews are from customers who actually purchased and tried the product.",
+    "writeReview": "Write a Review",
+    "verifiedPurchase": "Verified Purchase"
   }
 }

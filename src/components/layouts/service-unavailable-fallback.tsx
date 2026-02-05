@@ -1,4 +1,5 @@
-// src/components/layouts/service-unavailable-fallback.tsx
+'use client';
+
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import React from 'react';
@@ -13,8 +14,7 @@ export function ServiceUnavailableFallback() {
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
-                        className="h-full w-full text-gray-900"
-                    >
+                        className="h-full w-full text-gray-900">
                         <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -26,14 +26,11 @@ export function ServiceUnavailableFallback() {
                 <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
                     {t('storeUnavailable')}
                 </h1>
-                <p className="text-lg text-gray-600">
-                    {t('description')}
-                </p>
+                <p className="text-lg text-gray-600">{t('description')}</p>
                 <div className="pt-4">
                     <Link
                         href="/"
-                        className="inline-flex items-center justify-center rounded-full bg-black px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-800"
-                    >
+                        className="inline-flex items-center justify-center rounded-full bg-black px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-800">
                         {t('tryAgain')}
                     </Link>
                 </div>

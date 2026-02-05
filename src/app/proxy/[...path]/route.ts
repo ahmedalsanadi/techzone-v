@@ -22,9 +22,10 @@ async function handleRequest(
     // Determine if this endpoint requires authentication
     const isProtected =
         !isNominatim &&
-        PROTECTED_API_ENDPOINTS.some((endpoint) =>
+        (PROTECTED_API_ENDPOINTS.some((endpoint) =>
             backendPath.startsWith(endpoint),
-        );
+        ) ||
+            (backendPath.startsWith('/store/reviews') && method !== 'GET'));
 
     // Get customer token from cookies
     const token = request.cookies.get(AUTH_COOKIES.ACCESS_TOKEN)?.value;
@@ -51,7 +52,8 @@ async function handleRequest(
             defaultStoreKey: env.storeDefaultKey || env.liberoApiKey,
             domainMap: parseDomainMap(env.storeDomainMap),
             allowDefault: env.isDev || env.allowDefaultStoreKeyInProd,
-            allowDefaultOnPlatformHosts: env.allowDefaultStoreKeyOnPlatformHosts,
+            allowDefaultOnPlatformHosts:
+                env.allowDefaultStoreKeyOnPlatformHosts,
         });
 
         if (!storeKey) {

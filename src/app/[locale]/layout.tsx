@@ -83,7 +83,6 @@ export async function generateMetadata({
     };
 }
 
-
 /* -------------------------------------------------------------------------- */
 /*                                   LAYOUT                                   */
 /* -------------------------------------------------------------------------- */
@@ -142,17 +141,14 @@ export default async function RootLayout({
             <body
                 className={`${geistSans.variable} ${geistMono.variable} ${ibmPlexSansArabic.variable} antialiased font-sans`}
                 suppressHydrationWarning>
-                {!storeConfig ? (
-                    <ServiceUnavailableFallback />
-                ) : (
+                <NextIntlClientProvider locale={locale} messages={messages}>
                     <ThemeProvider
                         attribute="class"
-                        defaultTheme=
-                        "light"
+                        defaultTheme="light"
                         enableSystem>
-                        <NextIntlClientProvider
-                            locale={locale}
-                            messages={messages}>
+                        {!storeConfig ? (
+                            <ServiceUnavailableFallback />
+                        ) : (
                             <StoreProvider
                                 config={storeConfig}
                                 categories={categories}
@@ -168,9 +164,9 @@ export default async function RootLayout({
                                     <BranchModalInitializer />
                                 </QueryProvider>
                             </StoreProvider>
-                        </NextIntlClientProvider>
+                        )}
                     </ThemeProvider>
-                )}
+                </NextIntlClientProvider>
 
                 <Analytics />
                 <SpeedInsights />

@@ -28,6 +28,7 @@ export const PROTECTED_API_ENDPOINTS = [
     '/store/cart/merge',
     '/store/addresses',
     '/store/wallet',
+    '/store/reviews/can-review',
 ] as const;
 
 /**

@@ -18,6 +18,8 @@ import {
 import { useCartActions } from '@/hooks/useCartActions';
 import { Product } from '@/services/types';
 import { toast } from 'sonner';
+import ProductReviews from './product-details/ProductReviews';
+import { useAuthStore } from '@/store/useAuthStore';
 
 interface ProductDetailsProps {
     product: Product;
@@ -26,6 +28,7 @@ interface ProductDetailsProps {
 export default function ProductDetails({ product }: ProductDetailsProps) {
     const t = useTranslations('Product');
     const { addToCart } = useCartActions();
+    // const { isAuthenticated } = useAuthStore();
 
     // Initialize addons with default values
     const initializeAddons = useMemo((): Record<
@@ -460,6 +463,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                         )}
                 </div>
             )}
+
+            <ProductReviews productId={product.id} />
         </div>
     );
 }
