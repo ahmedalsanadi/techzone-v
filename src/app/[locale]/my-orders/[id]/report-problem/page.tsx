@@ -1,6 +1,6 @@
 // src/app/[locale]/my-orders/[id]/report-problem/page.tsx
 import { notFound } from 'next/navigation';
-import { getOrderById } from '../../utils/services/order-services';
+import { orderService } from '@/services/order-service';
 import ReportProblemView from '../../utils/components/ReportProblemView';
 import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
@@ -25,12 +25,17 @@ export default async function ReportProblemPage({
 }) {
     const { id } = await params;
 
-    // Fetch the order data
-    const order = await getOrderById(id);
+    // Fetch the order data from the real API
+    try {
+        const order = await orderService.getOrder(id);
 
-    if (!order) {
+        if (!order) {
+            notFound();
+        }
+
+        return <ReportProblemView order={order} />;
+    } catch (error) {
+        console.error('Failed to fetch order for problem report:', error);
         notFound();
     }
-
-    return <ReportProblemView order={order} />;
 }

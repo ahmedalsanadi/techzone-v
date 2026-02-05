@@ -5,10 +5,9 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import { OrderSummaryCard } from './OrderSummaryCard';
-import { Order } from '../services/order-services';
+import { Order } from '@/types/orders';
 import { ReportProblemForm } from './ReportProblemForm';
 import SubHeaderManager from '@/components/layouts/SubHeaderManager';
-
 
 interface ReportProblemViewProps {
     order: Order;
@@ -22,7 +21,7 @@ export default function ReportProblemView({ order }: ReportProblemViewProps) {
         { label: tOrders('navigation.home'), href: '/' },
         { label: tOrders('navigation.myOrders'), href: '/my-orders' },
         {
-            label: tOrders('orderNumber', { number: order.orderNumber }),
+            label: tOrders('orderNumber', { number: order.id }),
             href: `/my-orders/${order.id}`,
         },
         { label: t('title'), active: true },
@@ -32,7 +31,7 @@ export default function ReportProblemView({ order }: ReportProblemViewProps) {
         <section className="min-h-screen py-8">
             <div className="container mx-auto px-4">
                 <Breadcrumbs items={breadcrumbItems} />
-                 <SubHeaderManager show={false} />
+                <SubHeaderManager show={false} />
 
                 <div className="mt-8 mb-12">
                     <h1 className="text-4xl font-black text-gray-900 leading-tight">
