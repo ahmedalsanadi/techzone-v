@@ -197,6 +197,7 @@ export default async function CMSPageDetail({ params }: Props) {
     );
 }
 
-// ISR configuration - keep literal for Next segment config validation
-export const revalidate = 604800;
+// Force dynamic rendering to ensure tenant headers are always available
+// This also prevents ISR build-time errors related to jsdom
+export const dynamic = 'force-dynamic';
 export const dynamicParams = true;

@@ -38,6 +38,9 @@ const nextConfig: NextConfig = {
     },
     // Enable compression
     compress: true,
+    // Fix for jsdom/dompurify on Vercel: Prevent bundling conflicts
+    // This is the conventional way to handle these packages in Next.js 15+
+    serverExternalPackages: ['jsdom', 'dompurify'],
 };
 
 export default withNextIntl(nextConfig);
