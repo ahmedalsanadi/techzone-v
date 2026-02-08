@@ -1,11 +1,8 @@
-// src/components/modals/CartItemConfigModal.tsx
-'use client';
-
-import React, { useEffect, useMemo, useState } from 'react';
+import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { cartService } from '@/services/cart-service';
 import { storeService } from '@/services/store-service';
 import { generateCartItemId } from '@/lib/cart/utils';
 import { useCartActions } from '@/hooks/useCartActions';
@@ -34,7 +31,11 @@ export default function CartItemConfigModal({
     const { updateItemConfiguration } = useCartActions();
     const slug = item?.metadata?.productSlug;
 
-    const { data: product, isLoading, isError } = useQuery({
+    const {
+        data: product,
+        isLoading,
+        isError,
+    } = useQuery({
         queryKey: ['product', slug],
         queryFn: () => storeService.getProduct(slug!),
         enabled: isOpen && !!slug,
@@ -44,7 +45,10 @@ export default function CartItemConfigModal({
     const initialAddons = useMemo(() => {
         const fromItem =
             item?.metadata?.addons && typeof item.metadata.addons === 'object'
-                ? (item.metadata.addons as Record<number, Record<number, number>>)
+                ? (item.metadata.addons as Record<
+                      number,
+                      Record<number, number>
+                  >)
                 : {};
         return fromItem;
     }, [item]);
@@ -66,8 +70,6 @@ export default function CartItemConfigModal({
         setCustomFields(item?.metadata?.custom_fields || {});
         setNotes(item?.metadata?.notes || '');
     }, [isOpen, initialAddons, item?.metadata]);
-
-    if (!isOpen) return null;
 
     const activeProduct = product as Product | undefined;
     const validation = activeProduct
@@ -112,7 +114,9 @@ export default function CartItemConfigModal({
     const handleSave = async () => {
         if (!item || !activeProduct) return;
         if (!validation.isValid) {
-            toast.error(t('validationError') || 'Please complete required selections');
+            toast.error(
+                t('validationError') || 'Please complete required selections',
+            );
             return;
         }
 
@@ -155,177 +159,218 @@ export default function CartItemConfigModal({
             }
         });
 
-        await updateItemConfiguration(item.id, {
-            id: generateCartItemId(activeProduct.id, {
-                variantId: selectedVariantId,
-                addons: selectedAddons,
-                customFields,
-                notes,
-            }),
-            name: activeProduct.title,
-            image: activeProduct.cover_image_url,
-            price: calculateTotalPrice(),
-            categoryId: String(activeProduct.categories?.[0]?.id || ''),
-            metadata: {
-                productId: activeProduct.id,
-                productSlug: activeProduct.slug,
-                product_variant_id: selectedVariantId || null,
-                variant_options:
-                    selectedVariant?.option_values &&
-                    Object.keys(selectedVariant.option_values).length > 0
-                        ? selectedVariant.option_values
+        await updateItemConfiguration(
+            item.id,
+            {
+                id: generateCartItemId(activeProduct.id, {
+                    variantId: selectedVariantId,
+                    addons: selectedAddons,
+                    customFields,
+                    notes,
+                }),
+                name: activeProduct.title,
+                image: activeProduct.cover_image_url,
+                price: calculateTotalPrice(),
+                categoryId: String(activeProduct.categories?.[0]?.id || ''),
+                metadata: {
+                    productId: activeProduct.id,
+                    productSlug: activeProduct.slug,
+                    product_variant_id: selectedVariantId || null,
+                    variant_options:
+                        selectedVariant?.option_values &&
+                        Object.keys(selectedVariant.option_values).length > 0
+                            ? selectedVariant.option_values
+                            : null,
+                    variety: selectedVariant
+                        ? { name: selectedVariant.title }
                         : null,
-                variety: selectedVariant ? { name: selectedVariant.title } : null,
-                addons: selectedAddons,
-                addonDetails,
-                custom_fields:
-                    Object.keys(customFields).length > 0 ? customFields : null,
-                notes: notes || undefined,
+                    addons: selectedAddons,
+                    addonDetails,
+                    custom_fields:
+                        Object.keys(customFields).length > 0
+                            ? customFields
+                            : null,
+                    notes: notes || undefined,
+                },
             },
-        }, item.quantity);
+            item.quantity,
+        );
 
         onClose();
     };
 
     return (
-        <>
+        <Dialog
+            open={isOpen}
+            as="div"
+            className="relative z-50 focus:outline-none"
+            onClose={onClose}>
+            {/* Backdrop */}
             <div
-                className="fixed inset-0 bg-black/50 z-50 backdrop-blur-sm transition-opacity"
-                onClick={onClose}
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300"
+                aria-hidden="true"
             />
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-5">
-                <div
-                    className={cn(
-                        'bg-white shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col relative',
-                        'max-h-[88vh] sm:max-h-[90vh]',
-                        'rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl',
-                    )}
-                    onClick={(e) => e.stopPropagation()}>
-                    <header className="flex items-center justify-between p-4 sm:p-5 md:p-6 border-b border-gray-100 shrink-0">
-                        <button
-                            onClick={onClose}
-                            className="p-2 hover:bg-gray-100 rounded-lg sm:rounded-xl transition-colors touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
-                            aria-label={t('close')}>
-                            <X className="w-5 h-5 text-gray-500" />
-                        </button>
-                        <h2 className="text-base sm:text-lg md:text-xl font-bold text-gray-900">
-                            {item?.name || t('product')}
-                        </h2>
-                        <div className="w-9 min-w-[44px]" />
-                    </header>
 
-                    <main className="flex-1 overflow-y-auto p-4 sm:p-5 md:p-6 space-y-6">
-                        {isLoading && (
-                            <div className="text-sm text-gray-500">
-                                {t('loading') || 'Loading...'}
-                            </div>
-                        )}
-                        {isError && (
-                            <div className="text-sm text-red-500">
-                                {t('loadProductError') ||
-                                    'Unable to load product details'}
-                            </div>
-                        )}
-                        {!isLoading && activeProduct && (
-                            <>
-                                {activeProduct.variants &&
-                                    activeProduct.variants.length > 0 && (
-                                        <VariantSelector
-                                            variants={activeProduct.variants}
-                                            selectedVariantId={selectedVariantId}
-                                            onSelect={(variantId) =>
-                                                setSelectedVariantId(variantId)
-                                            }
-                                            required
-                                        />
-                                    )}
+            <div className="fixed inset-0 z-50 w-screen overflow-y-auto">
+                <div className="flex min-h-full items-center justify-center p-3 sm:p-4 md:p-5">
+                    <DialogPanel
+                        transition
+                        className="bg-white shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col relative max-h-[88vh] rounded-2xl lg:rounded-4xl duration-300 ease-out data-closed:scale-95 data-closed:opacity-0">
+                        <header className="flex items-center justify-between p-4 sm:p-5 md:p-6 border-b border-gray-100 shrink-0">
+                            <button
+                                onClick={onClose}
+                                className="p-2 hover:bg-gray-100 rounded-lg sm:rounded-xl transition-colors touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
+                                aria-label={t('close')}>
+                                <X className="w-5 h-5 text-gray-500" />
+                            </button>
+                            <DialogTitle
+                                as="h2"
+                                className="text-base sm:text-lg md:text-xl font-bold text-gray-900">
+                                {item?.name || t('product')}
+                            </DialogTitle>
+                            <div className="w-9 min-w-[44px]" />
+                        </header>
 
-                                {(activeProduct.addons || []).map((addonGroup) => (
-                                    <AddonSelector
-                                        key={addonGroup.id}
-                                        addonGroup={addonGroup}
-                                        selectedItems={
-                                            selectedAddons[addonGroup.id] || {}
-                                        }
-                                        onUpdateSelection={(itemId, qty) => {
-                                            setSelectedAddons((prev) => ({
-                                                ...prev,
-                                                [addonGroup.id]: {
-                                                    ...prev[addonGroup.id],
-                                                    [itemId]: qty,
-                                                },
-                                            }));
-                                        }}
-                                    />
-                                ))}
-
-                                {activeProduct.custom_fields &&
-                                    activeProduct.custom_fields.length > 0 && (
-                                        <CustomFieldsForm
-                                            customFields={
-                                                activeProduct.custom_fields
-                                            }
-                                            values={customFields}
-                                            onChange={(name, value) => {
-                                                setCustomFields((prev) => ({
-                                                    ...prev,
-                                                    [name]: value,
-                                                }));
-                                            }}
-                                        />
-                                    )}
-
-                                <div className="space-y-2">
-                                    <label className="block text-sm font-medium">
-                                        {t('notes')}
-                                    </label>
-                                    <textarea
-                                        value={notes}
-                                        onChange={(e) =>
-                                            setNotes(e.target.value)
-                                        }
-                                        rows={2}
-                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg"
-                                    />
+                        <main className="flex-1 overflow-y-auto p-4 sm:p-5 md:p-6 space-y-6">
+                            {isLoading && (
+                                <div className="text-sm text-gray-500">
+                                    {t('loading') || 'Loading...'}
                                 </div>
-                            </>
-                        )}
-                    </main>
+                            )}
+                            {isError && (
+                                <div className="text-sm text-red-500">
+                                    {t('loadProductError') ||
+                                        'Unable to load product details'}
+                                </div>
+                            )}
+                            {!isLoading && activeProduct && (
+                                <>
+                                    {activeProduct.variants &&
+                                        activeProduct.variants.length > 0 && (
+                                            <VariantSelector
+                                                variants={
+                                                    activeProduct.variants
+                                                }
+                                                selectedVariantId={
+                                                    selectedVariantId
+                                                }
+                                                onSelect={(variantId) =>
+                                                    setSelectedVariantId(
+                                                        variantId,
+                                                    )
+                                                }
+                                                required
+                                            />
+                                        )}
 
-                    <footer className="p-4 sm:p-5 md:p-6 border-t border-gray-100 flex items-center justify-between gap-3 shrink-0">
-                        <div className="text-sm text-gray-500">
-                            <span className="font-semibold text-gray-700">
-                                {t('price')}:
-                            </span>{' '}
-                            <span className="font-bold text-gray-900">
-                                {totalPrice}
-                            </span>{' '}
-                            <CurrencySymbol className="inline-block w-3.5 h-3.5" />
-                            <span className="text-xs text-gray-400 ml-2">
-                                {t('perQuantity')} × {quantity}
-                            </span>
-                        </div>
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="min-h-[48px] px-6 py-3 text-gray-500 font-bold rounded-lg sm:rounded-xl hover:bg-gray-100 transition-colors touch-manipulation">
-                            {t('cancel') || 'Cancel'}
-                        </button>
-                        <button
-                            type="button"
-                            onClick={handleSave}
-                            disabled={!validation.isValid || isLoading || isError}
-                            className={cn(
-                                'min-h-[48px] px-8 sm:px-10 py-3 font-black rounded-lg sm:rounded-xl transition-all shadow-lg touch-manipulation',
-                                !validation.isValid || isLoading || isError
-                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-none'
-                                    : 'bg-theme-primary text-white hover:brightness-95 shadow-theme-primary/20 active:scale-[0.98]',
-                            )}>
-                            {t('save') || 'Save'}
-                        </button>
-                    </footer>
+                                    {(activeProduct.addons || []).map(
+                                        (addonGroup) => (
+                                            <AddonSelector
+                                                key={addonGroup.id}
+                                                addonGroup={addonGroup}
+                                                selectedItems={
+                                                    selectedAddons[
+                                                        addonGroup.id
+                                                    ] || {}
+                                                }
+                                                onUpdateSelection={(
+                                                    itemId,
+                                                    qty,
+                                                ) => {
+                                                    setSelectedAddons(
+                                                        (prev) => ({
+                                                            ...prev,
+                                                            [addonGroup.id]: {
+                                                                ...prev[
+                                                                    addonGroup
+                                                                        .id
+                                                                ],
+                                                                [itemId]: qty,
+                                                            },
+                                                        }),
+                                                    );
+                                                }}
+                                            />
+                                        ),
+                                    )}
+
+                                    {activeProduct.custom_fields &&
+                                        activeProduct.custom_fields.length >
+                                            0 && (
+                                            <CustomFieldsForm
+                                                customFields={
+                                                    activeProduct.custom_fields
+                                                }
+                                                values={customFields}
+                                                onChange={(name, value) => {
+                                                    setCustomFields((prev) => ({
+                                                        ...prev,
+                                                        [name]: value,
+                                                    }));
+                                                }}
+                                            />
+                                        )}
+
+                                    <div className="space-y-2">
+                                        <label className="block text-sm font-medium">
+                                            {t('notes')}
+                                        </label>
+                                        <textarea
+                                            value={notes}
+                                            onChange={(e) =>
+                                                setNotes(e.target.value)
+                                            }
+                                            rows={2}
+                                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-theme-primary focus:border-transparent outline-none transition-all"
+                                        />
+                                    </div>
+                                </>
+                            )}
+                        </main>
+
+                        <footer className="p-4 sm:p-5 md:p-6 border-t border-gray-100 flex items-center justify-between gap-3 shrink-0">
+                            <div className="text-sm text-gray-500">
+                                <span className="font-semibold text-gray-700">
+                                    {t('price')}:
+                                </span>{' '}
+                                <span className="font-bold text-gray-900">
+                                    {totalPrice}
+                                </span>{' '}
+                                <CurrencySymbol className="inline-block w-3.5 h-3.5" />
+                                <span className="text-xs text-gray-400 ml-2">
+                                    {t('perQuantity')} × {quantity}
+                                </span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <button
+                                    type="button"
+                                    onClick={onClose}
+                                    className="min-h-[48px] px-6 py-3 text-gray-500 font-bold rounded-lg sm:rounded-xl hover:bg-gray-100 transition-colors touch-manipulation">
+                                    {t('cancel') || 'Cancel'}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleSave}
+                                    disabled={
+                                        !validation.isValid ||
+                                        isLoading ||
+                                        isError
+                                    }
+                                    className={cn(
+                                        'min-h-[48px] px-8 sm:px-10 py-3 font-black rounded-lg sm:rounded-xl transition-all shadow-lg touch-manipulation',
+                                        !validation.isValid ||
+                                            isLoading ||
+                                            isError
+                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-none'
+                                            : 'bg-theme-primary text-white hover:brightness-95 shadow-theme-primary/20 active:scale-[0.98]',
+                                    )}>
+                                    {t('save') || 'Save'}
+                                </button>
+                            </div>
+                        </footer>
+                    </DialogPanel>
                 </div>
             </div>
-        </>
+        </Dialog>
     );
 }
