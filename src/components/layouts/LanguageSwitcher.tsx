@@ -24,13 +24,15 @@ const LanguageSwitcher = () => {
                 <Globe size={24} strokeWidth={1.5} />
             </MenuButton>
 
-            <BaseMenuItems anchor="bottom end" className="min-w-[140px] rounded-xl p-1.5">
+            <BaseMenuItems
+                anchor="bottom end"
+                className="min-w-[140px] rounded-2xl p-1.5 flex flex-col gap-1">
                 <MenuItem>
                     <button
                         onClick={() => changeLanguage('en')}
-                        className={`flex w-full items-center rounded-lg px-3 py-2 text-sm font-semibold transition-all ${
+                        className={`flex w-full items-center rounded-xl px-3 py-2 text-sm font-bold transition-all ${
                             locale === 'en'
-                                ? 'bg-theme-primary text-white'
+                                ? 'bg-theme-primary text-white shadow-sm'
                                 : 'text-gray-700 hover:bg-gray-50'
                         }`}>
                         English
@@ -39,9 +41,9 @@ const LanguageSwitcher = () => {
                 <MenuItem>
                     <button
                         onClick={() => changeLanguage('ar')}
-                        className={`flex w-full items-center rounded-lg px-3 py-2 text-sm font-semibold transition-all ${
+                        className={`flex w-full items-center rounded-xl px-3 py-2 text-sm font-bold transition-all ${
                             locale === 'ar'
-                                ? 'bg-theme-primary text-white'
+                                ? 'bg-theme-primary text-white shadow-sm'
                                 : 'text-gray-700 hover:bg-gray-50'
                         }`}>
                         العربية

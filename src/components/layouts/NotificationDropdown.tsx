@@ -24,30 +24,30 @@ const NotificationDropdown = () => {
 
             <BaseMenuItems
                 anchor="bottom end"
-                className="w-80 md:w-96 p-0 overflow-hidden rounded-2xl">
+                className="w-[calc(100vw-1rem)] sm:w-80 md:w-96 max-h-[calc(100vh-4rem)] flex flex-col p-0 overflow-hidden rounded-2xl">
                 {/* Header */}
-                <div className="px-4 py-3 bg-linear-to-r from-gray-50 to-white border-b border-gray-100">
-                    <h3 className="font-bold flex items-center gap-2 text-gray-900 text-base">
+                <div className="px-4 py-2.5 sm:py-3 bg-linear-to-r from-gray-50 to-white border-b border-gray-100 shrink-0">
+                    <h3 className="font-bold flex items-center gap-2 text-gray-900 text-sm sm:text-base">
                         <Bell size={18} strokeWidth={2} />
                         {t('title')}
                     </h3>
                 </div>
 
                 {/* Notifications List */}
-                <div className="max-h-96 overflow-y-auto p-3 scrollbar-hide">
+                <div className="max-h-48 sm:max-h-96 overflow-y-auto p-2 sm:p-3 scrollbar-hide flex-1 min-h-0">
                     {count === 0 ? (
-                        <div className="text-center py-12">
+                        <div className="text-center py-8 sm:py-12">
                             <BellOff
-                                size={48}
-                                className="mx-auto text-gray-200 mb-3"
+                                size={40}
+                                className="mx-auto text-gray-200 mb-3 sm:size-12"
                                 strokeWidth={1.5}
                             />
-                            <p className="text-sm font-medium text-gray-400">
+                            <p className="text-xs sm:text-sm font-medium text-gray-400">
                                 {t('empty')}
                             </p>
                         </div>
                     ) : (
-                        <div className="space-y-3">
+                        <div className="space-y-2 sm:space-y-3">
                             <p className="text-center text-xs text-gray-400 py-4">
                                 No new notifications
                             </p>
@@ -56,13 +56,16 @@ const NotificationDropdown = () => {
                 </div>
 
                 {/* Footer */}
-                <div className="p-4 border-t border-gray-100 bg-gray-50">
+                <div className="p-3 sm:p-4 border-t border-gray-100 bg-gray-50 shrink-0">
                     <MenuItem>
                         <Link
                             href="/notifications"
-                            className="w-full bg-white text-gray-900 text-center font-semibold py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all hover:bg-gray-100 border border-gray-200">
+                            className="w-full bg-white text-gray-900 text-center font-semibold py-2 sm:py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all hover:bg-gray-100 border border-gray-200 text-sm">
                             {t('viewAll')}
-                            <ArrowRight size={18} className="rtl:rotate-180" />
+                            <ArrowRight
+                                size={16}
+                                className="rtl:rotate-180 sm:size-[18px]"
+                            />
                         </Link>
                     </MenuItem>
                 </div>
