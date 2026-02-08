@@ -57,12 +57,14 @@ const NotificationDropdown = () => {
 
                 {/* Footer */}
                 <div className="p-4 border-t border-gray-100 bg-gray-50">
-                    <Link
-                        href="/notifications"
-                        className="w-full bg-white text-gray-900 text-center font-semibold py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all hover:bg-gray-100 border border-gray-200">
-                        {t('viewAll')}
-                        <ArrowRight size={18} className="rtl:rotate-180" />
-                    </Link>
+                    <MenuItem>
+                        <Link
+                            href="/notifications"
+                            className="w-full bg-white text-gray-900 text-center font-semibold py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all hover:bg-gray-100 border border-gray-200">
+                            {t('viewAll')}
+                            <ArrowRight size={18} className="rtl:rotate-180" />
+                        </Link>
+                    </MenuItem>
                 </div>
             </BaseMenuItems>
         </Menu>

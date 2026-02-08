@@ -193,21 +193,25 @@ const CartDropdown = () => {
                             </div>
                         </div>
                         <div className="flex flex-col gap-2">
-                            <Link
-                                href="/cart"
-                                className="w-full bg-white text-gray-900 text-center font-semibold py-2.5 rounded-xl block transition-all hover:bg-gray-100 border border-gray-200">
-                                {t('viewCart')}
-                            </Link>
+                            <MenuItem>
+                                <Link
+                                    href="/cart"
+                                    className="w-full bg-white text-gray-900 text-center font-semibold py-2.5 rounded-xl block transition-all hover:bg-gray-100 border border-gray-200">
+                                    {t('viewCart')}
+                                </Link>
+                            </MenuItem>
 
-                            <Link
-                                href="/cart"
-                                className="w-full bg-theme-primary text-white text-center font-semibold py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all hover:brightness-95 active:scale-[0.98] shadow-md">
-                                {t('checkout')}
-                                <ArrowRight
-                                    size={18}
-                                    className="rtl:rotate-180"
-                                />
-                            </Link>
+                            <MenuItem>
+                                <Link
+                                    href="/cart"
+                                    className="w-full bg-theme-primary text-white text-center font-semibold py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all hover:brightness-95 active:scale-[0.98] shadow-md">
+                                    {t('checkout')}
+                                    <ArrowRight
+                                        size={18}
+                                        className="rtl:rotate-180"
+                                    />
+                                </Link>
+                            </MenuItem>
                         </div>
                     </div>
                 )}
