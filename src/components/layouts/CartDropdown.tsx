@@ -44,40 +44,40 @@ const CartDropdown = () => {
 
             <BaseMenuItems
                 anchor="bottom end"
-                className="w-80 md:w-96 p-0 overflow-hidden rounded-2xl">
+                className="w-[calc(100vw-1rem)] sm:w-80 md:w-96 max-h-[calc(100vh-4rem)] flex flex-col p-0 overflow-hidden rounded-2xl">
                 {/* Header */}
-                <div className="px-4 py-3 bg-linear-to-r from-gray-50 to-white border-b border-gray-100">
-                    <h3 className="font-bold flex items-center gap-2 text-gray-900 text-base">
+                <div className="px-4 py-2.5 sm:py-3 bg-linear-to-r from-gray-50 to-white border-b border-gray-100 shrink-0">
+                    <h3 className="font-bold flex items-center gap-2 text-gray-900 text-sm sm:text-base">
                         <ShoppingCart size={18} strokeWidth={2} />
                         {t('title')}
                     </h3>
                 </div>
 
                 {/* Items List */}
-                <div className="max-h-96 overflow-y-auto p-3 scrollbar-hide">
+                <div className="max-h-48 sm:max-h-96 overflow-y-auto p-2 sm:p-3 scrollbar-hide flex-1 min-h-0">
                     {items.length === 0 ? (
-                        <div className="text-center py-12">
+                        <div className="text-center py-8 sm:py-12">
                             {isLoading ? (
                                 <div className="w-10 h-10 border-3 border-theme-primary border-t-transparent rounded-full animate-spin mx-auto mb-3" />
                             ) : (
                                 <>
                                     <ShoppingCart
-                                        size={48}
-                                        className="mx-auto text-gray-200 mb-3"
+                                        size={40}
+                                        className="mx-auto text-gray-200 mb-3 sm:size-12"
                                         strokeWidth={1.5}
                                     />
-                                    <p className="text-sm font-medium text-gray-400">
+                                    <p className="text-xs sm:text-sm font-medium text-gray-400">
                                         {t('empty')}
                                     </p>
                                 </>
                             )}
                         </div>
                     ) : (
-                        <div className="space-y-3">
+                        <div className="space-y-2 sm:space-y-3">
                             {items.map((item) => (
                                 <MenuItem key={item.id} as="div">
-                                    <div className="flex items-start gap-3 p-2 rounded-xl hover:bg-gray-50 transition-colors group">
-                                        <div className="relative w-16 h-16 bg-gray-100 rounded-lg overflow-hidden shrink-0">
+                                    <div className="flex items-start gap-2 sm:gap-3 p-1.5 sm:p-2 rounded-xl hover:bg-gray-50 transition-colors group">
+                                        <div className="relative w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded-lg overflow-hidden shrink-0">
                                             <DynamicImage
                                                 src={item.image}
                                                 alt={item.name}
@@ -86,13 +86,13 @@ const CartDropdown = () => {
                                             />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <h4 className="text-sm font-bold text-gray-900 truncate mb-0.5">
+                                            <h4 className="text-xs sm:text-sm font-bold text-gray-900 truncate mb-0.5">
                                                 {item.name}
                                             </h4>
 
                                             {/* Variety */}
                                             {item.metadata?.variety && (
-                                                <p className="text-[10px] text-gray-400 font-medium mb-1">
+                                                <p className="text-[9px] sm:text-[10px] text-gray-400 font-medium mb-0.5 sm:mb-1">
                                                     {item.metadata.variety.name}
                                                 </p>
                                             )}
@@ -103,14 +103,14 @@ const CartDropdown = () => {
                                                     item.metadata
                                                         .variant_options,
                                                 ).length > 0 && (
-                                                    <div className="flex flex-wrap gap-1 mb-1">
+                                                    <div className="flex flex-wrap gap-0.5 sm:gap-1 mb-0.5 sm:mb-1">
                                                         {Object.entries(
                                                             item.metadata
                                                                 .variant_options,
                                                         ).map(([k, v]) => (
                                                             <span
                                                                 key={k}
-                                                                className="text-[9px] text-gray-400 bg-gray-50 px-1 rounded border border-gray-100/50">
+                                                                className="text-[8px] sm:text-[9px] text-gray-400 bg-gray-50 px-1 rounded border border-gray-100/50">
                                                                 {k}: {String(v)}
                                                             </span>
                                                         ))}
@@ -121,7 +121,7 @@ const CartDropdown = () => {
                                             {item.metadata?.addonDetails &&
                                                 item.metadata.addonDetails
                                                     .length > 0 && (
-                                                    <p className="text-[10px] text-gray-400 line-clamp-1 mb-1">
+                                                    <p className="text-[9px] sm:text-[10px] text-gray-400 line-clamp-1 mb-0.5 sm:mb-1">
                                                         {item.metadata.addonDetails
                                                             .map((g: any) =>
                                                                 g.items
@@ -142,36 +142,37 @@ const CartDropdown = () => {
                                                 Object.keys(
                                                     item.metadata.custom_fields,
                                                 ).length > 0 && (
-                                                    <p className="text-[10px] text-gray-400 line-clamp-1 italic mb-1">
+                                                    <p className="text-[9px] sm:text-[10px] text-gray-400 line-clamp-1 italic mb-0.5 sm:mb-1">
                                                         {Object.entries(
                                                             item.metadata
                                                                 .custom_fields,
                                                         )
                                                             .map(
                                                                 ([k, v]) =>
-                                                                    `${k.replace(
-                                                                        /_/g,
-                                                                        ' ',
-                                                                    )}: ${v}`,
+                                                                    `${k.replace(/_/g, ' ')}: ${v}`,
                                                             )
                                                             .join(', ')}
                                                     </p>
                                                 )}
 
-                                            <p className="text-xs text-gray-500 mb-1">
+                                            <p className="text-[10px] sm:text-xs text-gray-500 mb-0.5 sm:mb-1">
                                                 x{item.quantity}
                                             </p>
-                                            <div className="flex items-center gap-1 text-sm font-bold text-theme-primary">
+                                            <div className="flex items-center gap-1 text-xs sm:text-sm font-bold text-theme-primary">
                                                 <span>
                                                     {item.price * item.quantity}
                                                 </span>
-                                                <CurrencySymbol className="w-3.5 h-3.5" />
+                                                <CurrencySymbol className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                                             </div>
                                         </div>
                                         <button
                                             onClick={() => removeItem(item.id)}
-                                            className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all">
-                                            <X size={16} strokeWidth={2} />
+                                            className="p-1 sm:p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all">
+                                            <X
+                                                size={14}
+                                                strokeWidth={2}
+                                                className="sm:size-4"
+                                            />
                                         </button>
                                     </div>
                                 </MenuItem>
@@ -182,21 +183,21 @@ const CartDropdown = () => {
 
                 {/* Footer */}
                 {items.length > 0 && (
-                    <div className="p-4 border-t border-gray-100 bg-gray-50">
-                        <div className="flex justify-between items-center mb-3">
-                            <span className="text-sm text-gray-600 font-semibold">
+                    <div className="p-3 sm:p-4 border-t border-gray-100 bg-gray-50 shrink-0">
+                        <div className="flex justify-between items-center mb-2 sm:mb-3">
+                            <span className="text-xs sm:text-sm text-gray-600 font-semibold">
                                 {t('total')}
                             </span>
-                            <div className="flex items-center gap-1 text-lg font-bold text-gray-900">
+                            <div className="flex items-center gap-1 text-base sm:text-lg font-bold text-gray-900">
                                 <span>{getTotalPrice()}</span>
-                                <CurrencySymbol className="w-4 h-4" />
+                                <CurrencySymbol className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             </div>
                         </div>
-                        <div className="flex flex-col gap-2">
+                        <div className="flex flex-col gap-1.5 sm:gap-2">
                             <MenuItem>
                                 <Link
                                     href="/cart"
-                                    className="w-full bg-white text-gray-900 text-center font-semibold py-2.5 rounded-xl block transition-all hover:bg-gray-100 border border-gray-200">
+                                    className="w-full bg-white text-gray-900 text-center font-semibold py-2 sm:py-2.5 rounded-xl block transition-all hover:bg-gray-100 border border-gray-200 text-sm">
                                     {t('viewCart')}
                                 </Link>
                             </MenuItem>
@@ -204,11 +205,11 @@ const CartDropdown = () => {
                             <MenuItem>
                                 <Link
                                     href="/cart"
-                                    className="w-full bg-theme-primary text-white text-center font-semibold py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all hover:brightness-95 active:scale-[0.98] shadow-md">
+                                    className="w-full bg-theme-primary text-white text-center font-semibold py-2 sm:py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all hover:brightness-95 active:scale-[0.98] shadow-md text-sm">
                                     {t('checkout')}
                                     <ArrowRight
-                                        size={18}
-                                        className="rtl:rotate-180"
+                                        size={16}
+                                        className="rtl:rotate-180 sm:size-[18px]"
                                     />
                                 </Link>
                             </MenuItem>
