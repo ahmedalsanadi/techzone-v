@@ -4,12 +4,8 @@
 import { useLocale } from 'next-intl';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { Globe } from 'lucide-react';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '../ui/DropdownMenu';
+import { Menu, MenuButton, MenuItem } from '@headlessui/react';
+import { BaseMenuItems } from '../ui/BaseMenuItems';
 
 const LanguageSwitcher = () => {
     const router = useRouter();
@@ -24,21 +20,38 @@ const LanguageSwitcher = () => {
     };
 
     return (
-        <DropdownMenu dir={locale === 'ar' ? 'rtl' : 'ltr'}>
-            <DropdownMenuTrigger asChild>
-                <button className="relative p-2 text-white hover:bg-white/10 rounded-full transition-colors outline-none cursor-pointer">
-                    <Globe size={24} strokeWidth={1.5} />
-                </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="center" className="min-w-[120px]">
-                <DropdownMenuItem onClick={() => changeLanguage('en')}>
-                    English
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => changeLanguage('ar')}>
-                    العربية
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
+        <Menu as="div" className="relative inline-block text-left">
+            <MenuButton className="relative p-2 text-white hover:bg-white/10 rounded-full transition-colors outline-none cursor-pointer">
+                <Globe size={24} strokeWidth={1.5} />
+            </MenuButton>
+
+            <BaseMenuItems
+                anchor="bottom"
+                className="min-w-[120px] rounded-xl p-1">
+                <MenuItem>
+                    <button
+                        onClick={() => changeLanguage('en')}
+                        className={`flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                            locale === 'en'
+                                ? 'bg-theme-primary/10 text-theme-primary'
+                                : 'text-gray-700 hover:bg-gray-50'
+                        }`}>
+                        English
+                    </button>
+                </MenuItem>
+                <MenuItem>
+                    <button
+                        onClick={() => changeLanguage('ar')}
+                        className={`flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                            locale === 'ar'
+                                ? 'bg-theme-primary/10 text-theme-primary'
+                                : 'text-gray-700 hover:bg-gray-50'
+                        }`}>
+                        العربية
+                    </button>
+                </MenuItem>
+            </BaseMenuItems>
+        </Menu>
     );
 };
 

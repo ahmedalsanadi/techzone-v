@@ -6,13 +6,10 @@ import DynamicImage from '../ui/DynamicImage';
 import { useCartStore } from '@/store/useCartStore';
 import { Link } from '@/i18n/navigation';
 import CurrencySymbol from '../ui/CurrencySymbol';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuTrigger,
-} from '../ui/DropdownMenu';
 import { useAuthStore } from '@/store/useAuthStore';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { Menu, MenuButton, MenuItem } from '@headlessui/react';
+import { BaseMenuItems } from '../ui/BaseMenuItems';
 
 const CartDropdown = () => {
     const t = useTranslations('Cart');
@@ -28,34 +25,28 @@ const CartDropdown = () => {
     } = useCartStore();
     const { isAuthenticated } = useAuthStore();
     const count = getTotalItems();
-    const [isMounted, setIsMounted] = useState(false);
-
-    useEffect(() => {
-        setIsMounted(true);
-    }, []);
 
     // Sync cart with API when authenticated
     useEffect(() => {
-        if (isMounted && isAuthenticated && !isGuestMode) {
+        if (isAuthenticated && !isGuestMode) {
             syncWithAPI();
         }
-    }, [isMounted, isAuthenticated, isGuestMode, syncWithAPI]);
+    }, [isAuthenticated, isGuestMode, syncWithAPI]);
 
     return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <button className="relative p-2 text-white hover:bg-white/10 rounded-full transition-colors outline-none cursor-pointer">
-                    <ShoppingCart size={24} strokeWidth={1.5} />
-                    {isMounted && count > 0 && (
-                        <span className="absolute bottom-1 left-1 bg-[#F3C450] text-[#030213] text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center border border-white/20">
-                            {count}
-                        </span>
-                    )}
-                </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-                align="end"
-                className="w-[320px] md:w-[380px] p-0 overflow-hidden rounded-3xl border-gray-100 shadow-2xl bg-white">
+        <Menu as="div" className="relative inline-block text-left">
+            <MenuButton className="relative p-2 text-white hover:bg-white/10 rounded-full transition-colors outline-none cursor-pointer">
+                <ShoppingCart size={24} strokeWidth={1.5} />
+                {count > 0 && (
+                    <span className="absolute bottom-1 left-1 bg-[#F3C450] text-[#030213] text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center border border-white/20">
+                        {count}
+                    </span>
+                )}
+            </MenuButton>
+
+            <BaseMenuItems
+                anchor="bottom end"
+                className="w-[320px] md:w-[380px] p-0 overflow-hidden rounded-3xl">
                 {/* Clean Header (No Red Background) */}
                 <div className="p-4 border-b border-gray-50">
                     <h3 className="font-bold flex items-center gap-2 text-gray-900">
@@ -66,11 +57,7 @@ const CartDropdown = () => {
 
                 {/* Items List (Previous Body Content Style) */}
                 <div className="max-h-[400px] overflow-y-auto p-4 scrollbar-hide">
-                    {!isMounted ? (
-                        <div className="text-center py-10">
-                            <div className="w-8 h-8 border-2 border-theme-primary border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-                        </div>
-                    ) : items.length === 0 ? (
+                    {items.length === 0 ? (
                         <div className="text-center py-10">
                             {isLoading ? (
                                 <div className="w-8 h-8 border-2 border-theme-primary border-t-transparent rounded-full animate-spin mx-auto mb-3" />
@@ -89,104 +76,107 @@ const CartDropdown = () => {
                     ) : (
                         <div className="space-y-4">
                             {items.map((item) => (
-                                <div
-                                    key={item.id}
-                                    className="flex items-center gap-3 group relative">
-                                    <div className="relative w-16 h-16 bg-gray-50 rounded-xl overflow-hidden shrink-0 border border-gray-100">
-                                        <DynamicImage
-                                            src={item.image}
-                                            alt={item.name}
-                                            fill
-                                            className="object-contain p-1"
-                                        />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <h4 className="text-sm font-bold text-gray-900 truncate">
-                                            {item.name}
-                                        </h4>
-                                        {item.metadata?.variety && (
-                                            <p className="text-[10px] text-gray-400 font-medium">
-                                                {item.metadata.variety.name}
-                                            </p>
-                                        )}
-                                        {/* Variant Options Summary */}
-                                        {item.metadata?.variant_options &&
-                                            Object.keys(
-                                                item.metadata.variant_options,
-                                            ).length > 0 && (
-                                                <div className="flex flex-wrap gap-1 mt-0.5">
-                                                    {Object.entries(
-                                                        item.metadata
-                                                            .variant_options,
-                                                    ).map(([k, v]) => (
-                                                        <span
-                                                            key={k}
-                                                            className="text-[9px] text-gray-400 bg-gray-50 px-1 rounded border border-gray-100/50">
-                                                            {k}: {String(v)}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        {/* Addons Summary */}
-                                        {item.metadata?.addonDetails &&
-                                            item.metadata.addonDetails.length >
-                                                0 && (
-                                                <p className="text-[10px] text-gray-400 line-clamp-1">
-                                                    {item.metadata.addonDetails
-                                                        .map((g: any) =>
-                                                            g.items
-                                                                .map(
-                                                                    (i: any) =>
-                                                                        i.name,
-                                                                )
-                                                                .join(', '),
-                                                        )
-                                                        .join(', ')}
-                                                </p>
-                                            )}
-                                        {/* Custom Fields Summary */}
-                                        {item.metadata?.custom_fields &&
-                                            Object.keys(
-                                                item.metadata.custom_fields,
-                                            ).length > 0 && (
-                                                <p className="text-[10px] text-gray-400 line-clamp-1 italic">
-                                                    {Object.entries(
-                                                        item.metadata
-                                                            .custom_fields,
-                                                    )
-                                                        .map(
-                                                            ([k, v]) =>
-                                                                `${k.replace(
-                                                                    /_/g,
-                                                                    ' ',
-                                                                )}: ${v}`,
-                                                        )
-                                                        .join(', ')}
-                                                </p>
-                                            )}
-                                        <p className="text-xs text-gray-500 mt-0.5">
-                                            x{item.quantity}
-                                        </p>
-                                        <div className="flex items-center gap-1 text-sm font-black text-theme-primary mt-1">
-                                            <span>
-                                                {item.price * item.quantity}
-                                            </span>
-                                            <CurrencySymbol className="w-3 h-3" />
+                                <MenuItem key={item.id} as="div">
+                                    <div className="flex items-center gap-3 group relative">
+                                        <div className="relative w-16 h-16 bg-gray-50 rounded-xl overflow-hidden shrink-0 border border-gray-100">
+                                            <DynamicImage
+                                                src={item.image}
+                                                alt={item.name}
+                                                fill
+                                                className="object-contain p-1"
+                                            />
                                         </div>
+                                        <div className="flex-1 min-w-0">
+                                            <h4 className="text-sm font-bold text-gray-900 truncate">
+                                                {item.name}
+                                            </h4>
+                                            {item.metadata?.variety && (
+                                                <p className="text-[10px] text-gray-400 font-medium">
+                                                    {item.metadata.variety.name}
+                                                </p>
+                                            )}
+                                            {/* Variant Options Summary */}
+                                            {item.metadata?.variant_options &&
+                                                Object.keys(
+                                                    item.metadata
+                                                        .variant_options,
+                                                ).length > 0 && (
+                                                    <div className="flex flex-wrap gap-1 mt-0.5">
+                                                        {Object.entries(
+                                                            item.metadata
+                                                                .variant_options,
+                                                        ).map(([k, v]) => (
+                                                            <span
+                                                                key={k}
+                                                                className="text-[9px] text-gray-400 bg-gray-50 px-1 rounded border border-gray-100/50">
+                                                                {k}: {String(v)}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            {/* Addons Summary */}
+                                            {item.metadata?.addonDetails &&
+                                                item.metadata.addonDetails
+                                                    .length > 0 && (
+                                                    <p className="text-[10px] text-gray-400 line-clamp-1">
+                                                        {item.metadata.addonDetails
+                                                            .map((g: any) =>
+                                                                g.items
+                                                                    .map(
+                                                                        (
+                                                                            i: any,
+                                                                        ) =>
+                                                                            i.name,
+                                                                    )
+                                                                    .join(', '),
+                                                            )
+                                                            .join(', ')}
+                                                    </p>
+                                                )}
+                                            {/* Custom Fields Summary */}
+                                            {item.metadata?.custom_fields &&
+                                                Object.keys(
+                                                    item.metadata.custom_fields,
+                                                ).length > 0 && (
+                                                    <p className="text-[10px] text-gray-400 line-clamp-1 italic">
+                                                        {Object.entries(
+                                                            item.metadata
+                                                                .custom_fields,
+                                                        )
+                                                            .map(
+                                                                ([k, v]) =>
+                                                                    `${k.replace(
+                                                                        /_/g,
+                                                                        ' ',
+                                                                    )}: ${v}`,
+                                                            )
+                                                            .join(', ')}
+                                                    </p>
+                                                )}
+                                            <p className="text-xs text-gray-500 mt-0.5">
+                                                x{item.quantity}
+                                            </p>
+                                            <div className="flex items-center gap-1 text-sm font-black text-theme-primary mt-1">
+                                                <span>
+                                                    {item.price * item.quantity}
+                                                </span>
+                                                <CurrencySymbol className="w-3 h-3" />
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => removeItem(item.id)}
+                                            className="p-1.5 text-gray-300 hover:text-red-500 transition-colors">
+                                            <X size={16} />
+                                        </button>
                                     </div>
-                                    <button
-                                        onClick={() => removeItem(item.id)}
-                                        className="p-1.5 text-gray-300 hover:text-red-500 transition-colors">
-                                        <X size={16} />
-                                    </button>
-                                </div>
+                                </MenuItem>
                             ))}
                         </div>
                     )}
                 </div>
 
                 {/* Footer (Red Button Style) */}
-                {isMounted && items.length > 0 && (
+                {items.length > 0 && (
                     <div className="p-4 border-t border-gray-50 bg-gray-50/50">
                         <div className="flex justify-between items-center mb-4">
                             <span className="text-sm text-gray-500 font-bold ">
@@ -216,8 +206,8 @@ const CartDropdown = () => {
                         </div>
                     </div>
                 )}
-            </DropdownMenuContent>
-        </DropdownMenu>
+            </BaseMenuItems>
+        </Menu>
     );
 };
 

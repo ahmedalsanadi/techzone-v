@@ -1,31 +1,53 @@
 //src/components/layouts/navbar.tsx
 'use client';
 import { usePathname } from '@/i18n/navigation';
-import { Search, Menu, ChevronDown } from 'lucide-react';
+import { Search, Menu as MenuIcon, ChevronDown } from 'lucide-react';
+import { Link } from '@/i18n/navigation';
 import { NAV_ITEMS } from '@/config/navigation';
 
 import NavItem from './NavItem';
 import { Input } from '../ui/Input';
 
-import UserMenu from './UserMenu';
-import CartDropdown from './CartDropdown';
-import NotificationDropdown from './NotificationDropdown';
-import LanguageSwitcher from './LanguageSwitcher';
-
 import { useLocale, useTranslations } from 'next-intl';
 import { useUiStore } from '@/store/useUiStore';
 import MobileSidebar from './MobileSidebar';
-// import LogoImage from '@/components/layouts/LogoImage';
 import { useStore } from '@/components/providers/StoreProvider';
-// import { siteConfig } from '@/config/site';
-// import FastoLogo from './FastoLogo';
 import LogoImage from './LogoImage';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuTrigger,
-} from '../ui/DropdownMenu';
-import { Link } from '@/i18n/navigation';
+import { Menu, MenuButton, MenuItem } from '@headlessui/react';
+import { BaseMenuItems } from '../ui/BaseMenuItems';
+import { useMemo } from 'react';
+import { ClientOnly } from '../ui/ClientOnly';
+import dynamic from 'next/dynamic';
+
+// --- Dynamic Imports with Skeletons ---
+
+const LanguageSwitcher = dynamic(() => import('./LanguageSwitcher'), {
+    ssr: false,
+    loading: () => (
+        <div className="p-2 w-10 h-10 rounded-full bg-white/5 animate-pulse" />
+    ),
+});
+
+const NotificationDropdown = dynamic(() => import('./NotificationDropdown'), {
+    ssr: false,
+    loading: () => (
+        <div className="p-2 w-10 h-10 rounded-full bg-white/5 animate-pulse" />
+    ),
+});
+
+const CartDropdown = dynamic(() => import('./CartDropdown'), {
+    ssr: false,
+    loading: () => (
+        <div className="p-2 w-10 h-10 rounded-full bg-white/5 animate-pulse" />
+    ),
+});
+
+const UserMenu = dynamic(() => import('./UserMenu'), {
+    ssr: false,
+    loading: () => (
+        <div className="px-3 py-1.5 w-[140px] h-10 rounded-full bg-white/10 animate-pulse hidden lg:block" />
+    ),
+});
 
 export default function Navbar() {
     const pathname = usePathname();
@@ -33,7 +55,12 @@ export default function Navbar() {
     const locale = useLocale();
     const { toggleMobileMenu } = useUiStore();
     const { config, cmsPages } = useStore();
-    const menuCMSPages = cmsPages.filter((p) => p.show_in_menu);
+
+    const menuCMSPages = useMemo(
+        () => cmsPages.filter((p) => p.show_in_menu),
+        [cmsPages],
+    );
+
     const pagesLabel = locale === 'ar' ? 'الصفحات' : 'Pages';
 
     return (
@@ -43,7 +70,7 @@ export default function Navbar() {
                 <button
                     onClick={toggleMobileMenu}
                     className="lg:hidden p-2 text-white hover:bg-white/10 rounded-full transition-colors">
-                    <Menu size={24} strokeWidth={1.5} />
+                    <MenuIcon size={24} strokeWidth={1.5} />
                 </button>
 
                 {/*-------- logo----------- */}
@@ -54,7 +81,6 @@ export default function Navbar() {
                     }
                 />
             </div>
-
             {/*-------- Navlist----------- */}
             <div className="hidden lg:flex flex-1 items-center justify-center gap-1.5 pt-1 text-nowrap">
                 {NAV_ITEMS.map((item) => {
@@ -77,29 +103,27 @@ export default function Navbar() {
                 })}
 
                 {menuCMSPages.length > 0 && (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <button className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-semibold text-white hover:bg-white/10 transition-colors">
-                                <span>{pagesLabel}</span>
-                                <ChevronDown className="h-4 w-4 opacity-80" />
-                            </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                            align="start"
-                            className="min-w-[220px] rounded-2xl border border-gray-100 bg-white p-2 shadow-xl">
+                    <Menu as="div" className="relative inline-block text-left">
+                        <MenuButton className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-semibold text-white hover:bg-white/10 transition-colors">
+                            <span>{pagesLabel}</span>
+                            <ChevronDown className="h-4 w-4 opacity-80" />
+                        </MenuButton>
+                        <BaseMenuItems
+                            anchor="bottom start"
+                            className="min-w-[220px] rounded-2xl p-2">
                             {menuCMSPages.map((page) => (
-                                <Link
-                                    key={page.id}
-                                    href={`/pages/${page.slug}`}
-                                    className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900">
-                                    {page.title}
-                                </Link>
+                                <MenuItem key={page.id}>
+                                    <Link
+                                        href={`/pages/${page.slug}`}
+                                        className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900">
+                                        {page.title}
+                                    </Link>
+                                </MenuItem>
                             ))}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                        </BaseMenuItems>
+                    </Menu>
                 )}
             </div>
-
             {/*-------- Search----------- */}
             <div className="hidden lg:flex items-center mt-1">
                 <Input
@@ -116,7 +140,6 @@ export default function Navbar() {
                     containerClassName="w-[270px] xl:w-[340px]"
                 />
             </div>
-
             <div className="relative flex items-center gap-2 h-8">
                 <div className="hidden lg:block">
                     <LanguageSwitcher />
@@ -125,7 +148,6 @@ export default function Navbar() {
                 <CartDropdown />
                 <UserMenu />
             </div>
-
             {/*-------- Mobile Sidebar ----------- */}
             <MobileSidebar />
         </div>
