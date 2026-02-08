@@ -61,21 +61,14 @@ export default function MobileSidebar() {
             <div
                 className={`absolute top-0 ${
                     isArabic ? 'right-0' : 'left-0'
-                } h-full w-[280px] bg-libero-red shadow-2xl transition-transform duration-300 ease-in-out flex flex-col`}>
-                <div className="p-4 flex items-center justify-between border-b border-white/10 bg-libero-red text-white">
+                } h-full w-[280px] bg-primary shadow-2xl transition-transform duration-300 ease-in-out flex flex-col`}>
+                <div className="p-4 flex items-center justify-between border-b border-white/10 bg-primary-50 text-white">
                     <div className="flex items-center gap-3">
                         <button
                             onClick={() => setMobileMenuOpen(false)}
                             className="p-1.5 hover:bg-white/10 rounded-full transition-colors">
                             <X size={24} />
                         </button>
-                        <LogoImage
-                            brandName={config?.store?.name || siteConfig.name}
-                            brandLogo={
-                                config?.store?.logo_url ||
-                                '/images/svgs/logo-icon.svg'
-                            }
-                        />
                     </div>
 
                     <div className="flex items-center gap-1">
@@ -100,7 +93,7 @@ export default function MobileSidebar() {
                     </div>
 
                     {/* Navigation Items */}
-                    <nav className="flex flex-col gap-1">
+                    <nav className="flex flex-col justify-start items-start gap-1">
                         {NAV_ITEMS.map((item) => {
                             const isActive =
                                 item.href === '/'
@@ -118,6 +111,7 @@ export default function MobileSidebar() {
                                         icon={item.icon}
                                         isActive={isActive}
                                         alt={item.alt}
+                                        variant="sidebar"
                                     />
                                 </div>
                             );
@@ -136,6 +130,7 @@ export default function MobileSidebar() {
                                         isActive={pathname.startsWith(
                                             `/pages/${page.slug}`,
                                         )}
+                                        variant="sidebar"
                                     />
                                 </div>
                             ))}
