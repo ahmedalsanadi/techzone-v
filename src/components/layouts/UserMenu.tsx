@@ -53,86 +53,81 @@ const UserMenu = () => {
             as="div"
             className="relative inline-block text-left"
             dir={locale === 'ar' ? 'rtl' : 'ltr'}>
-            <MenuButton className="bg-white flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-black/5 shadow-sm cursor-pointer hover:bg-gray-50 transition-all active:scale-95 outline-none h-[38px] lg:h-[42px]">
-                <div className="size-[28px] lg:size-[32px] bg-theme-primary/10 rounded-full flex items-center justify-center border border-theme-primary shadow-xs">
-                    <User size={16} className="text-theme-primary" />
+            <MenuButton className="bg-white/95 backdrop-blur-sm flex items-center gap-2 px-3 py-2 rounded-full border border-white/20 shadow-sm hover:shadow-md hover:bg-white transition-all outline-none h-10 lg:h-11">
+                <div className="w-7 h-7 lg:w-8 lg:h-8 bg-theme-primary/10 rounded-full flex items-center justify-center border border-theme-primary/20">
+                    <User size={16} className="text-theme-primary" strokeWidth={2.5} />
                 </div>
-                <span className="text-gray-900 font-bold text-[13px] whitespace-nowrap hidden lg:inline mx-1">
+                <span className="text-gray-900 font-semibold text-sm whitespace-nowrap hidden lg:inline">
                     {isAuthenticated ? user?.name?.split(' ')[0] : t('guest')}
                 </span>
                 <ChevronDown
-                    size={14}
-                    className="text-gray-400 group-hover:text-theme-primary transition-colors"
+                    size={16}
+                    className="text-gray-400 transition-transform group-data-[open]:rotate-180"
+                    strokeWidth={2}
                 />
             </MenuButton>
 
             <BaseMenuItems
                 anchor="bottom end"
-                className="w-[260px] p-0 rounded-[28px] overflow-hidden">
+                className="w-72 p-0 rounded-2xl overflow-hidden">
                 {/* User Info Header Section */}
-                <div className="relative p-4 bg-white">
+                <div className="relative px-5 pt-5 pb-4 bg-gradient-to-br from-gray-50 to-white border-b border-gray-100">
                     {/* Edit Button */}
                     {isAuthenticated && (
                         <MenuItem>
                             <Link
                                 href="/profile"
-                                className="absolute top-3 left-3 text-[11px] font-bold text-gray-400 hover:text-theme-primary transition-colors bg-gray-50 px-2.5 py-1 rounded-full border border-gray-100 shadow-xs">
+                                className="absolute top-3 right-3 text-xs font-semibold text-gray-500 hover:text-theme-primary transition-colors bg-white px-3 py-1.5 rounded-full border border-gray-200 hover:border-theme-primary/30 shadow-sm">
                                 {t('profile')}
                             </Link>
                         </MenuItem>
                     )}
 
-                    <div className="flex flex-col items-center text-center gap-3 mt-1.5">
+                    <div className="flex flex-col items-center text-center gap-2.5 mt-2">
                         {/* Avatar */}
-                        <div className="size-16 bg-gray-50 rounded-full flex items-center justify-center border-2 border-white shadow-lg relative overflow-hidden group">
-                            <div className="absolute inset-0 bg-theme-primary/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="w-16 h-16 bg-gradient-to-br from-theme-primary/10 to-theme-primary/5 rounded-full flex items-center justify-center border-2 border-white shadow-lg relative overflow-hidden">
                             <User
-                                size={32}
+                                size={28}
                                 className="text-theme-primary"
-                                strokeWidth={1.5}
+                                strokeWidth={2}
                             />
                         </div>
 
                         {/* Text Details */}
-                        <div className="flex flex-col gap-1">
-                            <span className="text-base font-black text-gray-900 tracking-tight">
+                        <div className="flex flex-col gap-1.5">
+                            <span className="text-base font-bold text-gray-900">
                                 {isAuthenticated ? user?.name : t('guest')}
                             </span>
 
                             {isAuthenticated ? (
                                 <>
-                                    <div className="flex items-center justify-center gap-1.5 text-[11px] text-gray-400 font-medium">
-                                        <Phone
-                                            size={10}
-                                            className="text-gray-300"
-                                        />
-                                        <span dir="ltr">{user?.phone}</span>
+                                    <div className="flex items-center justify-center gap-1.5 text-xs text-gray-500">
+                                        <Phone size={12} className="text-gray-400" />
+                                        <span dir="ltr" className="font-medium">{user?.phone}</span>
                                     </div>
-                                    <div className="flex items-center justify-center gap-1.5 text-[11px] text-gray-400 font-medium">
-                                        <Mail
-                                            size={10}
-                                            className="text-gray-300"
-                                        />
-                                        <span className="max-w-[160px] truncate">
-                                            {user?.email}
-                                        </span>
-                                    </div>
+                                    {user?.email && (
+                                        <div className="flex items-center justify-center gap-1.5 text-xs text-gray-500">
+                                            <Mail size={12} className="text-gray-400" />
+                                            <span className="max-w-[180px] truncate font-medium">
+                                                {user?.email}
+                                            </span>
+                                        </div>
+                                    )}
 
                                     {/* Points Badge */}
-                                    <div className="mt-1.5 max-w-[150px] mx-auto inline-flex items-center gap-1.5 bg-theme-primary/5 text-theme-primary px-3 py-1 rounded-full border border-theme-primary ">
+                                    <div className="mt-2 inline-flex items-center gap-1.5 bg-theme-primary/10 text-theme-primary px-3 py-1.5 rounded-full border border-theme-primary/20">
                                         <Star
-                                            size={10}
+                                            size={12}
                                             fill="currentColor"
                                             strokeWidth={0}
                                         />
-                                        <span className="text-[10px] font-black uppercase tracking-wide">
-                                            {profile?.points || 0}{' '}
-                                            {t('pointsEarned')}
+                                        <span className="text-xs font-bold">
+                                            {profile?.points || 0} {t('pointsEarned')}
                                         </span>
                                     </div>
                                 </>
                             ) : (
-                                <span className="text-[11px] text-gray-400 font-medium">
+                                <span className="text-xs text-gray-500 font-medium">
                                     {t('guestSubtitle')}
                                 </span>
                             )}
@@ -140,105 +135,88 @@ const UserMenu = () => {
                     </div>
                 </div>
 
-                <div className="bg-gray-50/50 pt-1.5 px-1.5 pb-1.5">
+                <div className="p-2">
                     {isAuthenticated ? (
-                        <div className="grid grid-cols-1 gap-1">
+                        <div className="flex flex-col gap-1">
                             {/* Menu Navigation Items */}
-                            <div className="bg-white rounded-[22px] p-1 border border-gray-100/50 shadow-xs">
-                                <MenuItem>
-                                    <Link
-                                        href="/my-orders"
-                                        className="py-2.5 px-3 rounded-[18px] gap-3 cursor-pointer group transition-all hover:bg-orange-50/50 flex items-center active:scale-[0.98]">
-                                        <div className="size-8 rounded-lg bg-orange-100/50 flex items-center justify-center text-orange-600 group-hover:scale-110 transition-transform">
-                                            <Package
-                                                size={18}
-                                                strokeWidth={2}
-                                            />
-                                        </div>
-                                        <span className="text-[13px] font-bold text-gray-700 group-hover:text-orange-700 transition-colors">
-                                            {t('myOrders')}
-                                        </span>
-                                    </Link>
-                                </MenuItem>
+                            <MenuItem>
+                                <Link
+                                    href="/my-orders"
+                                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-orange-50 transition-all group">
+                                    <div className="w-9 h-9 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600 group-hover:scale-105 transition-transform">
+                                        <Package size={18} strokeWidth={2} />
+                                    </div>
+                                    <span className="text-sm font-semibold text-gray-700 group-hover:text-orange-700">
+                                        {t('myOrders')}
+                                    </span>
+                                </Link>
+                            </MenuItem>
 
-                                <MenuItem>
-                                    <Link
-                                        href="/my-addresses"
-                                        className="py-2.5 px-3 rounded-[18px] gap-3 cursor-pointer group transition-all hover:bg-blue-50/50 flex items-center active:scale-[0.98]">
-                                        <div className="size-8 rounded-lg bg-blue-100/50 flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform">
-                                            <MapPin size={18} strokeWidth={2} />
-                                        </div>
-                                        <span className="text-[13px] font-bold text-gray-700 group-hover:text-blue-700 transition-colors">
-                                            {t('myAddresses')}
-                                        </span>
-                                    </Link>
-                                </MenuItem>
+                            <MenuItem>
+                                <Link
+                                    href="/my-addresses"
+                                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-blue-50 transition-all group">
+                                    <div className="w-9 h-9 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 group-hover:scale-105 transition-transform">
+                                        <MapPin size={18} strokeWidth={2} />
+                                    </div>
+                                    <span className="text-sm font-semibold text-gray-700 group-hover:text-blue-700">
+                                        {t('myAddresses')}
+                                    </span>
+                                </Link>
+                            </MenuItem>
 
-                                <MenuItem>
-                                    <Link
-                                        href="/wallet"
-                                        className="py-2.5 px-3 rounded-[18px] gap-3 cursor-pointer group transition-all hover:bg-emerald-50/50 flex items-center active:scale-[0.98]">
-                                        <div className="size-8 rounded-lg bg-emerald-100/50 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
-                                            <Wallet size={18} strokeWidth={2} />
-                                        </div>
-                                        <span className="text-[13px] font-bold text-gray-700 group-hover:text-emerald-700 transition-colors">
-                                            {t('wallet')}
-                                        </span>
-                                    </Link>
-                                </MenuItem>
+                            <MenuItem>
+                                <Link
+                                    href="/wallet"
+                                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-emerald-50 transition-all group">
+                                    <div className="w-9 h-9 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600 group-hover:scale-105 transition-transform">
+                                        <Wallet size={18} strokeWidth={2} />
+                                    </div>
+                                    <span className="text-sm font-semibold text-gray-700 group-hover:text-emerald-700">
+                                        {t('wallet')}
+                                    </span>
+                                </Link>
+                            </MenuItem>
 
-                                <MenuItem>
-                                    <Link
-                                        href="/wishlist"
-                                        className="py-2.5 px-3 rounded-[18px] gap-3 cursor-pointer group transition-all hover:bg-pink-50/50 flex items-center active:scale-[0.98]">
-                                        <div className="size-8 rounded-lg bg-pink-100/50 flex items-center justify-center text-pink-600 group-hover:scale-110 transition-transform">
-                                            <Heart size={18} strokeWidth={2} />
-                                        </div>
-                                        <span className="text-[13px] font-bold text-gray-700 group-hover:text-pink-700 transition-colors">
-                                            {t('favorites')}
-                                        </span>
-                                    </Link>
-                                </MenuItem>
-                            </div>
+                            <MenuItem>
+                                <Link
+                                    href="/wishlist"
+                                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-pink-50 transition-all group">
+                                    <div className="w-9 h-9 rounded-lg bg-pink-100 flex items-center justify-center text-pink-600 group-hover:scale-105 transition-transform">
+                                        <Heart size={18} strokeWidth={2} />
+                                    </div>
+                                    <span className="text-sm font-semibold text-gray-700 group-hover:text-pink-700">
+                                        {t('favorites')}
+                                    </span>
+                                </Link>
+                            </MenuItem>
+
+                            {/* Divider */}
+                            <div className="h-px bg-gray-100 my-1" />
 
                             {/* Sign Out Action */}
                             <MenuItem>
                                 <button
                                     onClick={handleLogout}
-                                    className="w-full mt-1 py-2.5 px-3 rounded-[18px] gap-3 cursor-pointer group transition-all hover:bg-red-50/50 flex items-center text-red-600 active:scale-[0.98]">
-                                    <div className="size-8 rounded-lg bg-red-100/50 flex items-center justify-center text-red-600 group-hover:scale-110 transition-transform">
+                                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-50 transition-all group text-red-600">
+                                    <div className="w-9 h-9 rounded-lg bg-red-100 flex items-center justify-center group-hover:scale-105 transition-transform">
                                         <LogOut size={18} strokeWidth={2} />
                                     </div>
-                                    <span className="text-[13px] font-bold group-hover:text-red-700 transition-colors">
+                                    <span className="text-sm font-semibold group-hover:text-red-700">
                                         {t('logout')}
                                     </span>
                                 </button>
                             </MenuItem>
                         </div>
                     ) : (
-                        <div className="px-1.5 pb-1.5">
-                            <MenuItem>
-                                <Link
-                                    href="/auth"
-                                    className="bg-linear-to-r from-blue-50 to-indigo-50 flex items-center justify-start gap-2 w-full h-[52px] text-slate-800 px-4 rounded-[20px] transition-all shadow-sm shadow-blue-100/50 hover:shadow-md hover:shadow-blue-200/70 active:scale-[0.98] cursor-pointer border border-blue-100/50 hover:border-blue-200">
-                                    <div className="size-8 bg-white rounded-xl flex items-center justify-center shadow-sm ring-1 ring-blue-100">
-                                        <LogIn
-                                            size={18}
-                                            strokeWidth={2.5}
-                                            className="text-blue-600"
-                                        />
-                                    </div>
-                                    <div className="flex flex-col items-start leading-tight">
-                                        <span className="text-[14px] font-black uppercase tracking-tight text-blue-800">
-                                            {t('signIn')}
-                                        </span>
-                                        <span className="text-[10px] text-slate-600 font-medium">
-                                            {t('guestSubtitle')}
-                                        </span>
-                                    </div>
-                                </Link>
-                            </MenuItem>
-                        </div>
+                        <MenuItem>
+                            <Link
+                                href="/auth"
+                                className="flex items-center justify-center gap-3 w-full py-3 px-4 bg-gradient-to-r from-theme-primary to-theme-primary/90 text-white rounded-xl transition-all hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] font-semibold">
+                                <LogIn size={18} strokeWidth={2.5} />
+                                <span>{t('signIn')}</span>
+                            </Link>
+                        </MenuItem>
                     )}
                 </div>
             </BaseMenuItems>

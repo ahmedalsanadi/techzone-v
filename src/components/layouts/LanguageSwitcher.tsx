@@ -1,4 +1,3 @@
-//src/components/layouts/LanguageSwitcher.tsx
 'use client';
 
 import { useLocale } from 'next-intl';
@@ -21,19 +20,17 @@ const LanguageSwitcher = () => {
 
     return (
         <Menu as="div" className="relative inline-block text-left">
-            <MenuButton className="relative p-2 text-white hover:bg-white/10 rounded-full transition-colors outline-none cursor-pointer">
+            <MenuButton className="relative p-2 text-white hover:bg-white/10 rounded-full transition-colors outline-none">
                 <Globe size={24} strokeWidth={1.5} />
             </MenuButton>
 
-            <BaseMenuItems
-                anchor="bottom"
-                className="min-w-[120px] rounded-xl p-1">
+            <BaseMenuItems anchor="bottom end" className="min-w-[140px] rounded-xl p-1.5">
                 <MenuItem>
                     <button
                         onClick={() => changeLanguage('en')}
-                        className={`flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                        className={`flex w-full items-center rounded-lg px-3 py-2 text-sm font-semibold transition-all ${
                             locale === 'en'
-                                ? 'bg-theme-primary/10 text-theme-primary'
+                                ? 'bg-theme-primary text-white'
                                 : 'text-gray-700 hover:bg-gray-50'
                         }`}>
                         English
@@ -42,9 +39,9 @@ const LanguageSwitcher = () => {
                 <MenuItem>
                     <button
                         onClick={() => changeLanguage('ar')}
-                        className={`flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                        className={`flex w-full items-center rounded-lg px-3 py-2 text-sm font-semibold transition-all ${
                             locale === 'ar'
-                                ? 'bg-theme-primary/10 text-theme-primary'
+                                ? 'bg-theme-primary text-white'
                                 : 'text-gray-700 hover:bg-gray-50'
                         }`}>
                         العربية

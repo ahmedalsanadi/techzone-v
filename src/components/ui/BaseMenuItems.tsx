@@ -3,16 +3,13 @@
 import { MenuItems as HeadlessMenuItems } from '@headlessui/react';
 import React from 'react';
 
-interface BaseMenuItemsProps extends React.ComponentProps<
-    typeof HeadlessMenuItems
-> {
+interface BaseMenuItemsProps extends React.ComponentProps<typeof HeadlessMenuItems> {
     children: React.ReactNode;
     className?: string;
 }
 
 /**
- * A standardized MenuItems component for Headless UI Menu.
- * Encapsulates common styles, transitions, and animations.
+ * Optimized MenuItems with proper radius, shadows, and transitions
  */
 export const BaseMenuItems = ({
     children,
@@ -21,8 +18,9 @@ export const BaseMenuItems = ({
 }: BaseMenuItemsProps) => {
     return (
         <HeadlessMenuItems
+            modal={false}
             {...props}
-            className={`z-50 mt-2 origin-top bg-white shadow-2xl border border-gray-100 focus:outline-none transition duration-100 ease-out data-closed:scale-95 data-closed:opacity-0 ${className}`}>
+            className={`z-50 mt-2 origin-top bg-white shadow-xl border border-gray-100 focus:outline-none transition duration-200 ease-out data-[closed]:scale-95 data-closed:opacity-0 ${className}`}>
             {children}
         </HeadlessMenuItems>
     );

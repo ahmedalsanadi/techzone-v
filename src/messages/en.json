@@ -33,7 +33,9 @@
     "favorites": "Favorites"
   },
   "Notifications": {
-    "empty": "No new notifications"
+    "title": "Notifications",
+    "empty": "No new notifications",
+    "viewAll": "View All"
   },
   "SubHeader": {
     "selectOrderType": "Select order type:",

@@ -33,7 +33,9 @@
     "favorites": "المفضلة"
   },
   "Notifications": {
-    "empty": "لا توجد إشعارات جديدة"
+    "title": "الإشعارات",
+    "empty": "لا توجد إشعارات جديدة",
+    "viewAll": "عرض الكل"
   },
   "SubHeader": {
     "selectOrderType": "حدد نوع الطلب:",

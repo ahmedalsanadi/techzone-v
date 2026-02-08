@@ -1,4 +1,3 @@
-//src/components/layouts/NavItem.tsx
 'use client';
 
 import Image from 'next/image';
@@ -11,7 +10,7 @@ interface NavItemProps {
     icon: string;
     isActive: boolean;
     alt?: string;
-    id?: string; // Add id to identify branches nav item
+    id?: string;
 }
 
 export default function NavItem({
@@ -23,19 +22,7 @@ export default function NavItem({
     id,
 }: NavItemProps) {
     const { setModalOpen } = useBranchStore();
-    const activeStyles =
-        'bg-white rounded-xl shadow-sm border border-white/30';
-    const inactiveStyles =
-        'rounded-xl cursor-pointer hover:bg-white/10 transition-colors group border border-transparent';
 
-    const textActiveStyles = 'text-libero-red font-semibold';
-    const textInactiveStyles = 'text-white/90 group-hover:text-white';
-
-    const iconFilter = isActive
-        ? 'invert(32%) sepia(34%) saturate(1476%) hue-rotate(326deg) brightness(89%) contrast(88%)'
-        : 'brightness-0 invert';
-
-    // Handle branches click - open modal instead of navigating
     const handleClick = (e: React.MouseEvent) => {
         if (id === 'branches') {
             e.preventDefault();
@@ -47,8 +34,10 @@ export default function NavItem({
         <Link
             href={href}
             onClick={handleClick}
-            className={`flex gap-2 items-center justify-center py-1.5 px-2.5 ${
-                isActive ? activeStyles : inactiveStyles
+            className={`flex gap-2 items-center justify-center py-2 px-3 rounded-xl transition-all ${
+                isActive
+                    ? 'bg-white shadow-sm'
+                    : 'hover:bg-white/10'
             }`}
             aria-current={isActive ? 'page' : undefined}>
             <Image
@@ -56,18 +45,12 @@ export default function NavItem({
                 alt={alt || label}
                 width={20}
                 height={20}
-                style={isActive ? { filter: iconFilter } : undefined}
-                className={!isActive ? iconFilter : ''}
+                className={isActive ? 'brightness-0' : 'brightness-0 invert opacity-90'}
             />
             <span
-                className={`text-[13px] text-center text-nowrap inline-flex flex-col items-center ${
-                    isActive ? textActiveStyles : textInactiveStyles
+                className={`text-sm font-semibold ${
+                    isActive ? 'text-theme-primary' : 'text-white/90'
                 }`}>
-                <span
-                    className="h-0 overflow-hidden invisible font-bold"
-                    aria-hidden="true">
-                    {label}
-                </span>
                 {label}
             </span>
         </Link>
