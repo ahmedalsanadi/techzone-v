@@ -10,12 +10,15 @@
   },
   "Navbar": {
     "searchPlaceholder": "اكتب شيء للبحث عنه ...",
+    "logout": "تسجيل الخروج",
+    "signIn": "تسجيل الدخول",
     "nav": {
       "home": "الرئيسية",
       "categories": "الأقسام",
       "branches": "الفروع",
       "offers": "العروض",
-      "my-orders": "طلباتي"
+      "my-orders": "طلباتي",
+      "my-account": "حسابي"
     }
   },
   "UserMenu": {
