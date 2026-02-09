@@ -6,8 +6,10 @@ import { useTranslations } from 'next-intl';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { usePaymentStatus } from '@/hooks/useCheckout';
+import { parsePaymentResult } from '../utils';
 
-const PAYMENT_STATUS_PAID = 4;
+const RESULT_LAYOUT_CLASS =
+    'container mx-auto min-h-screen py-24 flex flex-col items-center justify-center gap-6 px-4';
 
 export default function CheckoutResultPage() {
     const t = useTranslations('Checkout');
@@ -16,45 +18,21 @@ export default function CheckoutResultPage() {
     const statusParam = searchParams.get('status');
     const orderIdParam = searchParams.get('order_id');
 
-    const { data: paymentData, isLoading, isError } = usePaymentStatus(
+    const { data: paymentData, isLoading, isError } = usePaymentStatus(attemptId);
+
+    const { orderId, isSuccess, isFailed, message } = parsePaymentResult({
         attemptId,
-    );
-
-    /** Success when: URL has order_id + success, or payment-status API says paid. */
-    const orderIdFromUrlParsed =
-        orderIdParam && statusParam === 'success'
-            ? parseInt(orderIdParam, 10)
-            : NaN;
-    const orderIdFromUrl =
-        Number.isInteger(orderIdFromUrlParsed) ? orderIdFromUrlParsed : null;
-    const orderId =
-        orderIdFromUrl ??
-        (paymentData?.status === PAYMENT_STATUS_PAID && paymentData?.order_id
-            ? paymentData.order_id
-            : null);
-    const isSuccess =
-        orderIdFromUrl != null ||
-        (paymentData?.status === PAYMENT_STATUS_PAID && !!paymentData?.order_id);
-
-    /** No attempt_id and no success params → show failed. */
-    const noAttemptAndNoSuccess =
-        !attemptId && !(orderIdParam && statusParam === 'success');
-    const isFailed =
-        noAttemptAndNoSuccess ||
-        (attemptId && !isLoading && (isError || !paymentData || paymentData.status !== PAYMENT_STATUS_PAID));
-
-    const message =
-        isFailed && paymentData && paymentData.status !== PAYMENT_STATUS_PAID
-            ? paymentData.status_label
-            : isFailed && statusParam === 'error'
-              ? t('paymentFailed') || 'Payment failed'
-              : isFailed
-                ? t('checkoutFailed')
-                : '';
+        statusParam,
+        orderIdParam,
+        paymentData,
+        isLoading,
+        isError,
+        t,
+    });
 
     if (!isSuccess && !isFailed) {
         return (
-            <div className="container mx-auto min-h-screen py-24 flex flex-col items-center justify-center gap-4 px-4">
+            <div className={`${RESULT_LAYOUT_CLASS} gap-4`}>
                 <Loader2 className="w-12 h-12 text-theme-primary animate-spin" />
                 <p className="text-gray-600 font-medium">
                     {t('loading') || 'Checking payment status...'}
@@ -65,7 +43,7 @@ export default function CheckoutResultPage() {
 
     if (isSuccess) {
         return (
-            <div className="container mx-auto min-h-screen py-24 flex flex-col items-center justify-center gap-6 px-4">
+            <div className={RESULT_LAYOUT_CLASS}>
                 <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center">
                     <CheckCircle className="w-12 h-12 text-green-600" />
                 </div>
@@ -84,7 +62,7 @@ export default function CheckoutResultPage() {
     }
 
     return (
-        <div className="container mx-auto min-h-screen py-24 flex flex-col items-center justify-center gap-6 px-4">
+        <div className={RESULT_LAYOUT_CLASS}>
             <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center">
                 <XCircle className="w-12 h-12 text-red-600" />
             </div>

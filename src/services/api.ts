@@ -264,7 +264,8 @@ export async function fetchLiberoFull<T>(
                 });
             }
 
-            throw new ApiError(response.status, errorMessage, result?.data);
+            // Pass full error body so consumers can read message + errors (e.g. 422 validation)
+            throw new ApiError(response.status, errorMessage, result ?? undefined);
         }
 
         return result;
