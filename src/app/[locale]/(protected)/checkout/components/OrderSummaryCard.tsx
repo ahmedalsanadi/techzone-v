@@ -13,6 +13,8 @@ interface OrderSummaryCardProps {
     onSubmit?: () => void;
     isLoading?: boolean;
     disabled?: boolean;
+    /** Optional reason shown when submit is disabled (e.g. "Select address to continue") */
+    disabledReason?: string;
 }
 
 export default function OrderSummaryCard({
@@ -21,6 +23,7 @@ export default function OrderSummaryCard({
     onSubmit,
     isLoading,
     disabled,
+    disabledReason,
 }: OrderSummaryCardProps) {
     const t = useTranslations('Checkout');
 
@@ -32,7 +35,9 @@ export default function OrderSummaryCard({
 
             <div className="space-y-4 text-md font-medium">
                 {items.map((item, index) => (
-                    <div key={index} className="flex justify-between">
+                    <div
+                        key={`${item.label}-${index}`}
+                        className="flex justify-between">
                         <span
                             className={
                                 item.isNegative
@@ -54,6 +59,11 @@ export default function OrderSummaryCard({
                     </div>
                 </div>
 
+                {disabled && disabledReason && (
+                    <p className="text-amber-700 text-sm mt-2">
+                        {disabledReason}
+                    </p>
+                )}
                 <button
                     onClick={onSubmit}
                     disabled={disabled || isLoading}

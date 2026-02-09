@@ -35,7 +35,7 @@ export function OrderProductsCard({ items }: OrderProductsCardProps) {
                             <Image
                                 src={
                                     item.product_image ||
-                                    '/images/placeholder.svg'
+                                    '/images/placeholder.png'
                                 }
                                 alt={item.product_title}
                                 fill

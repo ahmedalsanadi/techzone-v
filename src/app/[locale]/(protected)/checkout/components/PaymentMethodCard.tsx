@@ -8,7 +8,6 @@ import {
     EpaymentMethodOption,
 } from '@/types/orders';
 import { cn } from '@/lib/utils';
-import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 
 interface PaymentMethodCardProps {
@@ -63,64 +62,70 @@ export default function PaymentMethodCard({
     return (
         <CheckoutCard title={t('paymentMethodTitle')}>
             <div className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                    {methodsToShow.map((method) => {
-                        const isCod = method.type === 'cod';
-                        const disabled = isCod && codDisabled;
-                        const isSelected = selectedType === method.type && !disabled;
-                        return (
-                            <button
-                                key={method.type}
-                                type="button"
-                                disabled={disabled}
-                                onClick={() => !disabled && onChange(method.type)}
-                                className={cn(
-                                    'relative flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-right',
-                                    isSelected
-                                        ? 'border-theme-primary bg-theme-primary/5'
-                                        : 'border-gray-100 hover:border-gray-200 bg-white',
-                                    disabled &&
-                                        'opacity-60 cursor-not-allowed',
-                                )}>
-                                <div
+                {methodsToShow.length === 0 ? (
+                    <p className="text-gray-500 text-sm py-4">
+                        {t('noPaymentMethodsAvailable')}
+                    </p>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        {methodsToShow.map((method) => {
+                            const isCod = method.type === 'cod';
+                            const disabled = isCod && codDisabled;
+                            const isSelected = selectedType === method.type && !disabled;
+                            return (
+                                <button
+                                    key={method.type}
+                                    type="button"
+                                    disabled={disabled}
+                                    onClick={() => !disabled && onChange(method.type)}
                                     className={cn(
-                                        'size-10 rounded-xl flex items-center justify-center transition-colors',
+                                        'relative flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-right',
                                         isSelected
-                                            ? 'bg-theme-primary text-white'
-                                            : 'bg-gray-100 text-gray-400',
+                                            ? 'border-theme-primary bg-theme-primary/5'
+                                            : 'border-gray-100 hover:border-gray-200 bg-white',
+                                        disabled &&
+                                            'opacity-60 cursor-not-allowed',
                                     )}>
-                                    {getIcon(method.type)}
-                                </div>
-                                <div className="flex-1">
-                                    <div className="font-bold text-gray-900 leading-tight">
-                                        {method.name}
+                                    <div
+                                        className={cn(
+                                            'size-10 rounded-xl flex items-center justify-center transition-colors',
+                                            isSelected
+                                                ? 'bg-theme-primary text-white'
+                                                : 'bg-gray-100 text-gray-400',
+                                        )}>
+                                        {getIcon(method.type)}
                                     </div>
-                                    {isCod &&
-                                        codMethod?.max_amount != null &&
-                                        !disabled && (
-                                            <div className="text-xs text-gray-500 mt-0.5">
-                                                حتى{' '}
-                                                {codMethod.max_amount.toLocaleString()}{' '}
-                                                ر.س
-                                            </div>
-                                        )}
-                                </div>
-                                {isSelected && (
-                                    <div className="absolute top-2 left-2 size-5 rounded-full bg-theme-primary flex items-center justify-center">
-                                        <Check className="size-3 text-white" />
+                                    <div className="flex-1">
+                                        <div className="font-bold text-gray-900 leading-tight">
+                                            {method.name}
+                                        </div>
+                                        {isCod &&
+                                            codMethod?.max_amount != null &&
+                                            !disabled && (
+                                                <div className="text-xs text-gray-500 mt-0.5">
+                                                    {t('codMaxAmount', {
+                                                        amount: codMethod.max_amount.toLocaleString(),
+                                                    })}
+                                                </div>
+                                            )}
                                     </div>
-                                )}
-                            </button>
-                        );
-                    })}
-                </div>
+                                    {isSelected && (
+                                        <div className="absolute top-2 left-2 size-5 rounded-full bg-theme-primary flex items-center justify-center">
+                                            <Check className="size-3 text-white" />
+                                        </div>
+                                    )}
+                                </button>
+                            );
+                        })}
+                    </div>
+                )}
 
                 {selectedType === 'epayment' &&
                     selectedMethod?.epayment_methods &&
                     selectedMethod.epayment_methods.length > 0 && (
                         <div className="pt-4 border-t border-gray-100">
                             <label className="text-sm font-bold text-gray-700 block mb-3 text-center">
-                                اختر طريقة الدفع
+                                {t('selectEpaymentMethod')}
                             </label>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 {(
@@ -151,12 +156,12 @@ export default function PaymentMethodCard({
                                                         : 'bg-white',
                                                 )}>
                                                 {option.image_url ? (
-                                                    <Image
+                                                    <img
                                                         src={option.image_url}
                                                         alt={name}
                                                         width={32}
                                                         height={32}
-                                                        className="object-contain"
+                                                        className="object-contain w-8 h-8"
                                                     />
                                                 ) : (
                                                     <CreditCard className="size-5 text-gray-400" />

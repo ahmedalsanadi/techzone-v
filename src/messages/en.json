@@ -92,7 +92,14 @@
     "paymentFailed": "Payment failed",
     "viewOrder": "View order",
     "backToCheckout": "Back to checkout",
-    "backToCart": "Back to cart"
+    "backToCart": "Back to cart",
+    "selectAddressToContinue": "Choose where to receive your order",
+    "selectAddressToContinueHint": "Delivery requires an address; pickup requires a branch. Use the section above to choose and see the total.",
+    "chooseAddressOrType": "Choose address or order type",
+    "chooseAddressOrTypeHint": "Please select a delivery address or change to pickup, then retry.",
+    "selectEpaymentMethod": "Select payment method",
+    "codMaxAmount": "Up to {amount} SAR",
+    "noPaymentMethodsAvailable": "No payment methods available. Please contact support."
   },
   "Order": {
     "orderType": "Order Type",

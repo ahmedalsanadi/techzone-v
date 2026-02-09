@@ -1,79 +1,58 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
-import { orderService } from '@/services/order-service';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
+import { usePaymentStatus } from '@/hooks/useCheckout';
 
 const PAYMENT_STATUS_PAID = 4;
 
 export default function CheckoutResultPage() {
     const t = useTranslations('Checkout');
-    const router = useRouter();
     const searchParams = useSearchParams();
-    const [status, setStatus] = useState<'loading' | 'success' | 'failed'>(
-        'loading',
+    const attemptId = searchParams.get('attempt_id');
+    const statusParam = searchParams.get('status');
+    const orderIdParam = searchParams.get('order_id');
+
+    const { data: paymentData, isLoading, isError } = usePaymentStatus(
+        attemptId,
     );
-    const [orderId, setOrderId] = useState<number | null>(null);
-    const [message, setMessage] = useState<string>('');
 
-    useEffect(() => {
-        const attemptId = searchParams.get('attempt_id');
-        const statusParam = searchParams.get('status');
-        const orderIdParam = searchParams.get('order_id');
+    /** Success when: URL has order_id + success, or payment-status API says paid. */
+    const orderIdFromUrlParsed =
+        orderIdParam && statusParam === 'success'
+            ? parseInt(orderIdParam, 10)
+            : NaN;
+    const orderIdFromUrl =
+        Number.isInteger(orderIdFromUrlParsed) ? orderIdFromUrlParsed : null;
+    const orderId =
+        orderIdFromUrl ??
+        (paymentData?.status === PAYMENT_STATUS_PAID && paymentData?.order_id
+            ? paymentData.order_id
+            : null);
+    const isSuccess =
+        orderIdFromUrl != null ||
+        (paymentData?.status === PAYMENT_STATUS_PAID && !!paymentData?.order_id);
 
-        if (orderIdParam && statusParam === 'success') {
-            const id = parseInt(orderIdParam, 10);
-            if (!isNaN(id)) {
-                setOrderId(id);
-                setStatus('success');
-                return;
-            }
-        }
+    /** No attempt_id and no success params → show failed. */
+    const noAttemptAndNoSuccess =
+        !attemptId && !(orderIdParam && statusParam === 'success');
+    const isFailed =
+        noAttemptAndNoSuccess ||
+        (attemptId && !isLoading && (isError || !paymentData || paymentData.status !== PAYMENT_STATUS_PAID));
 
-        if (!attemptId) {
-            setStatus('failed');
-            setMessage(t('checkoutFailed'));
-            return;
-        }
+    const message =
+        isFailed && paymentData && paymentData.status !== PAYMENT_STATUS_PAID
+            ? paymentData.status_label
+            : isFailed && statusParam === 'error'
+              ? t('paymentFailed') || 'Payment failed'
+              : isFailed
+                ? t('checkoutFailed')
+                : '';
 
-        let cancelled = false;
-        orderService
-            .getPaymentStatus(attemptId)
-            .then((data) => {
-                if (cancelled) return;
-                if (data.status === PAYMENT_STATUS_PAID && data.order_id) {
-                    setOrderId(data.order_id);
-                    setStatus('success');
-                    if (data.order_id) {
-                        router.replace(`/my-orders/${data.order_id}`);
-                    }
-                } else {
-                    setStatus('failed');
-                    setMessage(
-                        data.status_label ||
-                            (statusParam === 'error'
-                                ? t('paymentFailed') || 'Payment failed'
-                                : t('checkoutFailed')),
-                    );
-                }
-            })
-            .catch(() => {
-                if (!cancelled) {
-                    setStatus('failed');
-                    setMessage(t('checkoutFailed'));
-                }
-            });
-
-        return () => {
-            cancelled = true;
-        };
-    }, [searchParams, router, t]);
-
-    if (status === 'loading') {
+    if (!isSuccess && !isFailed) {
         return (
             <div className="container mx-auto min-h-screen py-24 flex flex-col items-center justify-center gap-4 px-4">
                 <Loader2 className="w-12 h-12 text-theme-primary animate-spin" />
@@ -84,7 +63,7 @@ export default function CheckoutResultPage() {
         );
     }
 
-    if (status === 'success') {
+    if (isSuccess) {
         return (
             <div className="container mx-auto min-h-screen py-24 flex flex-col items-center justify-center gap-6 px-4">
                 <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center">

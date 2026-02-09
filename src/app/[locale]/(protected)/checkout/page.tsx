@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import OrderTypeCard from './components/OrderTypeCard';
 import WalletDiscountCard from './components/WalletDiscountCard';
@@ -8,14 +8,9 @@ import PaymentMethodCard from './components/PaymentMethodCard';
 import CouponCard from './components/CouponCard';
 import OrderSummaryCard from './components/OrderSummaryCard';
 import { orderService } from '@/services/order-service';
-import {
-    FulfillmentMethod,
-    PaymentMethodType,
-    CheckoutInitResponse,
-} from '@/types/orders';
+import { FulfillmentMethod, PaymentMethodType } from '@/types/orders';
 import { useCartStore } from '@/store/useCartStore';
 import { useOrderStore, getScheduledTimeAsDate } from '@/store/useOrderStore';
-import { useBranchStore } from '@/store/useBranchStore';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { useRouter } from '@/i18n/navigation';
@@ -23,6 +18,11 @@ import { Loader2 } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import { useLocale } from 'next-intl';
 import { ApiError } from '@/services/api';
+import {
+    useCheckoutInit,
+    useCreateOrder,
+    getDefaultPaymentSelection,
+} from '@/hooks/useCheckout';
 
 function orderTypeToFulfillment(
     orderType: 'delivery' | 'pickup' | 'dineIn' | 'carPickup' | null,
@@ -32,6 +32,24 @@ function orderTypeToFulfillment(
     if (orderType === 'carPickup') return FulfillmentMethod.CURBSIDE;
     if (orderType === 'dineIn') return FulfillmentMethod.DINE_IN;
     return FulfillmentMethod.DELIVERY;
+}
+
+/** API expects "YYYY-MM-DD HH:mm:ss" for customer_pickup_datetime. */
+function formatDateTimeForApi(d: Date): string {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const h = String(d.getHours()).padStart(2, '0');
+    const min = String(d.getMinutes()).padStart(2, '0');
+    const s = String(d.getSeconds()).padStart(2, '0');
+    return `${y}-${m}-${day} ${h}:${min}:${s}`;
+}
+
+/** For "now" pickup/curbside/dine-in: use now + 30 min as earliest pickup time. */
+function earliestPickupDate(): Date {
+    const d = new Date();
+    d.setMinutes(d.getMinutes() + 30);
+    return d;
 }
 
 export default function CheckoutPage() {
@@ -45,12 +63,6 @@ export default function CheckoutPage() {
         scheduledTime: scheduledTimeRaw,
         orderTime,
     } = useOrderStore();
-    useBranchStore();
-
-    const [initData, setInitData] = useState<CheckoutInitResponse | null>(null);
-    const [initError, setInitError] = useState<string | null>(null);
-    const [isLoadingData, setIsLoadingData] = useState(true);
-    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [selectedPaymentMethodType, setSelectedPaymentMethodType] =
         useState<PaymentMethodType | null>(null);
@@ -58,6 +70,7 @@ export default function CheckoutPage() {
         number | null
     >(null);
     const [useWallet, setUseWallet] = useState<boolean>(false);
+    const [openOrderTypeModal, setOpenOrderTypeModal] = useState(false);
 
     const fulfillment_method = orderTypeToFulfillment(orderType);
     const address_id =
@@ -65,43 +78,34 @@ export default function CheckoutPage() {
             ? Number(deliveryAddress.id)
             : undefined;
 
-    const runInit = useCallback(async () => {
-        setInitError(null);
-        setIsLoadingData(true);
-        try {
-            const data = await orderService.checkoutInit({
-                fulfillment_method,
-                address_id,
-            });
-            setInitData(data);
-            setSelectedPaymentMethodType((prev) => {
-                if (prev) return prev;
-                const first = data.payment_methods.find(
-                    (m) => m.type !== 'wallet' && m.available,
-                );
-                return first?.type ?? null;
-            });
-            setSelectedEpaymentMethodId((prev) => {
-                if (prev) return prev;
-                const first = data.payment_methods
-                    .find((m) => m.type === 'epayment')
-                    ?.epayment_methods?.[0];
-                return first?.id ?? null;
-            });
-        } catch (err) {
-            console.error('Checkout init failed:', err);
-            setInitData(null);
-            setInitError(
-                err instanceof ApiError ? err.message : t('checkoutFailed'),
-            );
-        } finally {
-            setIsLoadingData(false);
-        }
-    }, [fulfillment_method, address_id, t]);
+    /** Backend requires address_id only for delivery (1). Branch is sent via x-branch-id header by proxy/cookies — not in init payload. */
+    const canRunInit =
+        orderType !== 'delivery' ||
+        (deliveryAddress?.id != null && Number(deliveryAddress.id) > 0);
 
+    const {
+        initData,
+        initError,
+        isLoading: isLoadingData,
+        refetch,
+    } = useCheckoutInit({
+        fulfillment_method,
+        address_id,
+        enabled: canRunInit,
+    });
+
+    const createOrderMutation = useCreateOrder();
+
+    /** Seed default payment method when init data first loads (deferred to avoid sync setState in effect). */
     useEffect(() => {
-        runInit();
-    }, [fulfillment_method, address_id, runInit]);
+        if (!initData) return;
+        const { type, epaymentMethodId } = getDefaultPaymentSelection(initData);
+        const tid = window.setTimeout(() => {
+            setSelectedPaymentMethodType((prev) => prev ?? type);
+            setSelectedEpaymentMethodId((prev) => prev ?? epaymentMethodId);
+        }, 0);
+        return () => clearTimeout(tid);
+    }, [initData]);
 
     const paymentMethods = initData?.payment_methods ?? [];
     const walletBalance = initData?.wallet?.balance ?? 0;
@@ -155,44 +159,49 @@ export default function CheckoutPage() {
             return;
         }
 
-        setIsSubmitting(true);
+        const scheduledTime = getScheduledTimeAsDate(scheduledTimeRaw);
+        const isPickupOrCurbside =
+            orderType === 'pickup' || orderType === 'carPickup';
+        const needsPickupDatetime = isPickupOrCurbside;
+        const pickupDatetime =
+            orderTime === 'later' && scheduledTime
+                ? formatDateTimeForApi(scheduledTime)
+                : needsPickupDatetime
+                  ? formatDateTimeForApi(earliestPickupDate())
+                  : undefined;
+
+        const payload: Parameters<typeof orderService.createOrder>[0] = {
+            fulfillment_method,
+            address_id:
+                orderType === 'delivery' && deliveryAddress?.id
+                    ? Number(deliveryAddress.id)
+                    : undefined,
+            customer_pickup_datetime: pickupDatetime,
+            notes: '',
+            payment_method: 'cod',
+        };
+
+        if (isFullyWalletCovered) {
+            payload.payment_method = 'wallet';
+        } else if (selectedPaymentMethodType === 'cod') {
+            payload.payment_method = 'cod';
+        } else if (selectedPaymentMethodType === 'epayment' && selectedEpaymentMethodId) {
+            payload.payment_method = 'epayment';
+            payload.epayment_method_id = selectedEpaymentMethodId;
+            const base = typeof window !== 'undefined' ? window.location.origin : '';
+            payload.success_url = `${base}/${locale}/checkout/result?status=success`;
+            payload.error_url = `${base}/${locale}/checkout/result?status=error`;
+        } else {
+            toast.error(t('pleaseSelectPaymentMethod'));
+            return;
+        }
+
+        if (useWallet && walletBalance > 0 && !isFullyWalletCovered) {
+            payload.use_wallet = true;
+        }
+
         try {
-            const scheduledTime = getScheduledTimeAsDate(scheduledTimeRaw);
-            const payload: Parameters<typeof orderService.createOrder>[0] = {
-                fulfillment_method,
-                address_id:
-                    orderType === 'delivery' && deliveryAddress?.id
-                        ? Number(deliveryAddress.id)
-                        : undefined,
-                customer_pickup_datetime:
-                    orderTime === 'later' && scheduledTime
-                        ? scheduledTime.toISOString().replace('T', ' ').slice(0, 19)
-                        : undefined,
-                notes: '',
-                payment_method: 'cod',
-            };
-
-            if (isFullyWalletCovered) {
-                payload.payment_method = 'wallet';
-            } else if (selectedPaymentMethodType === 'cod') {
-                payload.payment_method = 'cod';
-            } else if (selectedPaymentMethodType === 'epayment' && selectedEpaymentMethodId) {
-                payload.payment_method = 'epayment';
-                payload.epayment_method_id = selectedEpaymentMethodId;
-                const base = typeof window !== 'undefined' ? window.location.origin : '';
-                payload.success_url = `${base}/${locale}/checkout/result?status=success`;
-                payload.error_url = `${base}/${locale}/checkout/result?status=error`;
-            } else {
-                toast.error(t('pleaseSelectPaymentMethod'));
-                setIsSubmitting(false);
-                return;
-            }
-
-            if (useWallet && walletBalance > 0 && !isFullyWalletCovered) {
-                payload.use_wallet = true;
-            }
-
-            const response = await orderService.createOrder(payload);
+            const response = await createOrderMutation.mutateAsync(payload);
 
             if (response.redirect_url) {
                 window.location.href = response.redirect_url;
@@ -222,8 +231,6 @@ export default function CheckoutPage() {
                     ? firstValidation[0]
                     : (firstValidation as string)) || message,
             );
-        } finally {
-            setIsSubmitting(false);
         }
     };
 
@@ -257,7 +264,10 @@ export default function CheckoutPage() {
         },
     ].filter(Boolean) as { label: string; value: string; isNegative?: boolean }[];
 
-    if (isLoadingData && !initData) {
+    const needsAddressOrType = !canRunInit && !initData;
+    const isInitError = initError != null && !initData;
+
+    if (isLoadingData && !initData && !needsAddressOrType) {
         return (
             <div className="container mx-auto min-h-screen py-12 flex flex-col items-center justify-center gap-4">
                 <Loader2 className="w-12 h-12 text-theme-primary animate-spin" />
@@ -266,16 +276,97 @@ export default function CheckoutPage() {
         );
     }
 
-    if (initError && !initData) {
+    if (isInitError) {
         return (
-            <div className="container mx-auto min-h-screen py-12 px-4">
-                <div className="max-w-md mx-auto text-center">
-                    <p className="text-red-600 font-medium mb-4">{initError}</p>
+            <div className="container mx-auto min-h-screen py-6 md:py-12 px-4 sm:px-6">
+                <h1 className="text-xl sm:text-3xl font-bold mb-6">{t('title')}</h1>
+                <div id="checkout-order-type" className="scroll-mt-4">
+                    <OrderTypeCard
+                        openModal={openOrderTypeModal}
+                        onModalOpened={() => setOpenOrderTypeModal(false)}
+                    />
+                </div>
+                <div className="max-w-lg mt-6 p-6 bg-amber-50 border border-amber-200 rounded-2xl">
+                    <p className="text-amber-900 font-medium mb-4">{initError}</p>
+                    <p className="text-amber-800 text-sm mb-6">
+                        {t('chooseAddressOrTypeHint')}
+                    </p>
+                    <div className="flex flex-wrap gap-3">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setOpenOrderTypeModal(true);
+                                setTimeout(
+                                    () =>
+                                        document
+                                            .getElementById('checkout-order-type')
+                                            ?.scrollIntoView({
+                                                behavior: 'smooth',
+                                                block: 'start',
+                                            }),
+                                    100,
+                                );
+                            }}
+                            className="bg-theme-primary text-white font-bold py-2.5 px-6 rounded-xl hover:brightness-95">
+                            {t('chooseAddressOrType')}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => refetch()}
+                            className="border-2 border-gray-300 text-gray-700 font-bold py-2.5 px-6 rounded-xl hover:bg-gray-50">
+                            {t('retry')}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (needsAddressOrType) {
+        return (
+            <div className="container mx-auto min-h-screen py-6 md:py-12 px-4 sm:px-6 space-y-6 md:space-y-8">
+                <div className="hidden sm:block">
+                    <Breadcrumbs
+                        items={[
+                            { label: t('breadcrumbHome'), href: '/' },
+                            { label: t('breadcrumbCart'), href: '/cart' },
+                            { label: t('breadcrumbCheckout'), href: '/checkout' },
+                        ]}
+                    />
+                </div>
+                <h1 className="text-xl sm:text-3xl font-bold">{t('title')}</h1>
+
+                <div id="checkout-order-type" className="scroll-mt-4">
+                    <OrderTypeCard
+                        openModal={openOrderTypeModal}
+                        onModalOpened={() => setOpenOrderTypeModal(false)}
+                    />
+                </div>
+
+                <div className="max-w-lg p-6 bg-theme-primary/5 border-2 border-theme-primary/20 rounded-2xl">
+                    <p className="text-gray-800 font-bold mb-2">
+                        {t('selectAddressToContinue')}
+                    </p>
+                    <p className="text-gray-600 text-sm mb-6">
+                        {t('selectAddressToContinueHint')}
+                    </p>
                     <button
                         type="button"
-                        onClick={() => runInit()}
-                        className="bg-theme-primary text-white font-bold py-2 px-6 rounded-xl">
-                        {t('retry') || 'Retry'}
+                        onClick={() => {
+                            setOpenOrderTypeModal(true);
+                            setTimeout(
+                                () =>
+                                    document
+                                        .getElementById('checkout-order-type')
+                                        ?.scrollIntoView({
+                                            behavior: 'smooth',
+                                            block: 'start',
+                                        }),
+                                100,
+                            );
+                        }}
+                        className="bg-theme-primary text-white font-bold py-3 px-8 rounded-xl hover:brightness-95">
+                        {t('chooseAddressOrType')}
                     </button>
                 </div>
             </div>
@@ -314,7 +405,12 @@ export default function CheckoutPage() {
 
             <div className="flex flex-col lg:flex-row gap-4 md:gap-6">
                 <div className="flex-1 space-y-4">
-                    <OrderTypeCard />
+                    <div id="checkout-order-type" className="scroll-mt-4">
+                        <OrderTypeCard
+                            openModal={openOrderTypeModal}
+                            onModalOpened={() => setOpenOrderTypeModal(false)}
+                        />
+                    </div>
 
                     {walletAvailable && (
                         <WalletDiscountCard
@@ -358,7 +454,7 @@ export default function CheckoutPage() {
                         items={summaryItems}
                         total={formatCurrency(finalTotal, locale)}
                         onSubmit={handleCheckout}
-                        isLoading={isSubmitting}
+                        isLoading={createOrderMutation.isPending}
                         disabled={
                             items.length === 0 ||
                             !cart_valid ||
@@ -366,6 +462,19 @@ export default function CheckoutPage() {
                                 !selectedPaymentMethodType) ||
                             (selectedPaymentMethodType === 'epayment' &&
                                 !selectedEpaymentMethodId)
+                        }
+                        disabledReason={
+                            items.length === 0
+                                ? undefined
+                                : !cart_valid
+                                  ? t('cartInvalid')
+                                  : !isFullyWalletCovered &&
+                                      !selectedPaymentMethodType
+                                    ? t('pleaseSelectPaymentMethod')
+                                    : selectedPaymentMethodType === 'epayment' &&
+                                          !selectedEpaymentMethodId
+                                      ? t('selectEpaymentMethod')
+                                      : undefined
                         }
                     />
                 </div>

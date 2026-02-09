@@ -2,18 +2,35 @@
 
 import { ChevronLeft, MapPin, Clock } from 'lucide-react';
 import CheckoutCard from './CheckoutCard';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useOrderStore, getScheduledTimeAsDate } from '@/store/useOrderStore';
 import { useBranchStore } from '@/store/useBranchStore';
 import OrderTypeModal from '@/components/modals/OrderTypeModal';
 import { useTranslations } from 'next-intl';
 import { getAddressLabel, formatAddressForDisplay } from '@/lib/address';
 
-export default function OrderTypeCard() {
+interface OrderTypeCardProps {
+    /** When true, open the order type/address modal (e.g. from "Choose address" CTA). */
+    openModal?: boolean;
+    /** Called after opening the modal so parent can reset the trigger. */
+    onModalOpened?: () => void;
+}
+
+export default function OrderTypeCard({
+    openModal = false,
+    onModalOpened,
+}: OrderTypeCardProps = {}) {
     const t = useTranslations('Order');
     const checkoutT = useTranslations('Checkout');
     const subHeaderT = useTranslations('SubHeader');
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    useEffect(() => {
+        if (openModal) {
+            setIsModalOpen(true);
+            onModalOpened?.();
+        }
+    }, [openModal, onModalOpened]);
     const {
         orderType,
         deliveryAddress,

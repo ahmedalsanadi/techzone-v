@@ -93,7 +93,14 @@
     "paymentFailed": "فشل الدفع",
     "viewOrder": "عرض الطلب",
     "backToCheckout": "العودة لصفحة الدفع",
-    "backToCart": "العودة للسلة"
+    "backToCart": "العودة للسلة",
+    "selectAddressToContinue": "اختر مكان استلام الطلب",
+    "selectAddressToContinueHint": "التوصيل يتطلب عنواناً والاستلام يتطلب فرعاً. استخدم القسم أعلاه للاختيار ومعرفة الإجمالي.",
+    "chooseAddressOrType": "اختيار العنوان أو نوع الطلب",
+    "chooseAddressOrTypeHint": "يرجى اختيار عنوان التوصيل أو التبديل إلى الاستلام ثم إعادة المحاولة.",
+    "selectEpaymentMethod": "اختر طريقة الدفع",
+    "codMaxAmount": "حتى {amount} ر.س",
+    "noPaymentMethodsAvailable": "لا توجد طرق دفع متاحة. يرجى التواصل مع الدعم."
   },
   "Order": {
     "orderType": "نوع الطلب",
