@@ -85,7 +85,15 @@
     "total": "الإجمالي",
     "loading": "جاري تحميل البيانات...",
     "walletDeduction": "خصم المحفظة",
-    "insufficientWalletBalance": "رصيد المحفظة غير كافٍ للدفع الكامل"
+    "insufficientWalletBalance": "رصيد المحفظة غير كافٍ للدفع الكامل",
+    "retry": "إعادة المحاولة",
+    "cartInvalid": "هناك مشكلة في السلة",
+    "codFee": "رسوم الدفع عند الاستلام",
+    "tax": "الضريبة",
+    "paymentFailed": "فشل الدفع",
+    "viewOrder": "عرض الطلب",
+    "backToCheckout": "العودة لصفحة الدفع",
+    "backToCart": "العودة للسلة"
   },
   "Order": {
     "orderType": "نوع الطلب",
@@ -367,6 +375,7 @@
     "summary": "ملخص الطلب",
     "subtotal": "المجموع الفرعي",
     "delivery": "رسوم التوصيل",
+    "deliveryAtCheckout": "يُحسب في صفحة الدفع",
     "free": "مجاني",
     "total": "الإجمالي",
     "checkout": "إتمام الطلب",

@@ -1,28 +1,41 @@
+'use client';
+
 import { CreditCard, Banknote, Wallet, Check } from 'lucide-react';
 import CheckoutCard from './CheckoutCard';
 import {
     PaymentMethod,
     PaymentMethodType,
-    PaymentGateway,
+    EpaymentMethodOption,
 } from '@/types/orders';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
+import { useLocale, useTranslations } from 'next-intl';
 
 interface PaymentMethodCardProps {
     methods: PaymentMethod[];
-    selectedType: string | null;
-    selectedGatewaySlug: string | null;
+    summaryTotal: number;
+    selectedType: PaymentMethodType | null;
+    selectedEpaymentMethodId: number | null;
+    useWallet: boolean;
+    walletCoversTotal: boolean;
     onChange: (type: PaymentMethodType) => void;
-    onGatewayChange: (slug: string) => void;
+    onEpaymentMethodChange: (id: number) => void;
 }
 
 export default function PaymentMethodCard({
     methods,
+    summaryTotal,
     selectedType,
-    selectedGatewaySlug,
+    selectedEpaymentMethodId,
+    useWallet,
+    walletCoversTotal,
     onChange,
-    onGatewayChange,
+    onEpaymentMethodChange,
 }: PaymentMethodCardProps) {
+    const locale = useLocale();
+    const t = useTranslations('Checkout');
+    const isRtl = locale === 'ar';
+
     const getIcon = (type: string) => {
         switch (type) {
             case 'epayment':
@@ -37,94 +50,135 @@ export default function PaymentMethodCard({
     };
 
     const selectedMethod = methods.find((m) => m.type === selectedType);
+    const codMethod = methods.find((m) => m.type === 'cod');
+    const codDisabled =
+        codMethod?.available &&
+        codMethod.max_amount != null &&
+        summaryTotal > codMethod.max_amount;
+
+    const methodsToShow = methods.filter(
+        (m) => m.type !== 'wallet' && m.available,
+    );
 
     return (
-        <CheckoutCard title="طريقة الدفع">
+        <CheckoutCard title={t('paymentMethodTitle')}>
             <div className="space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                    {methods
-                        .filter((m) => m.type !== 'wallet') // Wallet is handled by WalletDiscountCard
-                        .map((method) => {
-                            const isSelected = selectedType === method.type;
-                            // For now, epayment is allowed to be selected but gateways are placeholder
-                            return (
-                                <button
-                                    key={method.type}
-                                    onClick={() => onChange(method.type)}
+                    {methodsToShow.map((method) => {
+                        const isCod = method.type === 'cod';
+                        const disabled = isCod && codDisabled;
+                        const isSelected = selectedType === method.type && !disabled;
+                        return (
+                            <button
+                                key={method.type}
+                                type="button"
+                                disabled={disabled}
+                                onClick={() => !disabled && onChange(method.type)}
+                                className={cn(
+                                    'relative flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-right',
+                                    isSelected
+                                        ? 'border-theme-primary bg-theme-primary/5'
+                                        : 'border-gray-100 hover:border-gray-200 bg-white',
+                                    disabled &&
+                                        'opacity-60 cursor-not-allowed',
+                                )}>
+                                <div
                                     className={cn(
-                                        'relative flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-right',
+                                        'size-10 rounded-xl flex items-center justify-center transition-colors',
                                         isSelected
-                                            ? 'border-theme-primary bg-theme-primary/5'
-                                            : 'border-gray-100 hover:border-gray-200 bg-white',
+                                            ? 'bg-theme-primary text-white'
+                                            : 'bg-gray-100 text-gray-400',
                                     )}>
-                                    <div
-                                        className={cn(
-                                            'size-10 rounded-xl flex items-center justify-center transition-colors',
-                                            isSelected
-                                                ? 'bg-theme-primary text-white'
-                                                : 'bg-gray-100 text-gray-400',
-                                        )}>
-                                        {getIcon(method.type)}
+                                    {getIcon(method.type)}
+                                </div>
+                                <div className="flex-1">
+                                    <div className="font-bold text-gray-900 leading-tight">
+                                        {method.name}
                                     </div>
-                                    <div className="flex-1">
-                                        <div className="font-bold text-gray-900 leading-tight">
-                                            {method.name}
-                                        </div>
+                                    {isCod &&
+                                        codMethod?.max_amount != null &&
+                                        !disabled && (
+                                            <div className="text-xs text-gray-500 mt-0.5">
+                                                حتى{' '}
+                                                {codMethod.max_amount.toLocaleString()}{' '}
+                                                ر.س
+                                            </div>
+                                        )}
+                                </div>
+                                {isSelected && (
+                                    <div className="absolute top-2 left-2 size-5 rounded-full bg-theme-primary flex items-center justify-center">
+                                        <Check className="size-3 text-white" />
                                     </div>
-                                    {isSelected && (
-                                        <div className="absolute top-2 left-2 size-5 rounded-full bg-theme-primary flex items-center justify-center">
-                                            <Check className="size-3 text-white" />
-                                        </div>
-                                    )}
-                                </button>
-                            );
-                        })}
+                                )}
+                            </button>
+                        );
+                    })}
                 </div>
 
-                {/* Gateway Selection for e-payment */}
                 {selectedType === 'epayment' &&
-                    selectedMethod?.gateways &&
-                    selectedMethod.gateways.length > 0 && (
+                    selectedMethod?.epayment_methods &&
+                    selectedMethod.epayment_methods.length > 0 && (
                         <div className="pt-4 border-t border-gray-100">
-                            <label className="text-sm font-bold text-gray-700 block mb-5 text-center">
-                                اختر بوابة الدفع
+                            <label className="text-sm font-bold text-gray-700 block mb-3 text-center">
+                                اختر طريقة الدفع
                             </label>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                {selectedMethod.gateways.map((gateway) => {
+                                {(
+                                    selectedMethod.epayment_methods as EpaymentMethodOption[]
+                                ).map((option) => {
+                                    const name =
+                                        isRtl ? option.name_ar : option.name_en;
+                                    const isSelected =
+                                        selectedEpaymentMethodId === option.id;
                                     return (
                                         <button
-                                            key={gateway.id}
-                                            disabled
+                                            key={option.id}
+                                            type="button"
+                                            onClick={() =>
+                                                onEpaymentMethodChange(option.id)
+                                            }
                                             className={cn(
-                                                'relative flex items-center gap-3 p-4 rounded-xl border-2 transition-all',
-                                                'border-gray-100 bg-white opacity-80 cursor-not-allowed',
+                                                'relative flex items-center gap-3 p-4 rounded-xl border-2 transition-all text-right',
+                                                isSelected
+                                                    ? 'border-theme-primary bg-theme-primary/5'
+                                                    : 'border-gray-100 hover:border-gray-200 bg-white',
                                             )}>
-                                            {/* Centered Top Badge */}
-                                            <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-gray-900 shadow-sm text-white text-[9px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-tighter whitespace-nowrap z-10 border border-white">
-                                                Coming Soon
-                                            </div>
-
-                                            <div className="size-10 rounded-lg bg-white border border-gray-50 flex items-center justify-center overflow-hidden shrink-0">
-                                                {gateway.logo ? (
+                                            <div
+                                                className={cn(
+                                                    'size-10 rounded-lg flex items-center justify-center overflow-hidden shrink-0 border border-gray-100',
+                                                    isSelected
+                                                        ? 'bg-theme-primary/10'
+                                                        : 'bg-white',
+                                                )}>
+                                                {option.image_url ? (
                                                     <Image
-                                                        src={gateway.logo}
-                                                        alt={gateway.name}
+                                                        src={option.image_url}
+                                                        alt={name}
                                                         width={32}
                                                         height={32}
                                                         className="object-contain"
                                                     />
                                                 ) : (
-                                                    <CreditCard className="size-5 text-gray-300" />
+                                                    <CreditCard className="size-5 text-gray-400" />
                                                 )}
                                             </div>
-                                            <div className="flex-1 text-right">
+                                            <div className="flex-1">
                                                 <div className="text-sm font-bold text-gray-900">
-                                                    {gateway.name}
+                                                    {name}
                                                 </div>
-                                                <div className="text-[10px] text-gray-500 line-clamp-1">
-                                                    {gateway.description}
-                                                </div>
+                                                {option.service_charge > 0 && (
+                                                    <div className="text-xs text-gray-500">
+                                                        +{' '}
+                                                        {option.service_charge}{' '}
+                                                        {option.currency}
+                                                    </div>
+                                                )}
                                             </div>
+                                            {isSelected && (
+                                                <div className="size-5 rounded-full bg-theme-primary flex items-center justify-center">
+                                                    <Check className="size-3 text-white" />
+                                                </div>
+                                            )}
                                         </button>
                                     );
                                 })}

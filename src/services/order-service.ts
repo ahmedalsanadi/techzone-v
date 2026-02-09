@@ -4,8 +4,9 @@ import {
     Order,
     CreateOrderRequest,
     CreateOrderResponse,
-    PaymentMethod,
-    PaymentGateway,
+    CheckoutInitRequest,
+    CheckoutInitResponse,
+    PaymentStatusResponse,
 } from '@/types/orders';
 import { PaginationMeta } from './types';
 
@@ -24,6 +25,17 @@ export const orderService = {
      */
     getOrder: (id: number | string) =>
         fetchLibero<Order>(`/store/orders/${id}`, {
+            isProtected: true,
+        }),
+
+    /**
+     * Initialize checkout: validates cart and returns payment methods, wallet, summary, etc.
+     * Call on checkout page load and when fulfillment method or address changes.
+     */
+    checkoutInit: (data: CheckoutInitRequest) =>
+        fetchLibero<CheckoutInitResponse>('/store/orders/init', {
+            method: 'POST',
+            body: JSON.stringify(data),
             isProtected: true,
         }),
 
@@ -52,14 +64,12 @@ export const orderService = {
         }),
 
     /**
-     * Get available payment methods.
+     * Get payment status after return from gateway (epayment).
+     * Status: 1=initiated, 2=pending, 3=failed, 4=paid, 5=cancelled, 6=expired.
      */
-    getPaymentMethods: () =>
-        fetchLibero<PaymentMethod[]>('/store/payment-methods'),
-
-    /**
-     * Get available payment gateways.
-     */
-    getPaymentGateways: () =>
-        fetchLibero<PaymentGateway[]>('/store/payment-gateways'),
+    getPaymentStatus: (attemptId: number | string) =>
+        fetchLibero<PaymentStatusResponse>(
+            `/store/orders/payment-status/${attemptId}`,
+            { isProtected: true },
+        ),
 };

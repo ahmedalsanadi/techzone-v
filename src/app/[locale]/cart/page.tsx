@@ -109,8 +109,7 @@ const CartPage = () => {
         );
     }
 
-    const deliveryFee = 0; // Free for now
-    const total = getTotalPrice() + deliveryFee;
+    const subtotal = getTotalPrice();
 
     return (
         <>
@@ -416,16 +415,14 @@ const CartPage = () => {
                             <div className="flex justify-between text-gray-600">
                                 <span>{t('subtotal')}</span>
                                 <div className="flex items-center gap-1 font-bold text-gray-900">
-                                    <span>{getTotalPrice()}</span>
+                                    <span>{subtotal}</span>
                                     <CurrencySymbol className="w-3.5 h-3.5" />
                                 </div>
                             </div>
                             <div className="flex justify-between text-gray-600">
                                 <span>{t('delivery')}</span>
-                                <span className="font-bold text-green-600">
-                                    {deliveryFee === 0
-                                        ? t('free')
-                                        : deliveryFee}
+                                <span className="text-gray-500 text-sm">
+                                    {t('deliveryAtCheckout')}
                                 </span>
                             </div>
                         </div>
@@ -436,7 +433,7 @@ const CartPage = () => {
                                     {t('total')}
                                 </span>
                                 <div className="flex items-center gap-1.5 text-2xl font-black text-theme-primary">
-                                    <span>{total}</span>
+                                    <span>{subtotal}</span>
                                     <CurrencySymbol className="w-5 h-5" />
                                 </div>
                             </div>

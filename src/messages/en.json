@@ -84,7 +84,15 @@
     "total": "Total",
     "loading": "Loading data...",
     "walletDeduction": "Wallet Deduction",
-    "insufficientWalletBalance": "Insufficient wallet balance for full payment"
+    "insufficientWalletBalance": "Insufficient wallet balance for full payment",
+    "retry": "Retry",
+    "cartInvalid": "Your cart has issues",
+    "codFee": "COD Fee",
+    "tax": "Tax",
+    "paymentFailed": "Payment failed",
+    "viewOrder": "View order",
+    "backToCheckout": "Back to checkout",
+    "backToCart": "Back to cart"
   },
   "Order": {
     "orderType": "Order Type",
@@ -367,6 +375,7 @@
     "summary": "Order Summary",
     "subtotal": "Subtotal",
     "delivery": "Delivery Fee",
+    "deliveryAtCheckout": "Calculated at checkout",
     "free": "Free",
     "total": "Total",
     "checkout": "Checkout",
