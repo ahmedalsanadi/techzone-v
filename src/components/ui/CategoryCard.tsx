@@ -29,16 +29,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
     scroll = true,
 }) => {
     // Shared fallback image
-    const FallbackIcon = (
-        <div className="relative w-full h-full">
-            <Image
-                src="/images/images/food.png"
-                alt={label}
-                fill
-                className="object-contain opacity-60"
-            />
-        </div>
-    );
+
 
     const content = (
         <div
@@ -64,7 +55,6 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                         priority={priority}
                         className="object-cover"
                         sizes="(max-width: 768px) 56px, 64px"
-                        fallbackComponent={FallbackIcon}
                     />
                 </div>
             </div>
@@ -122,7 +112,6 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                                 priority={priority}
                                 className="object-contain"
                                 sizes="(max-width: 768px) 40px, 56px"
-                                fallbackComponent={FallbackIcon}
                             />
                         </div>
                         <span

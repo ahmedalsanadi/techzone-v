@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import Image, { ImageProps } from 'next/image';
-import { ImageOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface DynamicImageProps extends Omit<ImageProps, 'onLoad' | 'onError'> {
@@ -60,7 +59,12 @@ export default function DynamicImage({
                     containerClassName,
                 )}>
                 {fallbackComponent || (
-                    <ImageOff className="w-1/2 h-1/2 opacity-20" />
+                    <Image 
+                    src="/images/placeholder.png"
+                    alt="fallback"
+                    fill
+                    className="object-cover"
+                    />
                 )}
             </div>
         );
@@ -79,10 +83,11 @@ export default function DynamicImage({
                 {...props}
                 src={src}
                 alt={alt}
+                fill
                 priority={priority}
                 loading={priority ? undefined : (loadingProp || 'lazy')}
                 className={cn(
-                    'transition-all duration-500 ease-in-out',
+                    'transition-all duration-500 ease-in-out object-cover',
                     isLoading ? 'blur-lg scale-[1.02]' : 'blur-0 scale-100',
                     className,
                 )}
