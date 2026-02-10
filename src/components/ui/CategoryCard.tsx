@@ -3,7 +3,7 @@ import { Link } from '@/i18n/navigation';
 import { LayoutGrid } from 'lucide-react';
 import DynamicImage from './DynamicImage';
 import { cn } from '@/lib/utils';
-import Image from 'next/image';
+
 
 interface CategoryCardProps {
     label: string;
