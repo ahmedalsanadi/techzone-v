@@ -48,6 +48,7 @@ Init is called via **TanStack Query** (`useCheckoutInit`) only when **all** of t
 **When init runs again (refetch):**
 
 - When **fulfillment_method** or **address_id** changes (query key changes). So: user changes order type or delivery address → store updates → init runs again with new body.
+- **On every checkout mount**: Init uses `staleTime: 0` and `refetchOnMount: 'always'`, so when the user leaves checkout (e.g. to add items to cart) and returns, we always refetch init. The summary and payment options then reflect the current cart instead of stale cached data.
 
 **When init does NOT run:**
 
@@ -75,8 +76,9 @@ Init is called via **TanStack Query** (`useCheckoutInit`) only when **all** of t
 
 ### 5.1 POST /store/orders/init
 
-- **When**: When user is on checkout and `canRunInit` is true (see §3). Also refetches when `fulfillment_method` or `address_id` changes.
+- **When**: When user is on checkout and `canRunInit` is true (see §3). Also refetches when `fulfillment_method` or `address_id` changes, and on every mount (`refetchOnMount: 'always'`) so returning from cart shows up-to-date summary.
 - **Where**: Triggered by `useCheckoutInit` in `src/hooks/useCheckout.ts`; called via `orderService.checkoutInit` in `src/services/order-service.ts`.
+- **Caching**: `staleTime: 0` so data is always considered stale; init is refetched when the checkout page is opened so the summary matches the current cart.
 - **Request body**: `{ fulfillment_method: 1|2|3|4, address_id?: number }`. `address_id` only for delivery.
 - **Why**: To get payment methods, wallet balance, summary (subtotal, delivery, COD, tax, total), cart validity, and cart issues. Checkout UI is driven by this response.
 - **Response (used by UI)**: `payment_methods`, `wallet` (balance, is_active), `summary` (items_subtotal, shipping_fee, cod_fee, tax_amount, total), `cart_valid`, `cart_issues`, plus addresses, fulfillment_methods, settings.
@@ -87,7 +89,7 @@ Init is called via **TanStack Query** (`useCheckoutInit`) only when **all** of t
 - **Where**: `createOrderMutation.mutateAsync(payload)` in checkout page; `orderService.createOrder` in order-service.
 - **Request body**: Built by `buildCreateOrderPayload` in `src/app/[locale]/(protected)/checkout/utils.ts`: `fulfillment_method`, `address_id?`, `customer_pickup_datetime?`, `notes`, `payment_method` ('cod' | 'wallet' | 'epayment'), `use_wallet?`, and for epayment: `epayment_method_id`, `success_url`, `error_url`.
 - **Why**: To create the order. Backend returns either a redirect URL (epayment) or order id (COD/wallet).
-- **Response**: `CreateOrderResponse`: `id`, `order_number`, `redirect_url?`, `attempt_id?`, etc. If `redirect_url` we send user to gateway; else we clear cart and navigate to `/my-orders/{id}`.
+- **Response**: `CreateOrderResponse`: `id`, `order_number`, `redirect_url?`, `attempt_id?`, etc. We **only redirect** when we sent `payment_method: 'epayment'` and the response has `redirect_url`; for wallet or COD we never redirect even if the API returned a URL (safety). Otherwise we clear cart and navigate to `/my-orders/{id}`.
 
 ### 5.3 GET /store/orders/payment-status/{attemptId}
 
@@ -123,12 +125,17 @@ The checkout page can render in **four** main states:
 ### 6.4 Main checkout (init success)
 
 - **Condition**: Init succeeded; we have `initData`.
-- **UI**: Breadcrumbs, title, optional cart-issues banner (if `!cart_valid`), OrderTypeCard, WalletDiscountCard (if wallet available), PaymentMethodCard, CouponCard, OrderSummaryCard (summary rows + total + Place order).
-- **Submit disabled when**: No cart items, cart invalid, no payment method selected (or epayment selected but no gateway chosen). We show a `disabledReason` (e.g. "Select payment method") under the button.
+- **UI**: Breadcrumbs, title, optional cart-issues banner (if `!cart_valid`), OrderTypeCard, **PaymentMethodCard** (includes wallet section + payment methods in one card), CouponCard, OrderSummaryCard (summary rows + total + Place order). There is no separate WalletDiscountCard; wallet toggle and balance live at the top of PaymentMethodCard when wallet is available.
+- **Payment & wallet UX**:
+  - **Wallet**: "Use wallet" defaults to **Yes** (`useWallet = true`). User can switch to No.
+  - **No default payment method or gateway**: On load we do not pre-select COD or epayment, and we do not pre-select a gateway (Visa, Apple Pay, etc.). The user must click a payment method; if they click "Electronic payment", the gateway list appears and they must click a gateway before submitting.
+  - **When wallet covers full total** (useWallet is Yes and wallet balance ≥ order total): We hide the payment method cards (COD, Electronic payment) and the gateway list. We show a single message (e.g. "Your order will be paid using your wallet. No other payment method is needed."). We clear any previously selected payment method and gateway so the UI is not confusing. Submit is enabled (payment will be wallet-only).
+  - **When wallet does not cover full total**: We show the payment method cards; user chooses COD or Electronic payment. If they choose Electronic payment, the gateway list appears and they must select a gateway.
+- **Submit disabled when**: No cart items, cart invalid; or (when wallet does not cover full total) no payment method selected, or epayment selected but no gateway chosen. We show a `disabledReason` (e.g. "Select payment method") under the button.
 - **Feedback**: 
   - **Before submit**: Toasts for validation (e.g. "Please select address", "Please select payment method").
   - **On create-order error**: Toast with message from `getApiErrorMessage`.
-  - **On success (COD/wallet)**: Toast "Order created", cart cleared, redirect to `/my-orders/{id}`.
+  - **On success (COD/wallet)**: Toast "Order created", cart cleared, redirect to `/my-orders/{id}`. We only redirect to a URL when we explicitly sent `payment_method: 'epayment'` and the response has `redirect_url`.
   - **On success (epayment)**: Redirect to `response.redirect_url` (gateway). After payment, user lands on `/checkout/result` with `attempt_id` (and possibly `order_id` and `status`).
 
 ---
@@ -153,11 +160,11 @@ So: line items and the pre-wallet total come from the backend; we only compute w
 
 ### 8.1 COD or full wallet
 
-- Create order returns `id` (no `redirect_url`). We show success toast, clear cart, and navigate to `/my-orders/{id}`.
+- Create order returns `id` (no `redirect_url` for these methods). We show success toast, clear cart, and navigate to `/my-orders/{id}`. We **never** redirect to a payment URL when the user chose wallet or COD; we only redirect when we sent `payment_method: 'epayment'` and the response includes `redirect_url` (defensive against backend returning a URL for wallet).
 
 ### 8.2 Epayment
 
-- Create order returns `redirect_url` (and `attempt_id`). We do `window.location.href = redirect_url`. User pays on gateway and is redirected back to our **success_url** or **error_url**:  
+- Create order returns `redirect_url` (and `attempt_id`). We redirect only if we actually sent `payment_method: 'epayment'`; then we do `window.location.href = response.redirect_url`. User pays on gateway and is redirected back to our **success_url** or **error_url**:  
   `/{locale}/checkout/result?status=success` or `?status=error`, with query params such as `attempt_id`, `order_id` (if gateway sends it).
 
 ---
@@ -191,10 +198,11 @@ So: line items and the pre-wallet total come from the backend; we only compute w
 
 | File | Role |
 |------|------|
-| `src/app/[locale]/(protected)/checkout/page.tsx` | Checkout page: init hook, create-order mutation, all four UI states, validation, submit. |
+| `src/app/[locale]/(protected)/checkout/page.tsx` | Checkout page: init hook, create-order mutation, all four UI states, validation, submit. Clears payment/gateway selection when wallet covers full total. |
 | `src/app/[locale]/(protected)/checkout/result/page.tsx` | Result page: payment-status query, success/fail/loading views. |
-| `src/app/[locale]/(protected)/checkout/utils.ts` | Helpers: orderTypeToFulfillment, formatDateTimeForApi, earliestPickupDate, getDefaultPaymentSelection, buildCreateOrderPayload, buildSummaryItems, isEpaymentValid, parsePaymentResult. |
-| `src/hooks/useCheckout.ts` | TanStack Query: useCheckoutInit, useCreateOrder, usePaymentStatus. |
+| `src/app/[locale]/(protected)/checkout/components/PaymentMethodCard.tsx` | Single card: wallet section (balance + Yes/No) when wallet available; payment method buttons (COD, Epayment); gateway list only when Epayment is selected; when wallet covers full total, shows "pay with wallet only" message and hides methods/gateways. |
+| `src/app/[locale]/(protected)/checkout/utils.ts` | Helpers: orderTypeToFulfillment, formatDateTimeForApi, earliestPickupDate, getDefaultPaymentSelection (used by utils only), buildCreateOrderPayload, buildSummaryItems, isEpaymentValid, parsePaymentResult. |
+| `src/hooks/useCheckout.ts` | TanStack Query: useCheckoutInit (staleTime: 0, refetchOnMount: 'always'), useCreateOrder, usePaymentStatus. |
 | `src/services/order-service.ts` | API: checkoutInit, createOrder, getPaymentStatus. |
 | `src/store/useOrderStore.ts` | Order type, delivery address, scheduled time, order time (now/later). Persisted. |
 | `src/app/proxy/[...path]/route.ts` | Adds `x-branch-id` from cookie to backend requests; branch not in init/create body. |
@@ -211,5 +219,17 @@ So: line items and the pre-wallet total come from the backend; we only compute w
 | Pickup / Curbside | Yes | fulfillment_method=2 or 3, customer_pickup_datetime set (now+30 or scheduled) |
 | Dine-in | Yes | fulfillment_method=4 |
 | Branch | N/A in body | Sent only via `x-branch-id` header by proxy |
+
+### Payment / wallet summary
+
+| User choice | UI | Submit |
+|-------------|-----|--------|
+| Wallet Yes, balance ≥ total | Wallet message only; no method/gateway cards | Enabled (pay with wallet) |
+| Wallet Yes, balance < total | Wallet + COD/Epayment cards; gateways only after clicking Epayment | Needs method + gateway if Epayment |
+| Wallet No | COD/Epayment cards; gateways only after clicking Epayment | Needs method + gateway if Epayment |
+
+Redirect to gateway happens only when we sent `payment_method: 'epayment'` and response has `redirect_url`; never for wallet or COD.
+
+---
 
 This document should be read together with `CHECKOUT_FLOW.md` and `CHECKOUT_REVISION.md` for historical and component-level details.
