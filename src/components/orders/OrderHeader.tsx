@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Star, X, RotateCcw, Info } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Link } from '@/i18n/navigation';
-import { Order } from '../services/order-services';
+import { Order } from '@/types/orders/orders.types';
 
 interface OrderHeaderProps {
     order: Order;
@@ -29,14 +29,14 @@ export function OrderHeader({ order }: OrderHeaderProps) {
                 </Link>
                 <span>›</span>
                 <span className="text-gray-900">
-                    {t('orderNumber', { number: order.orderNumber })}
+                    {t('orderNumber', { number: order.id })}
                 </span>
             </nav>
 
             {/* Title and Actions */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <h1 className="text-2xl md:text-3xl font-black text-gray-900">
-                    {t('orderNumberTitle', { number: order.orderNumber })}
+                    {t('orderNumberTitle', { number: order.id })}
                 </h1>
 
                 <div className="flex flex-wrap items-center gap-2">
@@ -46,7 +46,7 @@ export function OrderHeader({ order }: OrderHeaderProps) {
                         <Star className="w-4 h-4" />
                         {t('actions.rateOrder')}
                     </Button>
-                    {order.status !== 'cancelled' && (
+                    {order.status !== 'CANCELLED' && (
                         <Button
                             variant="outline"
                             className="h-10 px-4 rounded-xl border-red-100 bg-red-50 hover:bg-red-100 text-red-600 font-bold gap-2">

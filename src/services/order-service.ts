@@ -7,8 +7,7 @@ import {
     CheckoutInitRequest,
     CheckoutInitResponse,
     PaymentStatusResponse,
-} from '@/types/orders';
-import { PaginationMeta } from '@/types/api';
+} from '@/types/orders/orders.types';
 
 export const orderService = {
     /**

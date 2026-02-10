@@ -1,14 +1,15 @@
-// src/components/ui/DynamicImage.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Image, { ImageProps } from 'next/image';
 import { ImageOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-interface DynamicImageProps extends ImageProps {
+interface DynamicImageProps extends Omit<ImageProps, 'onLoad' | 'onError'> {
     fallbackComponent?: React.ReactNode;
     containerClassName?: string;
+    onLoad?: () => void;
+    onError?: () => void;
 }
 
 /**
@@ -20,23 +21,35 @@ export default function DynamicImage({
     alt,
     fallbackComponent,
     containerClassName,
-    className, // This will be applied directly to the Image component
+    className,
     priority,
     loading: loadingProp,
+    onLoad,
+    onError,
     ...props
 }: DynamicImageProps) {
     const [error, setError] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-
-    // Reset state when src changes
-    useEffect(() => {
+    
+    // ✅ Store previous src to detect changes during render
+    const [prevSrc, setPrevSrc] = useState(src);
+    
+    // ✅ Adjust state during rendering when src changes
+    if (src !== prevSrc) {
+        setPrevSrc(src);
         setError(false);
         setIsLoading(true);
-    }, [src]);
+    }
 
-    // Handle initial loading state for cached images
     const handleLoadingComplete = () => {
         setIsLoading(false);
+        onLoad?.();
+    };
+
+    const handleError = () => {
+        setError(true);
+        setIsLoading(false);
+        onError?.();
     };
 
     if (error || !src) {
@@ -67,19 +80,14 @@ export default function DynamicImage({
                 src={src}
                 alt={alt}
                 priority={priority}
-                // Only set loading if priority is not set (priority takes precedence)
-                // When priority is true, Next.js Image automatically handles it and loading should not be set
-                {...(priority ? {} : { loading: loadingProp || 'lazy' })}
+                loading={priority ? undefined : (loadingProp || 'lazy')}
                 className={cn(
                     'transition-all duration-500 ease-in-out',
                     isLoading ? 'blur-lg scale-[1.02]' : 'blur-0 scale-100',
                     className,
                 )}
                 onLoad={handleLoadingComplete}
-                onError={() => {
-                    setError(true);
-                    setIsLoading(false);
-                }}
+                onError={handleError}
             />
         </div>
     );
