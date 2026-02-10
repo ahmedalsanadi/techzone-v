@@ -4,7 +4,7 @@ import React from 'react';
 export default function CMSPageLoading() {
     return (
         <div className="min-h-screen bg-gray-50/30 py-8 lg:py-16">
-            <div className="container mx-auto px-4 max-w-5xl">
+            <div className="container mx-auto px-4 ">
                 {/* Breadcrumbs Skeleton */}
                 <div className="flex items-center gap-2 mb-8 animate-pulse">
                     <div className="h-4 w-12 bg-gray-200 rounded" />
