@@ -45,7 +45,8 @@ export function useCheckoutInit({
             return orderService.checkoutInit(body);
         },
         enabled,
-        staleTime: 1000 * 60 * 2,
+        staleTime: 0, // Always refetch when returning to checkout so summary reflects current cart
+        refetchOnMount: 'always', // Refetch every time checkout page is opened
         retry: 1,
     });
 

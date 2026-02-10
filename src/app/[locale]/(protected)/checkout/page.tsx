@@ -171,7 +171,8 @@ export default function CheckoutPage() {
         try {
             const response = await createOrderMutation.mutateAsync(payload);
 
-            if (response.redirect_url) {
+            // Only redirect to gateway when we actually chose epayment; never for wallet or COD
+            if (payment_method === 'epayment' && response.redirect_url) {
                 window.location.href = response.redirect_url;
                 return;
             }
