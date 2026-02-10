@@ -99,7 +99,8 @@
     "chooseAddressOrTypeHint": "Please select a delivery address or change to pickup, then retry.",
     "selectEpaymentMethod": "Select payment method",
     "codMaxAmount": "Up to {amount} SAR",
-    "noPaymentMethodsAvailable": "No payment methods available. Please contact support."
+    "noPaymentMethodsAvailable": "No payment methods available. Please contact support.",
+    "payWithWalletOnly": "Your order will be paid using your wallet. No other payment method is needed."
   },
   "Order": {
     "orderType": "Order Type",

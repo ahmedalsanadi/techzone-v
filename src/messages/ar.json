@@ -100,7 +100,8 @@
     "chooseAddressOrTypeHint": "يرجى اختيار عنوان التوصيل أو التبديل إلى الاستلام ثم إعادة المحاولة.",
     "selectEpaymentMethod": "اختر طريقة الدفع",
     "codMaxAmount": "حتى {amount} ر.س",
-    "noPaymentMethodsAvailable": "لا توجد طرق دفع متاحة. يرجى التواصل مع الدعم."
+    "noPaymentMethodsAvailable": "لا توجد طرق دفع متاحة. يرجى التواصل مع الدعم.",
+    "payWithWalletOnly": "سيتم دفع طلبك من المحفظة. لا حاجة لاختيار طريقة دفع أخرى."
   },
   "Order": {
     "orderType": "نوع الطلب",

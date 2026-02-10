@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import OrderTypeCard from './components/OrderTypeCard';
-import WalletDiscountCard from './components/WalletDiscountCard';
 import PaymentMethodCard from './components/PaymentMethodCard';
 import CouponCard from './components/CouponCard';
 import OrderSummaryCard from './components/OrderSummaryCard';
@@ -24,7 +23,6 @@ import {
     orderTypeToFulfillment,
     formatDateTimeForApi,
     earliestPickupDate,
-    getDefaultPaymentSelection,
     buildCreateOrderPayload,
     buildSummaryItems,
     isEpaymentValid,
@@ -55,7 +53,7 @@ export default function CheckoutPage() {
     const [selectedPaymentMethodType, setSelectedPaymentMethodType] =
         useState<PaymentMethodType | null>(null);
     const [selectedEpaymentMethodId, setSelectedEpaymentMethodId] = useState<number | null>(null);
-    const [useWallet, setUseWallet] = useState(false);
+    const [useWallet, setUseWallet] = useState(true); // Wallet on by default; user can turn off
     const [openOrderTypeModal, setOpenOrderTypeModal] = useState(false);
 
     const fulfillment_method = orderTypeToFulfillment(orderType);
@@ -76,16 +74,6 @@ export default function CheckoutPage() {
 
     const createOrderMutation = useCreateOrder();
 
-    useEffect(() => {
-        if (!initData) return;
-        const { type, epaymentMethodId } = getDefaultPaymentSelection(initData);
-        const tid = window.setTimeout(() => {
-            setSelectedPaymentMethodType((prev) => prev ?? type);
-            setSelectedEpaymentMethodId((prev) => prev ?? epaymentMethodId);
-        }, 0);
-        return () => clearTimeout(tid);
-    }, [initData]);
-
     const paymentMethods = initData?.payment_methods ?? [];
     const walletBalance = initData?.wallet?.balance ?? 0;
     const walletAvailable =
@@ -96,6 +84,17 @@ export default function CheckoutPage() {
     const totalFromSummary = summary?.total ?? 0;
     const isFullyWalletCovered = useWallet && walletBalance >= totalFromSummary;
     const discount = 0;
+
+    // When wallet covers full total, clear card/gateway selection so UI is not confusing (deferred to avoid sync setState in effect)
+    useEffect(() => {
+        if (!isFullyWalletCovered) return;
+        const tid = window.setTimeout(() => {
+            setSelectedPaymentMethodType(null);
+            setSelectedEpaymentMethodId(null);
+        }, 0);
+        return () => clearTimeout(tid);
+    }, [isFullyWalletCovered]);
+
     const walletDeduction =
         useWallet && walletBalance > 0
             ? Math.min(totalFromSummary - discount, walletBalance)
@@ -310,14 +309,6 @@ export default function CheckoutPage() {
                         {orderTypeCard}
                     </div>
 
-                    {walletAvailable && (
-                        <WalletDiscountCard
-                            balance={formatCurrency(walletBalance, locale)}
-                            selected={useWallet ? 'yes' : 'no'}
-                            onChange={(val: 'yes' | 'no') => setUseWallet(val === 'yes')}
-                        />
-                    )}
-
                     <PaymentMethodCard
                         methods={paymentMethods}
                         summaryTotal={totalFromSummary}
@@ -325,16 +316,13 @@ export default function CheckoutPage() {
                         selectedEpaymentMethodId={selectedEpaymentMethodId}
                         useWallet={useWallet}
                         walletCoversTotal={isFullyWalletCovered}
+                        walletAvailable={walletAvailable}
+                        walletBalanceFormatted={formatCurrency(walletBalance, locale)}
+                        onUseWalletChange={setUseWallet}
                         onChange={(type) => {
                             setSelectedPaymentMethodType(type);
-                            if (type === 'epayment') {
-                                const first = paymentMethods
-                                    .find((m) => m.type === 'epayment')
-                                    ?.epayment_methods?.[0];
-                                setSelectedEpaymentMethodId(first?.id ?? null);
-                            } else {
-                                setSelectedEpaymentMethodId(null);
-                            }
+                            // Do not auto-select a gateway; user must click one after selecting epayment
+                            if (type !== 'epayment') setSelectedEpaymentMethodId(null);
                         }}
                         onEpaymentMethodChange={setSelectedEpaymentMethodId}
                     />

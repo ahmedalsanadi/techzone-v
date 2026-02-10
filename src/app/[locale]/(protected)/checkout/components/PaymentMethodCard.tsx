@@ -17,6 +17,10 @@ interface PaymentMethodCardProps {
     selectedEpaymentMethodId: number | null;
     useWallet: boolean;
     walletCoversTotal: boolean;
+    /** When true, show wallet toggle at top of card (beside payment methods) */
+    walletAvailable?: boolean;
+    walletBalanceFormatted?: string;
+    onUseWalletChange?: (use: boolean) => void;
     onChange: (type: PaymentMethodType) => void;
     onEpaymentMethodChange: (id: number) => void;
 }
@@ -28,6 +32,9 @@ export default function PaymentMethodCard({
     selectedEpaymentMethodId,
     useWallet,
     walletCoversTotal,
+    walletAvailable = false,
+    walletBalanceFormatted = '',
+    onUseWalletChange,
     onChange,
     onEpaymentMethodChange,
 }: PaymentMethodCardProps) {
@@ -62,7 +69,63 @@ export default function PaymentMethodCard({
     return (
         <CheckoutCard title={t('paymentMethodTitle')}>
             <div className="space-y-6">
-                {methodsToShow.length === 0 ? (
+                {walletAvailable && onUseWalletChange && (
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100">
+                        <h3 className="text-md font-bold text-gray-800">
+                            {t('walletDiscountTitle')}
+                        </h3>
+                        <div className="inline-flex items-center gap-2 bg-gray-50 border border-gray-100 rounded-xl px-4 py-2 self-start sm:self-auto">
+                            <span className="text-gray-500 text-sm">
+                                {t('walletBalanceLabel')}
+                            </span>
+                            <span className="font-bold text-theme-primary">
+                                {walletBalanceFormatted}
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-6">
+                            {(['yes', 'no'] as const).map((value) => {
+                                const checked = (value === 'yes') === useWallet;
+                                return (
+                                    <label
+                                        key={value}
+                                        className="flex items-center gap-2 cursor-pointer">
+                                        <input
+                                            type="radio"
+                                            checked={checked}
+                                            onChange={() =>
+                                                onUseWalletChange(value === 'yes')
+                                            }
+                                            className="sr-only"
+                                        />
+                                        <div
+                                            className={cn(
+                                                'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all',
+                                                checked
+                                                    ? 'border-theme-primary bg-theme-primary'
+                                                    : 'border-gray-300 bg-white',
+                                            )}>
+                                            {checked && (
+                                                <div className="w-2 h-2 rounded-full bg-white" />
+                                            )}
+                                        </div>
+                                        <span className="text-gray-700">
+                                            {t(value)}
+                                        </span>
+                                    </label>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
+
+                {walletCoversTotal ? (
+                    <div className="flex items-center gap-3 p-4 rounded-2xl bg-theme-primary/5 border-2 border-theme-primary/20">
+                        <Wallet className="size-8 text-theme-primary shrink-0" />
+                        <p className="text-gray-800 font-medium">
+                            {t('payWithWalletOnly')}
+                        </p>
+                    </div>
+                ) : methodsToShow.length === 0 ? (
                     <p className="text-gray-500 text-sm py-4">
                         {t('noPaymentMethodsAvailable')}
                     </p>
@@ -120,7 +183,7 @@ export default function PaymentMethodCard({
                     </div>
                 )}
 
-                {selectedType === 'epayment' &&
+                {!walletCoversTotal && selectedType === 'epayment' &&
                     selectedMethod?.epayment_methods &&
                     selectedMethod.epayment_methods.length > 0 && (
                         <div className="pt-4 border-t border-gray-100">
