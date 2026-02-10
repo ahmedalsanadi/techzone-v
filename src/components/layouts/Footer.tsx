@@ -16,7 +16,7 @@ import {
     paymentBadges,
     partnerBadges,
     socialLinks,
-} from './footer/FooterData';
+} from '@/config/footer';
 import { useTranslations } from 'next-intl';
 import { useStore } from '@/components/providers/StoreProvider';
 

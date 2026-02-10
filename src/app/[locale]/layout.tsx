@@ -15,7 +15,7 @@ import PageContainer from '@/components/layouts/PageContainer';
 import { ServiceUnavailableFallback } from '@/components/layouts/service-unavailable-fallback';
 import { QueryProvider } from '@/components/providers/QueryProvider';
 import { getStoreCategories, getStorePages } from '@/services/store-config';
-import { getServerStoreConfig } from '@/lib/server/store-config';
+import { getServerStoreConfig } from '@/services/store-config';
 import { StoreProvider } from '@/components/providers/StoreProvider';
 import { ThemeStyles } from '@/components/providers/ThemeStyles';
 import ToasterContainer from '@/components/layouts/ToasterContainer';
@@ -95,7 +95,6 @@ export default async function RootLayout({
     params: Promise<{ locale: string }>;
 }) {
     const { locale } = await params;
-    // Enable static rendering and validate locale
     setupLocale(locale);
 
     const isArabic = locale === 'ar';

@@ -4,12 +4,12 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useWishlistStore } from '@/store/useWishlistStore';
-import { useWishlistActions } from '@/hooks/useWishlistActions';
+import { useWishlistActions } from '@/hooks/wishlist';
 import { Link, useRouter } from '@/i18n/navigation';
 import { Heart, ShoppingBag, Trash2 } from 'lucide-react';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
 import { useAuthStore } from '@/store/useAuthStore';
-import { useCartActions } from '@/hooks/useCartActions';
+import { useCartActions } from '@/hooks/cart';
 
 const WishlistPage = () => {
     const t = useTranslations('Wishlist');

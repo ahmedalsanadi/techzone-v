@@ -1,7 +1,7 @@
-import LandingPage from '@/components/pages/landing-page/LandingPage';
-import { getServerStoreConfig } from '@/lib/server/store-config';
+import LandingPage from '@/components/landing/LandingPage';
+import { getServerStoreConfig } from '@/services/store-config';
 import { storeService } from '@/services/store-service';
-import { Product, HomeSections } from '@/services/types';
+import { Product, HomeSections } from '@/types/store';
 
 /**
  * Server component that fetches products based on enabled sections.

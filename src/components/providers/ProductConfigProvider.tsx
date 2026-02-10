@@ -3,7 +3,7 @@
 
 import React, { createContext, useContext, useMemo, useState } from 'react';
 import ProductConfigModal from '@/components/modals/ProductConfigModal';
-import type { Product } from '@/services/types';
+import type { Product } from '@/types/store';
 
 interface ProductConfigContextValue {
     activeProduct: Product | null;

@@ -4,7 +4,7 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { StoreConfig } from '@/services/types';
+import { StoreConfig } from '@/types/store';
 import AuthContainer from '@/components/auth/AuthContainer';
 import { useRouter } from '@/i18n/navigation';
 import PhoneInput from '@/components/ui/PhoneInput';

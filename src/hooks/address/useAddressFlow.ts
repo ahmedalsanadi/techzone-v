@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useAddressStore } from '@/store/useAddressStore';
 import { useOrderStore } from '@/store/useOrderStore';
-import { useAddresses, useAddressMutations } from '@/hooks/useAddresses';
+import { useAddresses, useAddressMutations } from './useAddresses';
 import {
     Address,
     AddressFormSubmitPayload,

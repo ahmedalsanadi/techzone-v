@@ -1,7 +1,7 @@
 // src/app/proxy/[...path]/route.ts
 // Next.js 16 proxy route for API requests
 import { NextRequest, NextResponse } from 'next/server';
-import { getBaseHeaders } from '@/services/utils';
+import { getBaseHeaders } from '@/lib/api/headers';
 import { env } from '@/config/env';
 import { PROTECTED_API_ENDPOINTS, AUTH_COOKIES } from '@/lib/auth';
 import { BRANCH_COOKIES } from '@/lib/branches/constants';
@@ -38,8 +38,8 @@ async function handleRequest(
         );
     }
 
-    // Get headers from client request (Accept-Language, Content-Type, etc.)
-    // But we'll inject X-Store-Key from server env (not from client)
+    // Build headers: getBaseHeaders (server) adds Accept, Content-Type, and may add branch from request cookies.
+    // We then inject X-Store-Key and ensure x-branch-id from incoming request cookies (see below).
     const headers = await getBaseHeaders(
         request.headers.get('Accept-Language') || 'ar',
         request.headers.get('Content-Type'),
@@ -47,7 +47,11 @@ async function handleRequest(
     );
 
     if (!isNominatim) {
-        const host = request.headers.get('host');
+        // Inject X-Store-Key on the server only (never sent from browser). Resolve tenant from request host.
+        const forwarded = request.headers.get('x-forwarded-host');
+        const host =
+            (forwarded ? forwarded.split(',')[0].trim() : null) ||
+            request.headers.get('host');
         const { storeKey } = resolveTenant(host);
 
         if (!storeKey) {
@@ -105,9 +109,8 @@ async function handleRequest(
             }`;
         }
 
-        // Get branch ID from cookies
+        // Inject x-branch-id from incoming request cookies (user's branch selection) into the API request
         const branchId = request.cookies.get(BRANCH_COOKIES.BRANCH_ID)?.value;
-
         if (branchId && !isNominatim) {
             headers.set('x-branch-id', branchId);
         }

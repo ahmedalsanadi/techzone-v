@@ -1,4 +1,4 @@
-import MyOrdersView from './utils/components/MyOrdersView';
+import MyOrdersView from '@/components/orders/MyOrdersView';
 import { orderService } from '@/services/order-service';
 
 export const dynamic = 'force-dynamic';

@@ -1,5 +1,5 @@
 import type { QueryClient } from '@tanstack/react-query';
-import type { PaginationMeta } from '@/services/types';
+import type { PaginationMeta } from '@/types/api';
 import { storeService } from '@/services/store-service';
 
 interface PrefetchNextProductsPageParams {

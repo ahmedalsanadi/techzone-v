@@ -10,13 +10,13 @@ import { toast } from 'sonner';
 import { authService } from '@/services/auth-service';
 import { storeService } from '@/services/store-service';
 import { useAuthStore } from '@/store/useAuthStore';
-import { normalizeRedirectPath } from '@/lib/utils/redirect';
+import { normalizeRedirectPath } from '@/lib/utils';
 import { authStorage } from '@/lib/auth';
 import { getAuthErrorMessage } from '@/lib/auth/error-handler';
 import type { AuthStep, ProfileUpdateRequest } from '@/types/auth';
-import { useCartMerge } from '@/hooks/useCartMerge';
-import { useWishlistMerge } from '@/hooks/useWishlistMerge';
-import { useAddressMerge } from '@/hooks/useAddressMerge';
+import { useCartMerge } from '@/hooks/cart';
+import { useWishlistMerge } from '@/hooks/wishlist';
+import { useAddressMerge } from '@/hooks/address';
 
 interface UseAuthFlowHandlersOptions {
     step: AuthStep;

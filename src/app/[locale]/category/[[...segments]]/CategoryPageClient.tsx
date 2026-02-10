@@ -4,7 +4,7 @@ import React, { useMemo, useCallback, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import { storeService } from '@/services/store-service';
-import type { Category, Product } from '@/services/types';
+import type { Category, Product } from '@/types/store';
 import { useTranslations } from 'next-intl';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import CategoryHierarchy from './CategoryHierarchy';

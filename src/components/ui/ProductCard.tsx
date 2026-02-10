@@ -6,7 +6,7 @@ import DynamicImage from './DynamicImage';
 import { Heart, Plus, ShoppingBasket, Loader2 } from 'lucide-react';
 import CurrencySymbol from './CurrencySymbol';
 import { Link } from '@/i18n/navigation';
-import { useWishlistActions } from '@/hooks/useWishlistActions';
+import { useWishlistActions } from '@/hooks/wishlist';
 import { useWishlistStore } from '@/store/useWishlistStore';
 
 interface ProductCardProps {

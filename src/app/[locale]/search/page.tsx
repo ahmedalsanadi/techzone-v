@@ -3,7 +3,7 @@ import React, { Suspense } from 'react';
 import { getTranslations } from 'next-intl/server';
 import { Metadata } from 'next';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
-import SearchContent from '@/components/pages/search/SearchContent';
+import SearchContent from '@/components/search/SearchContent';
 
 export async function generateMetadata({
     params,

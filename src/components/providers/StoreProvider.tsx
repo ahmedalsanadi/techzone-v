@@ -8,7 +8,7 @@ import React, {
     useEffect,
     useRef,
 } from 'react';
-import { StoreConfig, Category, CMSPage } from '@/services/types';
+import { StoreConfig, Category, CMSPage } from '@/types/store';
 import { useCartStore } from '@/store/useCartStore';
 import { isValidColor, generateThemeVariables } from '@/lib/theme-utils';
 

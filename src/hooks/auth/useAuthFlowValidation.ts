@@ -5,7 +5,7 @@
 import { useEffect } from 'react';
 import { useRouter } from '@/i18n/navigation';
 import { useSearchParams } from 'next/navigation';
-import { normalizeRedirectPath } from '@/lib/utils/redirect';
+import { normalizeRedirectPath } from '@/lib/utils';
 import type { AuthStep } from '@/types/auth';
 
 interface UseAuthFlowValidationOptions {

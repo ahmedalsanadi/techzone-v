@@ -1,5 +1,5 @@
 // src/services/order-service.ts
-import { fetchLibero, fetchLiberoFull } from './api';
+import { fetchLibero, fetchLiberoFull } from '@/lib/api';
 import {
     Order,
     CreateOrderRequest,
@@ -8,7 +8,7 @@ import {
     CheckoutInitResponse,
     PaymentStatusResponse,
 } from '@/types/orders';
-import { PaginationMeta } from './types';
+import { PaginationMeta } from '@/types/api';
 
 export const orderService = {
     /**

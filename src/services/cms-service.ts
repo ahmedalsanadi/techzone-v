@@ -1,6 +1,6 @@
 //src/services/cms-service.ts
-import { fetchLibero } from './api';
-import { CMSPage } from './types';
+import { fetchLibero } from '@/lib/api';
+import { CMSPage } from '@/types/store';
 import { CACHE_STRATEGY, CACHE_TAGS } from '@/config/cache';
 
 /**

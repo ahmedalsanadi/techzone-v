@@ -1,7 +1,7 @@
 'use client';
 
 import { useReducer, useEffect } from 'react';
-import { useCountries, useCities, useDistricts } from '@/hooks/useAddresses';
+import { useCountries, useCities, useDistricts } from './useAddresses';
 
 export interface LocationState {
     selectedCountry: number | '';

@@ -1,5 +1,5 @@
 //src/services/auth-service.ts
-import { fetchLibero, fetchLiberoFull } from './api';
+import { fetchLibero, fetchLiberoFull } from '@/lib/api';
 import type {
     AuthResponse,
     Customer,

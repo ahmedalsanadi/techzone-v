@@ -4,7 +4,7 @@ import React, { useEffect, useState, useSyncExternalStore } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useCartStore } from '@/store/useCartStore';
-import { useCartActions } from '@/hooks/useCartActions';
+import { useCartActions } from '@/hooks/cart';
 import { Link, useRouter } from '@/i18n/navigation';
 import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Edit } from 'lucide-react';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';

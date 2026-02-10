@@ -5,11 +5,11 @@ import { Metadata } from 'next';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import { getContactData } from '@/lib/contact/getContactData';
 import { getContactBreadcrumbs } from '@/lib/contact/getBreadcrumbs';
-import { SupportChannels } from '@/components/pages/contact/SupportChannels';
-import { SocialMediaChannels } from '@/components/pages/contact/SocialMediaChannels';
-import { ContactForm } from '@/components/pages/contact/ContactForm';
-import { BranchWarning } from '@/components/pages/contact/BranchWarning';
-import BranchErrorHandler from '@/components/pages/contact/BranchErrorHandler';
+import { SupportChannels } from '@/components/contact/SupportChannels';
+import { SocialMediaChannels } from '@/components/contact/SocialMediaChannels';
+import { ContactForm } from '@/components/contact/ContactForm';
+import { BranchWarning } from '@/components/contact/BranchWarning';
+import BranchErrorHandler from '@/components/contact/BranchErrorHandler';
 
 export async function generateMetadata({
     params,

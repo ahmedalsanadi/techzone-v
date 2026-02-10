@@ -1,11 +1,11 @@
-import { fetchLibero, fetchLiberoFull } from './api';
+import { fetchLibero, fetchLiberoFull } from '@/lib/api';
+import { PaginationMeta } from '@/types/api';
 import {
     StoreConfig,
     Product,
-    PaginationMeta,
     Category,
     Collection,
-} from './types';
+} from '@/types/store';
 import { CACHE_STRATEGY, CACHE_TAGS } from '@/config/cache';
 import type { CustomerProfile, ProfileUpdateRequest } from '@/types/auth';
 import type {

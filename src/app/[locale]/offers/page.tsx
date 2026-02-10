@@ -8,7 +8,7 @@ import { getQueryClient } from '@/lib/getQueryClient';
 import { storeService } from '@/services/store-service';
 import { generateCollectionStructuredData } from '@/lib/metadata';
 import { resolveSiteIdentity } from '@/lib/tenant/resolve-site';
-import OffersView from '@/components/pages/collections/OffersView';
+import OffersView from '@/components/offers/OffersView';
 import OffersPageSkeleton from './OffersPageSkeleton';
 
 interface SearchParams {

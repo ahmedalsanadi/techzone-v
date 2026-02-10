@@ -3,7 +3,7 @@
  * Handles fetching branches, branch details, and validation
  */
 
-import { fetchLibero } from './api';
+import { fetchLibero } from '@/lib/api';
 import type { Branch } from '@/types/branches';
 
 /**

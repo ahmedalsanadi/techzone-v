@@ -7,7 +7,7 @@ import { useRouter } from '@/i18n/navigation';
 import { useSearchParams } from 'next/navigation';
 import { storeService } from '@/services/store-service';
 import { useAuthStore } from '@/store/useAuthStore';
-import { normalizeRedirectPath } from '@/lib/utils/redirect';
+import { normalizeRedirectPath } from '@/lib/utils';
 import { env } from '@/config/env';
 import type { AuthStep, ProfileUpdateRequest } from '@/types/auth';
 

@@ -1,5 +1,5 @@
 // src/app/[locale]/category/[[...segments]]/utils.ts
-import type { Category } from '@/services/types';
+import type { Category } from '@/types/store';
 
 /**
  * Builds the full path from root to current category based on URL segments.

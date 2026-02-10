@@ -10,7 +10,7 @@
  * - Works on Edge Runtime, Vercel Edge, Cloudflare Workers
  * - Theme generation is stateless and cacheable
  */
-import { StoreConfig } from '@/services/types';
+import { StoreConfig } from '@/types/store';
 import {
     generateThemeVariables,
     isValidColorStrict,

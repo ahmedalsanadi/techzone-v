@@ -4,6 +4,17 @@ import type { NextConfig } from 'next';
 const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
+    // Allow dev server to be accessed from LAN (e.g. phone at 192.168.1.2) and localhost
+    allowedDevOrigins: [
+        'localhost',
+        'fasto.vercel.app',
+        'http://store-api.libro-shop.com',
+        'https://store-api.libro-shop.com',
+        'localhost:3000',
+        '127.0.0.1',
+        '192.168.1.2',
+        // Add other LAN IPs if you open the app from another device, e.g. '192.168.1.3'
+    ],
     images: {
         remotePatterns: [
             {

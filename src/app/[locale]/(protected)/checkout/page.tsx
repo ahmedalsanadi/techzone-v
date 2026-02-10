@@ -6,19 +6,19 @@ import { useRouter } from '@/i18n/navigation';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
-import OrderTypeCard from './components/OrderTypeCard';
-import PaymentMethodCard from './components/PaymentMethodCard';
-import CouponCard from './components/CouponCard';
-import OrderSummaryCard from './components/OrderSummaryCard';
+import OrderTypeCard from '@/components/checkout/OrderTypeCard';
+import PaymentMethodCard from '@/components/checkout/PaymentMethodCard';
+import CouponCard from '@/components/checkout/CouponCard';
+import OrderSummaryCard from '@/components/checkout/OrderSummaryCard';
 import { PaymentMethodType } from '@/types/orders';
 import { useCartStore } from '@/store/useCartStore';
 import { useOrderStore, getScheduledTimeAsDate } from '@/store/useOrderStore';
 import { formatCurrency } from '@/lib/utils';
-import { getApiErrorMessage } from '@/lib/api-errors';
+import { getApiErrorMessage } from '@/lib/api';
 import {
     useCheckoutInit,
     useCreateOrder,
-} from '@/hooks/useCheckout';
+} from '@/hooks/checkout';
 import {
     orderTypeToFulfillment,
     formatDateTimeForApi,
@@ -26,7 +26,7 @@ import {
     buildCreateOrderPayload,
     buildSummaryItems,
     isEpaymentValid,
-} from './utils';
+} from '@/lib/checkout';
 
 const ORDER_TYPE_SCROLL_ID = 'checkout-order-type';
 

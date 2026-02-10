@@ -1,138 +1,165 @@
-export interface Category {
+export interface ProductVariety {
     id: string;
-    slug: string;
-    key: string;
-    image?: string;
-    isMain?: boolean;
-    children?: Category[];
+    name: string;
+    price: number;
+    originalPrice?: number;
+    calories?: number;
+    prepTime?: number;
+    isDefault?: boolean;
+}
+
+export interface ProductAddon {
+    id: string;
+    name: string;
+    price: number;
+}
+
+export interface ProductSauce {
+    id: string;
+    name: string;
+    price: number;
+}
+
+export interface ProductAllergy {
+    name: string;
+    icon: string;
 }
 
 export interface Product {
-    id: number;
-    nameKey: string;
-    image: string;
-    price: number;
-    oldPrice?: number;
-    discountAmount?: string;
-    categoryId: string;
-    subCategoryId?: string;
+    id: string;
+    name: string;
+    description: string;
+    images: string[];
+    calories: number;
+    prepTime: number;
+    allergies: ProductAllergy[];
+    varieties: ProductVariety[];
+    addons: ProductAddon[];
+    sauces: ProductSauce[];
 }
 
-export const CATEGORIES: Category[] = [
-    { id: '1', slug: 'all', key: 'all', isMain: true },
+export const mockProducts: Product[] = [
     {
-        id: '2',
-        slug: 'pizza',
-        key: 'pizza',
-        image: '/images/images/pizza-slice.png',
-        children: [
-            { id: '2-1', slug: 'all', key: 'all' },
+        id: '1',
+        name: 'مارجريتا وسط',
+        description: 'صوص طماطم طازج، جبن موزاريلا ذائب، وأوراق ريحان عطرية',
+        images: [
+            'https://images.unsplash.com/photo-1613564834361-9436948817d1?auto=format&fit=crop&q=80&w=800',
+            'https://images.unsplash.com/photo-1655673654158-9f7285b7d1ea?auto=format&fit=crop&q=80&w=800',
+        ],
+        calories: 450,
+        prepTime: 25,
+        allergies: [
+            { name: 'الحليب', icon: '🥛' },
+            { name: 'البيض', icon: '🥚' },
+            { name: 'القمح', icon: '🌾' },
+            { name: 'السمسم', icon: '🥜' },
+            { name: 'فول الصويا', icon: '🫘' },
+            { name: 'الخردل', icon: '🌭' },
+        ],
+        varieties: [
             {
-                id: '2-2',
-                slug: 'chicken-pizza',
-                key: 'chickenPizza',
-                image: '/images/images/dish.png',
+                id: 'v1',
+                name: 'كبير',
+                price: 35,
+                originalPrice: 40,
+                calories: 650,
+                prepTime: 30,
             },
             {
-                id: '2-3',
-                slug: 'beef-pizza',
-                key: 'beefPizza',
-                image: '/images/images/dish.png',
+                id: 'v2',
+                name: 'وسط',
+                price: 25,
+                originalPrice: 30,
+                calories: 450,
+                prepTime: 25,
+                isDefault: true,
             },
             {
-                id: '2-4',
-                slug: 'veggie-pizza',
-                key: 'veggiePizza',
-                image: '/images/images/dish.png',
+                id: 'v3',
+                name: 'صغير',
+                price: 20,
+                originalPrice: 25,
+                calories: 350,
+                prepTime: 20,
             },
         ],
+        addons: [
+            { id: 'a1', name: 'جبنة', price: 5 },
+            { id: 'a2', name: 'دجاج مشوي', price: 5 },
+            { id: 'a3', name: 'زيتون أسود', price: 5 },
+            { id: 'a4', name: 'بيبروني', price: 5 },
+            { id: 'a5', name: 'بصل', price: 5 },
+            { id: 'a6', name: 'فلفل اخضر', price: 5 },
+            { id: 'a7', name: 'لحم', price: 5 },
+            { id: 'a8', name: 'طماطم', price: 5 },
+        ],
+        sauces: [
+            { id: 's1', name: 'صوص باربكيو', price: 5 },
+            { id: 's2', name: 'صوص ايطالي', price: 5 },
+            { id: 's3', name: 'مايونيز', price: 5 },
+        ],
     },
-    {
-        id: '3',
-        slug: 'burger',
-        key: 'burger',
-        image: '/images/images/burgar.png',
-    },
-    {
-        id: '4',
-        slug: 'sweets',
-        key: 'sweets',
-        image: '/images/images/sweets.png',
-    },
-    {
-        id: '5',
-        slug: 'drinks',
-        key: 'drinks',
-        image: '/images/images/drink-can.png',
-    },
-    { id: '6', slug: 'meals', key: 'meals', image: '/images/images/food.png' },
 ];
 
-export const PRODUCTS: Product[] = [
-    {
-        id: 1,
-        nameKey: 'dishName',
-        image: '/images/images/dish.png',
-        price: 230,
-        oldPrice: 250,
-        discountAmount: '5%',
-        categoryId: '2',
-        subCategoryId: '2-2',
-    },
-    {
-        id: 2,
-        nameKey: 'dishName',
-        image: '/images/images/dish.png',
-        price: 230,
-        oldPrice: 250,
-        discountAmount: '5%',
-        categoryId: '2',
-        subCategoryId: '2-3',
-    },
-    {
-        id: 3,
-        nameKey: 'dishName',
-        image: '/images/images/dish.png',
-        price: 230,
-        oldPrice: 250,
-        discountAmount: '5%',
-        categoryId: '3',
-    },
-    {
-        id: 4,
-        nameKey: 'dishName',
-        image: '/images/images/dish.png',
-        price: 180,
-        discountAmount: '10%',
-        categoryId: '6',
-    },
-    {
-        id: 5,
-        nameKey: 'dishName',
-        image: '/images/images/dish.png',
-        price: 25,
-        categoryId: '5',
-    },
-    // ... add more to make it look full
-    ...Array.from({ length: 12 }).map((_, i) => ({
-        id: i + 10,
-        nameKey: 'dishName',
-        image: '/images/images/dish.png',
-        price: 230,
-        oldPrice: 250,
-        discountAmount: '5%',
-        categoryId: ((i % 5) + 2).toString(),
-    })),
-];
+export async function getProductById(id: string): Promise<Product | null> {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    return mockProducts.find((p) => p.id === id) || null;
+}
 
-export const fetchCategories = async (): Promise<Category[]> => {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 100));
-    return CATEGORIES;
-};
+export interface Order {
+    id: string;
+    orderNumber: string;
+    branchName: string;
+    createdAt: string;
+    deliveryLocation: string;
+    totalAmount: number;
+    rating: number;
+    status: 'delivered' | 'waiting';
+}
 
-export const fetchProducts = async (): Promise<Product[]> => {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 150));
-    return PRODUCTS;
-};
+export async function getOrders(): Promise<Order[]> {
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    return [
+        {
+            id: '1',
+            orderNumber: '2431',
+            branchName: 'النخيل',
+            createdAt: '22/11/2025, 10:00 م',
+            deliveryLocation: 'للمنزل',
+            totalAmount: 35.0,
+            rating: 4.5,
+            status: 'delivered',
+        },
+        {
+            id: '2',
+            orderNumber: '2431',
+            branchName: 'النخيل',
+            createdAt: '22/11/2025, 10:00 م',
+            deliveryLocation: 'للمنزل',
+            totalAmount: 35.0,
+            rating: 4.5,
+            status: 'waiting',
+        },
+        {
+            id: '3',
+            orderNumber: '2431',
+            branchName: 'النخيل',
+            createdAt: '22/11/2025, 10:00 م',
+            deliveryLocation: 'للمنزل',
+            totalAmount: 35.0,
+            rating: 4.5,
+            status: 'waiting',
+        },
+        {
+            id: '4',
+            orderNumber: '2431',
+            branchName: 'النخيل',
+            createdAt: '22/11/2025, 10:00 م',
+            deliveryLocation: 'للمنزل',
+            totalAmount: 35.0,
+            rating: 4.5,
+            status: 'waiting',
+        },
+    ];
+}

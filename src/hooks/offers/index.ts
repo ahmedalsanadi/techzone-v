@@ -1,0 +1,1 @@
+export { useOffersView } from './useOffersView';

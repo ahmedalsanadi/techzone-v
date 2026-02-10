@@ -4,10 +4,10 @@
 import React, { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import ProductCard from '@/components/ui/ProductCard';
-import type { Product } from '@/services/types';
+import type { Product } from '@/types/store';
 import { TRANSITIONS, MIN_HEIGHTS } from './constants';
 import ProductsSkeleton from './ProductsSkeleton';
-import { useProductConfigFlow } from '@/hooks/useProductConfigFlow';
+import { useProductConfigFlow } from '@/hooks/products';
 import { requiresConfiguration } from '@/lib/products/requirements';
 
 interface ProductsSectionProps {

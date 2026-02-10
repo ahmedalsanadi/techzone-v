@@ -2,7 +2,7 @@
 import React from 'react';
 import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { getServerStoreConfig } from '@/lib/server/store-config';
+import { getServerStoreConfig } from '@/services/store-config';
 import AuthFlow from './AuthFlow';
 
 export async function generateMetadata({

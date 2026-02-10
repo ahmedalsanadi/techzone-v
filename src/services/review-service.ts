@@ -1,12 +1,12 @@
 // src/services/review-service.ts
-import { fetchLibero, fetchLiberoFull } from './api';
+import { fetchLibero, fetchLiberoFull } from '@/lib/api';
 import {
     Review,
     CreateReviewRequest,
     UpdateReviewRequest,
     CanReviewResponse,
 } from '@/types/reviews';
-import { PaginationMeta } from './types';
+import { PaginationMeta } from '@/types/api';
 
 export interface ReviewListParams {
     [key: string]: string | number | boolean | undefined;

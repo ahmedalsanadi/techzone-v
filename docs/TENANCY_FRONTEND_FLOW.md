@@ -28,16 +28,16 @@ Key steps:
 3. Use the store key only on the server.
 
 This logic is implemented in:
-- `src/lib/tenant.ts`
-- `src/lib/tenant/get-tenant.ts`
-- `src/lib/tenant/resolve-site.ts`
+- `src/lib/tenant/resolve.ts` (host → store key; client-safe exports via `src/lib/tenant/index.ts`)
+- `src/lib/tenant/get-tenant.ts` (request host via `x-forwarded-host` or `host`, origin, full tenant context)
+- `src/lib/tenant/resolve-site.ts` (store identity for metadata)
 
 ### Request Flow (Server Fetch)
 When a server component calls any service:
-1. `fetchLibero` → `fetchLiberoFull` in `src/services/api.ts`
-2. `getBaseHeaders` in `src/services/utils.ts` builds headers:
+1. `fetchLibero` → `fetchLiberoFull` in `src/lib/api/client.ts`
+2. `getBaseHeaders` in `src/lib/api/headers.ts` builds headers:
    - `Accept`, `Accept-Language`
-   - `X-Store-Key` (server only)
+   - `X-Store-Key` (server only), using host from `x-forwarded-host` (first value) or `host`
    - `Authorization` for protected routes
    - `x-branch-id` if cookie exists
 3. `fetch` is sent directly to the API on server
@@ -51,6 +51,13 @@ When a client component calls any service:
 4. Proxy forwards to backend
 
 This keeps tenant and API key hidden from browser devtools.
+
+### When X-Store-Key and x-branch-id Are Injected
+
+| Header        | Client (browser) | Server (RSC / SSR) |
+|---------------|------------------|---------------------|
+| **X-Store-Key** | **Not** set in the browser. The **proxy** injects it when handling the request to `/proxy`, using `resolveTenant(host)` from the request’s `x-forwarded-host` or `host`. | Set in `getBaseHeaders()` in `src/lib/api/headers.ts`: host from request headers → `resolveTenant(host)` → `headers.set('X-Store-Key', storeKey)`. |
+| **x-branch-id** | Set in `getBaseHeaders()` from `document.cookie` so the request to `/proxy` includes the user’s branch. The **proxy** then reads the same cookie from the incoming request and sets `x-branch-id` on the outgoing request to the API. | Set in `getBaseHeaders()` from `cookies()` (Next.js request cookies) when building the fetch to the API. |
 
 ### Caching & Revalidation
 Cache strategy is centralized in `src/config/cache.ts`.
@@ -108,8 +115,8 @@ These are the active variables after refactor:
 
 ### File Map (Refactored)
 Tenant resolution:
-- `src/lib/tenant.ts` (parsing host → store key)
-- `src/lib/tenant/get-tenant.ts` (origin + host info)
+- `src/lib/tenant/resolve.ts` (parsing host → store key; exported via `index.ts`)
+- `src/lib/tenant/get-tenant.ts` (request host: `x-forwarded-host` or `host`, origin, full tenant context)
 - `src/lib/tenant/resolve-site.ts` (store identity for metadata)
 
 Metadata:
@@ -119,25 +126,24 @@ Metadata:
 - `src/app/[locale]/offers/page.tsx`
 
 Request/Proxy:
-- `src/services/api.ts`
-- `src/services/utils.ts`
-- `src/app/proxy/[...path]/route.ts`
-- `src/proxy.ts`
+- `src/lib/api/client.ts` (fetchLibero, fetchLiberoFull)
+- `src/lib/api/headers.ts` (getBaseHeaders; X-Store-Key uses same host resolution)
+- `src/app/proxy/[...path]/route.ts` (injects X-Store-Key using x-forwarded-host or host)
 
 Caching:
 - `src/config/cache.ts`
 - `src/services/store-service.ts`
-- `src/services/store-config.ts`
+- `src/services/store-config.ts` (store/categories/pages; host from x-forwarded-host or host)
 
 Sitemap:
 - `src/app/sitemap.ts`
 
 Branch Cookies:
-- `src/lib/branches/cookies.ts`
+- `src/lib/branches/constants.ts` / branch cookie handling in `src/lib/api/headers.ts`
 
 ### End-to-End Flow Example
 1. User opens `https://pizza.example.com`
-2. Next.js reads `host = pizza.example.com`
+2. Next.js reads `host` from headers (`x-forwarded-host` or `host`), e.g. `pizza.example.com`
 3. Tenant resolver uses subdomain `pizza`
 4. Server fetch injects `X-Store-Key: pizza`
 5. Backend resolves tenant by slug `pizza`

@@ -1,7 +1,7 @@
 // src/app/[locale]/products/page.tsx
 import React, { Suspense } from 'react';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
-import ProductsView from '@/components/pages/products/ProductsView';
+import ProductsView from '@/components/products/ProductsView';
 import { getTranslations } from 'next-intl/server';
 import { Metadata } from 'next';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';

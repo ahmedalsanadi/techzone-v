@@ -4,11 +4,11 @@ import { getTranslations } from 'next-intl/server';
 import { Metadata } from 'next';
 import { storeService } from '@/services/store-service';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
-import CategoryContent from '@/components/pages/categories/CategoryContent';
+import CategoryContent from '@/components/categories/CategoryContent';
 import { notFound } from 'next/navigation';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { getQueryClient } from '@/lib/getQueryClient';
-import { Category } from '@/services/types';
+import { Category } from '@/types/store';
 
 interface Props {
     params: Promise<{ locale: string; slug: string }>;

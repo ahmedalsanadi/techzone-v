@@ -1,5 +1,5 @@
 import { siteConfig } from '@/config/site';
-import { getServerStoreConfig } from '@/lib/server/store-config';
+import { getServerStoreConfig } from '@/services/store-config';
 import { getTenantContext } from './get-tenant';
 
 export async function resolveSiteIdentity() {

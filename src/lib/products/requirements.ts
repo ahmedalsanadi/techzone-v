@@ -1,4 +1,4 @@
-import type { Product } from '@/services/types';
+import type { Product } from '@/types/store';
 
 export interface ProductSelection {
     selectedVariantId: number | null;

@@ -1,7 +1,7 @@
 // src/app/[locale]/my-orders/[id]/page.tsx
 import { notFound } from 'next/navigation';
 import { orderService } from '@/services/order-service';
-import OrderDetailsView from '../utils/components/OrderDetailsView';
+import OrderDetailsView from '@/components/orders/OrderDetailsView';
 
 export const dynamic = 'force-dynamic';
 

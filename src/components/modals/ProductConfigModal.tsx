@@ -2,17 +2,17 @@ import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import { X, ArrowUpRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Product } from '@/services/types';
-import { useCartActions } from '@/hooks/useCartActions';
+import { Product } from '@/types/store';
+import { useCartActions } from '@/hooks/cart';
 import {
     getRequiredAddonGroups,
     getRequiredCustomFields,
     hasVariants,
     validateRequiredSelections,
 } from '@/lib/products/requirements';
-import AddonSelector from '@/components/pages/products/product-details/AddonSelector';
-import VariantSelector from '@/components/pages/products/product-details/VariantSelector';
-import CustomFieldsForm from '@/components/pages/products/product-details/CustomFieldsForm';
+import AddonSelector from '@/components/products/product-details/AddonSelector';
+import VariantSelector from '@/components/products/product-details/VariantSelector';
+import CustomFieldsForm from '@/components/products/product-details/CustomFieldsForm';
 import { generateCartItemId } from '@/lib/cart/utils';
 import { cn } from '@/lib/utils';
 import { Link } from '@/i18n/navigation';

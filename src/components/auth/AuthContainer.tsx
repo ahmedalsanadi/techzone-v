@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { ChevronLeft } from 'lucide-react';
-import { StoreConfig } from '@/services/types';
+import { StoreConfig } from '@/types/store';
 
 interface AuthContainerProps {
     config: StoreConfig;

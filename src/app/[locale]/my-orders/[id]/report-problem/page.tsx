@@ -1,7 +1,7 @@
 // src/app/[locale]/my-orders/[id]/report-problem/page.tsx
 import { notFound } from 'next/navigation';
 import { orderService } from '@/services/order-service';
-import ReportProblemView from '../../utils/components/ReportProblemView';
+import ReportProblemView from '@/components/orders/ReportProblemView';
 import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 

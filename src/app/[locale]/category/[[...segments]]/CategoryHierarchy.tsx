@@ -3,7 +3,7 @@
 
 import React, { useMemo } from 'react';
 import CategoryCard from '@/components/ui/CategoryCard';
-import type { Category } from '@/services/types';
+import type { Category } from '@/types/store';
 import { getRootCategories, getCategoryUrl } from './utils';
 
 interface CategoryHierarchyProps {

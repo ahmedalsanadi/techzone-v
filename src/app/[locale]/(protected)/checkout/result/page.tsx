@@ -5,8 +5,8 @@ import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
-import { usePaymentStatus } from '@/hooks/useCheckout';
-import { parsePaymentResult } from '../utils';
+import { usePaymentStatus } from '@/hooks/checkout';
+import { parsePaymentResult } from '@/lib/checkout';
 
 const RESULT_LAYOUT_CLASS =
     'container mx-auto min-h-screen py-24 flex flex-col items-center justify-center gap-6 px-4';

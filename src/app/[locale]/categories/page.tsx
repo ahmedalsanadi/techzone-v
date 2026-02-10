@@ -20,7 +20,7 @@ export async function generateMetadata({
     };
 }
 
-import CategoryContent from '@/components/pages/categories/CategoryContent';
+import CategoryContent from '@/components/categories/CategoryContent';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { getQueryClient } from '@/lib/getQueryClient';
 

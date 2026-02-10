@@ -1,4 +1,4 @@
-import { fetchLibero } from './api';
+import { fetchLibero } from '@/lib/api';
 import type {
     ApiCart,
     AddCartItemRequest,

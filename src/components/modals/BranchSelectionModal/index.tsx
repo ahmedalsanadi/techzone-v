@@ -7,7 +7,7 @@
 import React, { useRef } from 'react';
 import { ChevronRight, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useBranchSelection } from '@/hooks/useBranchSelection';
+import { useBranchSelection } from '@/hooks/branch';
 import { BranchList } from './BranchList';
 import { BranchMapContainer } from './BranchMapContainer';
 import { cn } from '@/lib/utils';

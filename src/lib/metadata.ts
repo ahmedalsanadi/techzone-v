@@ -1,5 +1,5 @@
 import { siteConfig } from '@/config/site';
-import { Product, StoreConfig } from '@/services/types';
+import { Product, StoreConfig } from '@/types/store';
 
 /**
  * Generates Product Structured Data with correct Schema.org enumerations

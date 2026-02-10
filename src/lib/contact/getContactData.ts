@@ -3,10 +3,10 @@
  */
 
 import { branchService } from '@/services/branch-service';
-import { getServerStoreConfig } from '@/lib/server/store-config';
+import { getServerStoreConfig } from '@/services/store-config';
 import { redirect } from '@/i18n/navigation';
 import type { Branch } from '@/types/branches';
-import type { StoreInfo } from '@/services/types';
+import type { StoreInfo } from '@/types/store';
 
 interface ContactData {
     branch: Branch | null;

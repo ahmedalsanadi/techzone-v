@@ -4,7 +4,7 @@ import {
     parseDomainMap,
     resolveStoreKeyFromHost,
     type TenantSource,
-} from '@/lib/tenant';
+} from './resolve';
 
 export type TenantRequestInfo = {
     host: string | null;

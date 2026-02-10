@@ -2,7 +2,7 @@
  * Error handling utilities for authentication flow
  */
 
-import { ApiError } from '@/services/api';
+import { ApiError } from '@/lib/api';
 
 export interface ErrorHandlerOptions {
     defaultMessage: string;
