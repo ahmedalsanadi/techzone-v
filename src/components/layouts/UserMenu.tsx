@@ -14,6 +14,7 @@ import {
     Phone,
     Mail,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { useRouter } from '@/i18n/navigation';
@@ -24,9 +25,93 @@ import { Menu, MenuButton, MenuItem } from '@headlessui/react';
 import { BaseMenuItems } from '../ui/BaseMenuItems';
 import { Button } from '@/components/ui/Button';
 
+const THEME_CLASSES: Record<
+    string,
+    { wrapper: string; link: string; label: string }
+> = {
+    orange: {
+        wrapper: 'bg-orange-100 text-orange-600',
+        link: 'hover:bg-orange-50',
+        label: 'group-hover:text-orange-700',
+    },
+    blue: {
+        wrapper: 'bg-blue-100 text-blue-600',
+        link: 'hover:bg-blue-50',
+        label: 'group-hover:text-blue-700',
+    },
+    emerald: {
+        wrapper: 'bg-emerald-100 text-emerald-600',
+        link: 'hover:bg-emerald-50',
+        label: 'group-hover:text-emerald-700',
+    },
+    pink: {
+        wrapper: 'bg-pink-100 text-pink-600',
+        link: 'hover:bg-pink-50',
+        label: 'group-hover:text-pink-700',
+    },
+    red: {
+        wrapper: 'bg-red-100 text-red-600',
+        link: 'hover:bg-red-50',
+        label: 'group-hover:text-red-700',
+    },
+};
+
+interface UserMenuNavItemProps {
+    href?: string;
+    onClick?: () => void;
+    icon: LucideIcon;
+    theme: keyof typeof THEME_CLASSES;
+    label: string;
+}
+
+function UserMenuNavItem({
+    href,
+    onClick,
+    icon: Icon,
+    theme,
+    label,
+}: UserMenuNavItemProps) {
+    const classes = THEME_CLASSES[theme];
+    const content = (
+        <>
+            <div
+                className={`w-9 h-9 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform shrink-0 ${classes.wrapper}`}>
+                <Icon size={18} strokeWidth={2} />
+            </div>
+            <span
+                className={`text-sm font-semibold text-gray-700 ${classes.label}`}>
+                {label}
+            </span>
+        </>
+    );
+
+    if (onClick) {
+        return (
+            <MenuItem>
+                <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={onClick}
+                    className={`w-full flex items-center justify-start gap-3 px-3 py-2.5 rounded-xl h-auto min-h-0 ${classes.link} text-red-600`}>
+                    {content}
+                </Button>
+            </MenuItem>
+        );
+    }
+
+    return (
+        <MenuItem>
+            <Link
+                href={href!}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group ${classes.link}`}>
+                {content}
+            </Link>
+        </MenuItem>
+    );
+}
+
 const UserMenu = () => {
     const t = useTranslations('UserMenu');
-    const locale = useLocale();
     const router = useRouter();
     const {
         user,
@@ -41,6 +126,7 @@ const UserMenu = () => {
             await authService.logout();
         } catch (error) {
             // Error already handled
+            console.error(error);
         }
 
         clearAuth();
@@ -53,7 +139,7 @@ const UserMenu = () => {
         <Menu
             as="div"
             className="relative inline-block"
-            dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+            >
             <MenuButton className="bg-white/95 backdrop-blur-sm flex items-center gap-2 px-3 py-2 rounded-full border border-white/20 shadow-sm hover:shadow-md hover:bg-white transition-all outline-none h-10 lg:h-11">
                 <div className="w-7 h-7 lg:w-8 lg:h-8 bg-theme-primary/10 rounded-full flex items-center justify-center border border-theme-primary/20">
                     <User size={16} className="text-theme-primary" strokeWidth={2.5} />
@@ -116,7 +202,7 @@ const UserMenu = () => {
                                     )}
 
                                     {/* Points Badge */}
-                                    <div className="mt-2 inline-flex items-center gap-1.5 bg-theme-primary/10 text-theme-primary px-3 py-1.5 rounded-full border border-theme-primary/20">
+                                    <div className="mt-2 inline-flex max-w-[160px] mx-auto items-center gap-1.5 bg-theme-primary/10 text-theme-primary px-3 py-1.5 rounded-full border border-theme-primary/20">
                                         <Star
                                             size={12}
                                             fill="currentColor"
@@ -139,77 +225,49 @@ const UserMenu = () => {
                 <div className="p-2">
                     {isAuthenticated ? (
                         <div className="flex flex-col gap-1">
-                            {/* Menu Navigation Items */}
-                            <MenuItem>
-                                <Link
-                                    href="/my-orders"
-                                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-orange-50 transition-all group">
-                                    <div className="w-9 h-9 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600 group-hover:scale-105 transition-transform">
-                                        <Package size={18} strokeWidth={2} />
-                                    </div>
-                                    <span className="text-sm font-semibold text-gray-700 group-hover:text-orange-700">
-                                        {t('myOrders')}
-                                    </span>
-                                </Link>
-                            </MenuItem>
+                            {[
+                                {
+                                    href: '/my-orders',
+                                    icon: Package,
+                                    theme: 'orange' as const,
+                                    labelKey: 'myOrders',
+                                },
+                                {
+                                    href: '/my-addresses',
+                                    icon: MapPin,
+                                    theme: 'blue' as const,
+                                    labelKey: 'myAddresses',
+                                },
+                                {
+                                    href: '/wallet',
+                                    icon: Wallet,
+                                    theme: 'emerald' as const,
+                                    labelKey: 'wallet',
+                                },
+                                {
+                                    href: '/wishlist',
+                                    icon: Heart,
+                                    theme: 'pink' as const,
+                                    labelKey: 'favorites',
+                                },
+                            ].map((item) => (
+                                <UserMenuNavItem
+                                    key={item.href}
+                                    href={item.href}
+                                    icon={item.icon}
+                                    theme={item.theme}
+                                    label={t(item.labelKey)}
+                                />
+                            ))}
 
-                            <MenuItem>
-                                <Link
-                                    href="/my-addresses"
-                                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-blue-50 transition-all group">
-                                    <div className="w-9 h-9 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 group-hover:scale-105 transition-transform">
-                                        <MapPin size={18} strokeWidth={2} />
-                                    </div>
-                                    <span className="text-sm font-semibold text-gray-700 group-hover:text-blue-700">
-                                        {t('myAddresses')}
-                                    </span>
-                                </Link>
-                            </MenuItem>
-
-                            <MenuItem>
-                                <Link
-                                    href="/wallet"
-                                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-emerald-50 transition-all group">
-                                    <div className="w-9 h-9 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600 group-hover:scale-105 transition-transform">
-                                        <Wallet size={18} strokeWidth={2} />
-                                    </div>
-                                    <span className="text-sm font-semibold text-gray-700 group-hover:text-emerald-700">
-                                        {t('wallet')}
-                                    </span>
-                                </Link>
-                            </MenuItem>
-
-                            <MenuItem>
-                                <Link
-                                    href="/wishlist"
-                                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-pink-50 transition-all group">
-                                    <div className="w-9 h-9 rounded-lg bg-pink-100 flex items-center justify-center text-pink-600 group-hover:scale-105 transition-transform">
-                                        <Heart size={18} strokeWidth={2} />
-                                    </div>
-                                    <span className="text-sm font-semibold text-gray-700 group-hover:text-pink-700">
-                                        {t('favorites')}
-                                    </span>
-                                </Link>
-                            </MenuItem>
-
-                            {/* Divider */}
                             <div className="h-px bg-gray-100 my-1" />
 
-                            {/* Sign Out Action */}
-                            <MenuItem>
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    onClick={handleLogout}
-                                    className="w-full flex items-center justify-start gap-3 px-3 py-2.5 rounded-xl hover:bg-red-50 text-red-600 hover:text-red-600 h-auto min-h-0">
-                                    <div className="w-9 h-9 rounded-lg bg-red-100 flex items-center justify-center group-hover:scale-105 transition-transform">
-                                        <LogOut size={18} strokeWidth={2} />
-                                    </div>
-                                    <span className="text-sm font-semibold group-hover:text-red-700">
-                                        {t('logout')}
-                                    </span>
-                                </Button>
-                            </MenuItem>
+                            <UserMenuNavItem
+                                icon={LogOut}
+                                theme="red"
+                                label={t('logout')}
+                                onClick={handleLogout}
+                            />
                         </div>
                     ) : (
                         <MenuItem>
