@@ -41,7 +41,7 @@ export default function PhoneInput({
                     )}
                 </label>
             )}
-            <div className="relative group">
+            <div className="relative group" dir="ltr">
                 <div className="absolute top-1/2 -translate-y-1/2 flex items-center gap-2 sm:gap-2.5 md:gap-3 px-2 sm:px-3 md:px-4 h-10 sm:h-12 md:h-14 start-0">
                     <div className="w-6 h-4 sm:w-7 sm:h-4.5 md:w-8 md:h-5 relative rounded-sm overflow-hidden shadow-sm border border-gray-100 shrink-0">
                         <Image
@@ -52,9 +52,7 @@ export default function PhoneInput({
                             className="object-cover w-full h-full"
                         />
                     </div>
-                    <span
-                        className="text-[#2D3142] font-black text-sm sm:text-base md:text-lg shrink-0"
-                        dir="ltr">
+                    <span className="text-[#2D3142] font-black text-sm sm:text-base md:text-lg shrink-0">
                         {countryCode}
                     </span>
                 </div>
