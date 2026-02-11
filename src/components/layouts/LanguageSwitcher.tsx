@@ -19,7 +19,7 @@ const LanguageSwitcher = () => {
     };
 
     return (
-        <Menu as="div" className="relative inline-block text-left">
+        <Menu as="div" className="relative inline-block ">
             <MenuButton className="relative p-2 text-white hover:bg-white/10 rounded-full transition-colors outline-none">
                 <Globe size={24} strokeWidth={1.5} />
             </MenuButton>

@@ -52,7 +52,7 @@ const UserMenu = () => {
     return (
         <Menu
             as="div"
-            className="relative inline-block text-left"
+            className="relative inline-block"
             dir={locale === 'ar' ? 'rtl' : 'ltr'}>
             <MenuButton className="bg-white/95 backdrop-blur-sm flex items-center gap-2 px-3 py-2 rounded-full border border-white/20 shadow-sm hover:shadow-md hover:bg-white transition-all outline-none h-10 lg:h-11">
                 <div className="w-7 h-7 lg:w-8 lg:h-8 bg-theme-primary/10 rounded-full flex items-center justify-center border border-theme-primary/20">
@@ -63,7 +63,7 @@ const UserMenu = () => {
                 </span>
                 <ChevronDown
                     size={16}
-                    className="text-gray-400 transition-transform group-data-[open]:rotate-180"
+                    className="text-gray-400 transition-transform group-data-open:rotate-180"
                     strokeWidth={2}
                 />
             </MenuButton>
@@ -72,7 +72,7 @@ const UserMenu = () => {
                 anchor="bottom end"
                 className="w-72 p-0 rounded-2xl overflow-hidden">
                 {/* User Info Header Section */}
-                <div className="relative px-5 pt-5 pb-4 bg-gradient-to-br from-gray-50 to-white border-b border-gray-100">
+                <div className="relative px-5 pt-5 pb-4 bg-linear-to-br from-gray-50 to-white border-b border-gray-100">
                     {/* Edit Button */}
                     {isAuthenticated && (
                         <MenuItem>
