@@ -151,18 +151,21 @@ export default function AuthFlow({
 
                         <div className="text-xs sm:text-sm text-[#2D3142] text-start px-1">
                             {t('termsText')}{' '}
-                            <button
+                            <Button
                                 type="button"
+                                variant="link"
                                 onClick={() => router.push('/terms')}
-                                className="text-theme-primary font-bold hover:underline wrap-break-word">
+                                className="text-theme-primary font-bold p-0 h-auto min-h-0">
                                 {t('termsLink')}
-                            </button>
+                            </Button>
                         </div>
 
                         <Button
                             type="submit"
+                            variant="primary"
+                            size="xl"
                             disabled={loading || !phone}
-                            className="w-full h-10 sm:h-12 md:h-14 rounded-lg sm:rounded-xl md:rounded-2xl text-white font-black text-sm sm:text-base md:text-lg lg:text-xl shadow-xl transition-all active:scale-[0.98] mt-3 sm:mt-4 md:mt-5 bg-theme-primary hover:brightness-[0.95] shadow-theme-primary/20">
+                            className="w-full mt-3 sm:mt-4 md:mt-5 active:scale-[0.98]">
                             {loading ? (
                                 <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                             ) : (
@@ -308,8 +311,10 @@ export default function AuthFlow({
 
                     <Button
                         type="submit"
+                        variant="primary"
+                        size="xl"
                         disabled={loading || !formData.first_name.trim()}
-                        className="w-full h-10 sm:h-12 md:h-14 rounded-lg sm:rounded-xl md:rounded-2xl text-white font-black text-sm sm:text-base md:text-lg lg:text-xl shadow-xl transition-all active:scale-[0.98] mt-3 sm:mt-4 md:mt-5 bg-libero-red shadow-libero-red/20">
+                        className="w-full mt-3 sm:mt-4 md:mt-5 active:scale-[0.98] bg-libero-red shadow-libero-red/20 hover:brightness-95">
                         {loading ? (
                             <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         ) : (

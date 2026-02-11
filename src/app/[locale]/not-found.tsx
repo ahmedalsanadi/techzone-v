@@ -4,6 +4,7 @@ import React from 'react';
 import { UtensilsCrossed } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
+import { Button } from '@/components/ui/Button';
 
 export default function NotFound() {
     const t = useTranslations('NotFound');
@@ -35,11 +36,9 @@ export default function NotFound() {
             </p>
 
             {/* Action Button */}
-            <Link
-                href="/"
-                className="inline-flex items-center justify-center px-10 py-4 bg-theme-primary hover:brightness-[0.95] text-white text-lg font-bold rounded-2xl transition-all shadow-theme-primary/30 hover:shadow-theme-primary/40 hover:-translate-y-1 active:scale-95">
-                {t('backHome')}
-            </Link>
+            <Button asChild variant="primary" size="2xl" className="hover:-translate-y-1 active:scale-95">
+                <Link href="/">{t('backHome')}</Link>
+            </Button>
 
             {/* Decorative elements */}
             <div className="absolute top-1/4 left-10 w-2 h-2 rounded-full bg-theme-primary/20" />

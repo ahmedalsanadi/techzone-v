@@ -106,8 +106,10 @@ export default function MyAddressesView() {
 
                 <Button
                     type="button"
+                    variant="primary"
+                    size="xl"
                     onClick={handleAdd}
-                    className="w-full md:w-auto min-h-[48px] sm:min-h-[52px] md:h-14 px-5 sm:px-6 md:px-8 lg:px-10 rounded-lg sm:rounded-xl md:rounded-2xl bg-theme-primary hover:brightness-95 text-white font-bold text-sm sm:text-base md:text-lg shadow-lg shadow-theme-primary/10 transition-all active:scale-[0.98] touch-manipulation relative z-10 flex items-center justify-center gap-2">
+                    className="w-full md:w-auto relative z-10 active:scale-[0.98]">
                     <Plus className="w-5 h-5 shrink-0" />
                     {t('addNew')}
                 </Button>
@@ -153,8 +155,8 @@ export default function MyAddressesView() {
                         <Button
                             type="button"
                             variant="outline"
-                            onClick={() => refetch()}
-                            className="min-h-[48px] rounded-lg sm:rounded-xl px-6 sm:px-8 touch-manipulation">
+                            size="xl"
+                            onClick={() => refetch()}>
                             {t('retry') || 'Retry'}
                         </Button>
                     </div>
@@ -185,8 +187,8 @@ export default function MyAddressesView() {
                         <Button
                             type="button"
                             variant="outline"
-                            onClick={handleAdd}
-                            className="min-h-[48px] rounded-lg sm:rounded-xl px-6 sm:px-8 touch-manipulation">
+                            size="xl"
+                            onClick={handleAdd}>
                             {t('addNew')}
                         </Button>
                     </div>

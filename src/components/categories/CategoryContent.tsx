@@ -18,6 +18,7 @@ import { prefetchNextProductsPage } from '@/lib/products/prefetch';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useRouter, usePathname } from '@/i18n/navigation';
 import { useStore } from '@/components/providers/StoreProvider';
+import { Button } from '@/components/ui/Button';
 
 interface CategoryContentProps {
     initialCategory?: Category;
@@ -210,11 +211,12 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
                                 حدث خطأ أثناء تحميل المنتجات. يرجى المحاولة مرة
                                 أخرى.
                             </p>
-                            <button
+                            <Button
+                                variant="link"
                                 onClick={() => window.location.reload()}
-                                className="mt-4 text-sm underline font-bold">
+                                className="mt-4 text-sm underline font-bold p-0 h-auto min-h-0">
                                 تحديث الصفحة
-                            </button>
+                            </Button>
                         </div>
                     ) : (
                         <ProductsGrid

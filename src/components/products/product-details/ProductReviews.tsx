@@ -256,8 +256,10 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
                             <Filter className="w-4 h-4 text-gray-400" />
                         </div>
                         {[5, 4, 3, 2, 1].map((rating) => (
-                            <button
+                            <Button
                                 key={rating}
+                                type="button"
+                                variant="ghost"
                                 onClick={() =>
                                     setRatingFilter(
                                         ratingFilter === rating.toString()
@@ -266,7 +268,7 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
                                     )
                                 }
                                 className={cn(
-                                    'flex items-center justify-between w-full p-2 rounded-lg transition-colors',
+                                    'flex items-center justify-between w-full p-2 rounded-lg h-auto min-h-0',
                                     ratingFilter === rating.toString()
                                         ? 'bg-theme-primary/10 border border-theme-primary/20'
                                         : 'hover:bg-gray-50',
@@ -294,7 +296,7 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
                                         }
                                     </span>
                                 </div>
-                            </button>
+                            </Button>
                         ))}
                     </div>
                 </div>
@@ -467,9 +469,11 @@ function ReviewCard({ review }: { review: Review }) {
                         {review.comment}
                     </p>
                     {review.comment.length > 150 && (
-                        <button className="text-xs text-theme-primary hover:text-theme-primary/80 font-medium">
+                        <Button
+                            variant="link"
+                            className="text-xs text-theme-primary hover:text-theme-primary/80 font-medium p-0 h-auto min-h-0">
                             {t('readMore') || 'قراءة المزيد'}
-                        </button>
+                        </Button>
                     )}
                 </div>
             )}

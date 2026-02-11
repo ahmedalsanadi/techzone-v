@@ -5,6 +5,7 @@ import React, { useMemo } from 'react';
 import type { Branch, WorkingHoursSchedule } from '@/types/branches';
 import { formatWorkingHoursDays } from '@/lib/branches';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/Button';
 
 interface WorkingHoursModalProps {
     branch: Branch;
@@ -67,12 +68,15 @@ const WorkingHoursModal: React.FC<WorkingHoursModalProps> = ({
                                 <Clock className="size-5 md:size-[20px] text-theme-primary" />
                                 {t('working_hours')}
                             </DialogTitle>
-                            <button
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
                                 onClick={onClose}
-                                className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-full bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-all focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-2"
+                                className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-50 hover:bg-gray-100 hover:text-gray-600 shrink-0"
                                 aria-label={t('close_modal') || 'Close modal'}>
-                                <X size={20} />
-                            </button>
+                                <X className="size-5" />
+                            </Button>
                         </div>
 
                         {/* Content */}

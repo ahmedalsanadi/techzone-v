@@ -5,6 +5,8 @@ import React, { useEffect, useRef } from 'react';
 import DynamicImage from './DynamicImage';
 import { Heart, Plus, ShoppingBasket, Loader2 } from 'lucide-react';
 import CurrencySymbol from './CurrencySymbol';
+import { Button } from './Button';
+import { cn } from '@/lib/utils';
 import { Link } from '@/i18n/navigation';
 import { useWishlistActions } from '@/hooks/wishlist';
 import { useWishlistStore } from '@/store/useWishlistStore';
@@ -107,15 +109,18 @@ const ProductCard: React.FC<ProductCardProps> = ({
             onFocus={onPrefetch}
             className="bg-white border border-gray-100 rounded-xl overflow-hidden relative group shadow-sm flex flex-col h-full">
             {/* Wishlist Button */}
-            <button
+            <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
                 onClick={handleWishlistClick}
-                className={`absolute top-3 left-3 w-8 h-8 bg-white/90 backdrop-blur-sm shadow-sm rounded-full flex items-center justify-center transition-all z-20 cursor-pointer ${
+                className={`absolute top-3 left-3 z-20 rounded-full bg-white/90 backdrop-blur-sm shadow-sm ${
                     isInWishlistState
                         ? 'text-red-500 fill-red-500'
                         : 'text-gray-400 hover:text-red-500'
                 }`}>
                 <Heart className={`w-4 h-4 ${isInWishlistState ? 'fill-current' : ''}`} />
-            </button>
+            </Button>
 
             {/* Link wrapper for Image and Info */}
             <Link href={href} className="w-full flex flex-col flex-1">
@@ -170,7 +175,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
             {/* Add to Cart Button */}
             <div className="p-4 pt-0">
-                <button
+                <Button
+                    type="button"
+                    variant="outlineTint"
+                    size="lg"
                     onClick={(e) => {
                         e.stopPropagation();
                         e.preventDefault();
@@ -179,11 +187,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
                         }
                     }}
                     disabled={isAdding}
-                    className={`w-full font-medium py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95 border cursor-pointer group/btn ${
-                        isAdding
-                            ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
-                            : 'bg-theme-primary/10 hover:bg-theme-primary hover:text-white text-theme-primary border-theme-primary'
-                    }`}>
+                    className={cn(
+                        'w-full rounded-lg active:scale-95 group/btn',
+                        isAdding && 'bg-gray-100 text-gray-400 border-gray-200',
+                    )}>
                     {isAdding ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                     ) : (
@@ -192,7 +199,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     <span className="text-sm">
                         {addToCartLabel || 'إضافة إلى السلة'}
                     </span>
-                </button>
+                </Button>
             </div>
         </div>
     );

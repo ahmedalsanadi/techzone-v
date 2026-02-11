@@ -1,4 +1,5 @@
 import CheckoutCard from './CheckoutCard';
+import { Button } from '@/components/ui/Button';
 
 export default function CouponCard() {
     return (
@@ -9,9 +10,12 @@ export default function CouponCard() {
                     placeholder="كود الكوبون"
                     className="w-full sm:w-60 border border-gray-300 rounded-lg px-4 py-2.5 focus:border-theme-primary-border focus:ring-4 focus:ring-theme-primary/5 outline-none transition-all"
                 />
-                <button className="px-6 py-2.5 border border-theme-primary text-theme-primary rounded-lg text-lg font-semibold hover:bg-theme-primary/10 transition-all whitespace-nowrap">
+                <Button
+                    type="button"
+                    variant="outline"
+                    className="px-6 py-2.5 border-theme-primary text-theme-primary rounded-lg text-lg font-semibold hover:bg-theme-primary/10 whitespace-nowrap">
                     تحقق
-                </button>
+                </Button>
             </div>
         </CheckoutCard>
     );

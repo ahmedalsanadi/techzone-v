@@ -6,6 +6,7 @@ import { Plus, Minus } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
+import { Button } from '@/components/ui/Button';
 
 interface ProductActionBarProps {
     totalPrice: number;
@@ -25,12 +26,15 @@ interface QtyButtonProps {
 
 const QtyButton = React.memo(
     ({ icon: Icon, onClick, disabled }: QtyButtonProps) => (
-        <button
+        <Button
+            type="button"
+            variant="stepper"
+            size="icon"
             onClick={onClick}
             disabled={disabled}
-            className="w-9 h-9  rounded-lg bg-white flex items-center justify-center text-gray-600 hover:text-theme-primary transition-all shadow-sm disabled:opacity-30 active:scale-95 cursor-pointer">
-            <Icon className="w-3.5 h-3.5 " strokeWidth={3} />
-        </button>
+            className="active:scale-95">
+            <Icon className="w-3.5 h-3.5" strokeWidth={3} />
+        </Button>
     ),
 );
 
@@ -84,13 +88,14 @@ export default function ProductActionBar({
                 </div>
 
                 {/* Add to Cart Button */}
-                <button
+                <Button
+                    type="button"
+                    variant="primary"
                     onClick={onAddToCart}
                     disabled={!isAvailable}
                     className={cn(
-                        'flex items-center justify-between gap-12 max-w-[260px] bg-theme-primary hover:brightness-[0.95] text-white',
-                        'px-5 py-2.5 rounded-lg transition-all active:scale-[0.98] shadow-lg shadow-theme-primary/10 group cursor-pointer',
-                        'disabled:bg-gray-400 disabled:shadow-none disabled:cursor-not-allowed',
+                        'flex items-center justify-between gap-12 max-w-[260px] px-5 py-2.5 rounded-lg transition-all active:scale-[0.98] group',
+                        !isAvailable && 'bg-gray-400 shadow-none',
                     )}>
                     <span className="text-sm sm:text-lg font-bold">
                         {buttonText}
@@ -114,7 +119,7 @@ export default function ProductActionBar({
                             </div>
                         </div>
                     )}
-                </button>
+                </Button>
             </div>
         </div>
     );

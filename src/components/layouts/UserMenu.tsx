@@ -22,6 +22,7 @@ import { useCartStore } from '@/store/useCartStore';
 import { authService } from '@/services/auth-service';
 import { Menu, MenuButton, MenuItem } from '@headlessui/react';
 import { BaseMenuItems } from '../ui/BaseMenuItems';
+import { Button } from '@/components/ui/Button';
 
 const UserMenu = () => {
     const t = useTranslations('UserMenu');
@@ -196,16 +197,18 @@ const UserMenu = () => {
 
                             {/* Sign Out Action */}
                             <MenuItem>
-                                <button
+                                <Button
+                                    type="button"
+                                    variant="ghost"
                                     onClick={handleLogout}
-                                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-50 transition-all group text-red-600">
+                                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-50 text-red-600 hover:text-red-600 h-auto min-h-0">
                                     <div className="w-9 h-9 rounded-lg bg-red-100 flex items-center justify-center group-hover:scale-105 transition-transform">
                                         <LogOut size={18} strokeWidth={2} />
                                     </div>
                                     <span className="text-sm font-semibold group-hover:text-red-700">
                                         {t('logout')}
                                     </span>
-                                </button>
+                                </Button>
                             </MenuItem>
                         </div>
                     ) : (

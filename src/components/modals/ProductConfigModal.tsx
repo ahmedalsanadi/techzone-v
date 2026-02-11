@@ -16,6 +16,7 @@ import CustomFieldsForm from '@/components/products/product-details/CustomFields
 import { generateCartItemId } from '@/lib/cart/utils';
 import { cn } from '@/lib/utils';
 import { Link } from '@/i18n/navigation';
+import { Button } from '@/components/ui/Button';
 import { toast } from 'sonner';
 
 interface ProductConfigModalProps {
@@ -208,12 +209,14 @@ export default function ProductConfigModal({
                         transition
                         className="bg-white shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col relative max-h-[88vh] rounded-2xl lg:rounded-4xl duration-300 ease-out data-closed:scale-95 data-closed:opacity-0">
                         <header className="flex items-center justify-between p-4 sm:p-5 md:p-6 border-b border-gray-100 shrink-0">
-                            <button
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon-xl"
                                 onClick={onClose}
-                                className="p-2 hover:bg-gray-100 rounded-lg sm:rounded-xl transition-colors touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
                                 aria-label={t('close')}>
-                                <X className="w-5 h-5 text-gray-500" />
-                            </button>
+                                <X className="size-5" />
+                            </Button>
                             <div className="text-center flex-1">
                                 <DialogTitle
                                     as="h2"
@@ -288,24 +291,27 @@ export default function ProductConfigModal({
                         </main>
 
                         <footer className="p-4 sm:p-5 md:p-6 border-t border-gray-100 flex items-center justify-end gap-3 shrink-0">
-                            <button
+                            <Button
                                 type="button"
+                                variant="secondary"
+                                size="xl"
                                 onClick={onClose}
-                                className="min-h-[48px] px-6 py-3 text-gray-500 font-bold rounded-lg sm:rounded-xl hover:bg-gray-100 transition-colors touch-manipulation">
+                                className="px-6">
                                 {t('cancel') || 'Cancel'}
-                            </button>
-                            <button
+                            </Button>
+                            <Button
                                 type="button"
+                                variant="primary"
+                                size="xl"
                                 onClick={handleAddToCart}
                                 disabled={!validation.isValid || isOutOfStock}
                                 className={cn(
-                                    'min-h-[48px] px-8 sm:px-10 py-3 font-black rounded-lg sm:rounded-xl transition-all shadow-lg touch-manipulation',
-                                    !validation.isValid || isOutOfStock
-                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-none'
-                                        : 'bg-theme-primary text-white hover:brightness-95 shadow-theme-primary/20 active:scale-[0.98]',
+                                    'active:scale-[0.98]',
+                                    (!validation.isValid || isOutOfStock) &&
+                                        'bg-gray-100 text-gray-400 border-none shadow-none hover:brightness-100',
                                 )}>
                                 {t('addToCart') || 'Add to cart'}
-                            </button>
+                            </Button>
                         </footer>
                     </DialogPanel>
                 </div>

@@ -22,6 +22,7 @@ import { useAddressForm } from '@/hooks/address/useAddressForm';
 import { DEFAULT_COORDINATES } from '@/lib/address/constants';
 import { formatAddressForDisplay } from '@/lib/address';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/Button';
 
 // Lazy load map component
 const AddressMap = dynamic(() => import('./AddressMap'), {
@@ -210,12 +211,14 @@ const AddressModal: React.FC<AddressModalProps> = ({
                         transition
                         className="bg-white shadow-2xl w-full max-w-6xl overflow-hidden flex flex-col relative max-h-[90vh] rounded-2xl md:rounded-4xl duration-300 ease-out data-closed:scale-95 data-closed:opacity-0">
                         <header className="flex items-center justify-between p-4 sm:p-5 md:p-6 border-b border-gray-100 shrink-0">
-                            <button
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon-xl"
                                 onClick={onClose}
-                                className="p-2 hover:bg-gray-100 rounded-lg sm:rounded-xl transition-colors touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
                                 aria-label={t('close')}>
-                                <X className="w-5 h-5 text-gray-500" />
-                            </button>
+                                <X className="size-5" />
+                            </Button>
                             <DialogTitle
                                 as="h2"
                                 className="text-base sm:text-lg md:text-xl font-bold text-gray-900">
@@ -448,24 +451,27 @@ const AddressModal: React.FC<AddressModalProps> = ({
                         </main>
 
                         <footer className="p-4 sm:p-5 md:p-6 border-t border-gray-100 flex items-center justify-end gap-3 shrink-0">
-                            <button
+                            <Button
                                 type="button"
+                                variant="secondary"
+                                size="xl"
                                 onClick={onClose}
-                                className="min-h-[48px] px-6 py-3 text-gray-500 font-bold rounded-lg sm:rounded-xl hover:bg-gray-100 transition-colors touch-manipulation">
+                                className="px-6">
                                 {t('cancel')}
-                            </button>
-                            <button
+                            </Button>
+                            <Button
                                 type="button"
+                                variant="primary"
+                                size="xl"
                                 onClick={handleSave}
                                 disabled={!isFormValid}
                                 className={cn(
-                                    'min-h-[48px] px-8 sm:px-10 py-3 font-black rounded-lg sm:rounded-xl transition-all shadow-lg touch-manipulation',
-                                    isFormValid
-                                        ? 'bg-theme-primary text-white hover:brightness-95 shadow-theme-primary/20 active:scale-[0.98]'
-                                        : 'bg-gray-100 text-gray-400 cursor-not-allowed border-none',
+                                    'active:scale-[0.98]',
+                                    !isFormValid &&
+                                        'bg-gray-100 text-gray-400 border-none shadow-none hover:brightness-100',
                                 )}>
                                 {activeAddress ? t('save') : t('addNew')}
-                            </button>
+                            </Button>
                         </footer>
                     </DialogPanel>
                 </div>

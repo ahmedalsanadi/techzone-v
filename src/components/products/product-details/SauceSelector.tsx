@@ -8,6 +8,7 @@ import { Plus, Minus, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import CustomizationCard from '@/components/products/product-details/CustomizationCard';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
+import { Button } from '@/components/ui/Button';
 
 interface SauceSelectorProps {
     sauces: ProductSauce[];
@@ -38,29 +39,34 @@ const SauceItem = React.memo(
                 </div>
 
                 <div className="flex items-center gap-2 bg-[#F1F3F5] p-1 rounded-lg shadow-inner">
-                    <button
+                    <Button
+                        type="button"
+                        variant="stepper"
+                        size="icon-xs"
                         onClick={() => onUpdateQuantity(String(sauce.id), -1)}
+                        disabled={qty === 0}
                         className={cn(
-                            'w-7 h-7 rounded-md bg-white flex items-center justify-center transition-all shadow-sm active:scale-95',
-                            qty === 0
-                                ? 'opacity-30 cursor-not-allowed'
-                                : 'text-gray-600 hover:text-red-500',
-                        )}
-                        disabled={qty === 0}>
+                            'active:scale-95',
+                            qty === 0 && 'opacity-30',
+                            qty > 0 && 'hover:text-red-500',
+                        )}>
                         {qty === 1 ? (
                             <Trash2 size={13} />
                         ) : (
                             <Minus size={13} strokeWidth={3} />
                         )}
-                    </button>
+                    </Button>
                     <span className="w-5 text-center font-bold text-base text-gray-800">
                         {qty}
                     </span>
-                    <button
+                    <Button
+                        type="button"
+                        variant="stepper"
+                        size="icon-xs"
                         onClick={() => onUpdateQuantity(String(sauce.id), 1)}
-                        className="w-7 h-7 rounded-md bg-white flex items-center justify-center text-gray-600 hover:text-libero-red transition-all shadow-sm active:scale-95">
+                        className="hover:text-libero-red active:scale-95">
                         <Plus size={13} strokeWidth={3} />
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>

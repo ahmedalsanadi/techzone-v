@@ -4,6 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import { ChevronLeft } from 'lucide-react';
 import { StoreConfig } from '@/types/store';
+import { Button } from '@/components/ui/Button';
 
 interface AuthContainerProps {
     config: StoreConfig;
@@ -29,21 +30,21 @@ export default function AuthContainer({
             <div className="w-full lg:w-[60%] bg-white flex flex-col p-4 sm:p-6 md:p-8 lg:p-12 xl:p-16 relative overflow-x-hidden">
                 {/* Header with Back Button */}
                 <div className="flex items-center mb-6 sm:mb-8 md:mb-10 lg:mb-12 shrink-0">
-                    <button
+                    <Button
+                        type="button"
+                        variant="ghost"
                         onClick={onBack || (() => window.history.back())}
-                        className="flex items-center gap-2 sm:gap-4 md:gap-6 group w-full min-w-0">
-                       
+                        className="flex items-center gap-2 sm:gap-4 md:gap-6 group w-full min-w-0 h-auto min-h-0 p-0 rounded-none border-0 bg-transparent hover:bg-transparent shadow-none">
                         <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full border border-gray-100 flex items-center justify-center transition-all bg-white shadow-sm group-hover:bg-gray-50 shrink-0">
-                           
-                                <ChevronLeft
-                                    size={20}
-                                    className="sm:w-6 sm:h-6 md:w-7 md:h-7 text-gray-400 rtl:rotate-180"
-                                />
+                            <ChevronLeft
+                                size={20}
+                                className="sm:w-6 sm:h-6 md:w-7 md:h-7 text-gray-400 rtl:rotate-180"
+                            />
                         </div>
-                         <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-[#2D3142] leading-tight sm:leading-none pt-1 sm:pt-2 truncate min-w-0">
+                        <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-[#2D3142] leading-tight sm:leading-none pt-1 sm:pt-2 truncate min-w-0">
                             {title}
                         </h1>
-                    </button>
+                    </Button>
                 </div>
 
                 {/* Main Content Area */}

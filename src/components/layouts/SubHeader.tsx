@@ -12,6 +12,7 @@ import {
     formatAddressForDisplay,
     formatScheduledTime,
 } from '@/lib/address';
+import { Button } from '@/components/ui/Button';
 
 export default function SubHeader() {
     const t = useTranslations('SubHeader');
@@ -107,13 +108,15 @@ export default function SubHeader() {
                                         </span>
                                     </div>
                                 )}
-                                <button
+                                <Button
                                     type="button"
+                                    variant="secondaryTint"
+                                    size="sm"
                                     onClick={() => setIsOrderModalOpen(true)}
-                                    className="px-3 py-1.5 bg-theme-primary/10 text-theme-primary text-xs font-medium rounded-lg hover:bg-theme-primary/20 transition-colors flex items-center gap-1 cursor-pointer">
+                                    className="px-3 py-1.5 text-xs gap-1">
                                     <Edit className="w-3.5 h-3.5" />
                                     {t('edit')}
-                                </button>
+                                </Button>
                             </>
                         ) : (
                             <div className="flex items-center gap-2 flex-row-reverse">
@@ -199,13 +202,15 @@ export default function SubHeader() {
                                 </div>
                             )}
 
-                            <button
+                            <Button
                                 type="button"
+                                variant="secondaryTint"
+                                size="xl"
                                 onClick={() => setIsOrderModalOpen(true)}
-                                className="w-full mt-2 min-h-[48px] px-3 py-2.5 bg-theme-primary/10 text-theme-primary text-xs sm:text-sm font-medium rounded-lg hover:bg-theme-primary/20 transition-colors flex items-center justify-center gap-1 touch-manipulation cursor-pointer active:bg-theme-primary/20">
+                                className="w-full mt-2 text-xs sm:text-sm gap-1 active:bg-theme-primary/20">
                                 <Edit className="w-3.5 h-3.5 shrink-0" />
                                 {t('edit')}
-                            </button>
+                            </Button>
                         </div>
                     )}
 

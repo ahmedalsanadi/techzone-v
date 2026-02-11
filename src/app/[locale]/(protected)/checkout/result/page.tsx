@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
+import { Button } from '@/components/ui/Button';
 import { usePaymentStatus } from '@/hooks/checkout';
 import { parsePaymentResult } from '@/lib/checkout';
 
@@ -51,11 +52,9 @@ export default function CheckoutResultPage() {
                     {t('orderCreatedSuccessfully')}
                 </h1>
                 {orderId != null && (
-                    <Link
-                        href={`/my-orders/${orderId}`}
-                        className="bg-theme-primary text-white font-bold py-3 px-8 rounded-xl hover:brightness-95">
-                        {t('viewOrder') || 'View order'}
-                    </Link>
+                    <Button asChild variant="primary" size="xl">
+                        <Link href={`/my-orders/${orderId}`}>{t('viewOrder') || 'View order'}</Link>
+                    </Button>
                 )}
             </div>
         );
@@ -73,16 +72,12 @@ export default function CheckoutResultPage() {
                 <p className="text-gray-600 text-center max-w-md">{message}</p>
             )}
             <div className="flex flex-wrap gap-3 justify-center">
-                <Link
-                    href="/checkout"
-                    className="bg-theme-primary text-white font-bold py-3 px-8 rounded-xl hover:brightness-95">
-                    {t('backToCheckout') || 'Back to checkout'}
-                </Link>
-                <Link
-                    href="/cart"
-                    className="border-2 border-gray-300 text-gray-700 font-bold py-3 px-8 rounded-xl hover:bg-gray-50">
-                    {t('backToCart') || 'Back to cart'}
-                </Link>
+                <Button asChild variant="primary" size="xl">
+                    <Link href="/checkout">{t('backToCheckout') || 'Back to checkout'}</Link>
+                </Button>
+                <Button asChild variant="outline" size="xl" className="border-2">
+                    <Link href="/cart">{t('backToCart') || 'Back to cart'}</Link>
+                </Button>
             </div>
         </div>
     );

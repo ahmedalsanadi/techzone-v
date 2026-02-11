@@ -8,6 +8,7 @@ import { useBranchStore } from '@/store/useBranchStore';
 import OrderTypeModal from '@/components/modals/OrderTypeModal';
 import { useTranslations } from 'next-intl';
 import { getAddressLabel, formatAddressForDisplay } from '@/lib/address';
+import { Button } from '@/components/ui/Button';
 
 interface OrderTypeCardProps {
     /** When true, open the order type/address modal (e.g. from "Choose address" CTA). */
@@ -72,12 +73,15 @@ export default function OrderTypeCard({
             <CheckoutCard
                 title={checkoutT('orderTypeAndTime')}
                 action={
-                    <button
+                    <Button
+                        type="button"
+                        variant="secondaryTint"
+                        size="sm"
                         onClick={() => setIsModalOpen(true)}
-                        className="bg-theme-primary/10 px-2.5 py-1.5 rounded-md flex items-center gap-1 text-theme-primary text-md font-medium hover:brightness-[0.95] transition-all">
+                        className="gap-1">
                         <span>{checkoutT('edit')}</span>
                         <ChevronLeft className="w-4 h-4" />
-                    </button>
+                    </Button>
                 }>
                 <div className="text-md space-y-4">
                     <div className="flex items-start gap-3">

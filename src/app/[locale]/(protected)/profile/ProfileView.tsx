@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { useAuthStore } from '@/store/useAuthStore';
-import { storeService } from '@/services/store-service';
 import type { CustomerProfile, ProfileUpdateRequest } from '@/types/auth';
 import ProfileForm from './ProfileForm';
 import { Button } from '@/components/ui/Button';
 import { User, Loader2 } from 'lucide-react';
+import { useProfileQuery, useProfileUpdateMutation } from '@/hooks/auth';
 
 interface ProfileViewProps {
     initialProfile: CustomerProfile | null;
@@ -18,82 +18,67 @@ export default function ProfileView({ initialProfile }: ProfileViewProps) {
     const t = useTranslations('Profile');
     const { profile, setProfile } = useAuthStore();
     const [isEditing, setIsEditing] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [isSaving, setIsSaving] = useState(false);
-    const [formData, setFormData] = useState<ProfileUpdateRequest>({
-        first_name: '',
-        middle_name: '',
-        last_name: '',
-        email: '',
+    const [draft, setDraft] = useState<ProfileUpdateRequest | null>(null);
+
+    const profileQuery = useProfileQuery({
+        enabled: true,
+        initialData: initialProfile,
     });
+    const updateMutation = useProfileUpdateMutation();
 
-    // Use profile from store if available, otherwise use initialProfile
-    const currentProfile = profile || initialProfile;
+    const currentProfile =
+        profile ?? profileQuery.data ?? initialProfile ?? null;
 
-    // Initialize form data from profile
-    useEffect(() => {
-        if (currentProfile) {
-            setFormData({
-                first_name: currentProfile.first_name || '',
-                middle_name: currentProfile.middle_name || '',
-                last_name: currentProfile.last_name || '',
-                email: currentProfile.email || '',
-            });
-        }
-    }, [currentProfile]);
-
-    // Load profile if not available
-    useEffect(() => {
-        const loadProfile = async () => {
-            if (!currentProfile && !isLoading) {
-                setIsLoading(true);
-                try {
-                    const fetchedProfile = await storeService.getProfile();
-                    setProfile(fetchedProfile);
-                } catch (error) {
-                    toast.error(
-                        t('loadError') ||
-                            'Failed to load profile. Please try again.',
-                    );
-                } finally {
-                    setIsLoading(false);
-                }
+    const formDataFromProfile = currentProfile
+        ? {
+              first_name: currentProfile.first_name || '',
+              middle_name: currentProfile.middle_name || '',
+              last_name: currentProfile.last_name || '',
+              email: currentProfile.email || '',
             }
-        };
+        : {
+              first_name: '',
+              middle_name: '',
+              last_name: '',
+              email: '',
+            };
+    const formData = isEditing && draft ? draft : formDataFromProfile;
 
-        loadProfile();
-    }, [currentProfile, isLoading, setProfile, t]);
+    useEffect(() => {
+        if (profileQuery.data) {
+            setProfile(profileQuery.data);
+        }
+    }, [profileQuery.data, setProfile]);
+
+    const setFormData = (data: ProfileUpdateRequest | ((prev: ProfileUpdateRequest) => ProfileUpdateRequest)) => {
+        const next = typeof data === 'function' ? data(formData) : data;
+        setDraft(next);
+    };
 
     const handleSave = async (data: ProfileUpdateRequest) => {
-        setIsSaving(true);
-        try {
-            const updatedProfile = await storeService.updateProfile(data);
-            setProfile(updatedProfile);
-            setIsEditing(false);
-            toast.success(t('updateSuccess') || 'Profile updated successfully');
-        } catch (error: any) {
-            const errorMessage =
-                error?.message ||
-                t('updateError') ||
-                'Failed to update profile. Please try again.';
-            toast.error(errorMessage);
-        } finally {
-            setIsSaving(false);
-        }
+        updateMutation.mutate(data, {
+            onSuccess: () => {
+                setDraft(null);
+                setIsEditing(false);
+                toast.success(t('updateSuccess') || 'Profile updated successfully');
+            },
+            onError: (error: unknown) => {
+                const message =
+                    error instanceof Error
+                        ? error.message
+                        : t('updateError') || 'Failed to update profile. Please try again.';
+                toast.error(message);
+            },
+        });
     };
 
     const handleCancel = () => {
-        // Reset form data to current profile
-        if (currentProfile) {
-            setFormData({
-                first_name: currentProfile.first_name || '',
-                middle_name: currentProfile.middle_name || '',
-                last_name: currentProfile.last_name || '',
-                email: currentProfile.email || '',
-            });
-        }
+        setDraft(null);
         setIsEditing(false);
     };
+
+    const isSaving = updateMutation.isPending;
+    const isLoading = profileQuery.isLoading && !initialProfile;
 
     if (isLoading) {
         return (
@@ -117,8 +102,10 @@ export default function ProfileView({ initialProfile }: ProfileViewProps) {
                         {t('notFound') || 'Profile not found'}
                     </p>
                     <Button
-                        onClick={() => window.location.reload()}
-                        variant="outline">
+                        type="button"
+                        variant="outline"
+                        size="lg"
+                        onClick={() => profileQuery.refetch()}>
                         {t('retry') || 'Retry'}
                     </Button>
                 </div>
@@ -128,7 +115,6 @@ export default function ProfileView({ initialProfile }: ProfileViewProps) {
 
     return (
         <div className="mt-4 space-y-4 md:space-y-8">
-            {/* Header Section */}
             <div className="bg-white rounded-2xl md:rounded-3xl p-5 md:p-10 shadow-sm border border-gray-100 flex flex-col md:flex-row items-center md:items-end justify-between gap-6 overflow-hidden relative">
                 <div className="absolute top-0 start-0 w-32 h-32 bg-theme-primary/5 rounded-full -ms-16 -mt-16" />
 
@@ -146,14 +132,19 @@ export default function ProfileView({ initialProfile }: ProfileViewProps) {
 
                 {!isEditing && (
                     <Button
-                        onClick={() => setIsEditing(true)}
-                        className="w-full md:w-auto h-11 md:h-12 px-8 md:px-10 rounded-xl bg-theme-primary hover:brightness-95 text-white font-bold text-sm md:text-md shadow-lg shadow-theme-primary/20 transition-all active:scale-95 relative z-10">
+                        type="button"
+                        variant="primary"
+                        size="xl"
+                        onClick={() => {
+                            setDraft(formDataFromProfile);
+                            setIsEditing(true);
+                        }}
+                        className="w-full md:w-auto active:scale-95 relative z-10">
                         {t('edit')}
                     </Button>
                 )}
             </div>
 
-            {/* Profile Content */}
             <div className="bg-white rounded-2xl md:rounded-[40px] p-5 md:p-10 lg:p-12 shadow-sm border border-gray-100 min-h-[300px] md:min-h-[400px]">
                 <ProfileForm
                     profile={currentProfile}

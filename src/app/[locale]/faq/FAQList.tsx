@@ -3,6 +3,7 @@
 
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
 
 interface FAQItem {
     question: string;
@@ -26,9 +27,11 @@ export default function FAQList({ questions }: FAQListProps) {
                 <div
                     key={index}
                     className="bg-white rounded-[24px] border border-gray-100 shadow-sm overflow-hidden transition-all duration-300">
-                    <button
+                    <Button
+                        type="button"
+                        variant="ghost"
                         onClick={() => toggleAccordion(index)}
-                        className="w-full flex items-center justify-between p-6 md:p-8 text-start focus:outline-none group">
+                        className="w-full flex items-center justify-between p-6 md:p-8 text-start h-auto min-h-0 rounded-none border-0 shadow-none">
                         <span className="text-lg md:text-xl font-bold text-gray-900 group-hover:text-theme-primary transition-colors">
                             {item.question}
                         </span>
@@ -44,7 +47,7 @@ export default function FAQList({ questions }: FAQListProps) {
                                 <ChevronDown className="w-6 h-6" />
                             )}
                         </div>
-                    </button>
+                    </Button>
 
                     <div
                         className={`transition-all duration-300 ease-in-out ${

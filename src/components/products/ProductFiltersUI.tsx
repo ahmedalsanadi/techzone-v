@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/LabelField';
 import { ScrollArea } from '@/components/ui/ScrollArea';
 import { Slider } from '@/components/ui/Slider';
 import { Filter, Layers, Sliders, Zap, X } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
 
 interface ProductFiltersUIProps {
     categories: Category[];
@@ -148,12 +149,15 @@ const ProductFiltersUI = ({
             </div>
 
             {/* Reset Button */}
-            <button
+            <Button
+                type="button"
+                variant="outlineDanger"
+                size="lg"
                 onClick={onReset}
-                className="w-full h-12 flex items-center justify-center gap-2 text-sm font-bold text-red-500 hover:text-white bg-white hover:bg-red-500 border border-red-100 hover:border-red-500 rounded-3xl transition-all duration-300 shadow-sm">
+                className="w-full h-12 rounded-3xl">
                 <X className="w-4 h-4" />
                 {t('clear_all')}
-            </button>
+            </Button>
         </div>
     );
 };

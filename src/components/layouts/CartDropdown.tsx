@@ -10,6 +10,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 import React, { useEffect } from 'react';
 import { Menu, MenuButton, MenuItem } from '@headlessui/react';
 import { BaseMenuItems } from '../ui/BaseMenuItems';
+import { Button } from '@/components/ui/Button';
 
 const CartDropdown = () => {
     const t = useTranslations('Cart');
@@ -165,15 +166,18 @@ const CartDropdown = () => {
                                                 <CurrencySymbol className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                                             </div>
                                         </div>
-                                        <button
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon-sm"
                                             onClick={() => removeItem(item.id)}
-                                            className="p-1 sm:p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all">
+                                            className="hover:text-red-500 hover:bg-red-50 shrink-0">
                                             <X
                                                 size={14}
                                                 strokeWidth={2}
                                                 className="sm:size-4"
                                             />
-                                        </button>
+                                        </Button>
                                     </div>
                                 </MenuItem>
                             ))}

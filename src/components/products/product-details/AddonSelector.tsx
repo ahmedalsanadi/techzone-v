@@ -4,6 +4,7 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 import { Plus, Minus, AlertCircle, Check, Trash2 } from 'lucide-react';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
+import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 
 interface AddonItem {
@@ -264,7 +265,10 @@ export default function AddonSelector({
                                         </div>
 
                                         <div className="flex items-center gap-2 bg-[#F1F3F5] p-1 rounded-lg shadow-inner">
-                                            <button
+                                            <Button
+                                                type="button"
+                                                variant="stepper"
+                                                size="icon-xs"
                                                 onClick={() =>
                                                     handleQuantityChange(
                                                         item.id,
@@ -273,10 +277,8 @@ export default function AddonSelector({
                                                 }
                                                 disabled={!canDecrementItem}
                                                 className={cn(
-                                                    'w-7 h-7 rounded-md bg-white flex items-center justify-center transition-all shadow-sm active:scale-95',
-                                                    !canDecrementItem
-                                                        ? 'opacity-30 cursor-not-allowed'
-                                                        : 'text-gray-600 hover:text-theme-primary',
+                                                    'active:scale-95',
+                                                    !canDecrementItem && 'opacity-30',
                                                 )}>
                                                 {quantity === 1 ? (
                                                     <Trash2 size={13} />
@@ -286,11 +288,14 @@ export default function AddonSelector({
                                                         strokeWidth={3}
                                                     />
                                                 )}
-                                            </button>
+                                            </Button>
                                             <span className="w-5 text-center font-bold text-base text-gray-800">
                                                 {quantity}
                                             </span>
-                                            <button
+                                            <Button
+                                                type="button"
+                                                variant="stepper"
+                                                size="icon-xs"
                                                 onClick={() =>
                                                     handleQuantityChange(
                                                         item.id,
@@ -299,16 +304,14 @@ export default function AddonSelector({
                                                 }
                                                 disabled={!canIncrementItem}
                                                 className={cn(
-                                                    'w-7 h-7 rounded-md bg-white flex items-center justify-center transition-all shadow-sm active:scale-95',
-                                                    !canIncrementItem
-                                                        ? 'opacity-30 cursor-not-allowed'
-                                                        : 'text-gray-600 hover:text-theme-primary',
+                                                    'active:scale-95',
+                                                    !canIncrementItem && 'opacity-30',
                                                 )}>
                                                 <Plus
                                                     size={13}
                                                     strokeWidth={3}
                                                 />
-                                            </button>
+                                            </Button>
                                         </div>
                                     </div>
                                 </div>

@@ -203,15 +203,18 @@ export default function ProfileForm({
                     <Button
                         type="button"
                         variant="ghost"
+                        size="xl"
                         onClick={onCancel}
                         disabled={isLoading}
-                        className="w-full sm:w-auto h-11 md:h-12 px-8 md:px-10 rounded-xl text-gray-500 font-bold hover:bg-gray-50 transition-all">
+                        className="w-full sm:w-auto font-normal">
                         {t('cancel')}
                     </Button>
                     <Button
                         type="submit"
+                        variant="primary"
+                        size="xl"
                         disabled={isLoading || !formData.first_name.trim()}
-                        className="w-full sm:w-auto h-11 md:h-12 px-10 md:px-12 rounded-xl bg-theme-primary hover:brightness-95 text-white font-bold text-sm md:text-md shadow-lg shadow-theme-primary/20 transition-all active:scale-95">
+                        className="w-full sm:w-auto active:scale-95">
                         {isLoading ? (
                             <>
                                 <Loader2 className="w-5 h-5 animate-spin mr-2" />

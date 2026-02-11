@@ -4,6 +4,7 @@ import { Address } from '@/types/address';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { getAddressLabel, formatAddressForDisplay } from '@/lib/address';
+import { Button } from '@/components/ui/Button';
 
 interface AddressCardProps {
     address: Address;
@@ -111,22 +112,26 @@ const AddressCard = ({
                 <div
                     className="flex flex-col gap-1.5 sm:gap-2 shrink-0"
                     onClick={(e) => e.stopPropagation()}>
-                    <button
+                    <Button
                         type="button"
+                        variant="iconMuted"
+                        size="icon-xl"
                         onClick={() => onEdit(address)}
-                        className="min-w-[44px] min-h-[44px] flex items-center justify-center p-2 rounded-lg sm:rounded-xl bg-gray-50 text-gray-500 hover:bg-theme-primary/10 hover:text-theme-primary transition-all active:scale-95 touch-manipulation"
+                        className="hover:bg-theme-primary/10 hover:text-theme-primary active:scale-95"
                         title="Edit"
                         aria-label="Edit address">
                         <Edit className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         type="button"
+                        variant="ghost"
+                        size="icon-xl"
                         onClick={() => onDelete(address.id)}
-                        className="min-w-[44px] min-h-[44px] flex items-center justify-center p-2 rounded-lg sm:rounded-xl bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-500 transition-all active:scale-95 touch-manipulation"
+                        className="bg-gray-50 hover:bg-red-50 hover:text-red-500 active:scale-95"
                         title="Delete"
                         aria-label="Delete address">
                         <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </button>
+                    </Button>
                 </div>
             </div>
 

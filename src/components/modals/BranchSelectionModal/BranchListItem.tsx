@@ -7,6 +7,7 @@ import { Building2, Headphones, Clock } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { Branch } from '@/types/branches';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/Button';
 
 interface BranchListItemProps {
     branch: Branch;
@@ -89,20 +90,26 @@ export const BranchListItem: React.FC<BranchListItemProps> = ({
                 </div>
 
                 <div className="flex items-center gap-1.5 md:gap-3 shrink-0">
-                    <button
+                    <Button
+                        type="button"
+                        variant="iconMuted"
+                        size="icon"
                         onClick={onWorkingHoursClick}
-                        className="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-gray-50/50 backdrop-blur-sm flex items-center justify-center text-gray-400 hover:bg-theme-primary hover:text-white transition-all duration-300 active:scale-90 shadow-sm border border-gray-100/50"
+                        className="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl shrink-0 active:scale-90"
                         aria-label={`${t('view_working_hours') || 'View working hours'} - ${branch.name}`}
                         title={t('view_working_hours') || 'View working hours'}>
                         <Clock className="size-4 md:size-[22px]" />
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="iconMuted"
+                        size="icon"
                         onClick={onContactClick}
-                        className="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-gray-50/50 backdrop-blur-sm flex items-center justify-center text-gray-400 hover:bg-theme-primary hover:text-white transition-all duration-300 active:scale-90 shadow-sm border border-gray-100/50"
+                        className="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl shrink-0 active:scale-90"
                         aria-label={`${t('contact_branch') || 'Contact branch'} - ${branch.name}`}
                         title={t('contact_branch') || 'Contact branch'}>
                         <Headphones className="size-4 md:size-[22px]" />
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>

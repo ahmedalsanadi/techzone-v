@@ -8,6 +8,7 @@ import { useWishlistActions } from '@/hooks/wishlist';
 import { Link, useRouter } from '@/i18n/navigation';
 import { Heart, ShoppingBag, Trash2 } from 'lucide-react';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
+import { Button } from '@/components/ui/Button';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useCartActions } from '@/hooks/cart';
 
@@ -70,11 +71,9 @@ const WishlistPage = () => {
                 <p className="text-gray-500 max-w-sm mb-8 leading-relaxed">
                     {t('emptyDesc')}
                 </p>
-                <Link
-                    href="/products"
-                    className="bg-theme-primary text-white font-bold py-4 px-10 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all active:scale-95">
-                    {t('backToMenu')}
-                </Link>
+                <Button asChild variant="primary" size="2xl" className="hover:-translate-y-1 active:scale-95">
+                    <Link href="/products">{t('backToMenu')}</Link>
+                </Button>
             </div>
         );
     }
@@ -139,26 +138,30 @@ const WishlistPage = () => {
 
                                 {/* Actions */}
                                 <div className="flex items-center gap-2 mt-auto">
-                                    <button
+                                    <Button
+                                        variant="outlineTint"
+                                        size="lg"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             handleMoveToCart(item);
                                         }}
                                         disabled={isLoading}
-                                        className="flex-1 bg-theme-primary/10 hover:bg-theme-primary hover:text-white text-theme-primary font-medium py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95 border border-theme-primary disabled:opacity-50 disabled:cursor-not-allowed">
+                                        className="flex-1">
                                         <ShoppingBag className="w-4 h-4" />
                                         <span className="text-sm">{t('addToCart')}</span>
-                                    </button>
+                                    </Button>
 
-                                    <button
+                                    <Button
+                                        variant="ghostDanger"
+                                        size="icon"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             removeFromWishlist(item.productId);
                                         }}
                                         disabled={isLoading}
-                                        className="text-gray-300 hover:text-red-500 transition-colors p-2.5 rounded-lg border border-gray-100 hover:border-red-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                                        className="shrink-0">
                                         <Trash2 size={18} />
-                                    </button>
+                                    </Button>
                                 </div>
                             </div>
                         </div>

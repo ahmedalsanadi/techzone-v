@@ -2,6 +2,7 @@ import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import { Loader2 } from 'lucide-react';
 import React from 'react';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/Button';
 
 export interface ConfirmModalProps {
     isOpen: boolean;
@@ -72,29 +73,28 @@ export default function ConfirmModal({
                             </p>
                         </div>
                         <div className="flex gap-3 p-4 sm:p-5 md:p-6 pt-0 shrink-0">
-                            <button
+                            <Button
                                 type="button"
+                                variant="secondary"
+                                size="xl"
                                 onClick={handleCancel}
                                 disabled={isLoading}
-                                className="flex-1 min-h-[48px] px-4 py-3 rounded-lg sm:rounded-xl font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors disabled:opacity-50 touch-manipulation">
+                                className="flex-1 text-gray-600">
                                 {cancelLabel}
-                            </button>
-                            <button
+                            </Button>
+                            <Button
                                 type="button"
+                                variant={isDanger ? 'destructive' : 'primary'}
+                                size="xl"
                                 onClick={handleConfirm}
                                 disabled={isLoading}
-                                className={cn(
-                                    'flex-1 min-h-[48px] px-4 py-3 rounded-lg sm:rounded-xl font-bold text-white transition-colors disabled:opacity-50 flex items-center justify-center gap-2 touch-manipulation',
-                                    isDanger
-                                        ? 'bg-red-500 hover:bg-red-600'
-                                        : 'bg-theme-primary hover:brightness-95',
-                                )}>
+                                className="flex-1">
                                 {isLoading ? (
                                     <Loader2 className="w-5 h-5 animate-spin" />
                                 ) : (
                                     confirmLabel
                                 )}
-                            </button>
+                            </Button>
                         </div>
                     </DialogPanel>
                 </div>

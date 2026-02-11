@@ -52,8 +52,10 @@ export default function OtpStep({
                 <div className="space-y-3 sm:space-y-4 md:space-y-5 lg:space-y-6">
                     <Button
                         type="submit"
+                        variant="primary"
+                        size="xl"
                         disabled={loading}
-                        className="w-full h-10 sm:h-12 md:h-14 rounded-lg sm:rounded-xl md:rounded-2xl text-white font-black text-sm sm:text-base md:text-lg lg:text-xl shadow-xl transition-all active:scale-[0.98] bg-theme-primary shadow-theme-primary/20">
+                        className="w-full active:scale-[0.98]">
                         {loading ? (
                             <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         ) : (
@@ -75,13 +77,14 @@ export default function OtpStep({
                                 </span>
                             )}
                             {onResend && (
-                                <button
+                                <Button
                                     type="button"
+                                    variant="link"
                                     onClick={onResend}
                                     disabled={!!timer}
-                                    className="text-theme-primary font-black text-base sm:text-lg md:text-xl lg:text-2xl opacity-60 hover:opacity-100 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed">
+                                    className="text-theme-primary font-black text-base sm:text-lg md:text-xl lg:text-2xl opacity-60 hover:opacity-100 disabled:opacity-30 p-0 h-auto min-h-0">
                                     {resendLabel}
-                                </button>
+                                </Button>
                             )}
                         </div>
                     )}

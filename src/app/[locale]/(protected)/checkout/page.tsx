@@ -6,6 +6,7 @@ import { useRouter } from '@/i18n/navigation';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import { Button } from '@/components/ui/Button';
 import OrderTypeCard from '@/components/checkout/OrderTypeCard';
 import PaymentMethodCard from '@/components/checkout/PaymentMethodCard';
 import CouponCard from '@/components/checkout/CouponCard';
@@ -225,18 +226,21 @@ export default function CheckoutPage() {
                     <p className="text-amber-900 font-medium mb-4">{initError}</p>
                     <p className="text-amber-800 text-sm mb-6">{t('chooseAddressOrTypeHint')}</p>
                     <div className="flex flex-wrap gap-3">
-                        <button
+                        <Button
                             type="button"
-                            onClick={scrollToOrderTypeCard}
-                            className="bg-theme-primary text-white font-bold py-2.5 px-6 rounded-xl hover:brightness-95">
+                            variant="primary"
+                            size="xl"
+                            onClick={scrollToOrderTypeCard}>
                             {t('chooseAddressOrType')}
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                             type="button"
+                            variant="outline"
+                            size="xl"
                             onClick={() => refetch()}
-                            className="border-2 border-gray-300 text-gray-700 font-bold py-2.5 px-6 rounded-xl hover:bg-gray-50">
+                            className="border-2">
                             {t('retry')}
-                        </button>
+                        </Button>
                     </div>
                 </div>
             </div>
@@ -256,12 +260,13 @@ export default function CheckoutPage() {
                 <div className="max-w-lg p-6 bg-theme-primary/5 border-2 border-theme-primary/20 rounded-2xl">
                     <p className="text-gray-800 font-bold mb-2">{t('selectAddressToContinue')}</p>
                     <p className="text-gray-600 text-sm mb-6">{t('selectAddressToContinueHint')}</p>
-                    <button
+                    <Button
                         type="button"
-                        onClick={scrollToOrderTypeCard}
-                        className="bg-theme-primary text-white font-bold py-3 px-8 rounded-xl hover:brightness-95">
+                        variant="primary"
+                        size="xl"
+                        onClick={scrollToOrderTypeCard}>
                         {t('chooseAddressOrType')}
-                    </button>
+                    </Button>
                 </div>
             </div>
         );

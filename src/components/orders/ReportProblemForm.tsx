@@ -88,7 +88,9 @@ export const ReportProblemForm: React.FC = () => {
             <div className="flex justify-end pt-4">
                 <Button
                     type="submit"
-                    className="h-12 px-14 rounded-xl bg-theme-primary hover:brightness-[0.95] text-white font-bold text-md shadow-lg shadow-theme-primary/20 transition-all active:scale-95">
+                    variant="primary"
+                    size="xl"
+                    className="active:scale-95">
                     {t('submit')}
                 </Button>
             </div>

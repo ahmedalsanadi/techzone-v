@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay, EffectFade } from 'swiper/modules';
 import { MoveRight } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -99,14 +100,18 @@ const HeroSlider = () => {
                                         </p>
 
                                         <div className="pt-4 md:pt-8">
-                                            <button className="bg-theme-primary hover:bg-white hover:text-black text-white px-8 py-3 md:px-10 md:py-4 rounded-full flex items-center gap-3 md:gap-4 transition-all duration-300 transform hover:scale-105 active:scale-95 group cursor-pointer shadow-lg shadow-theme-primary/20">
+                                            <Button
+                                                type="button"
+                                                variant="primary"
+                                                size="2xl"
+                                                className="rounded-full hover:scale-105 active:scale-95 group hover:bg-white hover:text-black">
                                                 <span className="font-bold tracking-wider text-base md:text-lg">
                                                     ORDER NOW
                                                 </span>
                                                 <div className="bg-white/20 p-1 md:p-1.5 rounded-full group-hover:bg-black/10 transition-colors">
                                                     <MoveRight className="w-5 h-5 md:w-6 md:h-6" />
                                                 </div>
-                                            </button>
+                                            </Button>
                                         </div>
                                     </div>
 

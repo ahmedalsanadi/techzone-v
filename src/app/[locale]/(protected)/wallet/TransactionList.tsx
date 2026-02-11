@@ -17,10 +17,12 @@ export interface Transaction {
 
 interface TransactionListProps {
     transactions: Transaction[];
+    isLoading?: boolean;
 }
 
 export const TransactionList: React.FC<TransactionListProps> = ({
     transactions,
+    isLoading = false,
 }) => {
     const t = useTranslations('Wallet');
     const locale = useLocale();

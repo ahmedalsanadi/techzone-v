@@ -19,6 +19,7 @@ import {
     Transition,
     TransitionChild,
 } from '@headlessui/react';
+import { Button } from '@/components/ui/Button';
 
 const BranchSelectionModal: React.FC = () => {
     const t = useTranslations('Branches');
@@ -74,15 +75,18 @@ const BranchSelectionModal: React.FC = () => {
                                         {t('select_branch')}
                                     </DialogTitle>
                                     {(selectedBranchId || hasSelectedOnce) && (
-                                        <button
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon-xl"
                                             onClick={handleCloseModal}
-                                            className="w-10 h-10 flex items-center justify-center rounded-2xl bg-gray-50 text-gray-400 hover:bg-gray-100 transition-all focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-2"
+                                            className="rounded-2xl bg-gray-50"
                                             aria-label={
                                                 t('close_modal') ||
                                                 'Close modal'
                                             }>
-                                            <X size={20} />
-                                        </button>
+                                            <X className="size-5" />
+                                        </Button>
                                     )}
                                 </div>
 
@@ -110,17 +114,18 @@ const BranchSelectionModal: React.FC = () => {
 
                                 {/* Footer Action */}
                                 <div className="pt-3.5 md:pt-6 border-t border-gray-100">
-                                    <button
+                                    <Button
+                                        variant="primary"
+                                        size="xl"
                                         onClick={handleConfirmSelection}
                                         disabled={!tempSelectedBranch}
                                         className={cn(
-                                            'w-full py-3.5 md:py-5 rounded-2xl md:rounded-4xl font-black text-base md:text-xl shadow-xl transition-all duration-300',
-                                            tempSelectedBranch
-                                                ? 'bg-theme-primary text-white hover:brightness-[1.05] active:scale-[0.98] shadow-theme-primary/30'
-                                                : 'bg-gray-100 text-gray-400 cursor-not-allowed',
+                                            'w-full py-3.5 md:py-5 rounded-2xl md:rounded-4xl font-black text-base md:text-xl shadow-xl transition-all duration-300 active:scale-[0.98]',
+                                            !tempSelectedBranch &&
+                                                'bg-gray-100 text-gray-400 cursor-not-allowed border-none shadow-none hover:brightness-100',
                                         )}>
                                         {t('confirm')}
-                                    </button>
+                                    </Button>
                                 </div>
                             </div>
 

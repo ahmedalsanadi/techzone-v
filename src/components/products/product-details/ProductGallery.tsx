@@ -4,6 +4,7 @@ import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import DynamicImage from '@/components/ui/DynamicImage';
+import { Button } from '@/components/ui/Button';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -41,7 +42,11 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
             </Swiper>
 
             {/* Custom Navigation Arrows */}
-            <button className="swiper-button-prev-custom absolute left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/50 hover:bg-white/80 rounded-full flex items-center justify-center transition-all opacity-0 group-hover:opacity-100">
+            <Button
+                type="button"
+                variant="ghost"
+                size="icon-lg"
+                className="swiper-button-prev-custom absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/50 hover:bg-white/80 rounded-full opacity-0 group-hover:opacity-100">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
@@ -54,8 +59,12 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
                     strokeLinejoin="round">
                     <path d="m15 18-6-6 6-6" />
                 </svg>
-            </button>
-            <button className="swiper-button-next-custom absolute right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/50 hover:bg-white/80 rounded-full flex items-center justify-center transition-all opacity-0 group-hover:opacity-100">
+            </Button>
+            <Button
+                type="button"
+                variant="ghost"
+                size="icon-lg"
+                className="swiper-button-next-custom absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/50 hover:bg-white/80 rounded-full opacity-0 group-hover:opacity-100">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
@@ -68,7 +77,7 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
                     strokeLinejoin="round">
                     <path d="m9 18 6-6-6-6" />
                 </svg>
-            </button>
+            </Button>
 
             <style jsx global>{`
                 .swiper-pagination-bullet {

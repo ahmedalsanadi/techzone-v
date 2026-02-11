@@ -5,6 +5,7 @@ import React from 'react';
 import { useEffect } from 'react';
 import { AlertTriangle, RotateCcw, Home } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
+import { Button } from '@/components/ui/Button';
 
 export default function CMSPageError({
     error,
@@ -35,19 +36,21 @@ export default function CMSPageError({
                 </p>
 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <button
+                    <Button
+                        variant="primary"
+                        size="xl"
                         onClick={() => reset()}
-                        className="flex items-center gap-2 px-6 py-3 bg-theme-primary text-white rounded-2xl font-bold hover:opacity-90 transition-all w-full sm:w-auto justify-center">
+                        className="flex w-full sm:w-auto justify-center rounded-2xl">
                         <RotateCcw className="w-5 h-5" />
                         Try again
-                    </button>
+                    </Button>
 
-                    <Link
-                        href="/"
-                        className="flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-2xl font-bold hover:bg-gray-200 transition-all w-full sm:w-auto justify-center">
-                        <Home className="w-5 h-5" />
-                        Go Home
-                    </Link>
+                    <Button asChild variant="secondary" size="xl" className="w-full sm:w-auto justify-center rounded-2xl">
+                        <Link href="/">
+                            <Home className="w-5 h-5" />
+                            Go Home
+                        </Link>
+                    </Button>
                 </div>
 
                 {process.env.NODE_ENV === 'development' && (

@@ -179,26 +179,30 @@ export default function OrderCard({ order }: OrderCardProps) {
                     <>
                         <Button
                             asChild
-                            variant="secondary"
-                            className="flex-1 bg-[#F1F3F5] text-gray-600 hover:bg-gray-200 border-none font-bold h-11 rounded-xl">
+                            variant="secondaryMuted"
+                            size="card"
+                            className="flex-1">
                             <Link href={`/my-orders/${order.id}`}>
                                 {t('details')}
                             </Link>
                         </Button>
-                        <Button className="flex-1 bg-theme-primary hover:brightness-[0.95] text-white border-none font-bold h-11 rounded-xl shadow-lg shadow-theme-primary/20">
+                        <Button variant="primary" size="card" className="flex-1">
                             {t('reorder')}
                         </Button>
                     </>
                 ) : (
                     <>
                         <Button
-                            variant="secondary"
-                            className="flex-1 bg-[#F1F3F5] text-gray-600 hover:bg-gray-200 border-none font-bold h-11 rounded-xl">
+                            variant="secondaryMuted"
+                            size="card"
+                            className="flex-1">
                             {t('reportProblem')}
                         </Button>
                         <Button
                             asChild
-                            className="flex-1 bg-theme-primary/10 text-theme-primary hover:bg-theme-primary/5 border-none font-bold h-11 rounded-xl">
+                            variant="secondaryTint"
+                            size="card"
+                            className="flex-1">
                             <Link href={`/my-orders/${order.id}`}>
                                 {t('details')}
                             </Link>

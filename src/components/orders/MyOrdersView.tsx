@@ -1,16 +1,15 @@
-// src/app/[locale]/my-orders/utils/components/MyOrdersView.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslations } from 'next-intl';
 import SubHeaderManager from '@/components/layouts/SubHeaderManager';
-import { Order } from '@/types/orders';
+import type { Order } from '@/types/orders';
+import type { PaginationMeta } from '@/types/api';
 import OrderCard from './OrderCard';
-import { PaginationMeta } from '@/types/api';
-import { orderService } from '@/services/order-service';
 import { Button } from '@/components/ui/Button';
 import { Loader2 } from 'lucide-react';
 import OrderCardSkeleton from './OrderCardSkeleton';
+import { useOrdersList } from '@/hooks/orders';
 
 interface MyOrdersViewProps {
     initialOrders: Order[];
@@ -22,41 +21,12 @@ export default function MyOrdersView({
     initialMeta,
 }: MyOrdersViewProps) {
     const t = useTranslations('Orders');
-    const [orders, setOrders] = useState<Order[]>(initialOrders);
-    const [meta, setMeta] = useState<PaginationMeta | undefined>(initialMeta);
-    const [isLoadingMore, setIsLoadingMore] = useState(false);
-
-    const handleLoadMore = async () => {
-        if (!meta || meta.current_page >= meta.last_page || isLoadingMore)
-            return;
-
-        setIsLoadingMore(true);
-        try {
-            const nextPage = meta.current_page + 1;
-            const response = await orderService.getOrders({
-                page: nextPage,
-                per_page: meta.per_page,
-            });
-
-            if (response.data) {
-                setOrders((prev) => {
-                    const newOrders = response.data || [];
-                    const prevIds = new Set(prev.map((o) => o.id));
-                    const uniqueNewOrders = newOrders.filter(
-                        (o) => !prevIds.has(o.id),
-                    );
-                    return [...prev, ...uniqueNewOrders];
-                });
-                setMeta(response.meta);
-            }
-        } catch (error) {
-            console.error('Failed to load more orders:', error);
-        } finally {
-            setIsLoadingMore(false);
-        }
-    };
-
-    const hasMore = meta && meta.current_page < meta.last_page;
+    const {
+        orders,
+        hasNextPage,
+        fetchNextPage,
+        isFetchingNextPage,
+    } = useOrdersList({ initialOrders, initialMeta });
 
     return (
         <section className="min-h-screen pb-16 pt-6 px-2 md:px-4">
@@ -74,7 +44,7 @@ export default function MyOrdersView({
                         <OrderCard order={order} />
                     </div>
                 ))}
-                {isLoadingMore && (
+                {isFetchingNextPage && (
                     <>
                         <OrderCardSkeleton />
                         <OrderCardSkeleton />
@@ -82,14 +52,14 @@ export default function MyOrdersView({
                 )}
             </div>
 
-            {hasMore && (
+            {hasNextPage && (
                 <div className="flex justify-center mt-12">
                     <Button
-                        onClick={handleLoadMore}
-                        disabled={isLoadingMore}
+                        onClick={() => fetchNextPage()}
+                        disabled={isFetchingNextPage}
                         variant="outline"
                         className="min-w-[200px] h-12 rounded-xl font-bold border-2">
-                        {isLoadingMore ? (
+                        {isFetchingNextPage ? (
                             <Loader2 className="w-5 h-5 animate-spin" />
                         ) : (
                             t('loadMore') || 'تحميل المزيد'

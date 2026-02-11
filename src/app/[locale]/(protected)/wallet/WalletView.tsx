@@ -5,10 +5,9 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import { WalletBalanceCard } from './WalletBalanceCard';
-import { TransactionList, Transaction } from './TransactionList';
-
-import { WalletTransaction, TransactionType } from '@/types/wallet';
-import { walletService } from '@/services/wallet-service';
+import { TransactionList } from './TransactionList';
+import { useWalletTransactions } from '@/hooks/wallet';
+import { Loader2 } from 'lucide-react';
 
 interface WalletViewProps {
     balance: number;
@@ -16,60 +15,16 @@ interface WalletViewProps {
 
 export default function WalletView({ balance }: WalletViewProps) {
     const t = useTranslations('Wallet');
-    const [transactions, setTransactions] = React.useState<Transaction[]>([]);
-    const [isLoading, setIsLoading] = React.useState(true);
+    const {
+        transactions,
+        isLoading,
+        error,
+    } = useWalletTransactions({ page: 1, per_page: 20 });
 
     const breadcrumbItems = [
         { label: t('home'), href: '/' },
         { label: t('title') },
     ];
-
-    const [mounted, setMounted] = React.useState(false);
-
-    React.useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    React.useEffect(() => {
-        if (!mounted) return;
-
-        const fetchTransactions = async () => {
-            try {
-                const response = await walletService.getTransactions({
-                    page: 1,
-                    per_page: 20,
-                });
-                const mapped: Transaction[] = (response.data || []).map(
-                    (tx: WalletTransaction) => ({
-                        id: String(tx.id),
-                        type:
-                            tx.type === TransactionType.DEPOSIT ||
-                            tx.type === TransactionType.REFUND
-                                ? 'add'
-                                : 'purchase',
-                        title: tx.description,
-                        amount: Math.abs(tx.amount),
-                        date: new Date(tx.created_at).toLocaleDateString(
-                            'ar-SA',
-                            {
-                                year: 'numeric',
-                                month: '2-digit',
-                                day: '2-digit',
-                            },
-                        ),
-                        refNumber: tx.reference,
-                    }),
-                );
-                setTransactions(mapped);
-            } catch (error) {
-                console.error('Failed to fetch transactions:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchTransactions();
-    }, [mounted]);
 
     return (
         <main className="min-h-screen bg-gray-50/30 py-8">
@@ -83,14 +38,22 @@ export default function WalletView({ balance }: WalletViewProps) {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Sidebar: Wallet Balance */}
                     <div className="space-y-6">
                         <WalletBalanceCard balance={balance} />
                     </div>
 
-                    {/* Main Content: Transaction History */}
                     <div className="lg:col-span-2">
-                        <TransactionList transactions={transactions} />
+                        {isLoading ? (
+                            <div className="flex items-center justify-center py-16">
+                                <Loader2 className="w-10 h-10 text-theme-primary animate-spin" />
+                            </div>
+                        ) : error ? (
+                            <p className="text-red-600 font-medium py-8">
+                                {t('transactionsError') || 'Failed to load transactions.'}
+                            </p>
+                        ) : (
+                            <TransactionList transactions={transactions} />
+                        )}
                     </div>
                 </div>
             </div>
