@@ -1,13 +1,13 @@
 'use client';
 
-import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
 import { useBranchStore } from '@/store/useBranchStore';
+import type { LucideIcon } from 'lucide-react';
 
 interface NavItemProps {
     label: string;
     href: string;
-    icon: string;
+    icon: LucideIcon;
     isActive: boolean;
     alt?: string;
     id?: string;
@@ -32,6 +32,9 @@ export default function NavItem({
         }
     };
 
+    const Icon = icon;
+    const iconSize = variant === 'sidebar' ? 22 : 20;
+
     if (variant === 'sidebar') {
         return (
             <Link
@@ -42,13 +45,12 @@ export default function NavItem({
                         ? 'bg-white/15 shadow-sm backdrop-blur-md'
                         : 'hover:bg-white/5'
                 }`}
-                aria-current={isActive ? 'page' : undefined}>
-                <Image
-                    src={icon}
-                    alt={alt || label}
-                    width={22}
-                    height={22}
-                    className="brightness-0 invert opacity-90"
+                aria-current={isActive ? 'page' : undefined}
+                aria-label={alt || label}>
+                <Icon
+                    size={iconSize}
+                    className="text-white opacity-90 shrink-0"
+                    aria-hidden
                 />
                 <span
                     className={`text-base font-bold ${
@@ -67,15 +69,14 @@ export default function NavItem({
             className={`flex gap-2 items-center justify-center py-2 px-3 rounded-xl transition-all ${
                 isActive ? 'bg-white shadow-sm' : 'hover:bg-white/10'
             }`}
-            aria-current={isActive ? 'page' : undefined}>
-            <Image
-                src={icon}
-                alt={alt || label}
-                width={20}
-                height={20}
-                className={
-                    isActive ? 'brightness-0' : 'brightness-0 invert opacity-90'
-                }
+            aria-current={isActive ? 'page' : undefined}
+            aria-label={alt || label}>
+            <Icon
+                size={iconSize}
+                className={`shrink-0 ${
+                    isActive ? 'text-theme-primary' : 'text-white opacity-90'
+                }`}
+                aria-hidden
             />
             <span
                 className={`text-sm font-semibold ${

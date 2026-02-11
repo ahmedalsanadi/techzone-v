@@ -1,6 +1,6 @@
 'use client';
 
-import { X, Search, LogOut, LogIn } from 'lucide-react';
+import { X, Search, LogOut, LogIn, FileText } from 'lucide-react';
 import { useUiStore } from '@/store/useUiStore';
 import { NAV_ITEMS } from '@/config/navigation';
 import { useTranslations, useLocale } from 'next-intl';
@@ -176,7 +176,7 @@ export default function MobileSidebar() {
                                                             id={String(page.id)}
                                                             label={page.title}
                                                             href={`/pages/${page.slug}`}
-                                                            icon="/images/svgs/4grid-squares-icon.svg"
+                                                            icon={FileText}
                                                             isActive={pathname.startsWith(
                                                                 `/pages/${page.slug}`,
                                                             )}
