@@ -104,7 +104,7 @@ export default function Navbar() {
 
                 {menuCMSPages.length > 0 && (
                     <Menu as="div" className="relative inline-block">
-                        <MenuButton className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-semibold text-white hover:bg-white/10 transition-colors">
+                        <MenuButton className="flex items-center gap-2 py-2 px-3 text-sm font-semibold text-white hover:bg-white/10 transition-colors rounded-lg">
                             <span>{pagesLabel}</span>
                             <ChevronDown className="h-4 w-4 opacity-80" />
                         </MenuButton>

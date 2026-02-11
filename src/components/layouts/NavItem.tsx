@@ -66,7 +66,7 @@ export default function NavItem({
         <Link
             href={href}
             onClick={handleClick}
-            className={`flex gap-2 items-center justify-center py-2 px-3 rounded-xl transition-all ${
+            className={`flex gap-2 items-center justify-center py-2 px-3 rounded-lg transition-all ${
                 isActive ? 'bg-white shadow-sm' : 'hover:bg-white/10'
             }`}
             aria-current={isActive ? 'page' : undefined}
