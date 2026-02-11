@@ -15,7 +15,7 @@ import {
     Mail,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { useLocale, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { useRouter } from '@/i18n/navigation';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -75,7 +75,7 @@ function UserMenuNavItem({
     const content = (
         <>
             <div
-                className={`w-9 h-9 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform shrink-0 ${classes.wrapper}`}>
+                className={`size-9 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform shrink-0 ${classes.wrapper}`}>
                 <Icon size={18} strokeWidth={2} />
             </div>
             <span
@@ -92,7 +92,7 @@ function UserMenuNavItem({
                     type="button"
                     variant="ghost"
                     onClick={onClick}
-                    className={`w-full flex items-center justify-start gap-3 px-3 py-2.5 rounded-xl h-auto min-h-0 ${classes.link} text-red-600`}>
+                    className={`w-full flex items-center justify-start gap-3 px-3 py-2.5 rounded-xl h-auto ${classes.link} text-red-600`}>
                     {content}
                 </Button>
             </MenuItem>
@@ -125,7 +125,6 @@ const UserMenu = () => {
         try {
             await authService.logout();
         } catch (error) {
-            // Error already handled
             console.error(error);
         }
 
@@ -136,22 +135,46 @@ const UserMenu = () => {
     };
 
     return (
-        <Menu
-            as="div"
-            className="relative inline-block"
+        <Menu as="div" className="relative inline-block">
+
+            <MenuButton
+                className="group relative flex items-center justify-center gap-2
+                           rounded-full md:rounded-xl border border-gray-200 bg-white shadow-sm
+                           hover:bg-gray-50 transition-colors outline-none
+                           size-9  md:size-11 lg:size-auto lg:justify-start lg:px-3.5 lg:py-2"
             >
-            <MenuButton className="bg-white/95 backdrop-blur-sm flex items-center gap-2 px-3 py-2 rounded-full border border-white/20 shadow-sm hover:shadow-md hover:bg-white transition-all outline-none h-10 lg:h-11">
-                <div className="w-7 h-7 lg:w-8 lg:h-8 bg-theme-primary/10 rounded-full flex items-center justify-center border border-theme-primary/20">
-                    <User size={16} className="text-theme-primary" strokeWidth={2.5} />
+                {/* Avatar Circle — smaller on mobile */}
+                <div
+                    className="size-6  md:size-8 rounded-full
+                               bg-linear-to-br from-gray-50 to-gray-100
+                               flex items-center justify-center
+                               border-2 border-gray-200 shrink-0"
+                >
+                    <User
+                        className="size-3.5 sm:size-4 lg:size-[18px] text-gray-600"
+                        strokeWidth={2.5}
+                    />
                 </div>
-                <span className="text-gray-900 font-semibold text-sm whitespace-nowrap hidden lg:inline">
-                    {isAuthenticated ? user?.name?.split(' ')[0] : t('guest')}
-                </span>
+
+        
+                {/* Chevron — Desktop (inline) */}
                 <ChevronDown
-                    size={16}
-                    className="text-gray-400 transition-transform group-data-open:rotate-180"
-                    strokeWidth={2}
+                    className="hidden lg:block size-4 text-gray-600
+                               transition-transform group-data-open:rotate-180 shrink-0"
                 />
+
+                {/* Chevron Badge — Mobile only, now contained inside the button */}
+                <span
+                    className="absolute bottom-0 end-0 size-4 rounded-full
+                               bg-white border border-gray-300
+                               flex items-center justify-center
+                               lg:hidden"
+                >
+                    <ChevronDown
+                        className="size-2.5 text-gray-600
+                                   transition-transform group-data-open:rotate-180"
+                    />
+                </span>
             </MenuButton>
 
             <BaseMenuItems
@@ -164,15 +187,15 @@ const UserMenu = () => {
                         <MenuItem>
                             <Link
                                 href="/profile"
-                                className="absolute top-3 right-3 text-xs font-semibold text-gray-500 hover:text-theme-primary transition-colors bg-white px-3 py-1.5 rounded-full border border-gray-200 hover:border-theme-primary/30 shadow-sm">
+                                className="absolute top-3 end-3 text-xs font-semibold text-gray-500 hover:text-theme-primary transition-colors bg-white px-3 py-1.5 rounded-full border border-gray-200 hover:border-theme-primary/30 shadow-sm">
                                 {t('profile')}
                             </Link>
                         </MenuItem>
                     )}
 
-                    <div className="flex flex-col items-center text-center gap-2.5 mt-2">
+                    <div className="flex flex-col items-center text-center gap-3 mt-2">
                         {/* Avatar */}
-                        <div className="w-16 h-16 bg-gradient-to-br from-theme-primary/10 to-theme-primary/5 rounded-full flex items-center justify-center border-2 border-white shadow-lg relative overflow-hidden">
+                        <div className="size-16 bg-linear-to-br from-theme-primary/10 to-theme-primary/5 rounded-full flex items-center justify-center border-2 border-white shadow-lg">
                             <User
                                 size={28}
                                 className="text-theme-primary"
@@ -190,7 +213,9 @@ const UserMenu = () => {
                                 <>
                                     <div className="flex items-center justify-center gap-1.5 text-xs text-gray-500">
                                         <Phone size={12} className="text-gray-400" />
-                                        <span dir="ltr" className="font-medium">{user?.phone}</span>
+                                        <span dir="ltr" className="font-medium">
+                                            {user?.phone}
+                                        </span>
                                     </div>
                                     {user?.email && (
                                         <div className="flex items-center justify-center gap-1.5 text-xs text-gray-500">
