@@ -135,13 +135,13 @@ const UserMenu = () => {
     };
 
     return (
-        <Menu as="div" className="relative inline-block">
+        <Menu as="div" className="relative inline-block pe-2">
 
             <MenuButton
                 className="group relative flex items-center justify-center gap-2
-                           rounded-full md:rounded-xl border border-gray-200 bg-white shadow-sm
+                           rounded-full  border border-gray-200 bg-white shadow-sm
                            hover:bg-gray-50 transition-colors outline-none
-                           size-9  md:size-11 lg:size-auto lg:justify-start lg:px-3.5 lg:py-2"
+                           size-9 md:size-11"
             >
                 {/* Avatar Circle — smaller on mobile */}
                 <div
@@ -151,27 +151,22 @@ const UserMenu = () => {
                                border-2 border-gray-200 shrink-0"
                 >
                     <User
-                        className="size-3.5 sm:size-4 lg:size-[18px] text-gray-600"
+                        className="size-3.5  text-gray-600"
                         strokeWidth={2.5}
                     />
                 </div>
 
         
-                {/* Chevron — Desktop (inline) */}
-                <ChevronDown
-                    className="hidden lg:block size-4 text-gray-600
-                               transition-transform group-data-open:rotate-180 shrink-0"
-                />
-
+           
                 {/* Chevron Badge — Mobile only, now contained inside the button */}
                 <span
-                    className="absolute bottom-0 end-0 size-4 rounded-full
+                    className="absolute bottom-0 end-0 size-4 md:size-5 rounded-full
                                bg-white border border-gray-300
                                flex items-center justify-center
-                               lg:hidden"
+                             "
                 >
                     <ChevronDown
-                        className="size-2.5 text-gray-600
+                        className="size-2.5 md:size-3 text-gray-600
                                    transition-transform group-data-open:rotate-180"
                     />
                 </span>
