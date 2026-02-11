@@ -37,7 +37,9 @@ export default function PageContainer({
             {/*-------- Theme primary bg header - fixed height so blue bar never grows; z-20 so it stays above content ----------- */}
             <nav
                 className={`bg-theme-primary transition-all duration-300 relative z-20 overflow-visible flex flex-col shrink-0 ${
-                    showSubHeader ? 'h-[190px] lg:h-[140px]' : 'h-[75px]'
+                    showSubHeader
+                        ? 'h-[190px] lg:h-[160px]'
+                        : 'min-h-[75px] lg:min-h-[120px]'
                 }`}>
                 <div className="container mx-auto px-4 py-4 flex-1 flex flex-col min-h-0">
                     <Navbar />

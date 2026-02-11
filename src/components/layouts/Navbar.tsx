@@ -65,31 +65,73 @@ export default function Navbar() {
     const pagesLabel = locale === 'ar' ? 'الصفحات' : 'Pages';
 
     return (
-        <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-                {/*-------- Hamburger (Mobile Only) ----------- */}
-                <button
-                    onClick={toggleMobileMenu}
-                    className="lg:hidden p-2 text-white hover:bg-white/10 rounded-full transition-colors">
-                    <MenuIcon size={24} strokeWidth={1.5} />
-                </button>
+        <>
+            {/* -------- Row 1: Brand, Search, Actions (balanced spacing) -------- */}
+            <div className="flex items-center justify-between gap-4 min-h-12">
+                <div className="flex items-center gap-3 min-w-0 shrink-0">
+                    <button
+                        onClick={toggleMobileMenu}
+                        className="lg:hidden p-2 text-white hover:bg-white/10 rounded-full transition-colors">
+                        <MenuIcon size={24} strokeWidth={1.5} />
+                    </button>
+                    <LogoImage
+                        brandName={config?.store?.name}
+                        brandLogo={
+                            config?.store?.logo_url ||
+                            '/images/svgs/logo-icon.svg'
+                        }
+                    />
+                </div>
 
-                {/*-------- logo----------- */}
-                <LogoImage
-                    brandName={config?.store?.name}
-                    brandLogo={
-                        config?.store?.logo_url || '/images/svgs/logo-icon.svg'
-                    }
-                />
+                <div className="hidden lg:flex flex-1 justify-center min-w-0 max-w-md ">
+                    <Input
+                        type="text"
+                        placeholder={t('searchPlaceholder')}
+                        inputSize="md"
+                        startIcon={
+                            <Search
+                                size={22}
+                                strokeWidth={1.5}
+                                className="opacity-40"
+                            />
+                        }
+                        containerClassName="w-full w-1/2"
+                    />
+                </div>
+
+                <div className="relative flex items-center gap-2 min-h-10 shrink-0">
+                    <div className="hidden lg:block">
+                        <LanguageSwitcher />
+                    </div>
+                    <NotificationDropdown />
+                    <CartDropdown />
+                    {isAuthenticated ? (
+                        <UserMenu />
+                    ) : (
+                        <Link
+                            href="/auth"
+                            aria-label={t('signIn')}
+                            className="flex items-center justify-center gap-2 shrink-0 size-10 md:size-auto md:h-10 md:px-4 rounded-full md:rounded-lg bg-white/15 hover:bg-white/25 text-white font-semibold text-sm transition-colors">
+                            <LogIn
+                                size={20}
+                                strokeWidth={2}
+                                className="shrink-0"
+                            />
+                            <span className="hidden md:inline">
+                                {t('signIn')}
+                            </span>
+                        </Link>
+                    )}
+                </div>
             </div>
-            {/*-------- Navlist----------- */}
-            <div className="hidden lg:flex flex-1 items-center justify-center gap-1.5 pt-1 text-nowrap">
+
+            {/* -------- Row 2: Main nav links, centered (desktop only) -------- */}
+            <div className="hidden lg:flex w-full items-center justify-center gap-1.5 pt-3 pb-1 border-t border-white/15 text-nowrap px-2 mt-2">
                 {NAV_ITEMS.map((item) => {
                     const isActive =
                         item.href === '/'
                             ? pathname === '/'
                             : pathname.startsWith(item.href);
-
                     return (
                         <NavItem
                             key={item.id}
@@ -102,7 +144,6 @@ export default function Navbar() {
                         />
                     );
                 })}
-
                 {menuCMSPages.length > 0 && (
                     <Menu as="div" className="relative inline-block">
                         <MenuButton className="flex items-center gap-2 py-2 px-3 text-sm font-semibold text-white hover:bg-white/10 transition-colors rounded-lg">
@@ -125,42 +166,8 @@ export default function Navbar() {
                     </Menu>
                 )}
             </div>
-            {/*-------- Search----------- */}
-            <div className="hidden lg:flex items-center mt-1">
-                <Input
-                    type="text"
-                    placeholder={t('searchPlaceholder')}
-                    inputSize="md"
-                    startIcon={
-                        <Search
-                            size={22}
-                            strokeWidth={1.5}
-                            className="opacity-40"
-                        />
-                    }
-                    containerClassName="w-[270px] xl:w-[340px]"
-                />
-            </div>
-            <div className="relative flex items-center gap-2 min-h-10">
-                <div className="hidden lg:block">
-                    <LanguageSwitcher />
-                </div>
-                <NotificationDropdown />
-                <CartDropdown />
-                {isAuthenticated ? (
-                    <UserMenu />
-                ) : (
-                    <Link
-                        href="/auth"
-                        aria-label={t('signIn')}
-                        className="flex items-center justify-center gap-2 shrink-0 size-10 md:size-auto md:h-10 md:px-4 rounded-full md:rounded-lg bg-white/15 hover:bg-white/25 text-white font-semibold text-sm transition-colors">
-                        <LogIn size={20} strokeWidth={2} className="shrink-0" />
-                        <span className="hidden md:inline">{t('signIn')}</span>
-                    </Link>
-                )}
-            </div>
-            {/*-------- Mobile Sidebar ----------- */}
+
             <MobileSidebar />
-        </div>
+        </>
     );
 }

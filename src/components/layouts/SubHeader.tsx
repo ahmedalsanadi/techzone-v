@@ -58,29 +58,29 @@ export default function SubHeader() {
 
     return (
         <>
-            <div className="mt-4">
-                {/* Desktop Layout */}
-                <div className="hidden lg:flex bg-white rounded-t-xl h-16 items-center justify-between px-4 shadow-t-sm border-t border-gray-200">
-                    <div className="flex items-center gap-4">
+            <div className="mt-5 lg:mt-2">
+                {/* Desktop Layout: consistent vertical alignment and spacing */}
+                <div className="hidden lg:flex bg-white rounded-t-xl min-h-18 h-16 items-center justify-between gap-6 px-5 shadow-t-sm border-t border-gray-200">
+                    <div className="flex items-center gap-4 min-h-10">
                         <button
                             type="button"
                             onClick={handleBranchClick}
-                            className="flex items-center gap-2 hover:bg-gray-50 p-2 rounded-lg transition-colors duration-200 group cursor-pointer"
+                            className="flex items-center gap-2 hover:bg-gray-50 p-2 -my-1 rounded-lg transition-colors duration-200 group cursor-pointer min-h-10"
                             aria-label={branchName}>
-                            <div className="size-8 rounded-full border border-gray-200 flex items-center justify-center bg-gray-50">
+                            <div className="size-8 rounded-full border border-gray-200 flex items-center justify-center bg-gray-50 shrink-0">
                                 <Building2 className="size-4.5 text-gray-500" />
                             </div>
-                            <span className="text-gray-900 font-semibold text-sm">
+                            <span className="text-gray-900 font-semibold text-sm leading-none">
                                 {branchName}
                             </span>
-                            <ChevronDown className="size-3.5 text-gray-500 group-hover:text-theme-primary transition-colors duration-200" />
+                            <ChevronDown className="size-3.5 text-gray-500 group-hover:text-theme-primary transition-colors duration-200 shrink-0" />
                         </button>
-                        <span className="text-gray-900 font-medium text-sm whitespace-nowrap">
+                        <span className="text-gray-900 font-medium text-sm whitespace-nowrap leading-none flex items-center">
                             {t('selectOrderType')}
                         </span>
                     </div>
 
-                    <div className="flex items-center gap-4 min-w-0 flex-1 justify-end">
+                    <div className="flex items-center gap-4 min-w-0 flex-1 justify-end min-h-10">
                         {activeOrderType === 'delivery' && deliveryAddress ? (
                             <>
                                 <div className="flex items-center gap-2 text-sm text-gray-700 min-w-0 max-w-full">
@@ -119,7 +119,7 @@ export default function SubHeader() {
                                 </Button>
                             </>
                         ) : (
-                            <div className="flex items-center gap-2 flex-row-reverse">
+                            <div className="flex items-center justify-end gap-2 flex-row-reverse">
                                 {orderTypes.map((type) => (
                                     <button
                                         key={type.id}
