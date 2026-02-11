@@ -9,15 +9,15 @@ export const CACHE_STRATEGY = {
     CMS_PAGE_SINGLE: 604800, // 1 week
 
     // Store Configuration
-    STORE_CONFIG: 0, // 1 hour
+    STORE_CONFIG: 3600, // 1 hour
 
     // Categories & Collections
     CATEGORIES_TREE: 3600, // 1 hour
     COLLECTIONS: 3600, // 1 hour
 
     // Products
-    PRODUCTS_LIST: 300, // 5 minutes
-    PRODUCT_SINGLE: 300, // 5 minutes
+    PRODUCTS_LIST:3600, // 1 hour
+    PRODUCT_SINGLE: 3600, // 1 hour
 
     // Static Data
     COUNTRIES_CITIES: 86400, // 24 hours
