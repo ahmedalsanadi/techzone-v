@@ -19,12 +19,12 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
     onClick,
 }) => {
     const fallbackComponent = (
-        <div className="relative w-full h-full">
+        <div className="relative w-full h-full bg-gray-100">
             <Image
                 src={PLACEHOLDER_IMAGE}
-                alt={collection.name}
+                alt=""
                 fill
-                className="object-contain opacity-60"
+                className="object-cover opacity-70"
             />
         </div>
     );

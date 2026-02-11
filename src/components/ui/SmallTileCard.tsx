@@ -24,8 +24,8 @@ export interface SmallTileCardProps {
 }
 
 /**
- * Reusable small tile card (85px/110px) with image or icon, label, and optional selected state.
- * Used for category tabs, collection strip, and similar “select one” UIs.
+ * Reusable small tile card for category tabs, collection strip, and similar “select one” UIs.
+ * Enhanced: clear image area, refined hover/selected states, better typography.
  */
 const SmallTileCard: React.FC<SmallTileCardProps> = ({
     label,
@@ -45,39 +45,39 @@ const SmallTileCard: React.FC<SmallTileCardProps> = ({
     const content = (
         <div
             className={cn(
-                'flex flex-col items-center w-[85px] md:w-[110px] shrink-0',
+                'flex flex-col w-[88px] sm:w-[100px] md:w-[116px] shrink-0',
                 !href && onClick && 'cursor-pointer',
                 className,
             )}>
             <div
                 className={cn(
-                    'w-full h-full aspect-4/5 md:aspect-square flex flex-col items-center justify-center gap-2 p-3 transition-all duration-300 rounded-2xl relative',
+                    'flex flex-col rounded-2xl overflow-hidden transition-all duration-300',
+                    'ring-2 ring-transparent shadow-sm',
                     isSelected
-                        ? 'bg-white border-2 border-theme-primary shadow-xl -translate-y-1'
+                        ? 'bg-white ring-theme-primary shadow-lg shadow-theme-primary/15 scale-[1.02]'
                         : variant === 'muted'
-                          ? 'bg-gray-100 border border-gray-200 group-hover:bg-gray-50 group-hover:border-theme-primary-border group-hover:shadow-md'
-                          : 'bg-white/40 border border-gray-100 group-hover:bg-white group-hover:border-theme-primary-border group-hover:shadow-lg',
+                          ? 'bg-gray-50/90 border border-gray-200/80 group-hover:bg-white group-hover:border-theme-primary/30 group-hover:shadow-md group-hover:ring-theme-primary/20'
+                          : 'bg-white/60 border border-white/80 group-hover:bg-white group-hover:border-theme-primary/25 group-hover:shadow-md group-hover:ring-theme-primary/15',
                 )}>
-                {icon ? (
-                    <div className="flex flex-col items-center gap-2 w-full">
-                        <div className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-theme-primary/10 rounded-xl group-hover:scale-110 transition-transform">
-                            {icon}
-                        </div>
-                        <span
-                            className={cn(
-                                'text-[11px] md:text-xs font-bold transition-colors text-center line-clamp-2 px-1',
-                                isSelected
-                                    ? 'text-theme-primary'
-                                    : 'text-gray-800 group-hover:text-theme-primary',
-                            )}>
-                            {label}
-                        </span>
-                    </div>
-                ) : (
-                    <>
+                {/* Image / icon area */}
+                <div
+                    className={cn(
+                        'relative w-full aspect-square flex items-center justify-center p-3 overflow-hidden',
+                        icon && 'bg-linear-to-b from-theme-primary/5 to-transparent',
+                    )}>
+                    {icon ? (
                         <div
                             className={cn(
-                                'relative w-10 h-10 md:w-14 md:h-14 transition-transform group-hover:scale-110',
+                                'flex items-center justify-center rounded-xl transition-transform duration-300',
+                                'w-11 h-11 md:w-12 md:h-12 bg-theme-primary/10 text-theme-primary',
+                                'group-hover:bg-theme-primary/15 group-hover:scale-105',
+                            )}>
+                            {icon}
+                        </div>
+                    ) : (
+                        <div
+                            className={cn(
+                                'relative w-full h-full min-h-[44px] min-w-[44px] rounded-xl overflow-hidden bg-gray-100',
                                 imageClassName,
                             )}>
                             <DynamicImage
@@ -85,40 +85,45 @@ const SmallTileCard: React.FC<SmallTileCardProps> = ({
                                 alt={label}
                                 fill
                                 priority={priority}
-                                className="object-contain"
-                                sizes="(max-width: 768px) 40px, 56px"
+                                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                sizes="(max-width: 768px) 88px, 116px"
                                 fallbackComponent={fallbackComponent}
                             />
                         </div>
-                        <span
-                            className={cn(
-                                'text-[11px] md:text-xs font-bold transition-colors leading-tight text-center line-clamp-2 px-1',
-                                isSelected
-                                    ? 'text-theme-primary'
-                                    : 'text-gray-800 group-hover:text-theme-primary',
-                            )}
-                            title={title ?? label}>
-                            {label}
-                        </span>
-                    </>
-                )}
-                {isSelected && (
-                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-theme-primary rounded-full" />
-                )}
+                    )}
+                </div>
+                {/* Label */}
+                <div className="px-2 pb-3 pt-1 text-center">
+                    <span
+                        className={cn(
+                            'text-[11px] sm:text-xs font-semibold leading-tight line-clamp-2 block transition-colors',
+                            isSelected
+                                ? 'text-theme-primary'
+                                : 'text-gray-700 group-hover:text-theme-primary',
+                        )}
+                        title={title ?? label}>
+                        {label}
+                    </span>
+                </div>
             </div>
         </div>
     );
 
     if (href) {
         return (
-            <Link href={href} scroll={scroll} className="group outline-none">
+            <Link href={href} scroll={scroll} className="group outline-none focus-visible:ring-2 focus-visible:ring-theme-primary focus-visible:ring-offset-2 rounded-2xl">
                 {content}
             </Link>
         );
     }
 
     return (
-        <div onClick={onClick} className="group outline-none" role={onClick ? 'button' : undefined}>
+        <div
+            onClick={onClick}
+            className="group outline-none focus-visible:ring-2 focus-visible:ring-theme-primary focus-visible:ring-offset-2 rounded-2xl"
+            role={onClick ? 'button' : undefined}
+            tabIndex={onClick ? 0 : undefined}
+            onKeyDown={onClick ? (e) => e.key === 'Enter' && onClick() : undefined}>
             {content}
         </div>
     );
