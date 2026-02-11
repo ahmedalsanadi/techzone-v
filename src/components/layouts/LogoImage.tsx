@@ -10,7 +10,7 @@ interface LogoProps {
 export default function LogoImage({ brandName, brandLogo }: LogoProps) {
     return (
         <Link href="/" className="flex items-center gap-1.5 md:gap-2 mt-1 ps-2 ">
-            <div className="relative w-6 h-6 md:w-10 md:h-10 lg:w-20 lg:h-16">
+            <div className="relative w-6 h-6 md:w-10 md:h-10 lg:w-16 lg:h-1">
                 {brandLogo && (
                     <Image
                         src={brandLogo}
