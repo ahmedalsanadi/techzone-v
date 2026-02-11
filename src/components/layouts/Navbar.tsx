@@ -1,7 +1,7 @@
 //src/components/layouts/navbar.tsx
 'use client';
 import { usePathname } from '@/i18n/navigation';
-import { Search, Menu as MenuIcon, ChevronDown } from 'lucide-react';
+import { Search, Menu as MenuIcon, ChevronDown, LogIn } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { NAV_ITEMS } from '@/config/navigation';
 
@@ -18,6 +18,7 @@ import { BaseMenuItems } from '../ui/BaseMenuItems';
 import { useMemo } from 'react';
 
 import dynamic from 'next/dynamic';
+import { useAuthStore } from '@/store/useAuthStore';
 
 // --- Dynamic Imports with Skeletons ---
 
@@ -55,7 +56,7 @@ export default function Navbar() {
     const locale = useLocale();
     const { toggleMobileMenu } = useUiStore();
     const { config, cmsPages } = useStore();
-
+    const { isAuthenticated } = useAuthStore();
     const menuCMSPages = useMemo(
         () => cmsPages.filter((p) => p.show_in_menu),
         [cmsPages],
@@ -140,13 +141,23 @@ export default function Navbar() {
                     containerClassName="w-[270px] xl:w-[340px]"
                 />
             </div>
-            <div className="relative flex items-center gap-2 h-8">
+            <div className="relative flex items-center gap-2 min-h-10">
                 <div className="hidden lg:block">
                     <LanguageSwitcher />
                 </div>
                 <NotificationDropdown />
                 <CartDropdown />
-                <UserMenu />
+                {isAuthenticated ? (
+                    <UserMenu />
+                ) : (
+                    <Link
+                        href="/auth"
+                        aria-label={t('signIn')}
+                        className="flex items-center justify-center gap-2 shrink-0 size-10 md:size-auto md:h-10 md:px-4 rounded-full md:rounded-lg bg-white/15 hover:bg-white/25 text-white font-semibold text-sm transition-colors">
+                        <LogIn size={20} strokeWidth={2} className="shrink-0" />
+                        <span className="hidden md:inline">{t('signIn')}</span>
+                    </Link>
+                )}
             </div>
             {/*-------- Mobile Sidebar ----------- */}
             <MobileSidebar />
