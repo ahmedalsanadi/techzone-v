@@ -201,7 +201,7 @@ const UserMenu = () => {
                                     type="button"
                                     variant="ghost"
                                     onClick={handleLogout}
-                                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-50 text-red-600 hover:text-red-600 h-auto min-h-0">
+                                    className="w-full flex items-center justify-start gap-3 px-3 py-2.5 rounded-xl hover:bg-red-50 text-red-600 hover:text-red-600 h-auto min-h-0">
                                     <div className="w-9 h-9 rounded-lg bg-red-100 flex items-center justify-center group-hover:scale-105 transition-transform">
                                         <LogOut size={18} strokeWidth={2} />
                                     </div>
@@ -215,7 +215,7 @@ const UserMenu = () => {
                         <MenuItem>
                             <Link
                                 href="/auth"
-                                className="flex items-center justify-center gap-3 w-full py-3 px-4 bg-gradient-to-r from-theme-primary to-theme-primary/90 text-white rounded-xl transition-all hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] font-semibold">
+                                className="flex items-center justify-center gap-3 w-full py-3 px-4 bg-linear-to-r from-theme-primary to-theme-primary/90 text-white rounded-xl transition-all hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] font-semibold">
                                 <LogIn size={18} strokeWidth={2.5} />
                                 <span>{t('signIn')}</span>
                             </Link>
