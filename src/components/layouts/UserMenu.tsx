@@ -121,6 +121,12 @@ const UserMenu = () => {
     } = useAuthStore();
     const { setGuestMode, clearCart } = useCartStore();
 
+    const firstName =
+        (user?.name || '')
+            .trim()
+            .split(/\s+/)
+            .filter(Boolean)[0] || '';
+
     const handleLogout = async () => {
         try {
             await authService.logout();
@@ -138,35 +144,40 @@ const UserMenu = () => {
         <Menu as="div" className="relative inline-block pe-2">
 
             <MenuButton
-                className="group relative flex items-center justify-center gap-2
-                           rounded-full  border border-gray-200 bg-white shadow-sm
+                className="group relative flex items-center justify-center md:justify-start gap-2
+                           rounded-full md:rounded-3xl border border-gray-200 bg-white shadow-sm
                            hover:bg-gray-50 transition-colors outline-none
-                           size-9 md:size-11"
+                           size-9 md:h-10 md:w-auto md:px-3"
             >
                 {/* Avatar Circle — smaller on mobile */}
                 <div
-                    className="size-6  md:size-8 rounded-full
+                    className="size-6 md:size-7 rounded-full
                                bg-linear-to-br from-gray-50 to-gray-100
                                flex items-center justify-center
                                border-2 border-gray-200 shrink-0"
                 >
                     <User
-                        className="size-3.5  text-gray-600"
+                        className="size-3.5 md:size-4 text-gray-600"
                         strokeWidth={2.5}
                     />
                 </div>
 
-        
-           
+                {/* Name: show first name on md+ only */}
+                {isAuthenticated && firstName && (
+                    <span className="hidden md:inline text-sm font-semibold text-gray-800 max-w-[140px] truncate pointer-events-none">
+                        {firstName}
+                    </span>
+                )}
+
                 {/* Chevron Badge — Mobile only, now contained inside the button */}
                 <span
-                    className="absolute bottom-0 end-0 size-4 md:size-5 rounded-full
+                    className="absolute md:hidden  bottom-0 end-0 size-4 md:size-4 rounded-full
                                bg-white border border-gray-300
                                flex items-center justify-center
                              "
                 >
                     <ChevronDown
-                        className="size-2.5 md:size-3 text-gray-600
+                        className=" size-2.5 md:size-2.5 text-gray-600
                                    transition-transform group-data-open:rotate-180"
                     />
                 </span>
