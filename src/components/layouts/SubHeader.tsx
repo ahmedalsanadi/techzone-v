@@ -166,51 +166,58 @@ export default function SubHeader() {
 
                     {activeOrderType === 'delivery' && deliveryAddress && (
                         <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-sm border border-gray-200 space-y-2 relative z-10">
-                            <div className="flex items-center gap-2 sm:gap-3 text-sm text-gray-700 pointer-events-none min-w-0">
-                                <MapPin className="w-4 h-4 text-theme-primary shrink-0" />
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-gray-700 text-xs sm:text-sm truncate leading-snug">
-                                        <span className="font-medium">
-                                            {t('deliveryTo')}{' '}
-                                            <span className="text-theme-primary font-bold">
-                                                (
-                                                {getAddressLabel(
-                                                    deliveryAddress,
-                                                )}
-                                                )
-                                            </span>
-                                            {' · '}
-                                        </span>
-                                        <span className="text-gray-600">
-                                            {formatAddressForDisplay(
-                                                deliveryAddress,
-                                            )}
-                                        </span>
-                                    </p>
-                                </div>
-                            </div>
+                            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
 
-                            {orderTime === 'later' && scheduledTime && (
-                                <div className="flex items-center gap-2 text-sm text-gray-700 pointer-events-none">
-                                    <Clock className="w-4 h-4 text-theme-primary shrink-0" />
-                                    <span>
-                                        {formatScheduledTime(
-                                            scheduledTime,
-                                            'ar',
+                                <div className="flex-1 min-w-0 space-y-2 pointer-events-none">
+                                    <div className="flex items-center gap-2 sm:gap-3 text-sm text-gray-700 min-w-0">
+                                        <MapPin className="w-4 h-4 text-theme-primary shrink-0" />
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-gray-700 text-xs sm:text-sm truncate leading-snug">
+                                                <span className="font-medium">
+                                                    {t('deliveryTo')}{' '}
+                                                    <span className="text-theme-primary font-bold">
+                                                        (
+                                                        {getAddressLabel(
+                                                            deliveryAddress,
+                                                        )}
+                                                        )
+                                                    </span>
+                                                    {' · '}
+                                                </span>
+                                                <span className="text-gray-600">
+                                                    {formatAddressForDisplay(
+                                                        deliveryAddress,
+                                                    )}
+                                                </span>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {orderTime === 'later' &&
+                                        scheduledTime && (
+                                            <div className="flex items-center gap-2 text-sm text-gray-700">
+                                                <Clock className="w-4 h-4 text-theme-primary shrink-0" />
+                                                <span>
+                                                    {formatScheduledTime(
+                                                        scheduledTime,
+                                                        'ar',
+                                                    )}
+                                                </span>
+                                            </div>
                                         )}
-                                    </span>
                                 </div>
-                            )}
-
-                            <Button
-                                type="button"
-                                variant="secondaryTint"
-                                size="xl"
-                                onClick={() => setIsOrderModalOpen(true)}
-                                className="w-full mt-2 text-xs sm:text-sm gap-1 active:bg-theme-primary/20">
-                                <Edit className="w-3.5 h-3.5 shrink-0" />
-                                {t('edit')}
-                            </Button>
+                            {/* Edit Button: */}
+                                <Button
+                                    type="button"
+                                    variant="secondaryTint"
+                                    size="icon-sm"
+                                    onClick={() => setIsOrderModalOpen(true)}
+                                    aria-label={t('edit')}
+                                    className="shrink-0 active:bg-theme-primary/20">
+                                    <Edit />
+                                    <span className="sr-only">{t('edit')}</span>
+                                </Button>
+                            </div>
                         </div>
                     )}
 
