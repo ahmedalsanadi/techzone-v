@@ -55,10 +55,62 @@ const ChangeView = ({ center }: { center: [number, number] }) => {
     return null;
 };
 
+// Fix Leaflet on small screens: container can have 0 size at first paint; invalidateSize() redraws when layout is ready
+const MapInvalidateSize: React.FC = () => {
+    const map = useMap();
+    useEffect(() => {
+        const run = () => map.invalidateSize();
+        run();
+        const t1 = window.setTimeout(run, 100);
+        const t2 = window.setTimeout(run, 350);
+        const el = map.getContainer();
+        const ro =
+            typeof ResizeObserver !== 'undefined'
+                ? new ResizeObserver(() => requestAnimationFrame(run))
+                : null;
+        if (ro && el) ro.observe(el);
+        const onResize = () => requestAnimationFrame(run);
+        window.addEventListener('resize', onResize);
+        return () => {
+            window.clearTimeout(t1);
+            window.clearTimeout(t2);
+            ro?.disconnect();
+            window.removeEventListener('resize', onResize);
+        };
+    }, [map]);
+    return null;
+};
+
 const BranchMap: React.FC<BranchMapProps> = React.memo(
     ({ branches, selectedBranchId, onBranchSelect }) => {
         const t = useTranslations('Branches');
+        const wrapperRef = React.useRef<HTMLDivElement>(null);
         const [mounted] = useState(() => typeof window !== 'undefined');
+        const [containerReady, setContainerReady] = useState(false);
+
+        // Defer Leaflet mount until container has non-zero height (fixes blank map on small screens)
+        useEffect(() => {
+            if (!mounted || !wrapperRef.current) return;
+            const el = wrapperRef.current;
+            const check = () => {
+                if (el.offsetHeight > 0 && !containerReady) setContainerReady(true);
+            };
+            check();
+            const t1 = requestAnimationFrame(check);
+            const t2 = setTimeout(check, 50);
+            const t3 = setTimeout(check, 200);
+            const ro =
+                typeof ResizeObserver !== 'undefined'
+                    ? new ResizeObserver(check)
+                    : null;
+            if (ro) ro.observe(el);
+            return () => {
+                cancelAnimationFrame(t1);
+                clearTimeout(t2);
+                clearTimeout(t3);
+                ro?.disconnect();
+            };
+        }, [mounted, containerReady]);
 
         // Calculate center dynamically from branches or selected branch
         const center = React.useMemo(
@@ -81,17 +133,30 @@ const BranchMap: React.FC<BranchMapProps> = React.memo(
                 );
         }, [branches]);
 
-        // Loading state
+        // Loading state (SSR / not mounted)
         if (!mounted) {
             return (
-                <div className="w-full h-full bg-gray-100 animate-pulse rounded-3xl flex items-center justify-center">
+                <div className="w-full h-full min-h-[250px] bg-gray-100 animate-pulse rounded-3xl flex items-center justify-center">
+                    <div className="text-sm text-gray-400">Loading map...</div>
+                </div>
+            );
+        }
+
+        // Placeholder until container has height (avoids Leaflet init at 0 size on small screens)
+        if (!containerReady) {
+            return (
+                <div
+                    ref={wrapperRef}
+                    className="w-full h-full min-h-[250px] bg-gray-100 animate-pulse rounded-2xl md:rounded-3xl flex items-center justify-center border border-gray-100">
                     <div className="text-sm text-gray-400">Loading map...</div>
                 </div>
             );
         }
 
         return (
-            <div className="w-full h-full rounded-2xl md:rounded-3xl overflow-hidden border border-gray-100 shadow-inner">
+            <div
+                ref={wrapperRef}
+                className="w-full h-full min-h-[250px] rounded-2xl md:rounded-3xl overflow-hidden border border-gray-100 shadow-inner">
                 <MapContainer
                     center={center}
                     zoom={DEFAULT_MAP_ZOOM}
@@ -104,6 +169,7 @@ const BranchMap: React.FC<BranchMapProps> = React.memo(
                         maxZoom={19}
                     />
                     <ChangeView center={center} />
+                    <MapInvalidateSize />
                     {branchesWithCoords.map(({ branch, coords }) => {
                         const [lat, lng] = coords;
                         const hasRealCoords =

@@ -58,16 +58,16 @@ export const BranchListItem: React.FC<BranchListItemProps> = ({
                                 : 'bg-gray-50 text-gray-400 group-hover:bg-theme-primary/10 group-hover:text-theme-primary',
                         )}
                         aria-hidden="true">
-                        <Building2 className="size-5 md:size-8 transition-transform duration-500 group-hover:scale-110" />
+                        <Building2 className="size-4 md:size-6 transition-transform duration-500 group-hover:scale-110" />
                     </div>
                     <div className="flex flex-col justify-center min-w-0 flex-1">
-                        <h4 className="font-bold text-gray-900 text-sm md:text-xl truncate mb-0.5 md:mb-1.5 transition-colors duration-300 group-hover:text-theme-primary">
+                        <h4 className="font-bold text-gray-900 text-sm line-clamp-1 mb-0.5 md:mb-2 transition-colors duration-300 group-hover:text-theme-primary">
                             {branch.name || 'Branch'}
                         </h4>
                         <div className="flex flex-wrap items-center gap-y-1 gap-x-2 md:gap-x-3">
                             <span
                                 className={cn(
-                                    'text-[7px] md:text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 md:py-1 rounded-full shadow-sm',
+                                    'text-xs font-black uppercase tracking-wider px-2 py-1 rounded-md shadow-sm',
                                     branch.is_open
                                         ? 'text-green-600 bg-green-50/80 backdrop-blur-sm'
                                         : 'text-gray-400 bg-gray-50',
@@ -79,7 +79,7 @@ export const BranchListItem: React.FC<BranchListItemProps> = ({
                                 aria-hidden="true"
                             />
                             {branch.services && (
-                                <span className="text-[10px] md:text-sm text-gray-500 font-medium whitespace-nowrap">
+                                <span className="text-sm  text-gray-500 font-medium whitespace-nowrap">
                                     {branch.services.shipping_enabled
                                         ? t('free_delivery')
                                         : t('delivery_with_fee', { fee: 5 })}
