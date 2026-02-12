@@ -1,45 +1,27 @@
 import React from 'react';
-import { Utensils } from 'lucide-react';
 
 export default function Loading() {
     return (
-        <div className="fixed inset-0 z-9999 flex flex-col items-center justify-center bg-white/90 backdrop-blur-md">
-            <div className="relative flex items-center justify-center">
-                {/* Background decorative circles */}
-                <div className="absolute w-32 h-32 bg-theme-primary/5 rounded-full animate-pulse" />
-                <div className="absolute w-24 h-24 bg-theme-primary/10 rounded-full animate-ping [animation-duration:3s]" />
-
-                {/* Spinning loader ring */}
-                <div className="w-20 h-20 border-[3px] border-gray-100 border-t-theme-primary rounded-full animate-spin [animation-duration:0.8s]" />
-
-                {/* Central Icon */}
-                <div className="absolute flex items-center justify-center">
-                    <Utensils
-                        size={32}
-                        className="text-theme-primary animate-bounce"
-                    />
+        <div className="min-h-screen bg-white">
+            {/* Global fallback skeleton (no fake navbar) */}
+            <div className="container mx-auto px-4 py-8">
+                <div className="space-y-6">
+                    <div className="h-8 w-64 rounded bg-gray-100 animate-pulse" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {Array.from({ length: 6 }).map((_, i) => (
+                            <div
+                                key={i}
+                                className="rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden">
+                                <div className="h-44 bg-gray-100 animate-pulse" />
+                                <div className="p-4 space-y-3">
+                                    <div className="h-4 w-4/5 rounded bg-gray-100 animate-pulse" />
+                                    <div className="h-4 w-2/5 rounded bg-gray-100 animate-pulse" />
+                                    <div className="h-10 w-full rounded-xl bg-gray-100 animate-pulse" />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
-            </div>
-
-            {/* Branding Text */}
-            <div className="mt-8 flex flex-col items-center gap-3">
-                <div className="flex items-center gap-2">
-                    <span className="text-2xl font-black text-gray-900 tracking-tighter uppercase italic">
-                        Fasto
-                    </span>
-                </div>
-
-                {/* Loading Dots */}
-                <div className="flex gap-1.5 items-center bg-gray-50 px-4 py-1.5 rounded-full border border-gray-100 shadow-sm">
-                    <div className="w-2 h-2 bg-theme-primary rounded-full animate-bounce [animation-delay:-0.3s]" />
-                    <div className="w-2 h-2 bg-theme-primary rounded-full animate-bounce [animation-delay:-0.15s]" />
-                    <div className="w-2 h-2 bg-theme-primary rounded-full animate-bounce" />
-                </div>
-            </div>
-
-            {/* Minimalist Progress Indicator at Bottom */}
-            <div className="absolute bottom-10 w-48 h-1 bg-gray-100 rounded-full overflow-hidden">
-                <div className="w-full h-full bg-theme-primary origin-left animate-loading-progress" />
             </div>
         </div>
     );

@@ -11,6 +11,10 @@ import React, {
 import { StoreConfig, Category, CMSPage } from '@/types/store';
 import { useCartStore } from '@/store/useCartStore';
 import { isValidColor, generateThemeVariables } from '@/lib/theme-utils';
+import { storeService } from '@/services/store-service';
+import { cmsService } from '@/services/cms-service';
+import { useQuery } from '@tanstack/react-query';
+import { useLocale } from 'next-intl';
 
 interface StoreContextType {
     config: StoreConfig;
@@ -31,6 +35,8 @@ export function StoreProvider({
     categories: Category[];
     cmsPages: CMSPage[];
 }) {
+    const locale = useLocale();
+
     // Track previous theme colors to avoid unnecessary updates
     const prevThemeRef = useRef<string | null>(null);
 
@@ -38,6 +44,26 @@ export function StoreProvider({
     useEffect(() => {
         useCartStore.persist.rehydrate();
     }, []);
+
+    // Client fetching (cached) for non-critical, shared layout data.
+    // We include locale in the key so switching languages doesn't reuse stale labels.
+    const categoriesQuery = useQuery({
+        queryKey: ['store', 'categories', locale],
+        queryFn: () => storeService.getCategories(true),
+        // Use placeholder (not initialData) so React Query still fetches.
+        // If we pass [] as initialData, it is considered "fresh" and won't refetch for staleTime.
+        placeholderData: categories,
+        refetchOnWindowFocus: false,
+        retry: 1,
+    });
+
+    const cmsPagesQuery = useQuery({
+        queryKey: ['store', 'cms-pages', locale],
+        queryFn: () => cmsService.getPages(),
+        placeholderData: cmsPages,
+        refetchOnWindowFocus: false,
+        retry: 1,
+    });
 
     useLayoutEffect(() => {
         if (!config?.theme) return;
@@ -81,7 +107,12 @@ export function StoreProvider({
     }, [config]);
 
     return (
-        <StoreContext.Provider value={{ config, categories, cmsPages }}>
+        <StoreContext.Provider
+            value={{
+                config,
+                categories: categoriesQuery.data || [],
+                cmsPages: cmsPagesQuery.data || [],
+            }}>
             {children}
         </StoreContext.Provider>
     );

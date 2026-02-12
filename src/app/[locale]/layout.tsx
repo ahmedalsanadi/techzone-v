@@ -14,7 +14,6 @@ import '@/app/globals.css';
 import PageContainer from '@/components/layouts/PageContainer';
 import { ServiceUnavailableFallback } from '@/components/layouts/service-unavailable-fallback';
 import { QueryProvider } from '@/components/providers/QueryProvider';
-import { getStoreCategories, getStorePages } from '@/services/store-config';
 import { getServerStoreConfig } from '@/services/store-config';
 import { StoreProvider } from '@/components/providers/StoreProvider';
 import { ThemeStyles } from '@/components/providers/ThemeStyles';
@@ -102,11 +101,7 @@ export default async function RootLayout({
 
     // Tenant config (UI + branding only, NOT metadata)
     // Using shared server context ensures single fetch per request
-    const [storeConfig, categories, cmsPages] = await Promise.all([
-        getServerStoreConfig(),
-        getStoreCategories(),
-        getStorePages(),
-    ]);
+    const storeConfig = await getServerStoreConfig();
 
     return (
         <html
@@ -148,11 +143,11 @@ export default async function RootLayout({
                         {!storeConfig ? (
                             <ServiceUnavailableFallback />
                         ) : (
-                            <StoreProvider
-                                config={storeConfig}
-                                categories={categories}
-                                cmsPages={cmsPages}>
-                                <QueryProvider>
+                            <QueryProvider>
+                                <StoreProvider
+                                    config={storeConfig}
+                                    categories={[]}
+                                    cmsPages={[]}>
                                     <ProductConfigProvider>
                                         <PageContainer>
                                             {children}
@@ -161,8 +156,8 @@ export default async function RootLayout({
                                     <ToasterContainer isArabic={isArabic} />
                                     <BranchSelectionModal />
                                     <BranchModalInitializer />
-                                </QueryProvider>
-                            </StoreProvider>
+                                </StoreProvider>
+                            </QueryProvider>
                         )}
                     </ThemeProvider>
                 </NextIntlClientProvider>
