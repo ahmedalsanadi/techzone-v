@@ -738,6 +738,7 @@
     "returnHome": "العودة للرئيسية"
   },
   "Reviews": {
+    "anonymous": "مستخدم",
     "reviewsTitle": "التقييمات",
     "overallRating": "التقييم العام",
     "basedOnReviews": "بناءً على {count} تقييم",
