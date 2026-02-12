@@ -38,7 +38,7 @@ export const BranchListItem: React.FC<BranchListItemProps> = ({
             onClick={onClick}
             onKeyDown={onKeyDown}
             className={cn(
-                'group p-2 md:p-4 rounded-2xl   transition-all duration-300 cursor-pointer relative focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-2',
+                'group p-3 md:p-4 rounded-xl md:rounded-2xl transition-all duration-300 cursor-pointer relative focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-2',
                 isSelected
                     ? 'border-theme-primary bg-linear-to-br from-theme-primary/10 to-theme-primary/5 shadow-xl shadow-theme-primary/10 z-10'
                     : 'border-gray-50 bg-white hover:border-gray-200 hover:shadow-lg hover:shadow-gray-100',
