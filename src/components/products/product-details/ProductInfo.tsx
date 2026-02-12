@@ -60,24 +60,12 @@ export default function ProductInfo({
                     <div className="flex gap-2">
                         {categories.map((cat) => (
                             <Badge
+                             className="text-md md:text-lg"
                                 key={cat.id}
-                                variant="primary">
-                                {cat.name}
-                            </Badge>
+                                variant="primary">{cat.name}</Badge>
                         ))}
                     </div>
                 )}
-
-                <div className="space-y-1">
-                    <h1 className="text-2xl font-bold tracking-tight text-gray-900 leading-tight">
-                        {name}
-                    </h1>
-                    {subtitle && (
-                        <p className="text-lg text-gray-500 font-medium">
-                            {subtitle}
-                        </p>
-                    )}
-                </div>
 
                 <p className="text-gray-500 font-medium leading-relaxed text-base max-w-2xl">
                     {description}

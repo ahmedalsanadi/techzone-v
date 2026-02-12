@@ -13,9 +13,9 @@ interface ActionButtonProps {
 const ActionButton = React.memo(({ icon: Icon, label }: ActionButtonProps) => (
     <Button
         type="button"
-        variant="outline"
-        size="sm"
-        className="rounded-md sm:rounded-xl shadow-sm group">
+        variant="secondaryTint"
+        size="lg"
+        className=" shadow-sm group">
         <Icon className="w-4 h-4 sm:w-[18px] sm:h-[18px] text-gray-400 group-hover:text-theme-primary transition-colors" />
         <span className="text-xs sm:text-sm font-bold">{label}</span>
     </Button>

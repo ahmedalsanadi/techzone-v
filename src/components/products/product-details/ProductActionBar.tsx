@@ -91,7 +91,7 @@ export default function ProductActionBar({
                 <Button
                     type="button"
                     variant="primary"
-                    size='lg'
+                    size='2xl'
                     onClick={onAddToCart}
                     disabled={!isAvailable}
                     className={cn(
