@@ -34,7 +34,7 @@ const Footer = () => {
         if (section.titleKey === 'sections.categories') {
             return {
                 ...section,
-                links: footerCategories.map((cat: any) => ({
+                links: footerCategories.map((cat) => ({
                     label: cat.name,
                     href: `/categories/${cat.slug || cat.id}`,
                 })),
@@ -44,12 +44,16 @@ const Footer = () => {
             return {
                 ...section,
                 links: [
+                    // Always show Contact link (not CMS page), with locale label
+                    { label: "تواصل معنا", href: '/contact' },
                     ...footerCMSPages.map((page) => ({
                         label: page.title,
                         href: `/pages/${page.slug}`,
                     })),
                     // Fallback or additional hardcoded links if any
                     ...section.links.filter(
+                        (l) => l.href !== '/contact',
+                    ).filter(
                         (l) =>
                             !footerCMSPages.some(
                                 (p) => p.slug === l.href.split('/').pop(),

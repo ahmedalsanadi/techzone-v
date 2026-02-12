@@ -58,7 +58,7 @@ export default function SubHeader() {
 
     return (
         <>
-            <div className="mt-5 lg:mt-2">
+            <div className="mt-3 lg:mt-2">
                 {/* Desktop Layout: consistent vertical alignment and spacing */}
                 <div className="hidden lg:flex bg-white rounded-t-xl min-h-18 h-16 items-center justify-between gap-6 px-5 shadow-t-sm border-t border-gray-200">
                     <div className="flex items-center gap-4 min-h-10">

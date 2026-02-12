@@ -41,7 +41,7 @@ export default function PageContainer({
                         ? 'h-[190px] lg:h-[160px]'
                         : 'min-h-[75px] lg:min-h-[120px]'
                 }`}>
-                <div className="container mx-auto px-4 py-4 flex-1 flex flex-col min-h-0">
+                <div className="container mx-auto px-4 py-1 flex-1 flex flex-col min-h-0">
                     <Navbar />
                     {showSubHeader && <SubHeader />}
                 </div>
@@ -49,7 +49,9 @@ export default function PageContainer({
             {/*-------- Content overlaps bottom of nav when subheader shown so half of subheader sits on white ----------- */}
             <div
                 className={`container mx-auto px-4 flex-1 ${showSubHeader ? '-mt-16 lg:-mt-12 pt-16 lg:pt-12 bg-white' : ''}`}>
-                {children}
+                <div className="flex flex-col gap-4 min-h-screen py-1">
+                    {children}
+                </div>
             </div>
             <FloatingButtons />
             <Footer />
