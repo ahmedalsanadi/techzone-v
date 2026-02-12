@@ -60,6 +60,50 @@
     --libero-red: var(--theme-primary);
 }
 
+/* Global scrollbar – theme color (applies to html/body and any scrollable area) */
+html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--theme-primary, #B44734) transparent;
+}
+html::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+html::-webkit-scrollbar-track {
+    background: transparent;
+}
+html::-webkit-scrollbar-thumb {
+    background-color: var(--theme-primary, #B44734);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+html::-webkit-scrollbar-thumb:hover {
+    background-color: var(--theme-primary-hover, rgba(180, 71, 52, 0.9));
+}
+
+/* Optional: theme scrollbar for any scrollable container (add class .scrollbar-theme) */
+.scrollbar-theme {
+    scrollbar-width: thin;
+    scrollbar-color: var(--theme-primary, #B44734) transparent;
+}
+.scrollbar-theme::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+.scrollbar-theme::-webkit-scrollbar-track {
+    background: transparent;
+}
+.scrollbar-theme::-webkit-scrollbar-thumb {
+    background-color: var(--theme-primary, #B44734);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+.scrollbar-theme::-webkit-scrollbar-thumb:hover {
+    background-color: var(--theme-primary-hover, rgba(180, 71, 52, 0.9));
+}
+
 /* Consistent scrollbars for custom dropdowns (SelectField) */
 .select-options-scroll {
     scrollbar-width: thin;
