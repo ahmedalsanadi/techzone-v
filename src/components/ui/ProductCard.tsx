@@ -114,7 +114,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 variant="ghost"
                 size="icon-sm"
                 onClick={handleWishlistClick}
-                className={`absolute top-3 left-3 z-20 rounded-full bg-white/90 backdrop-blur-sm shadow-sm ${
+                className={`absolute top-3 left-3 z-5 rounded-full bg-white/90 backdrop-blur-sm shadow-sm ${
                     isInWishlistState
                         ? 'text-red-500 fill-red-500'
                         : 'text-gray-400 hover:text-red-500'

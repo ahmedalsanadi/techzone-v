@@ -4,6 +4,14 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 import { ProductCustomField } from '@/types/store';
 import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/Input';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/SelectField';
 
 interface CustomFieldsFormProps {
     customFields: ProductCustomField[];
@@ -23,7 +31,37 @@ export default function CustomFieldsForm({
     const renderField = (field: ProductCustomField) => {
         const fieldValue = values[field.name] || '';
         const isRequired = field.is_required;
-        const hasError = isRequired && !fieldValue;
+
+        const isEmptyForRequired = (value: any) => {
+            // boolean required means it must be checked/true
+            if (field.input_type === 'boolean') return !value;
+            // checkbox groups: required means at least one selected
+            if (Array.isArray(value)) return value.length === 0;
+            // number 0 is valid; empty string/null/undefined are not
+            return value === '' || value === null || value === undefined;
+        };
+
+        const hasError = isRequired && isEmptyForRequired(fieldValue);
+
+        const label = (
+            <span className="text-md font-bold text-gray-700">
+                {field.label}
+                {isRequired && <span className="text-red-500 ml-1">*</span>}
+            </span>
+        );
+
+        const description = field.description ? (
+            <p className="text-xs text-gray-500 mt-1">{field.description}</p>
+        ) : null;
+
+        const inputContainerClassName = cn(
+            'h-12 rounded-xl bg-gray-50 border-gray-100 px-4',
+            'focus-within:border-theme-primary-border focus-within:ring-4 focus-within:ring-theme-primary/5',
+            hasError && 'border-red-300 focus-within:border-red-400 focus-within:ring-red-500/10',
+        );
+
+        const inputTextClassName =
+            'font-semibold text-base text-gray-800 placeholder:text-gray-400';
 
         switch (field.input_type) {
             case 'boolean':
@@ -51,24 +89,24 @@ export default function CustomFieldsForm({
                 return (
                     <div className="py-3">
                         <label className="block mb-2">
-                            <span className="text-md font-bold text-gray-700">
-                                {field.label}
-                                {isRequired && <span className="text-red-500 ml-1">*</span>}
-                            </span>
-                            {field.description && (
-                                <p className="text-xs text-gray-500 mt-1">{field.description}</p>
-                            )}
+                            {label}
+                            {description}
                         </label>
-                        <input
+                        <Input
                             type="number"
                             value={fieldValue}
-                            onChange={(e) => onChange(field.name, e.target.value ? Number(e.target.value) : '')}
+                            onChange={(e) =>
+                                onChange(
+                                    field.name,
+                                    e.target.value ? Number(e.target.value) : '',
+                                )
+                            }
                             min={0}
                             max={field.max_limit || undefined}
-                            className={cn(
-                                "w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-theme-primary focus:border-theme-primary",
-                                hasError && "border-red-300"
-                            )}
+                            variant="filled"
+                            inputSize="lg"
+                            containerClassName={inputContainerClassName}
+                            className={inputTextClassName}
                         />
                     </div>
                 );
@@ -77,23 +115,18 @@ export default function CustomFieldsForm({
                 return (
                     <div className="py-3">
                         <label className="block mb-2">
-                            <span className="text-md font-bold text-gray-700">
-                                {field.label}
-                                {isRequired && <span className="text-red-500 ml-1">*</span>}
-                            </span>
-                            {field.description && (
-                                <p className="text-xs text-gray-500 mt-1">{field.description}</p>
-                            )}
+                            {label}
+                            {description}
                         </label>
-                        <input
+                        <Input
                             type="text"
                             value={fieldValue}
                             onChange={(e) => onChange(field.name, e.target.value)}
                             maxLength={field.max_limit || undefined}
-                            className={cn(
-                                "w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-theme-primary focus:border-theme-primary",
-                                hasError && "border-red-300"
-                            )}
+                            variant="filled"
+                            inputSize="lg"
+                            containerClassName={inputContainerClassName}
+                            className={inputTextClassName}
                         />
                     </div>
                 );
@@ -102,24 +135,30 @@ export default function CustomFieldsForm({
                 return (
                     <div className="py-3">
                         <label className="block mb-2">
-                            <span className="text-md font-bold text-gray-700">
-                                {field.label}
-                                {isRequired && <span className="text-red-500 ml-1">*</span>}
-                            </span>
-                            {field.description && (
-                                <p className="text-xs text-gray-500 mt-1">{field.description}</p>
-                            )}
+                            {label}
+                            {description}
                         </label>
-                        <textarea
-                            value={fieldValue}
-                            onChange={(e) => onChange(field.name, e.target.value)}
-                            maxLength={field.max_limit || undefined}
-                            rows={3}
+                        <div
                             className={cn(
-                                "w-full px-4 py-2 border rounded-lg resize-none focus:ring-2 focus:ring-theme-primary focus:border-theme-primary",
-                                hasError && "border-red-300"
-                            )}
-                        />
+                                'group flex items-start gap-2 overflow-hidden px-4 transition-all duration-200 border border-solid outline-none',
+                                'h-auto rounded-xl bg-gray-50 border-gray-100',
+                                'focus-within:border-theme-primary-border focus-within:ring-4 focus-within:ring-theme-primary/5',
+                                hasError &&
+                                    'border-red-300 focus-within:border-red-400 focus-within:ring-red-500/10',
+                            )}>
+                            <textarea
+                                value={fieldValue}
+                                onChange={(e) =>
+                                    onChange(field.name, e.target.value)
+                                }
+                                maxLength={field.max_limit || undefined}
+                                rows={3}
+                                className={cn(
+                                    'w-full bg-transparent py-3 text-base text-gray-800 outline-none resize-none',
+                                    'placeholder:text-gray-400 font-semibold',
+                                )}
+                            />
+                        </div>
                     </div>
                 );
 
@@ -129,29 +168,40 @@ export default function CustomFieldsForm({
                 return (
                     <div className="py-3">
                         <label className="block mb-2">
-                            <span className="text-md font-bold text-gray-700">
-                                {field.label}
-                                {isRequired && <span className="text-red-500 ml-1">*</span>}
-                            </span>
-                            {field.description && (
-                                <p className="text-xs text-gray-500 mt-1">{field.description}</p>
-                            )}
+                            {label}
+                            {description}
                         </label>
                         {field.input_type === 'select' ? (
-                            <select
+                            <Select
                                 value={fieldValue}
-                                onChange={(e) => onChange(field.name, e.target.value)}
-                                className={cn(
-                                    "w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-theme-primary focus:border-theme-primary",
-                                    hasError && "border-red-300"
-                                )}>
-                                <option value="">{t('select') || 'Select...'}</option>
-                                {Object.entries(field.options).map(([value, label]) => (
-                                    <option key={value} value={value}>
-                                        {label}
-                                    </option>
-                                ))}
-                            </select>
+                                onValueChange={(v) => onChange(field.name, v)}
+                                className="w-full">
+                                <SelectTrigger
+                                    className={cn(
+                                        'h-12 rounded-xl bg-gray-50 border-gray-100 px-4',
+                                        'focus-visible:border-theme-primary-border focus-visible:ring-4 focus-visible:ring-theme-primary/5',
+                                        hasError &&
+                                            'border-red-300 focus-visible:border-red-400 focus-visible:ring-red-500/10',
+                                    )}>
+                                    <SelectValue
+                                        placeholder={t('select') || 'Select...'}
+                                    />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="__placeholder__" disabled>
+                                        {t('select') || 'Select...'}
+                                    </SelectItem>
+                                    {Object.entries(field.options).map(
+                                        ([value, optionLabel]) => (
+                                            <SelectItem
+                                                key={value}
+                                                value={value}>
+                                                {optionLabel}
+                                            </SelectItem>
+                                        ),
+                                    )}
+                                </SelectContent>
+                            </Select>
                         ) : (
                             <div className="space-y-2">
                                 {Object.entries(field.options).map(([value, label]) => (
@@ -179,13 +229,8 @@ export default function CustomFieldsForm({
                 return (
                     <div className="py-3">
                         <label className="block mb-2">
-                            <span className="text-md font-bold text-gray-700">
-                                {field.label}
-                                {isRequired && <span className="text-red-500 ml-1">*</span>}
-                            </span>
-                            {field.description && (
-                                <p className="text-xs text-gray-500 mt-1">{field.description}</p>
-                            )}
+                            {label}
+                            {description}
                         </label>
                         <div className="space-y-2">
                             {Object.entries(field.options).map(([value, label]) => {
@@ -218,22 +263,17 @@ export default function CustomFieldsForm({
                 return (
                     <div className="py-3">
                         <label className="block mb-2">
-                            <span className="text-md font-bold text-gray-700">
-                                {field.label}
-                                {isRequired && <span className="text-red-500 ml-1">*</span>}
-                            </span>
-                            {field.description && (
-                                <p className="text-xs text-gray-500 mt-1">{field.description}</p>
-                            )}
+                            {label}
+                            {description}
                         </label>
-                        <input
+                        <Input
                             type="date"
                             value={fieldValue}
                             onChange={(e) => onChange(field.name, e.target.value)}
-                            className={cn(
-                                "w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-theme-primary focus:border-theme-primary",
-                                hasError && "border-red-300"
-                            )}
+                            variant="filled"
+                            inputSize="lg"
+                            containerClassName={inputContainerClassName}
+                            className={cn(inputTextClassName, 'scheme-light')}
                         />
                     </div>
                 );
@@ -242,22 +282,17 @@ export default function CustomFieldsForm({
                 return (
                     <div className="py-3">
                         <label className="block mb-2">
-                            <span className="text-md font-bold text-gray-700">
-                                {field.label}
-                                {isRequired && <span className="text-red-500 ml-1">*</span>}
-                            </span>
-                            {field.description && (
-                                <p className="text-xs text-gray-500 mt-1">{field.description}</p>
-                            )}
+                            {label}
+                            {description}
                         </label>
-                        <input
+                        <Input
                             type="time"
                             value={fieldValue}
                             onChange={(e) => onChange(field.name, e.target.value)}
-                            className={cn(
-                                "w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-theme-primary focus:border-theme-primary",
-                                hasError && "border-red-300"
-                            )}
+                            variant="filled"
+                            inputSize="lg"
+                            containerClassName={inputContainerClassName}
+                            className={cn(inputTextClassName, 'scheme-light')}
                         />
                     </div>
                 );
@@ -266,22 +301,17 @@ export default function CustomFieldsForm({
                 return (
                     <div className="py-3">
                         <label className="block mb-2">
-                            <span className="text-md font-bold text-gray-700">
-                                {field.label}
-                                {isRequired && <span className="text-red-500 ml-1">*</span>}
-                            </span>
-                            {field.description && (
-                                <p className="text-xs text-gray-500 mt-1">{field.description}</p>
-                            )}
+                            {label}
+                            {description}
                         </label>
-                        <input
+                        <Input
                             type="datetime-local"
                             value={fieldValue}
                             onChange={(e) => onChange(field.name, e.target.value)}
-                            className={cn(
-                                "w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-theme-primary focus:border-theme-primary",
-                                hasError && "border-red-300"
-                            )}
+                            variant="filled"
+                            inputSize="lg"
+                            containerClassName={inputContainerClassName}
+                            className={cn(inputTextClassName, 'scheme-light')}
                         />
                     </div>
                 );
@@ -291,30 +321,37 @@ export default function CustomFieldsForm({
                 return (
                     <div className="py-3">
                         <label className="block mb-2">
-                            <span className="text-md font-bold text-gray-700">
-                                {field.label}
-                                {isRequired && <span className="text-red-500 ml-1">*</span>}
-                            </span>
-                            {field.description && (
-                                <p className="text-xs text-gray-500 mt-1">{field.description}</p>
-                            )}
+                            {label}
+                            {description}
                         </label>
-                        <input
-                            type="file"
-                            accept={field.input_type === 'image' ? 'image/*' : undefined}
-                            onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (file) {
-                                    // For file/image, we might need to upload first or store file reference
-                                    // For now, store the file name
-                                    onChange(field.name, file.name);
-                                }
-                            }}
+                        <div
                             className={cn(
-                                "w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-theme-primary focus:border-theme-primary",
-                                hasError && "border-red-300"
-                            )}
-                        />
+                                'group flex items-center gap-2 overflow-hidden px-4 transition-all duration-200 border border-solid outline-none',
+                                'h-12 rounded-xl bg-gray-50 border-gray-100',
+                                'focus-within:border-theme-primary-border focus-within:ring-4 focus-within:ring-theme-primary/5',
+                                hasError &&
+                                    'border-red-300 focus-within:border-red-400 focus-within:ring-red-500/10',
+                            )}>
+                            <input
+                                type="file"
+                                accept={
+                                    field.input_type === 'image'
+                                        ? 'image/*'
+                                        : undefined
+                                }
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                        // Keep behavior: store filename for now
+                                        onChange(field.name, file.name);
+                                    }
+                                }}
+                                className={cn(
+                                    'w-full text-sm text-gray-700 file:mr-3 file:rounded-lg file:border-0 file:bg-theme-primary/10 file:px-4 file:py-2 file:font-semibold file:text-theme-primary',
+                                    'cursor-pointer',
+                                )}
+                            />
+                        </div>
                     </div>
                 );
 
