@@ -314,7 +314,8 @@
     "noOrders": "No orders yet",
     "navigation": {
       "home": "Home",
-      "myOrders": "My Orders"
+      "myOrders": "My Orders",
+      "viewCart": "View Cart"
     },
     "actions": {
       "rateOrder": "Rate Order",

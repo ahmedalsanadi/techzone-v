@@ -314,7 +314,8 @@
     "noOrders": "لا توجد طلبات سابقة",
     "navigation": {
       "home": "الرئيسية",
-      "myOrders": "طلباتي"
+      "myOrders": "طلباتي",
+      "viewCart": "عرض السلة"
     },
     "actions": {
       "rateOrder": "تقييم الطلب",
