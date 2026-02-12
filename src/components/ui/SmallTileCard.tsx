@@ -51,7 +51,7 @@ const SmallTileCard: React.FC<SmallTileCardProps> = ({
             )}>
             <div
                 className={cn(
-                    'flex flex-col rounded-2xl overflow-hidden transition-all duration-300',
+                    'flex flex-col rounded-xl overflow-hidden transition-all duration-300 ',
                     'ring-2 ring-transparent shadow-sm',
                     isSelected
                         ? 'bg-white ring-theme-primary shadow-lg shadow-theme-primary/15 scale-[1.02]'
@@ -97,10 +97,10 @@ const SmallTileCard: React.FC<SmallTileCardProps> = ({
                 <div className="h-11 px-2 pb-2 pt-1 text-center flex items-end justify-center">
                     <span
                         className={cn(
-                            'text-[11px] sm:text-xs font-semibold leading-tight line-clamp-2 block w-full transition-colors',
+                            ' text-xs font-bold leading-tight line-clamp-2 block w-full transition-colors',
                             isSelected
                                 ? 'text-theme-primary'
-                                : 'text-gray-700 group-hover:text-theme-primary',
+                                : 'text-gray-800 group-hover:text-theme-primary',
                         )}
                         title={title ?? label}>
                         {label}
