@@ -60,12 +60,9 @@ const NotificationDropdown = () => {
                     <MenuItem>
                         <Link
                             href="/notifications"
-                            className="w-full bg-white text-gray-900 text-center font-semibold py-2 sm:py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all hover:bg-gray-100 border border-gray-200 text-sm">
+                            className="w-full bg-white text-gray-900 text-center font-semibold py-2 sm:py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all hover:bg-gray-100 border border-gray-200 text-sm">
                             {t('viewAll')}
-                            <ArrowRight
-                                size={16}
-                                className="rtl:rotate-180 sm:size-[18px]"
-                            />
+                         
                         </Link>
                     </MenuItem>
                 </div>
