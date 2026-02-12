@@ -12,13 +12,16 @@ export default async function OrderPage({
 }) {
     const { id } = await params;
 
+    let order;
     try {
-        const order = await orderService.getOrder(id);
-        if (!order) {
-            notFound();
-        }
-        return <OrderDetailsView order={order} />;
-    } catch (error) {
+        order = await orderService.getOrder(id);
+    } catch {
         notFound();
     }
+
+    if (!order) {
+        notFound();
+    }
+
+    return <OrderDetailsView order={order} />;
 }

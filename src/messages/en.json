@@ -402,7 +402,8 @@
     "needsConfigToast": "Some items need configuration before adding to your cart.",
     "clearPending": "Clear pending items",
     "editItem": "Edit item",
-    "loading": "Loading your cart..."
+    "loading": "Loading your cart...",
+    "removeItem": "Remove item"
   },
   "Wishlist": {
     "title": "Wishlist",
