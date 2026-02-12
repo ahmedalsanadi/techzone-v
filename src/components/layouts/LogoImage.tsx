@@ -21,7 +21,7 @@ export default function LogoImage({ brandName, brandLogo }: LogoProps) {
                     />
                 )}
             </div>
-            <p className="text-white text-lg md:text-[20px] font-medium leading-none align-middle mb-2">
+            <p className="text-amber-400 text-lg md:text-3xl font-medium leading-none align-middle ">
                 {brandName}
             </p>
         </Link>
