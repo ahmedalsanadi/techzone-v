@@ -43,7 +43,7 @@ export const BranchList: React.FC<BranchListProps> = React.memo(
         return (
             <div
                 ref={listRef}
-                className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3 md:space-y-4"
+                className="flex-1 overflow-y-auto p-2 custom-scrollbar space-y-3 md:space-y-4"
                 role="listbox"
                 aria-label={t('branch_list') || 'Branch list'}>
                 {isLoading || isFetching ? (

@@ -68,12 +68,7 @@ const BranchSelectionModal: React.FC = () => {
                             {/* Branch list Side */}
                             <div className="w-full md:w-[450px] flex flex-col bg-white border-b md:border-b-0 md:border-r border-gray-100 p-5 md:p-8 shadow-2xl z-10 overflow-hidden">
                                 {/* Header */}
-                                <div className="flex items-center justify-between mb-4 md:mb-8">
-                                    <DialogTitle
-                                        as="h2"
-                                        className="text-lg md:text-xl font-black text-gray-900">
-                                        {t('select_branch')}
-                                    </DialogTitle>
+                                <div className="flex items-center gap-4 mb-4 md:mb-8">
                                     {(selectedBranchId || hasSelectedOnce) && (
                                         <Button
                                             type="button"
@@ -88,6 +83,11 @@ const BranchSelectionModal: React.FC = () => {
                                             <X className="size-5" />
                                         </Button>
                                     )}
+                                    <DialogTitle
+                                        as="h2"
+                                        className="text-lg md:text-xl font-black text-gray-900">
+                                        {t('select_branch')}
+                                    </DialogTitle>
                                 </div>
 
                                 {/* Branch List */}
