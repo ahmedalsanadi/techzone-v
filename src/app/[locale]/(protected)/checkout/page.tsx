@@ -28,6 +28,7 @@ import {
     buildSummaryItems,
     isEpaymentValid,
 } from '@/lib/checkout';
+import CheckoutPageSkeleton from './CheckoutPageSkeleton';
 
 const ORDER_TYPE_SCROLL_ID = 'checkout-order-type';
 
@@ -207,12 +208,7 @@ export default function CheckoutPage() {
     );
 
     if (isLoadingData && !initData && !needsAddressOrType) {
-        return (
-            <div className="container mx-auto min-h-screen py-12 flex flex-col items-center justify-center gap-4">
-                <Loader2 className="w-12 h-12 text-theme-primary animate-spin" />
-                <p className="text-gray-500 font-medium">{t('loading')}</p>
-            </div>
-        );
+        return <CheckoutPageSkeleton />;
     }
 
     if (isInitError) {
