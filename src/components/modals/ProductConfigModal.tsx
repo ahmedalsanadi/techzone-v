@@ -277,7 +277,7 @@ export default function ProductConfigModal({
                             )}
 
                             <div className="flex items-center justify-between gap-3 rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm">
-                                <span className="text-gray-600 text-xs">
+                                <span className="text-gray-600 text-xs md:text-base font-medium md:font-bold">
                                     {t('moreOptionsHint') ||
                                         'More options available on the product page'}
                                 </span>
