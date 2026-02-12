@@ -46,7 +46,7 @@ export default function CustomFieldsForm({
         const label = (
             <span className="text-md font-bold text-gray-700">
                 {field.label}
-                {isRequired && <span className="text-red-500 ml-1">*</span>}
+                {isRequired && <span className="text-red-500 ms-1">*</span>}
             </span>
         );
 
@@ -55,7 +55,7 @@ export default function CustomFieldsForm({
         ) : null;
 
         const inputContainerClassName = cn(
-            'h-12 rounded-xl bg-gray-50 border-gray-100 px-4',
+            'h-12 rounded-lg bg-gray-50 border-gray-100 px-4',
             'focus-within:border-theme-primary-border focus-within:ring-4 focus-within:ring-theme-primary/5',
             hasError && 'border-red-300 focus-within:border-red-400 focus-within:ring-red-500/10',
         );
@@ -114,7 +114,7 @@ export default function CustomFieldsForm({
             case 'text':
                 return (
                     <div className="py-3">
-                        <label className="block mb-2">
+                        <label className="block mb-2 text-sm md:text-base">
                             {label}
                             {description}
                         </label>
@@ -134,7 +134,7 @@ export default function CustomFieldsForm({
             case 'textarea':
                 return (
                     <div className="py-3">
-                        <label className="block mb-2">
+                        <label className="block mb-2 text-sm md:text-base">
                             {label}
                             {description}
                         </label>
@@ -167,7 +167,7 @@ export default function CustomFieldsForm({
                 if (!field.options) return null;
                 return (
                     <div className="py-3">
-                        <label className="block mb-2">
+                        <label className="block mb-2 text-sm md:text-base">
                             {label}
                             {description}
                         </label>
@@ -228,7 +228,7 @@ export default function CustomFieldsForm({
                 if (!field.options) return null;
                 return (
                     <div className="py-3">
-                        <label className="block mb-2">
+                        <label className="block mb-2 text-sm md:text-base">
                             {label}
                             {description}
                         </label>
@@ -262,7 +262,7 @@ export default function CustomFieldsForm({
             case 'date':
                 return (
                     <div className="py-3">
-                        <label className="block mb-2">
+                        <label className="block mb-2 text-sm md:text-base">
                             {label}
                             {description}
                         </label>
@@ -281,7 +281,7 @@ export default function CustomFieldsForm({
             case 'time':
                 return (
                     <div className="py-3">
-                        <label className="block mb-2">
+                        <label className="block mb-2 text-sm md:text-base">
                             {label}
                             {description}
                         </label>
@@ -300,7 +300,7 @@ export default function CustomFieldsForm({
             case 'datetime':
                 return (
                     <div className="py-3">
-                        <label className="block mb-2">
+                        <label className="block mb-2 text-sm md:text-base">
                             {label}
                             {description}
                         </label>
@@ -320,7 +320,7 @@ export default function CustomFieldsForm({
             case 'image':
                 return (
                     <div className="py-3">
-                        <label className="block mb-2">
+                        <label className="block mb-2 text-sm md:text-base">
                             {label}
                             {description}
                         </label>

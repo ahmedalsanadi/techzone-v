@@ -204,7 +204,7 @@ export default function ProductConfigModal({
             />
 
             <div className="fixed inset-0 z-50 w-screen overflow-y-auto">
-                <div className="flex min-h-full items-center justify-center p-3 sm:p-4 md:p-5">
+                <div className="flex min-h-full items-center justify-center p-3 sm:p-2 py-4">
                     <DialogPanel
                         transition
                         className="bg-white shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col relative max-h-[88vh] rounded-2xl lg:rounded-4xl duration-300 ease-out data-closed:scale-95 data-closed:opacity-0">
@@ -277,7 +277,7 @@ export default function ProductConfigModal({
                             )}
 
                             <div className="flex items-center justify-between gap-3 rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm">
-                                <span className="text-gray-600">
+                                <span className="text-gray-600 text-xs">
                                     {t('moreOptionsHint') ||
                                         'More options available on the product page'}
                                 </span>
@@ -294,7 +294,7 @@ export default function ProductConfigModal({
                             <Button
                                 type="button"
                                 variant="secondary"
-                                size="xl"
+                                size="lg"
                                 onClick={onClose}
                                 className="px-6">
                                 {t('cancel') || 'Cancel'}
@@ -302,13 +302,13 @@ export default function ProductConfigModal({
                             <Button
                                 type="button"
                                 variant="primary"
-                                size="xl"
+                                size="lg"
                                 onClick={handleAddToCart}
                                 disabled={!validation.isValid || isOutOfStock}
                                 className={cn(
                                     'active:scale-[0.98]',
                                     (!validation.isValid || isOutOfStock) &&
-                                        'bg-gray-100 text-gray-400 border-none shadow-none hover:brightness-100',
+                                        'bg-gray-100 text-gray-400 border-none shadow-none hover:brightness-100 px-6',
                                 )}>
                                 {t('addToCart') || 'Add to cart'}
                             </Button>
