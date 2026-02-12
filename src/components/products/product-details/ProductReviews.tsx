@@ -214,7 +214,7 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
             {/* Header with Stats */}
             <div className="flex flex-col lg:flex-row gap-8">
                 <div className="lg:w-1/3 space-y-6">
-                    <div className="bg-linear-to-br from-theme-primary/5 to-theme-primary/10 rounded-[24px] p-6 border border-theme-primary/20">
+                    <div className="bg-linear-to-br from-theme-primary/5 to-theme-primary/10 rounded-lg  p-4 border border-theme-primary/20">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-xl font-black text-gray-900">
                                 {t('overallRating') || 'التقييم العام'}
@@ -248,7 +248,7 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
                     </div>
 
                     {/* Rating Distribution */}
-                    <div className="space-y-3">
+                    <div className="space-y-3 p-2">
                         <div className="flex items-center justify-between">
                             <h4 className="font-semibold text-gray-900">
                                 {t('ratingDistribution') || 'توزيع التقييمات'}
@@ -302,7 +302,7 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
                 </div>
 
                 {/* Reviews List */}
-                <div className="lg:w-2/3 space-y-6">
+                <div className="lg:w-2/3 space-y-6 p-2">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4">
                         <div>
                             <h3 className="text-2xl font-black text-gray-900">
@@ -370,7 +370,7 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
                     )}
 
                     {totalReviews === 0 ? (
-                        <div className="text-center py-12 bg-gray-50 rounded-[32px] border border-dashed border-gray-200">
+                        <div className="text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-200">
                             <MessageSquare className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                             <p className="text-gray-400 font-medium">
                                 {t('noReviews') ||
@@ -427,7 +427,7 @@ function ReviewCard({ review }: { review: Review }) {
     const t = useTranslations('Reviews');
 
     return (
-        <div className="p-6 bg-white rounded-[24px] border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 space-y-4 group">
+        <div className="px-6  bg-white rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300  group">
             <div className="flex justify-between items-start">
                 <div className="flex items-center gap-3">
                     <div className="size-10 rounded-full bg-theme-primary/10 flex items-center justify-center text-theme-primary group-hover:bg-theme-primary/20 transition-colors">

@@ -155,7 +155,7 @@ export default function AddonSelector({
             <div className="flex items-center justify-between">
                 <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2.5">
-                        <h3 className="text-lg font-bold text-gray-900">
+                        <h3 className="text-sm font-bold text-gray-900 md:text-lg">
                             {addonGroup.name}
                         </h3>
                         {addonGroup.is_required && (
@@ -178,13 +178,13 @@ export default function AddonSelector({
                         )}
                     </div>
                     {addonGroup.description && (
-                        <p className="text-sm text-gray-500 font-medium">
+                        <p className="text-xs text-gray-500 font-medium md:text-sm">
                             {addonGroup.description}
                         </p>
                     )}
                     {/* Selection count indicator */}
                     {addonGroup.max_selected !== null && (
-                        <p className="text-xs text-gray-400 mt-1">
+                        <p className="text-xs text-gray-400 mt-1 md:text-sm">
                             {t('maxAddons', {
                                 max: addonGroup.max_selected,
                                 current: selectedCount,
@@ -193,7 +193,7 @@ export default function AddonSelector({
                         </p>
                     )}
                     {addonGroup.min_selected > 0 && (
-                        <p className="text-xs text-gray-500 mt-0.5">
+                        <p className="text-xs text-gray-500 mt-0.5 md:text-sm">
                             {t('minRequired') || 'Minimum'}:{' '}
                             {addonGroup.min_selected}
                         </p>
@@ -203,7 +203,7 @@ export default function AddonSelector({
             <div className="pt-1">
                 {/* Validation error message */}
                 {validationError && (
-                    <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 p-2 rounded-lg mb-4">
+                    <div className="flex items-center gap-2 text-xs text-red-600 bg-red-50 p-2 rounded-lg mb-4 md:text-sm">
                         <AlertCircle size={16} />
                         <span>
                             {t('minSelectionRequired', {
@@ -231,11 +231,11 @@ export default function AddonSelector({
                                     key={item.id}
                                     className="flex items-center justify-between py-3 group hover:bg-gray-50/50 -mx-2 px-2 rounded-xl transition-colors">
                                     <div className="flex flex-col gap-0.5">
-                                        <span className="text-sm sm:text-base font-bold text-gray-700 transition-colors group-hover:text-gray-900">
+                                        <span className="text-xs font-bold text-gray-700 transition-colors group-hover:text-gray-900 md:text-base">
                                             {item.title}
                                         </span>
                                         {item.description && (
-                                            <p className="text-xs text-gray-500">
+                                            <p className="text-xs text-gray-500 md:text-sm">
                                                 {item.description}
                                             </p>
                                         )}
@@ -250,7 +250,7 @@ export default function AddonSelector({
 
                                     <div className="flex items-center gap-3">
                                         <div className="flex items-center gap-1">
-                                            <span className="text-md font-bold text-gray-800 leading-none">
+                                            <span className="text-sm font-bold text-gray-800 leading-none md:text-base">
                                                 + {item.extra_price}
                                             </span>
                                             <CurrencySymbol className="w-4 h-4" />
@@ -289,7 +289,7 @@ export default function AddonSelector({
                                                     />
                                                 )}
                                             </Button>
-                                            <span className="w-5 text-center font-bold text-base text-gray-800">
+                                            <span className="w-5 text-center font-bold text-sm text-gray-800 md:text-base">
                                                 {quantity}
                                             </span>
                                             <Button
@@ -341,7 +341,7 @@ export default function AddonSelector({
                                     <div className="flex flex-col gap-0.5">
                                         <span
                                             className={cn(
-                                                'text-md font-bold transition-colors',
+                                                'text-sm font-bold transition-colors md:text-base',
                                                 isSelected
                                                     ? 'text-gray-900'
                                                     : 'text-gray-700',
@@ -349,7 +349,7 @@ export default function AddonSelector({
                                             {item.title}
                                         </span>
                                         {item.description && (
-                                            <p className="text-xs text-gray-500">
+                                            <p className="text-xs text-gray-500 md:text-sm">
                                                 {item.description}
                                             </p>
                                         )}
@@ -357,7 +357,7 @@ export default function AddonSelector({
                                 </div>
                                 <div className="flex items-center gap-1.5">
                                     <div className="flex items-center gap-1">
-                                        <span className="text-md font-bold text-gray-900 leading-none">
+                                        <span className="text-sm font-bold text-gray-900 leading-none md:text-base">
                                             + {item.extra_price}
                                         </span>
                                         <CurrencySymbol className="w-4 h-4" />

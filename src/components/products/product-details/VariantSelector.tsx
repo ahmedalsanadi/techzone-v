@@ -49,7 +49,7 @@ const VariantItem = React.memo(({ variant, t }: VariantItemProps) => {
                             <div className="flex items-center gap-2">
                                 <span
                                     className={cn(
-                                        'text-md font-bold transition-colors',
+                                        'text-sm font-bold transition-colors md:text-base',
                                         checked
                                             ? 'text-gray-900'
                                             : 'text-gray-700',
@@ -86,14 +86,14 @@ const VariantItem = React.memo(({ variant, t }: VariantItemProps) => {
                     <div className="flex items-center gap-2">
                         <div className="flex flex-col items-end">
                             <div className="flex items-center gap-1">
-                                <span className="text-md font-bold text-gray-900 leading-none">
+                                <span className="text-sm font-bold text-gray-900 leading-none md:text-base">
                                     {variantPrice}
                                 </span>
                                 <CurrencySymbol className="w-3.5 h-3.5" />
                             </div>
                             {originalPrice && (
                                 <div className="flex items-center gap-1 opacity-60">
-                                    <span className="text-[12px] text-gray-500 line-through font-semibold leading-none">
+                                    <span className="text-xs text-gray-500 line-through font-semibold leading-none md:text-sm">
                                         {originalPrice}
                                     </span>
                                     <CurrencySymbol className="w-3 h-3" />
@@ -125,7 +125,7 @@ export default function VariantSelector({
                 <div className="flex items-center justify-between">
                     <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2.5">
-                            <Label className="text-lg font-bold text-gray-900 block">
+                            <Label className="text-sm font-bold text-gray-900 block md:text-lg">
                                 {t('variants') || 'Variants'}
                             </Label>
                             {required && (
