@@ -20,23 +20,24 @@ interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 
 import { cn } from '@/lib/utils';
 
-// Variant styles mapping
+// Variant styles: solid bg + high-contrast text so status badges stay readable
 const variantStyles: Record<BadgeVariant, string> = {
     default:
         'border-transparent bg-gray-900 text-white hover:bg-gray-800 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-200',
     secondary:
-        'border-transparent bg-gray-100 text-gray-900 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700',
+        'border-transparent bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-100 dark:hover:bg-gray-500',
     destructive:
-        'border-transparent bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400',
+        'border-transparent bg-red-600 text-white hover:bg-red-700 dark:bg-red-700 dark:text-white dark:hover:bg-red-800',
     outline:
         'text-gray-900 border-gray-300 hover:bg-gray-100 dark:text-gray-100 dark:border-gray-600 dark:hover:bg-gray-800',
     primary:
         'border-transparent bg-theme-primary text-white hover:bg-theme-primary/90 shadow-sm shadow-theme-primary/20',
     success:
-        'border-transparent bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400',
+        'border-transparent bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-700 dark:text-white dark:hover:bg-emerald-800',
     warning:
-        'border-transparent bg-amber-100 text-amber-700 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-400',
-    info: 'border-transparent bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-400',
+        'border-transparent bg-amber-600 text-white hover:bg-amber-700 dark:bg-amber-600 dark:text-white dark:hover:bg-amber-700',
+    info:
+        'border-transparent bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-700 dark:text-white dark:hover:bg-blue-800',
     plain: 'border-transparent bg-transparent text-current',
 };
 

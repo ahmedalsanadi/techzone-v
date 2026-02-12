@@ -18,6 +18,25 @@ export default function OrderCard({ order }: OrderCardProps) {
     const t = useTranslations('Orders');
     const locale = useLocale();
 
+    // API may return status as number (1–10); map to string key so variant/colors apply
+    const statusMap: Record<number, OrderStatus> = {
+        1: 'WAITING_APPROVAL',
+        2: 'WAITING_PAYMENT',
+        3: 'PREPARING',
+        4: 'READY',
+        5: 'PICKED_UP',
+        6: 'ON_THE_WAY',
+        7: 'DELIVERED',
+        8: 'COMPLETED',
+        9: 'CANCELLED',
+        10: 'REJECTED',
+    };
+    const statusKey =
+        typeof order.status === 'number'
+            ? statusMap[order.status] ?? 'WAITING_APPROVAL'
+            : order.status;
+
+    // Semantic colors: red = bad, amber = waiting, gray = in progress/paid, green = done
     const statusConfig: Record<
         string,
         { variant: BadgeVariant; label: string }
@@ -31,11 +50,11 @@ export default function OrderCard({ order }: OrderCardProps) {
             label: order.status_label || t('status.waiting_payment'),
         },
         PREPARING: {
-            variant: 'info',
+            variant: 'secondary',
             label: order.status_label || t('status.preparing'),
         },
         READY: {
-            variant: 'info',
+            variant: 'secondary',
             label: order.status_label || t('status.ready'),
         },
         PICKED_UP: {
@@ -64,9 +83,9 @@ export default function OrderCard({ order }: OrderCardProps) {
         },
     };
 
-    const currentStatus = statusConfig[order.status] || {
+    const currentStatus = statusConfig[statusKey] || {
         variant: 'secondary',
-        label: order.status_label || order.status,
+        label: order.status_label || String(order.status),
     };
 
     const [mounted, setMounted] = React.useState(false);
