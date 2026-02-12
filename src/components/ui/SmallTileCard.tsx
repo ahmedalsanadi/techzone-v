@@ -93,10 +93,11 @@ const SmallTileCard: React.FC<SmallTileCardProps> = ({
                     )}
                 </div>
                 {/* Label */}
-                <div className="px-2 pb-3 pt-1 text-center">
+                {/* Fixed height keeps all cards identical even with 1–2 lines */}
+                <div className="h-11 px-2 pb-2 pt-1 text-center flex items-end justify-center">
                     <span
                         className={cn(
-                            'text-[11px] sm:text-xs font-semibold leading-tight line-clamp-2 block transition-colors',
+                            'text-[11px] sm:text-xs font-semibold leading-tight line-clamp-2 block w-full transition-colors',
                             isSelected
                                 ? 'text-theme-primary'
                                 : 'text-gray-700 group-hover:text-theme-primary',
