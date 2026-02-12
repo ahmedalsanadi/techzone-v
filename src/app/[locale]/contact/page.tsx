@@ -58,7 +58,7 @@ export default async function ContactPage({
                 hasError={branchFetchError}
                 branchId={branch_id}
             />
-            <div className="container mx-auto px-4 max-w-6xl">
+            <div className="container mx-auto p-4 py-8 min-h-screen">
                 <Breadcrumbs items={breadcrumbItems} />
 
                 {/* Show warning if branch fetch failed */}
