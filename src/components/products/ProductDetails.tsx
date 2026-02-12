@@ -13,13 +13,11 @@ import ProductShareActions from './product-details/ProductShareActions';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import {
     generateCartItemId,
-    transformLocalAddonsToApi,
 } from '@/lib/cart/utils';
 import { useCartActions } from '@/hooks/cart';
 import { Product } from '@/types/store';
 import { toast } from 'sonner';
 import ProductReviews from './product-details/ProductReviews';
-import { useAuthStore } from '@/store/useAuthStore';
 
 interface ProductDetailsProps {
     product: Product;
