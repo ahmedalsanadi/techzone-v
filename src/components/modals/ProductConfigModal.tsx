@@ -1,5 +1,5 @@
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
-import { X, ArrowUpRight } from 'lucide-react';
+import { X, Eye } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Product } from '@/types/store';
@@ -281,12 +281,18 @@ export default function ProductConfigModal({
                                     {t('moreOptionsHint') ||
                                         'More options available on the product page'}
                                 </span>
-                                <Link
-                                    href={`/products/${product.slug}`}
-                                    className="inline-flex items-center gap-1.5 text-theme-primary font-bold">
-                                    {t('viewDetails') || 'View details'}
-                                    <ArrowUpRight className="w-4 h-4" />
-                                </Link>
+                                <Button
+                                    asChild
+                                    variant="outlineTint"
+                                    size="icon"
+                                    aria-label={t('viewDetails') || 'View details'}>
+                                    <Link href={`/products/${product.slug}`}>
+                                        <Eye className="w-4 h-4" />
+                                        <span className="sr-only">
+                                            {t('viewDetails') || 'View details'}
+                                        </span>
+                                    </Link>
+                                </Button>
                             </div>
                         </main>
 
