@@ -356,6 +356,17 @@
     min-width: 0 !important;
 }
 
+/* Single row when no description: icon + title + button aligned */
+.toaster [data-sonner-toast] [data-content]:not(:has([data-description])) {
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 12px !important;
+}
+.toaster [data-sonner-toast] [data-content]:not(:has([data-description])) [data-button] {
+    margin-top: 0 !important;
+    margin-inline-start: auto !important;
+}
+
 .toaster [data-sonner-toast] [data-title] {
     font-weight: 600 !important;
     font-size: 14px !important;

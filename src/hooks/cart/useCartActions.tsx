@@ -48,14 +48,14 @@ export const useCartActions = () => {
 
                 clearPendingByProductId(productId);
 
-                toast.success(t('added', { name: item.name }), {
+                toast.success(t('added'), {
                     icon: (
                         <ShoppingCart
                             size={18}
                             className="text-theme-primary"
                         />
                     ),
-                    description: t('viewCart'),
+               
                     action: {
                         label: t('viewCart'),
                         onClick: () => router.push('/cart'),
@@ -73,9 +73,8 @@ export const useCartActions = () => {
                 clearPendingByProductId(productId);
             }
 
-            toast.success(t('added', { name: item.name }), {
+            toast.success(t('added'), {
                 icon: <ShoppingCart size={18} className="text-theme-primary" />,
-                description: t('viewCart'),
                 action: {
                     label: t('viewCart'),
                     onClick: () => router.push('/cart'),

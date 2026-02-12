@@ -402,7 +402,7 @@
     "checkout": "Checkout",
     "remove": "Remove",
     "items": "{count} items",
-    "added": "{name} has been added to your cart!",
+    "added": "Added to your cart!",
     "notes": "Notes",
     "addError": "Failed to add product to cart",
     "removeError": "Failed to remove product from cart",
