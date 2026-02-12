@@ -1,17 +1,35 @@
 // src/types/orders/orders.types.ts
 
+// Matches backend Libero\OrdersModule\Enums\OrderStatus (1–10)
 export type OrderStatus =
     | 'WAITING_APPROVAL'
     | 'WAITING_PAYMENT'
-    | 'PREPARING'
-    | 'READY'
-    | 'PICKED_UP'
-    | 'ON_THE_WAY'
+    | 'PAID'
+    | 'IN_PROCESS'
+    | 'READY_FOR_PICKUP'
+    | 'SHIPPED'
     | 'DELIVERED'
-    | 'COMPLETED'
-    | 'CANCELLED'
-    | 'REJECTED'
-    | number; // Added to handle numeric status codes from API
+    | 'CANCELED'
+    | 'REFUNDED'
+    | 'PARTIALLY_REFUNDED'
+    | number;
+
+/** Map API numeric order status (1–10) to string key. Use for lookup in configs. */
+export const ORDER_STATUS_NUMBER_MAP: Record<number, OrderStatus> = {
+    1: 'WAITING_APPROVAL',
+    2: 'WAITING_PAYMENT',
+    3: 'PAID',
+    4: 'IN_PROCESS',
+    5: 'READY_FOR_PICKUP',
+    6: 'SHIPPED',
+    7: 'DELIVERED',
+    8: 'CANCELED',
+    9: 'REFUNDED',
+    10: 'PARTIALLY_REFUNDED',
+};
+
+/** Order item status from backend (1–5): RESERVED, PAID, REFUNDED, PARTIALLY_REFUNDED, CANCELLED. API returns status + status_label. */
+export type OrderItemStatusNumber = 1 | 2 | 3 | 4 | 5;
 
 export enum FulfillmentMethod {
     DELIVERY = 1,
@@ -44,11 +62,12 @@ export interface OrderItem {
     total_discount: number;
     tax_rate: number;
     total_tax: number;
-    addons: OrderItemAddon[];
-    custom_fields: Record<string, unknown>;
-    variant_options: unknown[];
+    addons: OrderItemAddon[] | null;
+    custom_fields: Record<string, unknown> | null;
+    variant_options: unknown[] | null;
     notes: string | null;
-    status: string;
+    /** Item status from API (1–5). Use status_label for display. */
+    status: number;
     status_label: string;
     product_image: string | null;
 }

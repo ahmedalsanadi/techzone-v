@@ -7,7 +7,12 @@ import { Star, X, RotateCcw, Info, Loader2 } from 'lucide-react';
 import SubHeaderManager from '@/components/layouts/SubHeaderManager';
 import { Button } from '@/components/ui/Button';
 import { Link, useRouter } from '@/i18n/navigation';
-import { Order, OrderStatus, OrderStatusUpdate } from '@/types/orders/orders.types';
+import {
+    Order,
+    OrderStatus,
+    OrderStatusUpdate,
+    ORDER_STATUS_NUMBER_MAP,
+} from '@/types/orders/orders.types';
 import { OrderCourierCard } from './OrderCourierCard';
 import { OrderStatusTimeline } from './OrderStatusTimeline';
 import { OrderSummaryCard } from './OrderSummaryCard';
@@ -81,13 +86,19 @@ export default function OrderDetailsView({
                                 productId: item.product_id,
                                 product_variant_id: item.product_variant_id,
                                 addons: item.addons?.reduce(
-                                    (acc: any, addon: any) => {
+                                    (
+                                        acc: [Record<number, number>],
+                                        addon: {
+                                            addon_item_id: number;
+                                            quantity?: number;
+                                        },
+                                    ) => {
                                         if (!acc[0]) acc[0] = {};
                                         acc[0][addon.addon_item_id] =
                                             addon.quantity || 1;
                                         return acc;
                                     },
-                                    {},
+                                    [{}] as [Record<number, number>],
                                 ),
                                 notes: item.notes,
                             },
@@ -125,11 +136,13 @@ export default function OrderDetailsView({
             // Update local state status
             setOrder({
                 ...order,
-                status: 'CANCELLED' as OrderStatus,
-                status_label: data.status_label || 'ملغى',
+                status: 8,
+                status_label: data.status_label || t('status.canceled'),
             });
-        } catch (error: any) {
-            toast.error(error.message || t('actions.cancelError'));
+        } catch (error: unknown) {
+            const message =
+                error instanceof Error ? error.message : t('actions.cancelError');
+            toast.error(message);
         } finally {
             setIsCancelling(false);
             setShowCancelModal(false);
@@ -142,56 +155,68 @@ export default function OrderDetailsView({
         setMounted(true);
     }, []);
 
-    // Map numeric status to string key for internal logic
-    const statusMap: Record<number, OrderStatus> = {
-        1: 'WAITING_APPROVAL',
-        2: 'WAITING_PAYMENT',
-        3: 'PREPARING',
-        4: 'READY',
-        5: 'PICKED_UP',
-        6: 'ON_THE_WAY',
-        7: 'DELIVERED',
-        8: 'COMPLETED',
-        9: 'CANCELLED',
-        10: 'REJECTED',
-    };
-
     const currentStatusKey = (
         typeof order.status === 'number'
-            ? statusMap[order.status] || 'WAITING_APPROVAL'
+            ? ORDER_STATUS_NUMBER_MAP[order.status] || 'WAITING_APPROVAL'
             : order.status
     ) as OrderStatus;
 
-    // Derived timeline if not provided by API
+    // Timeline steps matching backend flow (1–7). Terminal states 8–10 use first N steps or single state.
+    const timelineProgressSteps: OrderStatus[] = [
+        'WAITING_APPROVAL',
+        'WAITING_PAYMENT',
+        'PAID',
+        'IN_PROCESS',
+        'READY_FOR_PICKUP',
+        'SHIPPED',
+        'DELIVERED',
+    ];
+    const timelineLabels: Record<string, string> = {
+        WAITING_APPROVAL: t('status.waiting'),
+        WAITING_PAYMENT: t('status.waiting_payment'),
+        PAID: t('status.paid'),
+        IN_PROCESS: t('status.in_process'),
+        READY_FOR_PICKUP: t('status.ready_for_pickup'),
+        SHIPPED: t('status.shipped'),
+        DELIVERED: t('status.delivered'),
+    };
+
     const getTimeline = (): OrderStatusUpdate[] => {
         if (order.timeline && order.timeline.length > 0) return order.timeline;
 
-        const statuses: OrderStatus[] = [
-            'WAITING_APPROVAL',
-            'PREPARING',
-            'READY',
-            'ON_THE_WAY',
-            'DELIVERED',
-        ];
+        const isTerminal =
+            currentStatusKey === 'CANCELED' ||
+            currentStatusKey === 'REFUNDED' ||
+            currentStatusKey === 'PARTIALLY_REFUNDED';
+        const currentIndex = timelineProgressSteps.indexOf(currentStatusKey);
 
-        const currentIndex = statuses.indexOf(currentStatusKey);
+        if (isTerminal) {
+            const terminalLabel =
+                order.status_label ||
+                (currentStatusKey === 'CANCELED'
+                    ? t('status.canceled')
+                    : currentStatusKey === 'REFUNDED'
+                      ? t('status.refunded')
+                      : t('status.partially_refunded'));
+            return [
+                {
+                    status: currentStatusKey as string,
+                    label: terminalLabel,
+                    completed: true,
+                    active: true,
+                    timestamp: mounted
+                        ? new Date(order.updated_at).toLocaleTimeString(
+                              'ar-SA',
+                              { hour: '2-digit', minute: '2-digit' },
+                          )
+                        : undefined,
+                },
+            ];
+        }
 
-        return statuses.map((status, index) => {
-            const isCompleted =
-                index < currentIndex ||
-                currentStatusKey === 'COMPLETED' ||
-                (currentStatusKey === 'DELIVERED' && index <= currentIndex);
+        return timelineProgressSteps.map((status, index) => {
+            const isCompleted = index < currentIndex;
             const isActive = currentStatusKey === status;
-
-            // Map status to labels (simplified)
-            const labels: Record<string, string> = {
-                WAITING_APPROVAL: t('status.waiting'),
-                PREPARING: t('status.preparing'),
-                READY: t('status.timelineReady') || 'جاهز للاستلام',
-                ON_THE_WAY: t('status.with_courier'),
-                DELIVERED: t('status.delivered'),
-            };
-
             const timestamp =
                 isActive && mounted
                     ? new Date(order.updated_at).toLocaleTimeString('ar-SA', {
@@ -199,13 +224,9 @@ export default function OrderDetailsView({
                           minute: '2-digit',
                       })
                     : undefined;
-
-            const statusStr =
-                typeof status === 'number' ? String(status) : status;
-
             return {
-                status: statusStr,
-                label: labels[statusStr] || statusStr,
+                status: status as string,
+                label: String(timelineLabels[status] ?? status),
                 completed: isCompleted,
                 active: isActive,
                 timestamp,
@@ -308,7 +329,7 @@ export default function OrderDetailsView({
                     <OrderProductsCard items={order.items || []} />
                 </div>
                 <div className="flex flex-col gap-6 col-span-1 md:col-span-5">
-                    {order.status === 'ON_THE_WAY' && (
+                    {currentStatusKey === 'SHIPPED' && (
                         <>
                             <OrderCourierCard />
                             <LiveTrackingMap

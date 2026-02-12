@@ -37,6 +37,7 @@ export function OrderSummaryCard({ order }: OrderSummaryCardProps) {
 
     const details = [
         { label: t('orderNumber'), value: `#${order.id}` },
+        { label: t('status'), value: order.status_label },
         { label: t('createdAt'), value: formattedDate },
         { label: t('deliveryMethod'), value: order.fulfillment_label },
         {

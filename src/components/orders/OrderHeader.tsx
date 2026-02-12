@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Star, X, RotateCcw, Info } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Link } from '@/i18n/navigation';
-import { Order } from '@/types/orders/orders.types';
+import { Order, ORDER_STATUS_NUMBER_MAP } from '@/types/orders/orders.types';
 
 interface OrderHeaderProps {
     order: Order;
@@ -13,6 +13,11 @@ interface OrderHeaderProps {
 
 export function OrderHeader({ order }: OrderHeaderProps) {
     const t = useTranslations('Orders');
+    const statusKey =
+        typeof order.status === 'number'
+            ? ORDER_STATUS_NUMBER_MAP[order.status] ?? 'WAITING_APPROVAL'
+            : order.status;
+    const isCanceled = statusKey === 'CANCELED';
 
     return (
         <div className="flex flex-col gap-4 mb-8">
@@ -46,7 +51,7 @@ export function OrderHeader({ order }: OrderHeaderProps) {
                         <Star className="w-4 h-4" />
                         {t('actions.rateOrder')}
                     </Button>
-                    {order.status !== 'CANCELLED' && (
+                    {!isCanceled && (
                         <Button
                             variant="outline"
                             className="h-10 px-4 rounded-xl border-red-100 bg-red-50 hover:bg-red-100 text-red-600 font-bold gap-2">

@@ -3,6 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { OrderItem } from '@/types/orders';
+import { Badge } from '@/components/ui/Badge';
 import { formatCurrency } from '@/lib/utils';
 import { useLocale, useTranslations } from 'next-intl';
 
@@ -93,12 +94,19 @@ export function OrderProductsCard({ items }: OrderProductsCardProps) {
                                 </div>
                             </div>
 
-                            {/* Quantity (Bottom Right) */}
-                            <div className="mt-auto">
+                            {/* Quantity and item status (e.g. Reserved, Paid) */}
+                            <div className="mt-auto flex flex-wrap items-center gap-2">
                                 <span className="text-sm font-black text-gray-900">
                                     {item.quantity}{' '}
                                     {t('products.quantity_unit') || 'x'}
                                 </span>
+                                {item.status_label && (
+                                    <Badge
+                                        variant="secondary"
+                                        className="text-[10px] px-2 py-0 font-medium">
+                                        {item.status_label}
+                                    </Badge>
+                                )}
                             </div>
                         </div>
                     </div>

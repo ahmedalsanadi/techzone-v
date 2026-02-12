@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Badge, type BadgeVariant } from '@/components/ui/Badge';
 import { cn, formatCurrency } from '@/lib/utils';
 
-import { Order, OrderStatus } from '@/types/orders';
+import { Order, OrderStatus, ORDER_STATUS_NUMBER_MAP } from '@/types/orders';
 import { Link } from '@/i18n/navigation';
 
 interface OrderCardProps {
@@ -18,25 +18,12 @@ export default function OrderCard({ order }: OrderCardProps) {
     const t = useTranslations('Orders');
     const locale = useLocale();
 
-    // API may return status as number (1–10); map to string key so variant/colors apply
-    const statusMap: Record<number, OrderStatus> = {
-        1: 'WAITING_APPROVAL',
-        2: 'WAITING_PAYMENT',
-        3: 'PREPARING',
-        4: 'READY',
-        5: 'PICKED_UP',
-        6: 'ON_THE_WAY',
-        7: 'DELIVERED',
-        8: 'COMPLETED',
-        9: 'CANCELLED',
-        10: 'REJECTED',
-    };
     const statusKey =
         typeof order.status === 'number'
-            ? statusMap[order.status] ?? 'WAITING_APPROVAL'
-            : order.status;
+            ? ORDER_STATUS_NUMBER_MAP[order.status] ?? 'WAITING_APPROVAL'
+            : (order.status as OrderStatus);
 
-    // Semantic colors: red = bad, amber = waiting, gray = in progress/paid, green = done
+    // Semantic colors: red = canceled/refunded, amber = waiting, gray = paid/in progress, green = fulfillment done
     const statusConfig: Record<
         string,
         { variant: BadgeVariant; label: string }
@@ -49,37 +36,37 @@ export default function OrderCard({ order }: OrderCardProps) {
             variant: 'warning',
             label: order.status_label || t('status.waiting_payment'),
         },
-        PREPARING: {
+        PAID: {
             variant: 'secondary',
-            label: order.status_label || t('status.preparing'),
+            label: order.status_label || t('status.paid'),
         },
-        READY: {
+        IN_PROCESS: {
             variant: 'secondary',
-            label: order.status_label || t('status.ready'),
+            label: order.status_label || t('status.in_process'),
         },
-        PICKED_UP: {
-            variant: 'success',
-            label: order.status_label || t('status.ready'),
+        READY_FOR_PICKUP: {
+            variant: 'info',
+            label: order.status_label || t('status.ready_for_pickup'),
         },
-        ON_THE_WAY: {
+        SHIPPED: {
             variant: 'success',
-            label: order.status_label || t('status.with_courier'),
+            label: order.status_label || t('status.shipped'),
         },
         DELIVERED: {
             variant: 'success',
             label: order.status_label || t('status.delivered'),
         },
-        COMPLETED: {
-            variant: 'success',
-            label: order.status_label || t('status.completed'),
-        },
-        CANCELLED: {
+        CANCELED: {
             variant: 'destructive',
-            label: order.status_label || t('status.cancelled'),
+            label: order.status_label || t('status.canceled'),
         },
-        REJECTED: {
+        REFUNDED: {
             variant: 'destructive',
-            label: order.status_label || t('status.rejected'),
+            label: order.status_label || t('status.refunded'),
+        },
+        PARTIALLY_REFUNDED: {
+            variant: 'destructive',
+            label: order.status_label || t('status.partially_refunded'),
         },
     };
 
@@ -193,8 +180,7 @@ export default function OrderCard({ order }: OrderCardProps) {
 
             {/* Actions */}
             <div className="flex items-center gap-3 mt-auto">
-                {order.status === 'DELIVERED' ||
-                order.status === 'COMPLETED' ? (
+                {statusKey === 'DELIVERED' ? (
                     <>
                         <Button
                             asChild
