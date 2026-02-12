@@ -425,53 +425,65 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
 // Separate Review Card Component for better performance
 function ReviewCard({ review }: { review: Review }) {
     const t = useTranslations('Reviews');
+    const dateLabel = new Date(review.created_at).toLocaleDateString(
+        undefined,
+        { year: 'numeric', month: 'short', day: 'numeric' },
+    );
 
     return (
-        <div className="px-6  bg-white rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300  group">
-            <div className="flex justify-between items-start">
-                <div className="flex items-center gap-3">
-                    <div className="size-10 rounded-full bg-theme-primary/10 flex items-center justify-center text-theme-primary group-hover:bg-theme-primary/20 transition-colors">
-                        <User size={20} />
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="font-bold text-gray-900">
-                            {review.user_name}
-                        </span>
-                        <div className="flex items-center gap-1 text-[10px] text-gray-400 font-medium uppercase tracking-wider">
-                            <Calendar size={10} />
-                            <span>
-                                {new Date(review.created_at).toLocaleDateString(
-                                    'en-US'
-                                )}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <div className="flex gap-0.5">
+        <article
+            className={cn(
+                'relative overflow-hidden rounded-[24px] border border-gray-100 bg-white p-6',
+                'shadow-sm transition-all duration-300 hover:shadow-md hover:border-gray-200/80',
+                'text-start', // RTL-safe: follows document direction
+            )}>
+            {/* Accent edge on start side (right in RTL, left in LTR) */}
+            <div
+                className="absolute top-0 bottom-0 start-0 w-1 bg-linear-to-b from-theme-primary/30 to-theme-primary/10 rounded-e-full"
+                aria-hidden
+            />
+
+            {/* Header: stars first in DOM so they sit at "start" in RTL (right side) */}
+            <div className="flex flex-wrap items-center gap-4 pb-4">
+                <div className="flex gap-0.5 shrink-0" aria-label={`${review.rating} من 5`}>
                     {[1, 2, 3, 4, 5].map((star) => (
                         <Star
                             key={star}
-                            size={14}
+                            size={18}
                             className={cn(
                                 'transition-colors',
                                 star <= review.rating
-                                    ? 'fill-yellow-400 text-yellow-400'
-                                    : 'text-gray-100 fill-transparent',
+                                    ? 'fill-amber-400 text-amber-400'
+                                    : 'text-gray-200 fill-gray-200',
                             )}
                         />
                     ))}
                 </div>
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div className="size-11 shrink-0 rounded-full bg-theme-primary/10 flex items-center justify-center text-theme-primary ring-2 ring-gray-100">
+                        <User size={22} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                        <p className="font-bold text-gray-900 truncate">
+                            {review.user_name || t('anonymous') || 'مستخدم'}
+                        </p>
+                        <p className="flex items-center gap-1.5 text-sm text-gray-500 mt-0.5">
+                            <Calendar size={14} className="shrink-0 text-gray-400" />
+                            <time dateTime={review.created_at}>{dateLabel}</time>
+                        </p>
+                    </div>
+                </div>
             </div>
 
             {review.comment && (
-                <div className="space-y-2">
-                    <p className="text-gray-600 font-medium text-sm leading-relaxed line-clamp-3 group-hover:line-clamp-none transition-all">
+                <div className="space-y-2 pl-1">
+                    <p className="text-gray-600 text-[15px] leading-relaxed line-clamp-4">
                         {review.comment}
                     </p>
                     {review.comment.length > 150 && (
                         <Button
                             variant="link"
-                            className="text-xs text-theme-primary hover:text-theme-primary/80 font-medium p-0 h-auto min-h-0">
+                            className="text-sm text-theme-primary hover:text-theme-primary/80 font-medium p-0 h-auto min-h-0">
                             {t('readMore') || 'قراءة المزيد'}
                         </Button>
                     )}
@@ -479,12 +491,12 @@ function ReviewCard({ review }: { review: Review }) {
             )}
 
             {review.status === 'pending' && (
-                <div className="inline-flex items-center px-3 py-1 rounded-full bg-yellow-50 border border-yellow-200">
-                    <span className="text-xs font-medium text-yellow-700">
+                <div className="mt-4 inline-flex items-center px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200">
+                    <span className="text-xs font-medium text-amber-800">
                         {t('pendingReview') || 'قيد المراجعة'}
                     </span>
                 </div>
             )}
-        </div>
+        </article>
     );
 }
