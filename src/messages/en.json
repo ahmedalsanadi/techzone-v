@@ -376,7 +376,10 @@
       "title": "Products",
       "unit": "products",
       "quantity_unit": "Qty",
-      "addon": "Addon"
+      "addon": "Addon",
+      "addons": "Add-ons",
+      "variantOptions": "Options",
+      "customFields": "Custom details"
     }
   },
   "NotFound": {

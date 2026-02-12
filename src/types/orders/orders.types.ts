@@ -46,6 +46,10 @@ export interface OrderItemAddon {
     quantity: number;
     multiply_by_quantity?: boolean;
     name?: string;
+    /** API returns addon title (e.g. "حليب كامل الدسم") */
+    title?: string;
+    /** API returns group name (e.g. "نوع الحليب") */
+    group_name?: string;
 }
 
 export interface OrderItem {

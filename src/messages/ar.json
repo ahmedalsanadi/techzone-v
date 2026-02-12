@@ -376,7 +376,10 @@
       "title": "المنتجات",
       "unit": "منتج",
       "quantity_unit": "عدد",
-      "addon": "إضافة"
+      "addon": "إضافة",
+      "addons": "الإضافات",
+      "variantOptions": "الخيارات",
+      "customFields": "تفاصيل مخصصة"
     }
   },
   "NotFound": {
