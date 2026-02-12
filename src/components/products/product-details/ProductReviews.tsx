@@ -445,7 +445,28 @@ function ReviewCard({ review }: { review: Review }) {
 
             {/* Header: stars first in DOM so they sit at "start" in RTL (right side) */}
             <div className="flex flex-wrap items-center gap-4 pb-4">
-                <div className="flex gap-0.5 shrink-0" aria-label={`${review.rating} من 5`}>
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div className="size-11 shrink-0 rounded-full bg-theme-primary/10 flex items-center justify-center text-theme-primary ring-2 ring-gray-100">
+                        <User size={22} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                        <p className="font-bold text-gray-900 truncate">
+                            {review.user_name || t('anonymous') || 'مستخدم'}
+                        </p>
+                        <p className="flex items-center gap-1.5 text-sm text-gray-500 mt-0.5">
+                            <Calendar
+                                size={14}
+                                className="shrink-0 text-gray-400"
+                            />
+                            <time dateTime={review.created_at}>
+                                {dateLabel}
+                            </time>
+                        </p>
+                    </div>
+                </div>
+                <div
+                    className="flex gap-0.5 shrink-0"
+                    aria-label={`${review.rating} من 5`}>
                     {[1, 2, 3, 4, 5].map((star) => (
                         <Star
                             key={star}
@@ -458,20 +479,6 @@ function ReviewCard({ review }: { review: Review }) {
                             )}
                         />
                     ))}
-                </div>
-                <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <div className="size-11 shrink-0 rounded-full bg-theme-primary/10 flex items-center justify-center text-theme-primary ring-2 ring-gray-100">
-                        <User size={22} />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                        <p className="font-bold text-gray-900 truncate">
-                            {review.user_name || t('anonymous') || 'مستخدم'}
-                        </p>
-                        <p className="flex items-center gap-1.5 text-sm text-gray-500 mt-0.5">
-                            <Calendar size={14} className="shrink-0 text-gray-400" />
-                            <time dateTime={review.created_at}>{dateLabel}</time>
-                        </p>
-                    </div>
                 </div>
             </div>
 
