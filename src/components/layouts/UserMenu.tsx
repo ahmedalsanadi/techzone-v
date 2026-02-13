@@ -185,15 +185,15 @@ const UserMenu = () => {
 
             <BaseMenuItems
                 anchor="bottom end"
-                className="w-72 p-0 rounded-2xl overflow-hidden">
+                className="w-72 p-0 rounded-lg overflow-hidden">
                 {/* User Info Header Section */}
-                <div className="relative px-5 pt-5 pb-4 bg-linear-to-br from-gray-50 to-white border-b border-gray-100">
+                <div className="relative px-6 pt-5 pb-4 bg-linear-to-br from-gray-50 to-white border-b border-gray-100">
                     {/* Edit Button */}
                     {isAuthenticated && (
                         <MenuItem>
                             <Link
                                 href="/profile"
-                                className="absolute top-3 end-3 text-xs font-semibold text-gray-500 hover:text-theme-primary transition-colors bg-white px-3 py-1.5 rounded-full border border-gray-200 hover:border-theme-primary/30 shadow-sm">
+                                className="absolute top-3 end-3 text-xs font-semibold text-gray-500 hover:text-theme-primary transition-colors bg-white px-3 py-1.5 rounded-md border border-gray-200 hover:border-theme-primary/30 shadow-sm">
                                 {t('profile')}
                             </Link>
                         </MenuItem>

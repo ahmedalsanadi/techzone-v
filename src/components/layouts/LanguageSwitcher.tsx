@@ -20,17 +20,17 @@ const LanguageSwitcher = () => {
 
     return (
         <Menu as="div" className="relative inline-block ">
-            <MenuButton className="relative p-2 text-white hover:bg-white/10 rounded-full transition-colors outline-none">
+            <MenuButton className="relative  text-white hover:bg-white/10 rounded-md transition-colors outline-none">
                 <Globe size={24} strokeWidth={1.5} />
             </MenuButton>
 
             <BaseMenuItems
                 anchor="bottom end"
-                className="min-w-[140px] rounded-2xl p-1.5 flex flex-col gap-1">
+                className="min-w-[140px] rounded-lg p-1.5 flex flex-col gap-1">
                 <MenuItem>
                     <button
                         onClick={() => changeLanguage('en')}
-                        className={`flex w-full items-center rounded-xl px-3 py-2 text-sm font-bold transition-all ${
+                        className={`flex w-full items-center rounded-md px-3 py-2 text-sm font-bold transition-all ${
                             locale === 'en'
                                 ? 'bg-theme-primary text-white shadow-sm'
                                 : 'text-gray-700 hover:bg-gray-50'
@@ -41,7 +41,7 @@ const LanguageSwitcher = () => {
                 <MenuItem>
                     <button
                         onClick={() => changeLanguage('ar')}
-                        className={`flex w-full items-center rounded-xl px-3 py-2 text-sm font-bold transition-all ${
+                        className={`flex w-full items-center rounded-md px-3 py-2 text-sm font-bold transition-all ${
                             locale === 'ar'
                                 ? 'bg-theme-primary text-white shadow-sm'
                                 : 'text-gray-700 hover:bg-gray-50'
