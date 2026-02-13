@@ -4,6 +4,7 @@ import React from 'react';
 import { Button } from './Button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { cn } from '@/lib/utils';
 
 interface PaginationProps {
     currentPage: number;
@@ -50,11 +51,15 @@ const Pagination: React.FC<PaginationProps> = ({
                     key={page}
                     variant={
                         Number(currentPage) === Number(page)
-                            ? 'default'
+                            ? 'primary'
                             : 'ghost'
                     }
                     size="sm"
-                    className="w-8 h-8 md:w-10 md:h-10 p-0 rounded-xl"
+                    className={cn(
+                        'w-8 h-8 md:w-10 md:h-10 p-0 rounded-xl',
+                        Number(currentPage) !== Number(page) &&
+                            'hover:bg-theme-primary/10 hover:text-theme-primary focus-visible:ring-theme-primary/30',
+                    )}
                     onClick={() => onPageChange(Number(page))}>
                     {page}
                 </Button>
@@ -63,13 +68,13 @@ const Pagination: React.FC<PaginationProps> = ({
     };
 
     return (
-        <div className="flex items-center justify-center gap-2 pt-8 border-t border-gray-100">
+        <div className="flex items-center justify-center gap-2 pt-8 border-t border-theme-primary/10">
             <Button
                 variant="ghost"
                 size="sm"
                 disabled={currentPage === 1}
                 onClick={() => onPageChange(currentPage - 1)}
-                className="rounded-xl px-4">
+                className="rounded-xl px-4 hover:bg-theme-primary/10 hover:text-theme-primary focus-visible:ring-theme-primary/30 disabled:hover:bg-transparent disabled:hover:text-gray-500">
                 <ChevronLeft className="w-4 h-4 mr-2 rtl:rotate-180" />
                 {t('previous')}
             </Button>
@@ -81,7 +86,7 @@ const Pagination: React.FC<PaginationProps> = ({
                 size="sm"
                 disabled={currentPage === lastPage}
                 onClick={() => onPageChange(currentPage + 1)}
-                className="rounded-xl px-4">
+                className="rounded-xl px-4 hover:bg-theme-primary/10 hover:text-theme-primary focus-visible:ring-theme-primary/30 disabled:hover:bg-transparent disabled:hover:text-gray-500">
                 {t('next')}
                 <ChevronRight className="w-4 h-4 ml-2 rtl:rotate-180" />
             </Button>
