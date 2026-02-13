@@ -110,34 +110,34 @@ const AddressCard = ({
                 </div>
 
                 <div
-                    className="flex flex-col gap-1.5 sm:gap-2 shrink-0"
+                    className=" me-1 flex flex-col gap-1.5 sm:gap-2 shrink-0"
                     onClick={(e) => e.stopPropagation()}>
                     <Button
                         type="button"
                         variant="iconMuted"
-                        size="icon-xl"
+                        size="icon-sm"
                         onClick={() => onEdit(address)}
                         className="hover:bg-theme-primary/10 hover:text-theme-primary active:scale-95"
                         title="Edit"
                         aria-label="Edit address">
-                        <Edit className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <Edit className="w-4 h-4 " />
                     </Button>
                     <Button
                         type="button"
                         variant="ghost"
-                        size="icon-xl"
+                        size="icon-sm"
                         onClick={() => onDelete(address.id)}
                         className="bg-gray-50 hover:bg-red-50 hover:text-red-500 active:scale-95"
                         title="Delete"
                         aria-label="Delete address">
-                        <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <Trash2 className="w-4 h-4 " />
                     </Button>
                 </div>
             </div>
 
             {isDefault && (
                 <div className="absolute top-2.5 end-2.5 sm:top-3 sm:end-3 md:top-4 md:end-4">
-                    <div className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 bg-theme-primary rounded-full flex items-center justify-center text-white shadow-sm ring-2 ring-white">
+                    <div className="w-4 h-4  bg-theme-primary rounded-full flex items-center justify-center text-white shadow-sm ring-2 ring-white">
                         <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 stroke-2" />
                     </div>
                 </div>
