@@ -37,7 +37,7 @@ export function ProductsMainSection({
         useProductConfigFlow();
 
     return (
-        <div className="lg:col-span-3 space-y-8 relative z-0 p-1">
+        <div className="lg:col-span-3 space-y-8 relative z-0 p-1 pb-20">
             <ProductsHeader
                 sortBy={filters.sort}
                 order={filters.order}
