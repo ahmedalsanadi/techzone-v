@@ -78,7 +78,7 @@ export default async function ProductsPage({
     ]);
 
     return (
-        <main className="min-h-screen bg-gray-50/30">
+        <main className="min-h-screen bg-gray-50/30 py-12 px-4">
             <div className="container mx-auto px-4 pt-6">
                 <Breadcrumbs
                     items={[

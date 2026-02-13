@@ -37,19 +37,33 @@ const ProductFiltersUI = ({
     const t = useTranslations('Product');
 
     return (
-        <div className="space-y-6 lg:sticky lg:top-24 lg:z-10 lg:self-start">
+        <div className="space-y-8 lg:sticky lg:top-24 lg:z-10 lg:self-start">
             {/* Sidebar Header */}
-            <div className="flex items-center gap-2 mb-2 px-1">
-                <div className="p-2 bg-primary/10 rounded-xl">
-                    <Filter className="w-5 h-5 text-primary" />
+
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 mb-4 px-1 ">
+                    <div className="p-2 bg-primary/10 rounded-lg">
+                        <Filter className="w-5 h-5 text-primary" />
+                    </div>
+                    <h2 className="text-xl font-bold text-gray-900">
+                        {t('filters')}
+                    </h2>
                 </div>
-                <h2 className="text-xl font-bold text-gray-900">
-                    {t('filters')}
-                </h2>
+
+                {/* Reset Button */}
+                <Button
+                    type="button"
+                    variant="outlineDanger"
+                    size="lg"
+                    onClick={onReset}
+                    className="">
+                    <X className="w-4 h-4" />
+                    {t('clear_all')}
+                </Button>
             </div>
 
             {/* Categories Section */}
-            <div className="bg-white border border-gray-100 rounded-4xl p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
+            <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
                 <div className="flex items-center gap-2 mb-6">
                     <Layers className="w-4 h-4 text-gray-400" />
                     <h3 className="font-bold text-gray-800">
@@ -83,7 +97,7 @@ const ProductFiltersUI = ({
             </div>
 
             {/* Price Range Section */}
-            <div className="bg-white border border-gray-100 rounded-4xl p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
+            <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
                 <div className="flex items-center gap-2 mb-6">
                     <Sliders className="w-4 h-4 text-gray-400" />
                     <h3 className="font-bold text-gray-800">
@@ -111,7 +125,7 @@ const ProductFiltersUI = ({
             </div>
 
             {/* Quick Filters Section */}
-            <div className="bg-white border border-gray-100 rounded-4xl p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
+            <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
                 <div className="flex items-center gap-2 mb-6">
                     <Zap className="w-4 h-4 text-gray-400" />
                     <h3 className="font-bold text-gray-800">
@@ -147,17 +161,6 @@ const ProductFiltersUI = ({
                     </div>
                 </div>
             </div>
-
-            {/* Reset Button */}
-            <Button
-                type="button"
-                variant="outlineDanger"
-                size="lg"
-                onClick={onReset}
-                className="w-full h-12 rounded-3xl">
-                <X className="w-4 h-4" />
-                {t('clear_all')}
-            </Button>
         </div>
     );
 };
