@@ -75,7 +75,7 @@ export default function Navbar() {
     return (
         <>
             {/* -------- Row 1: Brand, Search, Actions (balanced spacing) -------- */}
-            <div className="flex items-center justify-between gap-4 min-h-12">
+            <div className="flex items-center justify-between gap-4 min-h-12 mt-1.5">
                 <div className="flex items-center gap-3 min-w-0 shrink-0">
                     <button
                         onClick={toggleMobileMenu}

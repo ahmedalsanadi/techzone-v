@@ -145,7 +145,7 @@ const UserMenu = () => {
 
             <MenuButton
                 className="group relative flex items-center justify-center md:justify-start gap-2
-                           rounded-full md:rounded-3xl border border-gray-200 bg-white shadow-sm
+                           rounded-full md:rounded-xl border border-gray-200 bg-white shadow-sm
                            hover:bg-gray-50 transition-colors outline-none
                            size-9 md:h-10 md:w-auto md:px-3"
             >
