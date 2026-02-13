@@ -53,8 +53,7 @@ export default async function CategoriesPage({
     });
 
     return (
-        <main className="min-h-screen bg-gray-50/30 py-16 px-8 relative">
-          
+        <main className="min-h-screen bg-gray-50/30 pt-16 pb-20 px-8 relative">
                 <Breadcrumbs items={breadcrumbItems} />
            
             <HydrationBoundary state={dehydrate(queryClient)}>

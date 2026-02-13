@@ -99,15 +99,7 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
                 </div>
             </div>
 
-            {pagination && (
-                <div className="pt-10 absolute -bottom-20 left-0 right-0">
-                    <Pagination
-                        currentPage={currentPage || pagination.current_page}
-                        lastPage={pagination.last_page}
-                        onPageChange={(page: number) => onPageChange?.(page)}
-                    />
-                </div>
-            )}
+        
         </div>
     );
 };

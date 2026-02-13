@@ -37,7 +37,7 @@ const ProductFiltersUI = ({
     const t = useTranslations('Product');
 
     return (
-        <div className="space-y-8 lg:sticky lg:top-24 lg:z-10 lg:self-start">
+        <div className="space-y-8 ">
             {/* Sidebar Header */}
 
             <div className="flex items-center justify-between">
