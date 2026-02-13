@@ -20,34 +20,38 @@ const LanguageSwitcher = () => {
 
     return (
         <Menu as="div" className="relative inline-block ">
-            <MenuButton className="relative  text-white hover:bg-white/10 rounded-md transition-colors outline-none">
-                <Globe size={24} strokeWidth={1.5} />
+            <MenuButton className="relative inline-flex items-center justify-center size-10 text-white hover:bg-white/10 rounded-md transition-colors outline-none">
+                <Globe size={24} strokeWidth={1.5} className="shrink-0" />
             </MenuButton>
 
             <BaseMenuItems
                 anchor="bottom end"
                 className="min-w-[140px] rounded-lg p-1.5 flex flex-col gap-1">
                 <MenuItem>
-                    <button
-                        onClick={() => changeLanguage('en')}
-                        className={`flex w-full items-center rounded-md px-3 py-2 text-sm font-bold transition-all ${
-                            locale === 'en'
-                                ? 'bg-theme-primary text-white shadow-sm'
-                                : 'text-gray-700 hover:bg-gray-50'
-                        }`}>
-                        English
-                    </button>
+                    {({ focus }) => (
+                        <button
+                            onClick={() => changeLanguage('en')}
+                            className={`flex w-full items-center rounded-md px-3 py-2 text-sm font-bold transition-all duration-200 ${
+                                locale === 'en'
+                                    ? 'bg-theme-primary text-white shadow-sm'
+                                    : `text-gray-700 hover:bg-theme-primary/10 hover:text-theme-primary focus:bg-theme-primary/10 focus:text-theme-primary ${focus ? 'bg-theme-primary/10 text-theme-primary' : ''}`
+                            }`}>
+                            English
+                        </button>
+                    )}
                 </MenuItem>
                 <MenuItem>
-                    <button
-                        onClick={() => changeLanguage('ar')}
-                        className={`flex w-full items-center rounded-md px-3 py-2 text-sm font-bold transition-all ${
-                            locale === 'ar'
-                                ? 'bg-theme-primary text-white shadow-sm'
-                                : 'text-gray-700 hover:bg-gray-50'
-                        }`}>
-                        العربية
-                    </button>
+                    {({ focus }) => (
+                        <button
+                            onClick={() => changeLanguage('ar')}
+                            className={`flex w-full items-center rounded-md px-3 py-2 text-sm font-bold transition-all duration-200 ${
+                                locale === 'ar'
+                                    ? 'bg-theme-primary text-white shadow-sm'
+                                    : `text-gray-700 hover:bg-theme-primary/10 hover:text-theme-primary focus:bg-theme-primary/10 focus:text-theme-primary ${focus ? 'bg-theme-primary/10 text-theme-primary' : ''}`
+                            }`}>
+                            العربية
+                        </button>
+                    )}
                 </MenuItem>
             </BaseMenuItems>
         </Menu>
