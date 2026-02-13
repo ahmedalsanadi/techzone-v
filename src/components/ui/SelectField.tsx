@@ -164,7 +164,7 @@ const Select = ({
 
                     <Listbox.Button
                         className={cn(
-                            'w-full h-11 px-4 pe-10 text-sm bg-white border border-gray-200 rounded-xl transition-all duration-200',
+                            'w-full h-11 px-4 pe-10 text-sm bg-white border border-gray-200 rounded-lg transition-all duration-200',
                             'focus:outline-none focus-visible:ring-4 focus-visible:ring-theme-primary/5 focus-visible:border-theme-primary-border',
                             'cursor-pointer hover:border-gray-300 text-start truncate',
                             leftIcon && 'ps-10',
@@ -186,7 +186,7 @@ const Select = ({
                         leaveTo="transform opacity-0 scale-95">
                         <Listbox.Options
                             className={cn(
-                                'absolute z-50 mt-2 w-full max-h-64 overflow-auto rounded-2xl bg-white border border-gray-200 shadow-xl ring-1 ring-black/5 p-2',
+                                'absolute z-50 mt-2 w-full max-h-64 overflow-auto rounded-lg bg-white border border-gray-200 shadow-xl ring-1 ring-black/5 p-2',
                                 'focus:outline-none select-options-scroll',
                                 contentClassName,
                             )}>
@@ -235,7 +235,7 @@ const SelectItem = ({
         disabled={disabled}
         className={({ active, selected, disabled }) =>
             cn(
-                'relative cursor-pointer select-none rounded-xl px-3 py-2 text-sm font-semibold transition-colors',
+                'relative cursor-pointer select-none rounded-lg px-3 py-2 text-sm font-semibold transition-colors',
                 disabled && 'opacity-50 cursor-not-allowed',
                 active && 'bg-theme-primary/10 text-theme-primary',
                 selected && 'bg-theme-primary/15 text-theme-primary',
