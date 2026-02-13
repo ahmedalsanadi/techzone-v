@@ -74,7 +74,10 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
 
         if (href) {
             return (
-                <Link href={href} scroll={scroll} className="group outline-none focus-visible:ring-2 focus-visible:ring-theme-primary focus-visible:ring-offset-2 rounded-2xl">
+                <Link
+                    href={href}
+                    scroll={scroll}
+                    className="group outline-none focus-visible:ring-2 focus-visible:ring-theme-primary focus-visible:ring-offset-2 rounded-2xl">
                     {content}
                 </Link>
             );
@@ -85,7 +88,9 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                 className="group outline-none focus-visible:ring-2 focus-visible:ring-theme-primary focus-visible:ring-offset-2 rounded-2xl"
                 role={onClick ? 'button' : undefined}
                 tabIndex={onClick ? 0 : undefined}
-                onKeyDown={onClick ? (e) => e.key === 'Enter' && onClick() : undefined}>
+                onKeyDown={
+                    onClick ? (e) => e.key === 'Enter' && onClick() : undefined
+                }>
                 {content}
             </div>
         );

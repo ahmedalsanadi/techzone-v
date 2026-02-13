@@ -100,14 +100,11 @@ export default async function CategoryPage({
     ];
 
     return (
-        <main className="min-h-screen bg-gray-50/30 py-8">
-            <div className="container mx-auto px-4 mb-6">
-                <Breadcrumbs items={breadcrumbItems} />
-            </div>
-
+        <section className="min-h-screen bg-gray-50/30 py-16 px-8 relative">
+            <Breadcrumbs items={breadcrumbItems} />
             <HydrationBoundary state={dehydrate(queryClient)}>
                 <CategoryContent initialCategory={category} />
             </HydrationBoundary>
-        </main>
+        </section>
     );
 }
