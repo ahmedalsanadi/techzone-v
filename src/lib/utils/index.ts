@@ -16,4 +16,15 @@ export function formatCurrency(amount: number, locale: string = 'ar') {
     return `${amount.toFixed(2)} ${locale === 'ar' ? '﷼' : 'SAR'}`;
 }
 
+export function formatMoneyAmount(amount: number, locale: string = 'ar') {
+    const safe = Number.isFinite(amount) ? amount : 0;
+    // IMPORTANT: Always render Latin digits (English numbers) even in Arabic UI.
+    // Currency label/symbol is handled separately by `CurrencySymbol`.
+    void locale;
+    return new Intl.NumberFormat('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+    }).format(safe);
+}
+
 export { normalizeRedirectPath } from './redirect';

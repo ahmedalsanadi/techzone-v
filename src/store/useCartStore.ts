@@ -1,6 +1,6 @@
 //src/store/useCartStore.ts
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { persist } from 'zustand/middleware';
 import { cartService } from '@/services/cart-service';
 import type { ApiCart, ApiCartItem } from '@/types/cart';
 import { generateCartItemId } from '@/lib/cart/utils';
@@ -36,10 +36,14 @@ export interface CartItem {
 interface CartStore {
     items: CartItem[];
     pendingItems: CartItem[];
+    /** Host/tenant that owns the persisted guest cart. */
+    tenantHost: string;
     // API-related state
     cartId: number | null;
     isGuestMode: boolean;
     isLoading: boolean;
+    /** Number of in-flight cart mutations (authenticated API writes). */
+    mutationsInFlight: number;
     lastSyncedAt: number | null;
 
     // Local cart methods (guest mode)
@@ -52,6 +56,8 @@ interface CartStore {
 
     // API sync methods (authenticated mode)
     syncWithAPI: () => Promise<void>;
+    beginMutation: () => void;
+    endMutation: () => void;
     setGuestMode: (isGuest: boolean) => void;
     setCartFromAPI: (cart: ApiCart) => void;
     getGuestCartItems: () => CartItem[];
@@ -60,7 +66,12 @@ interface CartStore {
     clearPendingByProductId: (productId: number) => void;
 }
 
-function transformApiCartItemToLocal(item: ApiCartItem): CartItem {
+export function getCurrentTenantHostForStorage(): string {
+    if (typeof window === 'undefined') return 'server';
+    return window.location.host || 'unknown-tenant';
+}
+
+export function transformApiCartItemToLocal(item: ApiCartItem): CartItem {
     // Generate a stable local ID based on the product composition
     const compositeId = generateCartItemId(item.product.id, {
         variantId: item.variant?.id,
@@ -124,10 +135,10 @@ function transformApiCartItemToLocal(item: ApiCartItem): CartItem {
         id: localId,
         name: item.product.title,
         image: item.product.cover_image_url,
-        price:
-            item.quantity > 0
-                ? item.total_price / item.quantity
-                : item.unit_price,
+        // IMPORTANT: use API-provided unit_price.
+        // Deriving via total_price / quantity can create ugly repeating decimals
+        // (e.g. 2760/7 => 394.285714...) which then flashes in the UI.
+        price: item.unit_price,
         quantity: item.quantity,
         categoryId: String(item.product.categories?.[0]?.id || item.product.id),
         metadata: {
@@ -150,58 +161,46 @@ export const useCartStore = create<CartStore>()(
         (set, get) => ({
             items: [],
             pendingItems: [],
+            tenantHost: getCurrentTenantHostForStorage(),
             cartId: null,
             isGuestMode: true, // Default to guest mode
             isLoading: false,
+            mutationsInFlight: 0,
             lastSyncedAt: null,
 
             addItem: (item, quantity = 1) => {
-                // If in guest mode, use local storage
-                if (get().isGuestMode) {
-                    const currentItems = get().items;
-                    const existingItem = currentItems.find(
-                        (i) => i.id === item.id,
-                    );
+                const currentItems = get().items;
+                const existingItem = currentItems.find((i) => i.id === item.id);
 
-                    if (existingItem) {
-                        set({
-                            items: currentItems.map((i) =>
-                                i.id === item.id
-                                    ? { ...i, quantity: i.quantity + quantity }
-                                    : i,
-                            ),
-                        });
-                    } else {
-                        set({
-                            items: [...currentItems, { ...item, quantity }],
-                        });
-                    }
-                }
-                // If authenticated, this should be called via API (handled in useCartActions)
-            },
-            removeItem: (id) => {
-                // If in guest mode, remove from local storage
-                if (get().isGuestMode) {
+                if (existingItem) {
                     set({
-                        items: get().items.filter((i) => i.id !== id),
+                        items: currentItems.map((i) =>
+                            i.id === item.id
+                                ? { ...i, quantity: i.quantity + quantity }
+                                : i,
+                        ),
+                    });
+                } else {
+                    set({
+                        items: [...currentItems, { ...item, quantity }],
                     });
                 }
-                // If authenticated, this should be called via API (handled in useCartActions)
+            },
+            removeItem: (id) => {
+                set({
+                    items: get().items.filter((i) => i.id !== id),
+                });
             },
             updateQuantity: (id, quantity) => {
                 if (quantity <= 0) {
                     get().removeItem(id);
                     return;
                 }
-                // If in guest mode, update locally
-                if (get().isGuestMode) {
-                    set({
-                        items: get().items.map((i) =>
-                            i.id === id ? { ...i, quantity } : i,
-                        ),
-                    });
-                }
-                // If authenticated, this should be called via API (handled in useCartActions)
+                set({
+                    items: get().items.map((i) =>
+                        i.id === id ? { ...i, quantity } : i,
+                    ),
+                });
             },
             clearCart: () => {
                 set({ items: [], cartId: null });
@@ -247,8 +246,20 @@ export const useCartStore = create<CartStore>()(
                     set({ isLoading: false });
                 }
             },
+            beginMutation: () => {
+                set({ mutationsInFlight: get().mutationsInFlight + 1 });
+            },
+            endMutation: () => {
+                set({
+                    mutationsInFlight: Math.max(0, get().mutationsInFlight - 1),
+                });
+            },
             setGuestMode: (isGuest) => {
-                set({ isGuestMode: isGuest });
+                // Keep tenantHost in sync when switching into guest mode (host-based isolation).
+                set({
+                    isGuestMode: isGuest,
+                    ...(isGuest ? { tenantHost: getCurrentTenantHostForStorage() } : {}),
+                });
             },
             setCartFromAPI: (cart) => {
                 // Transform API cart items to local format
@@ -281,14 +292,34 @@ export const useCartStore = create<CartStore>()(
         }),
         {
             name: 'fasto-cart-storage',
+            version: 2,
             // CRITICAL: Only persist when in guest mode
             // Authenticated users should NOT have cart persisted to localStorage
             // Their cart is managed by the API
             partialize: (state) => ({
-                ...(state.isGuestMode ? { items: state.items } : {}),
+                ...(state.isGuestMode
+                    ? { items: state.items, tenantHost: state.tenantHost }
+                    : {}),
                 pendingItems: state.pendingItems,
                 isGuestMode: state.isGuestMode,
             }),
+            merge: (persisted, current) => {
+                const p = persisted as Partial<CartStore> | undefined;
+                if (!p) return current;
+
+                // Hard isolation: if stored guest cart is from another tenant host, ignore it.
+                const currentHost = getCurrentTenantHostForStorage();
+                const persistedHost = p.tenantHost;
+                const isSameHost =
+                    typeof persistedHost === 'string' && persistedHost === currentHost;
+
+                return {
+                    ...current,
+                    ...p,
+                    items: isSameHost ? (p.items as CartItem[] | undefined) ?? [] : [],
+                    tenantHost: currentHost,
+                } as CartStore;
+            },
         },
     ),
 );

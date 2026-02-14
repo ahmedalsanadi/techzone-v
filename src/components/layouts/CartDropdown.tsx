@@ -11,6 +11,7 @@ import React, { useEffect } from 'react';
 import { Menu, MenuButton, MenuItem } from '@headlessui/react';
 import { BaseMenuItems } from '../ui/BaseMenuItems';
 import { Button } from '@/components/ui/Button';
+import { useCartActions } from '@/hooks/cart';
 
 type CartItemAddonDetailsGroup = {
     groupName: string;
@@ -28,7 +29,6 @@ const CartDropdown = () => {
     const t = useTranslations('Cart');
     const {
         items,
-        removeItem,
         getTotalItems,
         getTotalPrice,
         syncWithAPI,
@@ -36,6 +36,7 @@ const CartDropdown = () => {
         isGuestMode,
     } = useCartStore();
     const { isAuthenticated } = useAuthStore();
+    const { removeFromCart } = useCartActions();
     const count = getTotalItems();
 
     useEffect(() => {
@@ -177,7 +178,7 @@ const CartDropdown = () => {
                                             type="button"
                                             variant="ghost"
                                             size="icon-sm"
-                                            onClick={() => removeItem(item.id)}
+                                            onClick={() => void removeFromCart(item.id)}
                                             className="hover:text-red-500 hover:bg-red-50 shrink-0">
                                             <X
                                                 size={14}

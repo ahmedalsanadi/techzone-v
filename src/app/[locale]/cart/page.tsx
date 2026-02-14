@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useSyncExternalStore } from 'react';
 import Image from 'next/image';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useCartStore } from '@/store/useCartStore';
 import { useCartActions } from '@/hooks/cart';
 import { Link, useRouter } from '@/i18n/navigation';
@@ -19,9 +19,11 @@ import CurrencySymbol from '@/components/ui/CurrencySymbol';
 import { useAuthStore } from '@/store/useAuthStore';
 import CartItemConfigModal from '@/components/modals/CartItemConfigModal';
 import { Button } from '@/components/ui/Button';
+import { formatMoneyAmount } from '@/lib/utils';
 
 const CartPage = () => {
     const t = useTranslations('Cart');
+    const locale = useLocale();
     const {
         items,
         pendingItems,
@@ -30,6 +32,7 @@ const CartPage = () => {
         syncWithAPI,
         isLoading,
         isGuestMode,
+        mutationsInFlight,
         clearPendingItems,
     } = useCartStore();
     const { isAuthenticated } = useAuthStore();
@@ -121,6 +124,8 @@ const CartPage = () => {
     }
 
     const subtotal = getTotalPrice();
+    const isCartMutating = isAuthenticated && !isGuestMode && mutationsInFlight > 0;
+    const disableCheckout = isLoading || isCartMutating;
 
     return (
         <>
@@ -325,7 +330,11 @@ const CartPage = () => {
                                             {/* Price */}
                                             <div className="flex items-center gap-1 mt-1 text-theme-primary font-black">
                                                 <span>
-                                                    {item.price * item.quantity}
+                                                    {formatMoneyAmount(
+                                                        item.price *
+                                                            item.quantity,
+                                                        locale,
+                                                    )}
                                                 </span>
                                                 <CurrencySymbol className="w-3.5 h-3.5" />
                                             </div>
@@ -454,7 +463,9 @@ const CartPage = () => {
                                 <div className="flex justify-between text-gray-600">
                                     <span>{t('subtotal')}</span>
                                     <div className="flex items-center gap-1 font-bold text-gray-900">
-                                        <span>{subtotal}</span>
+                                        <span>
+                                            {formatMoneyAmount(subtotal, locale)}
+                                        </span>
                                         <CurrencySymbol className="w-3.5 h-3.5" />
                                     </div>
                                 </div>
@@ -472,7 +483,9 @@ const CartPage = () => {
                                         {t('total')}
                                     </span>
                                     <div className="flex items-center gap-1.5 text-2xl font-black text-theme-primary">
-                                        <span>{subtotal}</span>
+                                        <span>
+                                            {formatMoneyAmount(subtotal, locale)}
+                                        </span>
                                         <CurrencySymbol className="w-5 h-5" />
                                     </div>
                                 </div>
@@ -481,10 +494,10 @@ const CartPage = () => {
                             <Button
                                 variant="primary"
                                 onClick={handleCheckout}
-                                disabled={isLoading}
+                                disabled={disableCheckout}
                                 size="xl"
                                 className="w-full hover:-translate-y-0.5 active:scale-95">
-                                {isLoading ? (
+                                {disableCheckout ? (
                                     <Loader2 className="size-5 animate-spin" />
                                 ) : (
                                     <div className="flex items-center justify-between w-full">
