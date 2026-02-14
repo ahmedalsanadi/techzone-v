@@ -21,6 +21,23 @@ type PendingQty = {
     apiItemId: number;
 };
 
+function computeApiAddonsPrice(
+    addons:
+        | Array<{
+              quantity: number;
+              price: number;
+              multiply_by_quantity: boolean;
+          }>
+        | undefined,
+    productQty: number,
+): number {
+    if (!addons || addons.length === 0) return 0;
+    return addons.reduce((sum, a) => {
+        const base = (a.price || 0) * (a.quantity || 0);
+        return sum + (a.multiply_by_quantity ? base * productQty : base);
+    }, 0);
+}
+
 const pendingQtyByLocalId = new Map<string, PendingQty>();
 const pendingQtyMutations = new Set<string>();
 
@@ -181,6 +198,45 @@ export const useCartActions = () => {
                 // Optimistic UI first
                 updateQuantity(itemId, quantity);
 
+                // Optimistically update totals in metadata if we have API pricing.
+                const after = useCartStore
+                    .getState()
+                    .items.find((i) => i.id === itemId);
+                const apiPricing = after?.metadata?.apiPricing;
+                const apiAddons = after?.metadata?.apiAddons;
+                if (after && apiPricing) {
+                    const addons_price = computeApiAddonsPrice(
+                        apiAddons as
+                            | Array<{
+                                  quantity: number;
+                                  price: number;
+                                  multiply_by_quantity: boolean;
+                              }>
+                            | undefined,
+                        quantity,
+                    );
+                    const subtotal = apiPricing.unit_price * quantity;
+                    const total_price = subtotal + addons_price;
+                    useCartStore.setState((s) => ({
+                        items: s.items.map((i) =>
+                            i.id === itemId
+                                ? {
+                                      ...i,
+                                      metadata: {
+                                          ...(i.metadata || {}),
+                                          apiPricing: {
+                                              ...apiPricing,
+                                              subtotal,
+                                              addons_price,
+                                              total_price,
+                                          },
+                                      },
+                                  }
+                                : i,
+                        ),
+                    }));
+                }
+
                 // Debounce/coalesce rapid taps into a single PATCH.
                 if (!pendingQtyMutations.has(itemId)) {
                     pendingQtyMutations.add(itemId);
@@ -269,8 +325,11 @@ export const useCartActions = () => {
                     return;
                 }
 
-                const currentVariant = current.metadata?.product_variant_id;
-                const nextVariant = newItem.metadata?.product_variant_id || null;
+                // Normalize "no variant" to null on both sides.
+                // Otherwise `undefined !== null` and we incorrectly take the POST+DELETE path,
+                // which can merge items server-side and bump quantity unexpectedly.
+                const currentVariant = current.metadata?.product_variant_id ?? null;
+                const nextVariant = newItem.metadata?.product_variant_id ?? null;
 
                 // Optimistic UI: update visible item immediately.
                 useCartStore.setState((s) => ({
@@ -299,13 +358,13 @@ export const useCartActions = () => {
                     const updateRequest = {
                         // API requires quantity for PATCH (per CART docs / Postman collection)
                         quantity,
-                        ...(addons.length ? { addons } : {}),
-                        ...(newItem.metadata?.notes && {
-                            notes: newItem.metadata.notes,
-                        }),
-                        ...(newItem.metadata?.custom_fields && {
-                            custom_fields: newItem.metadata.custom_fields,
-                        }),
+                        // IMPORTANT:
+                        // - If user unselects all addons, we MUST send an empty array to clear server state.
+                        //   Omitting `addons` would keep previous addons and reappear after the response.
+                        addons,
+                        // Same logic for clearable fields: send explicit empties to overwrite server state.
+                        notes: newItem.metadata?.notes ?? '',
+                        custom_fields: newItem.metadata?.custom_fields ?? {},
                     };
                     const apiItem = await cartService.updateItem(
                         apiItemId,

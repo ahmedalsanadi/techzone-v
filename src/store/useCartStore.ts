@@ -17,6 +17,22 @@ export type CartItemMetadata = {
     variant_options?: Record<string, string>;
     addons?: Record<number, Record<number, number>>;
     addonDetails?: CartItemAddonDetailsGroup[];
+    /** Raw API addons array (for accurate totals on quantity changes). */
+    apiAddons?: Array<{
+        addon_item_id: number;
+        addon_group_name: string | null;
+        addon_item_name: string;
+        quantity: number;
+        price: number;
+        multiply_by_quantity: boolean;
+    }>;
+    /** API pricing fields (authoritative for authenticated carts). */
+    apiPricing?: {
+        unit_price: number;
+        subtotal: number;
+        addons_price: number;
+        total_price: number;
+    };
     custom_fields?: Record<string, unknown>;
     notes?: string;
     variety?: { name: string };
@@ -147,10 +163,18 @@ export function transformApiCartItemToLocal(item: ApiCartItem): CartItem {
             apiItemId: item.id, // Store API item ID for updates/deletes
             addons,
             addonDetails,
+            apiAddons: item.addons || undefined,
+            apiPricing: {
+                unit_price: item.unit_price,
+                subtotal: item.subtotal,
+                addons_price: item.addons_price,
+                total_price: item.total_price,
+            },
             notes: item.notes || undefined,
             custom_fields: item.custom_fields || undefined,
             variant_options: item.variant_options || undefined,
-            product_variant_id: item.variant?.id || undefined,
+            // Normalize "no variant" as null (not undefined) for stable comparisons.
+            product_variant_id: item.variant?.id ?? null,
             variety: item.variant ? { name: item.variant.title } : undefined,
         },
     };
@@ -212,10 +236,16 @@ export const useCartStore = create<CartStore>()(
                 );
             },
             getTotalPrice: () => {
-                return get().items.reduce(
-                    (total, item) => total + item.price * item.quantity,
-                    0,
-                );
+                return get().items.reduce((total, item) => {
+                    const apiTotal =
+                        item.metadata?.apiPricing?.total_price ??
+                        undefined;
+                    const lineTotal =
+                        typeof apiTotal === 'number'
+                            ? apiTotal
+                            : item.price * item.quantity;
+                    return total + lineTotal;
+                }, 0);
             },
             syncWithAPI: async () => {
                 // CRITICAL: Only sync if authenticated and not in guest mode

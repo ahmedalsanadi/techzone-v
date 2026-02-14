@@ -43,19 +43,29 @@ export default function CartItemConfigModal({
         staleTime: 1000 * 60 * 5,
     });
 
-    const initialAddons = useMemo(() => {
-        const fromItem =
+    // Keep addon selections as a flat map keyed by addon_item_id.
+    // This allows reliable prefill even when the cart item came from the API
+    // (API doesn't provide addon group IDs, only item IDs/names).
+    const initialAddonItemQty = useMemo((): Record<number, number> => {
+        const grouped =
             item?.metadata?.addons && typeof item.metadata.addons === 'object'
-                ? (item.metadata.addons as Record<
-                      number,
-                      Record<number, number>
-                  >)
+                ? (item.metadata.addons as Record<number, Record<number, number>>)
                 : {};
-        return fromItem;
+
+        const flat: Record<number, number> = {};
+        Object.values(grouped).forEach((groupItems) => {
+            Object.entries(groupItems || {}).forEach(([id, qty]) => {
+                const addonItemId = Number(id);
+                const q = Number(qty);
+                if (!Number.isFinite(addonItemId) || !Number.isFinite(q)) return;
+                if (q > 0) flat[addonItemId] = q;
+            });
+        });
+        return flat;
     }, [item]);
 
-    const [selectedAddons, setSelectedAddons] =
-        useState<Record<number, Record<number, number>>>(initialAddons);
+    const [selectedAddonItemQty, setSelectedAddonItemQty] =
+        useState<Record<number, number>>(initialAddonItemQty);
     const [selectedVariantId, setSelectedVariantId] = useState<number | null>(
         item?.metadata?.product_variant_id || null,
     );
@@ -65,10 +75,27 @@ export default function CartItemConfigModal({
     const [notes, setNotes] = useState(item?.metadata?.notes || '');
 
     const activeProduct = product as Product | undefined;
+    const quantity = item?.quantity || 1;
+
+    const groupedSelectedAddons = useMemo(() => {
+        const result: Record<number, Record<number, number>> = {};
+        (activeProduct?.addons || []).forEach((group) => {
+            const groupSelected: Record<number, number> = {};
+            group.items.forEach((it) => {
+                const q = selectedAddonItemQty[it.id] || 0;
+                if (q > 0) groupSelected[it.id] = q;
+            });
+            if (Object.keys(groupSelected).length > 0) {
+                result[group.id] = groupSelected;
+            }
+        });
+        return result;
+    }, [activeProduct?.addons, selectedAddonItemQty]);
+
     const validation = activeProduct
         ? validateRequiredSelections(activeProduct, {
               selectedVariantId,
-              selectedAddons,
+              selectedAddons: groupedSelectedAddons,
               customFields,
           })
         : { isValid: false, errors: [] };
@@ -82,27 +109,27 @@ export default function CartItemConfigModal({
         : activeProduct?.sale_price || activeProduct?.price || 0;
 
     const calculateTotalPrice = () => {
+        // Match `ProductDetails` pricing semantics:
+        // total = (base * productQty) + addons where `multiply_price_by_quantity`
+        // indicates per-unit addons.
         let totalAddonsPrice = 0;
-        Object.entries(selectedAddons).forEach(([addonGroupId, items]) => {
-            const addonGroup = activeProduct?.addons?.find(
-                (a) => a.id === parseInt(addonGroupId, 10),
-            );
-            if (!addonGroup) return;
-
-            Object.entries(items).forEach(([itemId, qty]) => {
-                const addonItem = addonGroup.items.find(
-                    (i) => i.id === parseInt(itemId, 10),
-                );
-                if (!addonItem || qty <= 0) return;
-                totalAddonsPrice += addonItem.extra_price * qty;
+        (activeProduct?.addons || []).forEach((addonGroup) => {
+            addonGroup.items.forEach((addonItem) => {
+                const qtySelected = selectedAddonItemQty[addonItem.id] || 0;
+                if (qtySelected <= 0) return;
+                const selectionTotal = addonItem.extra_price * qtySelected;
+                totalAddonsPrice += addonItem.multiply_price_by_quantity
+                    ? selectionTotal * quantity
+                    : selectionTotal;
             });
         });
-        return Number(currentPrice) + totalAddonsPrice;
+
+        const basePrice = Number(currentPrice);
+        return basePrice * quantity + totalAddonsPrice;
     };
 
-    const unitPrice = calculateTotalPrice();
-    const quantity = item?.quantity || 1;
-    const totalPrice = unitPrice * quantity;
+    const totalPrice = calculateTotalPrice();
+    const unitPrice = quantity > 0 ? totalPrice / quantity : 0;
 
     const handleSave = async () => {
         if (!item || !activeProduct) return;
@@ -118,7 +145,7 @@ export default function CartItemConfigModal({
             items: Array<{ name: string; quantity: number; price: number }>;
         }> = [];
 
-        Object.entries(selectedAddons).forEach(([addonGroupId, items]) => {
+        Object.entries(groupedSelectedAddons).forEach(([addonGroupId, items]) => {
             const addonGroup = activeProduct.addons?.find(
                 (a) => a.id === parseInt(addonGroupId, 10),
             );
@@ -157,13 +184,14 @@ export default function CartItemConfigModal({
             {
                 id: generateCartItemId(activeProduct.id, {
                     variantId: selectedVariantId,
-                    addons: selectedAddons,
+                    addons: groupedSelectedAddons,
                     customFields,
                     notes,
                 }),
                 name: activeProduct.title,
                 image: activeProduct.cover_image_url,
-                price: calculateTotalPrice(),
+                // Cart store expects per-unit price (line total = price * quantity).
+                price: unitPrice,
                 categoryId: String(activeProduct.categories?.[0]?.id || ''),
                 metadata: {
                     productId: activeProduct.id,
@@ -177,7 +205,7 @@ export default function CartItemConfigModal({
                     variety: selectedVariant
                         ? { name: selectedVariant.title }
                         : undefined,
-                    addons: selectedAddons,
+                    addons: groupedSelectedAddons,
                     addonDetails,
                     custom_fields:
                         Object.keys(customFields).length > 0
@@ -264,24 +292,34 @@ export default function CartItemConfigModal({
                                                 key={addonGroup.id}
                                                 addonGroup={addonGroup}
                                                 selectedItems={
-                                                    selectedAddons[
-                                                        addonGroup.id
-                                                    ] || {}
+                                                    (() => {
+                                                        const selected: Record<
+                                                            number,
+                                                            number
+                                                        > = {};
+                                                        addonGroup.items.forEach(
+                                                            (it) => {
+                                                                const q =
+                                                                    selectedAddonItemQty[
+                                                                        it.id
+                                                                    ] || 0;
+                                                                if (q > 0)
+                                                                    selected[
+                                                                        it.id
+                                                                    ] = q;
+                                                            },
+                                                        );
+                                                        return selected;
+                                                    })()
                                                 }
                                                 onUpdateSelection={(
                                                     itemId,
                                                     qty,
                                                 ) => {
-                                                    setSelectedAddons(
+                                                    setSelectedAddonItemQty(
                                                         (prev) => ({
                                                             ...prev,
-                                                            [addonGroup.id]: {
-                                                                ...prev[
-                                                                    addonGroup
-                                                                        .id
-                                                                ],
-                                                                [itemId]: qty,
-                                                            },
+                                                            [itemId]: qty,
                                                         }),
                                                     );
                                                 }}

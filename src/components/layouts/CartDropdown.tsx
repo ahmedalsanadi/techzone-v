@@ -1,7 +1,7 @@
 'use client';
 
 import { ShoppingCart, X, ArrowRight } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import DynamicImage from '../ui/DynamicImage';
 import { useCartStore } from '@/store/useCartStore';
 import { Link } from '@/i18n/navigation';
@@ -12,6 +12,7 @@ import { Menu, MenuButton, MenuItem } from '@headlessui/react';
 import { BaseMenuItems } from '../ui/BaseMenuItems';
 import { Button } from '@/components/ui/Button';
 import { useCartActions } from '@/hooks/cart';
+import { formatMoneyAmount } from '@/lib/utils';
 
 type CartItemAddonDetailsGroup = {
     groupName: string;
@@ -23,10 +24,12 @@ type CartItemMetadata = {
     variant_options?: Record<string, string>;
     addonDetails?: CartItemAddonDetailsGroup[];
     custom_fields?: Record<string, unknown>;
+    apiPricing?: { total_price: number };
 };
 
 const CartDropdown = () => {
     const t = useTranslations('Cart');
+    const locale = useLocale();
     const {
         items,
         getTotalItems,
@@ -169,7 +172,13 @@ const CartDropdown = () => {
                                             </p>
                                             <div className="flex items-center gap-1 text-xs sm:text-sm font-bold text-theme-primary">
                                                 <span>
-                                                    {item.price * item.quantity}
+                                                    {formatMoneyAmount(
+                                                        metadata?.apiPricing
+                                                            ?.total_price ??
+                                                            item.price *
+                                                                item.quantity,
+                                                        locale,
+                                                    )}
                                                 </span>
                                                 <CurrencySymbol className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                                             </div>
@@ -204,7 +213,9 @@ const CartDropdown = () => {
                                 {t('total')}
                             </span>
                             <div className="flex items-center gap-1 text-base sm:text-lg font-bold text-gray-900">
-                                <span>{getTotalPrice()}</span>
+                                <span>
+                                    {formatMoneyAmount(getTotalPrice(), locale)}
+                                </span>
                                 <CurrencySymbol className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             </div>
                         </div>

@@ -331,8 +331,10 @@ const CartPage = () => {
                                             <div className="flex items-center gap-1 mt-1 text-theme-primary font-black">
                                                 <span>
                                                     {formatMoneyAmount(
-                                                        item.price *
-                                                            item.quantity,
+                                                        item.metadata?.apiPricing
+                                                            ?.total_price ??
+                                                            item.price *
+                                                                item.quantity,
                                                         locale,
                                                     )}
                                                 </span>
@@ -394,7 +396,7 @@ const CartPage = () => {
                                                             item.quantity - 1,
                                                         );
                                                     }}
-                                                    disabled={isLoading}
+                                                    disabled={disableCheckout}
                                                     className="hover:bg-gray-200/50 active:scale-95">
                                                     <Minus />
                                                 </Button>
@@ -412,7 +414,7 @@ const CartPage = () => {
                                                             item.quantity + 1,
                                                         );
                                                     }}
-                                                    disabled={isLoading}
+                                                    disabled={disableCheckout}
                                                     className="hover:bg-gray-200/50 active:scale-95">
                                                     <Plus />
                                                 </Button>
@@ -426,7 +428,7 @@ const CartPage = () => {
                                                     e.stopPropagation();
                                                     setEditingItem(item);
                                                 }}
-                                                disabled={isLoading}
+                                                disabled={disableCheckout}
                                                 className="hover:text-theme-primary"
                                                 aria-label={t('editItem') || 'Edit item'}>
                                                 <Edit />
@@ -440,7 +442,7 @@ const CartPage = () => {
                                                     e.stopPropagation();
                                                     removeFromCart(item.id);
                                                 }}
-                                                disabled={isLoading}
+                                                disabled={disableCheckout}
                                                 className="hover:text-red-500 hover:bg-red-50"
                                                 aria-label={t('removeItem') || 'Remove item'}>
                                                 <Trash2 />
