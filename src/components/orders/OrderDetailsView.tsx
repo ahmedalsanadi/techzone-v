@@ -100,7 +100,7 @@ export default function OrderDetailsView({
                                     },
                                     [{}] as [Record<number, number>],
                                 ),
-                                notes: item.notes,
+                                notes: item.notes ?? undefined,
                             },
                         },
                         item.quantity,

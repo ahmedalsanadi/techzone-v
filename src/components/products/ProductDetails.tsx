@@ -1,7 +1,7 @@
 // src/components/pages/products/ProductDetails.tsx
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import ProductGallery from './product-details/ProductGallery';
 import ProductInfo from './product-details/ProductInfo';
@@ -54,7 +54,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             ? product.variants[0].id
             : null,
     );
-    const [customFields, setCustomFields] = useState<Record<string, any>>({});
+    const [customFields, setCustomFields] = useState<Record<string, unknown>>({});
 
     // Extract variant_options from selected variant
     const variantOptions = useMemo(() => {
@@ -66,23 +66,6 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     }, [selectedVariantId, product.variants]);
     const [quantity, setQuantity] = useState(1);
     const [notes, setNotes] = useState('');
-
-    // Re-initialize when product changes
-    useEffect(() => {
-        setSelectedAddons(initializeAddons);
-        // Reset variant selection to first variant if variants exist
-        if (product.variants && product.variants.length > 0) {
-            setSelectedVariantId(product.variants[0].id);
-        } else {
-            setSelectedVariantId(null);
-        }
-        // Reset custom fields
-        setCustomFields({});
-        // Reset quantity
-        setQuantity(1);
-        // Reset notes
-        setNotes('');
-    }, [initializeAddons, product.variants, product.id]);
 
     const images = [product.cover_image_url, ...(product.image_urls || [])];
 
@@ -311,16 +294,16 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                     variant_options:
                         Object.keys(variantOptions).length > 0
                             ? variantOptions
-                            : null,
+                            : undefined,
                     variety: selectedVariant
                         ? { name: selectedVariant.title }
-                        : null,
+                        : undefined,
                     addons: selectedAddons, // Keep IDs for reference
                     addonDetails, // Add names for display
                     custom_fields:
                         Object.keys(customFields).length > 0
                             ? customFields
-                            : null,
+                            : undefined,
                     notes,
                 },
             },

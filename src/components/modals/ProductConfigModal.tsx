@@ -1,7 +1,7 @@
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import { X, Eye } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Product } from '@/types/store';
 import { useCartActions } from '@/hooks/cart';
 import {
@@ -60,14 +60,7 @@ export default function ProductConfigModal({
     const [selectedVariantId, setSelectedVariantId] = useState<number | null>(
         product?.variants?.[0]?.id ?? null,
     );
-    const [customFields, setCustomFields] = useState<Record<string, any>>({});
-
-    useEffect(() => {
-        if (!isOpen) return;
-        setSelectedAddons(initializeAddons);
-        setSelectedVariantId(product?.variants?.[0]?.id ?? null);
-        setCustomFields({});
-    }, [isOpen, initializeAddons, product?.variants, product?.id]);
+    const [customFields, setCustomFields] = useState<Record<string, unknown>>({});
 
     if (!product) return null;
 
@@ -171,14 +164,14 @@ export default function ProductConfigModal({
                 variant_options:
                     Object.keys(variantOptions).length > 0
                         ? variantOptions
-                        : null,
+                        : undefined,
                 variety: selectedVariant
                     ? { name: selectedVariant.title }
-                    : null,
+                    : undefined,
                 addons: selectedAddons,
                 addonDetails,
                 custom_fields:
-                    Object.keys(customFields).length > 0 ? customFields : null,
+                    Object.keys(customFields).length > 0 ? customFields : undefined,
             },
         });
 

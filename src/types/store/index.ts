@@ -228,6 +228,40 @@ export interface Collection {
     image_url: string | null;
 }
 
+export interface ProductFilterOption {
+    id: number;
+    name: string;
+    count: number;
+}
+
+export interface ProductAvailabilityStatusOption {
+    value: 'in_stock' | 'out_of_stock' | 'low_stock' | string;
+    label: string;
+    arabic_label: string;
+    count: number;
+}
+
+export interface ProductFilterAttribute {
+    name: string;
+    slug: string;
+    options: Array<{ value: string | number; count: number }>;
+}
+
+export interface ProductsFiltersVars {
+    min_price: number;
+    max_price: number;
+    brands: ProductFilterOption[];
+    categories: ProductFilterOption[];
+    collections: ProductFilterOption[];
+    attributes: ProductFilterAttribute[];
+    availability_status: ProductAvailabilityStatusOption[];
+    calories_range?: { min: number; max: number };
+    weight_range?: { min: number; max: number };
+    max_rating?: number;
+    has_discount?: boolean;
+    has_variants?: boolean;
+}
+
 export interface CMSPage {
     id: number;
     title: string;

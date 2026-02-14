@@ -14,7 +14,7 @@ export function generateCartItemId(
             | Array<{ id: number; qty: number }>
             | Record<number, Record<number, number>>
             | null;
-        customFields?: Record<string, any> | null;
+        customFields?: Record<string, unknown> | null;
         notes?: string | null;
     },
 ): string {

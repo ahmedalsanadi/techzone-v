@@ -4,6 +4,7 @@ import { storeService } from '@/services/store-service';
 import { NAV_ITEMS } from '@/config/navigation';
 import { cmsService } from '@/services/cms-service';
 import { resolveSiteIdentity } from '@/lib/tenant/resolve-site';
+import type { Category } from '@/types/store';
 
 type ChangeFreq =
     | 'always'
@@ -75,8 +76,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         const allCategories = await storeService.getCategories(true);
 
         // Helper to flatten category tree for sitemap
-        const flattenCategories = (cats: any[]): any[] => {
-            return cats.reduce((acc, cat) => {
+        const flattenCategories = (cats: Category[]): Category[] => {
+            return cats.reduce<Category[]>((acc, cat) => {
                 acc.push(cat);
                 if (cat.children && cat.children.length > 0) {
                     acc.push(...flattenCategories(cat.children));

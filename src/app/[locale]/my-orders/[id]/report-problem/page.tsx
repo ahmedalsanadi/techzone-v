@@ -28,16 +28,17 @@ export default async function ReportProblemPage({
     const { id } = await params;
 
     // Fetch the order data from the real API
+    let order;
     try {
-        const order = await orderService.getOrder(id);
-
-        if (!order) {
-            notFound();
-        }
-
-        return <ReportProblemView order={order} />;
+        order = await orderService.getOrder(id);
     } catch (error) {
         console.error('Failed to fetch order for problem report:', error);
         notFound();
     }
+
+    if (!order) {
+        notFound();
+    }
+
+    return <ReportProblemView order={order} />;
 }

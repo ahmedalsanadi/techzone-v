@@ -1,7 +1,7 @@
 // src/hooks/useProductConfigFlow.ts
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCartActions } from '@/hooks/cart';
 import { generateCartItemId } from '@/lib/cart/utils';
@@ -10,50 +10,47 @@ import { storeService } from '@/services/store-service';
 import type { Product } from '@/types/store';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
 import { useProductConfigContext } from '@/components/providers/ProductConfigProvider';
 import { track } from '@vercel/analytics';
+import { useBranchStore } from '@/store/useBranchStore';
+import { branchCookies } from '@/lib/branches';
 
 const PRODUCT_CACHE_TTL = 1000 * 60 * 5;
 
-const getCacheKey = (slug: string) => `product-detail:${slug}`;
-
-const readProductCache = (slug: string): Product | null => {
-    if (typeof window === 'undefined') return null;
-    try {
-        const raw = window.localStorage.getItem(getCacheKey(slug));
-        if (!raw) return null;
-        const parsed = JSON.parse(raw) as {
-            data: Product;
-            storedAt: number;
-        };
-        if (Date.now() - parsed.storedAt > PRODUCT_CACHE_TTL) {
-            window.localStorage.removeItem(getCacheKey(slug));
-            return null;
-        }
-        return parsed.data;
-    } catch {
-        return null;
-    }
-};
-
-const writeProductCache = (slug: string, data: Product) => {
-    if (typeof window === 'undefined') return;
-    try {
-        window.localStorage.setItem(
-            getCacheKey(slug),
-            JSON.stringify({ data, storedAt: Date.now() }),
-        );
-    } catch {
-        // ignore storage write failures
-    }
-};
-
 export function useProductConfigFlow() {
     const t = useTranslations('Product');
+    const locale = useLocale();
     const queryClient = useQueryClient();
     const { addToCart } = useCartActions();
     const { openWithProduct } = useProductConfigContext();
     const [loadingProductId, setLoadingProductId] = useState<number | null>(null);
+
+    const selectedBranchId = useBranchStore((s) => s.selectedBranchId);
+    const branchIdFromCookie = useMemo(() => {
+        const raw = branchCookies.getBranchId();
+        const n = raw ? Number(raw) : NaN;
+        return Number.isFinite(n) ? n : null;
+    }, [selectedBranchId]);
+    const branchId = selectedBranchId ?? branchIdFromCookie;
+
+    const tenantHost = useMemo(() => {
+        if (typeof window === 'undefined') return 'server';
+        return window.location.host || 'unknown-tenant';
+    }, []);
+
+    const productKey = useMemo(
+        () => (slug: string) =>
+            ['product', tenantHost, locale, branchId ?? 'no-branch', slug] as const,
+        [tenantHost, locale, branchId],
+    );
+
+    // Avoid accumulating stale cross-branch product details in memory (optional but tidy).
+    useEffect(() => {
+        // When branch/locale changes, any in-flight detail fetch should not surface as "current".
+        // Query keys already separate caches, so this is just a safety cancel.
+        queryClient.cancelQueries({ queryKey: ['product', tenantHost, locale] });
+    }, [branchId, locale, queryClient, tenantHost]);
 
     const addBasicItem = (product: Product) => {
         addToCart({
@@ -74,16 +71,11 @@ export function useProductConfigFlow() {
         setLoadingProductId(product.id);
 
         try {
-            const cached = readProductCache(product.slug);
-            if (cached) {
-                queryClient.setQueryData(['product', product.slug], cached);
-            }
             const detail = await queryClient.fetchQuery({
-                queryKey: ['product', product.slug],
+                queryKey: productKey(product.slug),
                 queryFn: () => storeService.getProduct(product.slug),
                 staleTime: PRODUCT_CACHE_TTL,
             });
-            writeProductCache(product.slug, detail);
 
             if (!detail.is_available) {
                 toast.error(t('outOfStock') || 'Out of stock');
@@ -114,23 +106,11 @@ export function useProductConfigFlow() {
 
     const prefetchProduct = async (product: Product) => {
         if (!product.slug) return;
-        const cached = readProductCache(product.slug);
-        if (cached) {
-            queryClient.setQueryData(['product', product.slug], cached);
-            return;
-        }
         await queryClient.prefetchQuery({
-            queryKey: ['product', product.slug],
+            queryKey: productKey(product.slug),
             queryFn: () => storeService.getProduct(product.slug),
             staleTime: PRODUCT_CACHE_TTL,
         });
-        const data = queryClient.getQueryData<Product>([
-            'product',
-            product.slug,
-        ]);
-        if (data) {
-            writeProductCache(product.slug, data);
-        }
     };
 
     return {

@@ -15,12 +15,23 @@ export const SupportChannels: React.FC<SupportChannelsProps> = ({
     channels,
     title,
 }) => {
-    const displayChannels = channels && channels.length > 0
-        ? channels
-        : [
-              { type: 'phone', value: '+966 55 123 9876' },
-              { type: 'email', value: 'contact@Fasto.sa' },
-          ];
+    const displayChannels: BranchSupportChannel[] =
+        channels && channels.length > 0
+            ? channels
+            : [
+                  {
+                      type: 'phone',
+                      title: 'Phone',
+                      value: '+966 55 123 9876',
+                      status: true,
+                  },
+                  {
+                      type: 'email',
+                      title: 'Email',
+                      value: 'contact@Fasto.sa',
+                      status: true,
+                  },
+              ];
 
     return (
         <div className="bg-[#F8F9FA] rounded-3xl p-8 border border-gray-100 shadow-sm">
@@ -29,7 +40,7 @@ export const SupportChannels: React.FC<SupportChannelsProps> = ({
             </h2>
 
             <div className="space-y-6">
-                {displayChannels.map((channel: any, idx: number) => (
+                {displayChannels.map((channel, idx) => (
                     <div
                         key={idx}
                         className="flex items-center justify-start gap-4 group cursor-pointer">

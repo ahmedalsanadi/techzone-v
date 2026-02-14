@@ -24,13 +24,11 @@ export default function OrderTypeCard({
     const t = useTranslations('Order');
     const checkoutT = useTranslations('Checkout');
     const subHeaderT = useTranslations('SubHeader');
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [internalOpen, setInternalOpen] = useState(false);
+    const isModalOpen = internalOpen || openModal;
 
     useEffect(() => {
-        if (openModal) {
-            setIsModalOpen(true);
-            onModalOpened?.();
-        }
+        if (openModal) onModalOpened?.();
     }, [openModal, onModalOpened]);
     const {
         orderType,
@@ -77,7 +75,7 @@ export default function OrderTypeCard({
                         type="button"
                         variant="secondaryTint"
                         size="sm"
-                        onClick={() => setIsModalOpen(true)}
+                        onClick={() => setInternalOpen(true)}
                         className="gap-1">
                         <span>{checkoutT('edit')}</span>
                         <ChevronLeft className="w-4 h-4" />
@@ -186,7 +184,7 @@ export default function OrderTypeCard({
 
             <OrderTypeModal
                 isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                onClose={() => setInternalOpen(false)}
             />
         </>
     );

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useSyncExternalStore } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useWishlistStore } from '@/store/useWishlistStore';
@@ -20,12 +20,13 @@ const WishlistPage = () => {
     const { toggleWishlist, removeFromWishlist } = useWishlistActions();
     const { addToCart } = useCartActions();
     // const router = useRouter();
-    const [isMounted, setIsMounted] = useState(false);
-
-    // Prevent hydration mismatch
-    useEffect(() => {
-        setIsMounted(true);
-    }, []);
+    const isMounted = useSyncExternalStore(
+        () => () => {
+            /* no-op */
+        },
+        () => true,
+        () => false,
+    );
 
     // CRITICAL: Only sync wishlist with API when authenticated
     // Guest users should only see local wishlist (no API calls)

@@ -5,6 +5,7 @@ import {
     Product,
     Category,
     Collection,
+    ProductsFiltersVars,
 } from '@/types/store';
 import { CACHE_STRATEGY, CACHE_TAGS } from '@/config/cache';
 import type { CustomerProfile, ProfileUpdateRequest } from '@/types/auth';
@@ -49,10 +50,13 @@ export const storeService = {
      */
     async getProducts(
         params: Record<string, string | number | boolean | undefined> = {},
+        options?: { signal?: AbortSignal },
     ): Promise<{ data: Product[]; meta: PaginationMeta }> {
         const response = await fetchLiberoFull<Product[]>('/store/products', {
             params,
             next: { revalidate: CACHE_STRATEGY.PRODUCTS_LIST },
+            cache: typeof window !== 'undefined' ? 'no-store' : undefined,
+            signal: options?.signal,
         });
 
         const per_page = Number(params?.per_page) || 8;
@@ -68,6 +72,19 @@ export const storeService = {
             },
         };
     },
+
+    /**
+     * Get products filter variables for building dynamic filter UI.
+     */
+    getProductsFilters: (
+        params?: { search?: string; category_id?: string | number },
+        options?: { signal?: AbortSignal },
+    ) =>
+        fetchLibero<ProductsFiltersVars>('/store/products/filters', {
+            params,
+            cache: typeof window !== 'undefined' ? 'no-store' : undefined,
+            signal: options?.signal,
+        }),
 
     /**
      * Get a single product by Slug.

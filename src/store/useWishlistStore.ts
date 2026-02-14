@@ -12,7 +12,7 @@ export interface WishlistItem {
     price: number;
     salePrice: number | null;
     slug: string;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
 }
 
 interface WishlistStore {
@@ -141,10 +141,11 @@ export const useWishlistStore = create<WishlistStore>()(
                     itemsArray = data;
                 } else if (data && typeof data === 'object') {
                     // Check if data is wrapped in another object (e.g. { data: [], ... })
-                    if (Array.isArray((data as any).data)) {
-                        itemsArray = (data as any).data;
-                    } else if (Array.isArray((data as any).items)) {
-                        itemsArray = (data as any).items;
+                    const maybe = data as { data?: unknown; items?: unknown };
+                    if (Array.isArray(maybe.data)) {
+                        itemsArray = maybe.data as ApiWishlistItem[];
+                    } else if (Array.isArray(maybe.items)) {
+                        itemsArray = maybe.items as ApiWishlistItem[];
                     } else {
                         console.error(
                             '[WishlistStore] Expected array in setWishlistFromAPI but got:',

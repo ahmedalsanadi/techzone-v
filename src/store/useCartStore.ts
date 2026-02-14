@@ -5,6 +5,24 @@ import { cartService } from '@/services/cart-service';
 import type { ApiCart, ApiCartItem } from '@/types/cart';
 import { generateCartItemId } from '@/lib/cart/utils';
 
+export type CartItemAddonDetailsGroup = {
+    groupName: string;
+    items: Array<{ name: string; quantity: number; price: number }>;
+};
+
+export type CartItemMetadata = {
+    productId?: number;
+    productSlug?: string;
+    product_variant_id?: number | null;
+    variant_options?: Record<string, string>;
+    addons?: Record<number, Record<number, number>>;
+    addonDetails?: CartItemAddonDetailsGroup[];
+    custom_fields?: Record<string, unknown>;
+    notes?: string;
+    variety?: { name: string };
+    [key: string]: unknown;
+};
+
 export interface CartItem {
     id: string;
     name: string;
@@ -12,7 +30,7 @@ export interface CartItem {
     price: number;
     quantity: number;
     categoryId: string;
-    metadata?: Record<string, any>;
+    metadata?: CartItemMetadata;
 }
 
 interface CartStore {

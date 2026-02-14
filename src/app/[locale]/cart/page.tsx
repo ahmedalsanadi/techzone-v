@@ -235,16 +235,15 @@ const CartPage = () => {
                                                 </h3>
                                             )}
 
-                                            {item.metadata?.variety && (
+                                            {item.metadata?.variety ? (
                                                 <p className="text-sm text-gray-400 font-medium -mt-1">
                                                     {item.metadata.variety.name}
                                                 </p>
-                                            )}
+                                            ) : null}
 
                                             {/* Display Addons */}
                                             {item.metadata?.addonDetails &&
-                                                item.metadata.addonDetails
-                                                    .length > 0 && (
+                                            item.metadata.addonDetails.length > 0 ? (
                                                     <div className="mt-2 space-y-1">
                                                         {item.metadata.addonDetails.map(
                                                             (
@@ -288,7 +287,7 @@ const CartPage = () => {
                                                             ),
                                                         )}
                                                     </div>
-                                                )}
+                                                ) : null}
 
                                             {/* Display Variant Options */}
                                             {item.metadata?.variant_options &&

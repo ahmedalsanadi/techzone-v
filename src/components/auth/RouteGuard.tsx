@@ -37,16 +37,16 @@ export default function RouteGuard({
         const isAuthPage = pathname?.includes('/auth');
 
         if (isAuthPage && isAuthenticated && checkProfileComplete()) {
-            router.replace('/' as any);
+            router.replace('/');
             return;
         }
 
         if (requireAuth && !isAuthenticated) {
             const redirectPath = pathname ? encodeURIComponent(pathname) : '';
             if (redirectPath) {
-                router.replace(`/auth?redirect=${redirectPath}` as any);
+                router.replace(`/auth?redirect=${redirectPath}`);
             } else {
-                router.replace('/auth' as any);
+                router.replace('/auth');
             }
             return;
         }
@@ -63,10 +63,10 @@ export default function RouteGuard({
                     : '';
                 if (redirectPath) {
                     router.replace(
-                        `/auth?step=signup&redirect=${redirectPath}` as any,
+                        `/auth?step=signup&redirect=${redirectPath}`,
                     );
                 } else {
-                    router.replace('/auth?step=signup' as any);
+                    router.replace('/auth?step=signup');
                 }
                 toast.info('يجب إكمال الملف الشخصي للمتابعة');
                 return;
@@ -77,9 +77,9 @@ export default function RouteGuard({
         if (profileQuery.isError) {
             const redirectPath = pathname ? encodeURIComponent(pathname) : '';
             if (redirectPath) {
-                router.replace(`/auth?redirect=${redirectPath}` as any);
+                router.replace(`/auth?redirect=${redirectPath}`);
             } else {
-                router.replace('/auth' as any);
+                router.replace('/auth');
             }
             return;
         }
@@ -90,10 +90,10 @@ export default function RouteGuard({
             const redirectPath = pathname ? encodeURIComponent(pathname) : '';
             if (redirectPath) {
                 router.replace(
-                    `/auth?step=signup&redirect=${redirectPath}` as any,
+                    `/auth?step=signup&redirect=${redirectPath}`,
                 );
             } else {
-                router.replace('/auth?step=signup' as any);
+                router.replace('/auth?step=signup');
             }
             toast.info('يجب إكمال الملف الشخصي للمتابعة');
         }

@@ -44,6 +44,7 @@ const MapSizeInvalidator = memo(() => {
     }, [map]);
     return null;
 });
+MapSizeInvalidator.displayName = 'MapSizeInvalidator';
 
 const FitBounds = memo(({ coords }: { coords: [number, number][] }) => {
     const map = useMap();
@@ -55,6 +56,7 @@ const FitBounds = memo(({ coords }: { coords: [number, number][] }) => {
     }, [coords, map]);
     return null;
 });
+FitBounds.displayName = 'FitBounds';
 
 const LiveTrackingMap: React.FC<LiveTrackingMapProps> = ({
     courierCoords,

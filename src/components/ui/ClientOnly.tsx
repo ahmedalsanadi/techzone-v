@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useSyncExternalStore } from 'react';
 
 interface ClientOnlyProps {
     children: React.ReactNode;
@@ -12,11 +12,14 @@ interface ClientOnlyProps {
  * Useful for preventing hydration mismatches with dynamic data (cart counts, user state).
  */
 export const ClientOnly = ({ children, fallback = null }: ClientOnlyProps) => {
-    const [isMounted, setIsMounted] = useState(false);
-
-    useEffect(() => {
-        setIsMounted(true);
-    }, []);
+    // Avoid setState-in-effect (lint rule): determine client-ness via SyncExternalStore.
+    const isMounted = useSyncExternalStore(
+        () => () => {
+            /* no-op */
+        },
+        () => true,
+        () => false,
+    );
 
     if (!isMounted) {
         return <>{fallback}</>;

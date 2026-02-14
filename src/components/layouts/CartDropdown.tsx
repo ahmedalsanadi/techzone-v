@@ -12,6 +12,18 @@ import { Menu, MenuButton, MenuItem } from '@headlessui/react';
 import { BaseMenuItems } from '../ui/BaseMenuItems';
 import { Button } from '@/components/ui/Button';
 
+type CartItemAddonDetailsGroup = {
+    groupName: string;
+    items: Array<{ name: string; quantity: number; price: number }>;
+};
+
+type CartItemMetadata = {
+    variety?: { name: string };
+    variant_options?: Record<string, string>;
+    addonDetails?: CartItemAddonDetailsGroup[];
+    custom_fields?: Record<string, unknown>;
+};
+
 const CartDropdown = () => {
     const t = useTranslations('Cart');
     const {
@@ -78,6 +90,12 @@ const CartDropdown = () => {
                             {items.map((item) => (
                                 <MenuItem key={item.id} as="div">
                                     <div className="flex items-start gap-2 sm:gap-3 p-1.5 sm:p-2 rounded-xl hover:bg-gray-50 transition-colors group">
+                                        {(() => {
+                                            const metadata =
+                                                (item.metadata as unknown as CartItemMetadata) ||
+                                                undefined;
+                                            return (
+                                                <>
                                         <div className="relative w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded-lg overflow-hidden shrink-0">
                                             <DynamicImage
                                                 src={item.image}
@@ -92,22 +110,20 @@ const CartDropdown = () => {
                                             </h4>
 
                                             {/* Variety */}
-                                            {item.metadata?.variety && (
+                                            {metadata?.variety ? (
                                                 <p className="text-[9px] sm:text-[10px] text-gray-400 font-medium mb-0.5 sm:mb-1">
-                                                    {item.metadata.variety.name}
+                                                    {metadata.variety.name}
                                                 </p>
-                                            )}
+                                            ) : null}
 
                                             {/* Variant Options Summary */}
-                                            {item.metadata?.variant_options &&
+                                            {metadata?.variant_options &&
                                                 Object.keys(
-                                                    item.metadata
-                                                        .variant_options,
+                                                    metadata.variant_options,
                                                 ).length > 0 && (
                                                     <div className="flex flex-wrap gap-0.5 sm:gap-1 mb-0.5 sm:mb-1">
                                                         {Object.entries(
-                                                            item.metadata
-                                                                .variant_options,
+                                                            metadata.variant_options,
                                                         ).map(([k, v]) => (
                                                             <span
                                                                 key={k}
@@ -119,34 +135,25 @@ const CartDropdown = () => {
                                                 )}
 
                                             {/* Addons Summary */}
-                                            {item.metadata?.addonDetails &&
-                                                item.metadata.addonDetails
-                                                    .length > 0 && (
+                                            {metadata?.addonDetails &&
+                                                metadata.addonDetails.length > 0 && (
                                                     <p className="text-[9px] sm:text-[10px] text-gray-400 line-clamp-1 mb-0.5 sm:mb-1">
-                                                        {item.metadata.addonDetails
-                                                            .map((g: any) =>
-                                                                g.items
-                                                                    .map(
-                                                                        (
-                                                                            i: any,
-                                                                        ) =>
-                                                                            i.name,
-                                                                    )
-                                                                    .join(', '),
+                                                        {metadata.addonDetails
+                                                            .map((g) =>
+                                                                g.items.map((i) => i.name).join(', '),
                                                             )
                                                             .join(', ')}
                                                     </p>
                                                 )}
 
                                             {/* Custom Fields Summary */}
-                                            {item.metadata?.custom_fields &&
+                                            {metadata?.custom_fields &&
                                                 Object.keys(
-                                                    item.metadata.custom_fields,
+                                                    metadata.custom_fields,
                                                 ).length > 0 && (
                                                     <p className="text-[9px] sm:text-[10px] text-gray-400 line-clamp-1 italic mb-0.5 sm:mb-1">
                                                         {Object.entries(
-                                                            item.metadata
-                                                                .custom_fields,
+                                                            metadata.custom_fields,
                                                         )
                                                             .map(
                                                                 ([k, v]) =>
@@ -178,6 +185,9 @@ const CartDropdown = () => {
                                                 className="sm:size-4"
                                             />
                                         </Button>
+                                                </>
+                                            );
+                                        })()}
                                     </div>
                                 </MenuItem>
                             ))}

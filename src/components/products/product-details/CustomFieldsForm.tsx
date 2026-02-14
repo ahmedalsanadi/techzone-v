@@ -15,8 +15,8 @@ import {
 
 interface CustomFieldsFormProps {
     customFields: ProductCustomField[];
-    values: Record<string, any>;
-    onChange: (name: string, value: any) => void;
+    values: Record<string, unknown>;
+    onChange: (name: string, value: unknown) => void;
 }
 
 export default function CustomFieldsForm({
@@ -29,10 +29,19 @@ export default function CustomFieldsForm({
     if (!customFields || customFields.length === 0) return null;
 
     const renderField = (field: ProductCustomField) => {
-        const fieldValue = values[field.name] || '';
+        const rawValue = values[field.name];
+        const fieldValue =
+            rawValue === null || rawValue === undefined ? '' : rawValue;
+        const stringValue =
+            typeof fieldValue === 'string'
+                ? fieldValue
+                : typeof fieldValue === 'number'
+                  ? String(fieldValue)
+                  : '';
+        const selectValue = typeof fieldValue === 'string' ? fieldValue : '';
         const isRequired = field.is_required;
 
-        const isEmptyForRequired = (value: any) => {
+        const isEmptyForRequired = (value: unknown) => {
             // boolean required means it must be checked/true
             if (field.input_type === 'boolean') return !value;
             // checkbox groups: required means at least one selected
@@ -69,7 +78,7 @@ export default function CustomFieldsForm({
                     <label className="flex items-center gap-3 py-3 cursor-pointer group hover:bg-gray-50/50 -mx-2 px-2 rounded-xl transition-colors">
                         <input
                             type="checkbox"
-                            checked={!!fieldValue}
+                            checked={Boolean(fieldValue)}
                             onChange={(e) => onChange(field.name, e.target.checked)}
                             className="w-5 h-5 rounded-md border-2 border-gray-200 text-theme-primary focus:ring-theme-primary"
                         />
@@ -86,6 +95,11 @@ export default function CustomFieldsForm({
                 );
 
             case 'number':
+                {
+                    const inputValue: string | number =
+                        typeof fieldValue === 'number' || typeof fieldValue === 'string'
+                            ? fieldValue
+                            : '';
                 return (
                     <div className="py-3">
                         <label className="block mb-2">
@@ -94,7 +108,7 @@ export default function CustomFieldsForm({
                         </label>
                         <Input
                             type="number"
-                            value={fieldValue}
+                            value={inputValue}
                             onChange={(e) =>
                                 onChange(
                                     field.name,
@@ -110,6 +124,7 @@ export default function CustomFieldsForm({
                         />
                     </div>
                 );
+                }
 
             case 'text':
                 return (
@@ -120,7 +135,7 @@ export default function CustomFieldsForm({
                         </label>
                         <Input
                             type="text"
-                            value={fieldValue}
+                            value={stringValue}
                             onChange={(e) => onChange(field.name, e.target.value)}
                             maxLength={field.max_limit || undefined}
                             variant="filled"
@@ -147,7 +162,7 @@ export default function CustomFieldsForm({
                                     'border-red-300 focus-within:border-red-400 focus-within:ring-red-500/10',
                             )}>
                             <textarea
-                                value={fieldValue}
+                                value={stringValue}
                                 onChange={(e) =>
                                     onChange(field.name, e.target.value)
                                 }
@@ -173,7 +188,7 @@ export default function CustomFieldsForm({
                         </label>
                         {field.input_type === 'select' ? (
                             <Select
-                                value={fieldValue}
+                                value={selectValue}
                                 onValueChange={(v) => onChange(field.name, v)}
                                 className="w-full">
                                 <SelectTrigger
@@ -212,7 +227,7 @@ export default function CustomFieldsForm({
                                             type="radio"
                                             name={field.name}
                                             value={value}
-                                            checked={fieldValue === value}
+                                            checked={selectValue === value}
                                             onChange={(e) => onChange(field.name, e.target.value)}
                                             className="w-5 h-5 rounded-full border-2 border-gray-200 text-theme-primary focus:ring-theme-primary"
                                         />
@@ -234,7 +249,9 @@ export default function CustomFieldsForm({
                         </label>
                         <div className="space-y-2">
                             {Object.entries(field.options).map(([value, label]) => {
-                                const checkedValues = Array.isArray(fieldValue) ? fieldValue : [];
+                                const checkedValues = Array.isArray(fieldValue)
+                                    ? fieldValue.filter((v): v is string => typeof v === 'string')
+                                    : [];
                                 const isChecked = checkedValues.includes(value);
                                 return (
                                     <label
@@ -268,7 +285,7 @@ export default function CustomFieldsForm({
                         </label>
                         <Input
                             type="date"
-                            value={fieldValue}
+                            value={stringValue}
                             onChange={(e) => onChange(field.name, e.target.value)}
                             variant="filled"
                             inputSize="lg"
@@ -287,7 +304,7 @@ export default function CustomFieldsForm({
                         </label>
                         <Input
                             type="time"
-                            value={fieldValue}
+                            value={stringValue}
                             onChange={(e) => onChange(field.name, e.target.value)}
                             variant="filled"
                             inputSize="lg"
@@ -306,7 +323,7 @@ export default function CustomFieldsForm({
                         </label>
                         <Input
                             type="datetime-local"
-                            value={fieldValue}
+                            value={stringValue}
                             onChange={(e) => onChange(field.name, e.target.value)}
                             variant="filled"
                             inputSize="lg"

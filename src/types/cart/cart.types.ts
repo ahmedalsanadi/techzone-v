@@ -49,7 +49,7 @@ export interface ApiCartItem {
     addons: CartAddon[] | null;
     addons_price: number;
     total_price: number;
-    custom_fields: Record<string, any> | null;
+    custom_fields: Record<string, unknown> | null;
     variant_options: Record<string, string> | null;
     notes: string | null;
     is_available: boolean;
@@ -79,7 +79,7 @@ export interface GuestCartItem {
     product_variant_id?: number | null;
     quantity: number;
     addons?: AddCartAddon[];
-    custom_fields?: Record<string, any>;
+    custom_fields?: Record<string, unknown>;
     variant_options?: Record<string, string>;
     notes?: string;
 }
@@ -92,7 +92,7 @@ export interface AddCartItemRequest {
     product_variant_id?: number | null;
     quantity: number;
     addons?: AddCartAddon[];
-    custom_fields?: Record<string, any>;
+    custom_fields?: Record<string, unknown>;
     variant_options?: Record<string, string>;
     notes?: string;
 }
@@ -103,7 +103,7 @@ export interface AddCartItemRequest {
 export interface UpdateCartItemRequest {
     quantity?: number;
     addons?: AddCartAddon[];
-    custom_fields?: Record<string, any>;
+    custom_fields?: Record<string, unknown>;
     notes?: string;
 }
 

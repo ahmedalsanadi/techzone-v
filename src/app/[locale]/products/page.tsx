@@ -1,52 +1,52 @@
 // src/app/[locale]/products/page.tsx
-import React, { Suspense } from 'react';
+import React from 'react';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
-import ProductsView from '@/components/products/ProductsView';
+import ProductsPageClient from '@/features/products-page/ProductsPageClient';
 import { getTranslations } from 'next-intl/server';
 import { Metadata } from 'next';
+import { resolveSiteIdentity } from '@/lib/tenant/resolve-site';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { getQueryClient } from '@/lib/getQueryClient';
-import { storeService } from '@/services/store-service';
-import ProductsPageSkeleton from './ProductsPageSkeleton';
-
-interface SearchParams {
-    [key: string]: string | undefined;
-    search?: string;
-    category_id?: string;
-    brand_id?: string;
-    is_featured?: string;
-    is_latest?: string;
-    min_price?: string;
-    max_price?: string;
-    sort?: string;
-    order?: string;
-    page?: string;
-}
+import {
+    productsPageStateFromUrlParams,
+    type ProductsPageUrlParams,
+} from '@/features/products-page/types';
+import {
+    productsPageProductsQueryOptions,
+    productsPageFiltersVarsQueryOptions,
+} from '@/features/products-page/queries';
+import { cookies, headers } from 'next/headers';
+import { BRANCH_COOKIES } from '@/lib/branches/constants';
 
 export async function generateMetadata({
     params,
     searchParams,
 }: {
     params: Promise<{ locale: string }>;
-    searchParams: Promise<SearchParams>;
+    searchParams?: Promise<Record<string, string | undefined>>;
 }): Promise<Metadata> {
     const { locale } = await params;
     const t = await getTranslations({ locale, namespace: 'Product' });
+    const site = await resolveSiteIdentity();
+    const sp = (await searchParams) || {};
+    const hasQuery = Object.values(sp).some((v) => v != null && v !== '');
 
     return {
         title: t('products'),
         description: t('products_description'),
+        metadataBase: new URL(site.url),
         openGraph: {
             title: t('products'),
             description: t('products_description'),
             type: 'website',
         },
+        robots: {
+            // List page is indexable, but filtered/paginated variants should not be indexed.
+            index: !hasQuery,
+            follow: true,
+        },
         alternates: {
-            canonical: '/products',
-            languages: {
-                en: '/en/products',
-                ar: '/ar/products',
-            },
+            canonical: `${site.url}/${locale}/products`,
         },
     };
 }
@@ -56,25 +56,37 @@ export default async function ProductsPage({
     searchParams,
 }: {
     params: Promise<{ locale: string }>;
-    searchParams: Promise<SearchParams>;
+    searchParams: Promise<ProductsPageUrlParams>;
 }) {
     const { locale } = await params;
-    const filters = await searchParams;
-
     const t = await getTranslations({ locale, namespace: 'Product' });
-    const queryClient = getQueryClient();
+    const sp = await searchParams;
 
-    // Prefetch initial data
+    const requestHeaders = await headers();
+    const host = requestHeaders.get('x-forwarded-host')?.split(',')[0].trim() || requestHeaders.get('host') || 'server';
+    const cookieStore = await cookies();
+    const branchIdRaw = cookieStore.get(BRANCH_COOKIES.BRANCH_ID)?.value;
+    const branchId = branchIdRaw && Number.isFinite(Number(branchIdRaw)) ? Number(branchIdRaw) : null;
+
+    const queryClient = getQueryClient();
+    const state = productsPageStateFromUrlParams(sp);
+    const queryCtx = { tenantHost: host, locale, branchId };
+
+    const filtersVarsArgs = {
+        search: state.filters.search?.trim() ? state.filters.search.trim() : undefined,
+        category_id:
+            state.filters.categoryIds.length === 1
+                ? state.filters.categoryIds[0]
+                : undefined,
+    };
+
     await Promise.all([
-        queryClient.prefetchQuery({
-            queryKey: ['products', { ...filters, per_page: '8' }],
-            queryFn: () =>
-                storeService.getProducts({ ...filters, per_page: '8' }),
-        }),
-        queryClient.prefetchQuery({
-            queryKey: ['categories'],
-            queryFn: () => storeService.getCategories(true),
-        }),
+        queryClient.prefetchQuery(
+            productsPageProductsQueryOptions(state, queryCtx, { keepPrevious: false }),
+        ),
+        queryClient.prefetchQuery(
+            productsPageFiltersVarsQueryOptions(filtersVarsArgs, queryCtx),
+        ),
     ]);
 
     return (
@@ -88,11 +100,9 @@ export default async function ProductsPage({
                 />
             </div>
 
-            <Suspense fallback={<ProductsPageSkeleton />}>
-                <HydrationBoundary state={dehydrate(queryClient)}>
-                    <ProductsView />
-                </HydrationBoundary>
-            </Suspense>
+            <HydrationBoundary state={dehydrate(queryClient)}>
+                <ProductsPageClient />
+            </HydrationBoundary>
         </main>
     );
 }

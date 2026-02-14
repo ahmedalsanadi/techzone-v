@@ -93,11 +93,19 @@ export default async function CMSPageDetail({ params }: Props) {
     let page;
     try {
         page = await cmsService.getPage(slug);
-    } catch (error: any) {
+    } catch (error: unknown) {
         // Silently handle 404s (User error: wrong URL)
         // Only log system errors (500, 503, etc.)
-        if (error?.status !== 404) {
-            console.error('[CMSPage] System error:', error?.message || error);
+        const status =
+            typeof error === 'object' && error && 'status' in error
+                ? (error as { status?: number }).status
+                : undefined;
+        const message =
+            typeof error === 'object' && error && 'message' in error
+                ? String((error as { message?: unknown }).message)
+                : String(error);
+        if (status !== 404) {
+            console.error('[CMSPage] System error:', message);
         }
         notFound();
     }

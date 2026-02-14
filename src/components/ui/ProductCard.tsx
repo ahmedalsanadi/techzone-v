@@ -105,8 +105,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div
             ref={cardRef}
             onClick={onClick}
-            onMouseEnter={onPrefetch}
-            onFocus={onPrefetch}
             className="bg-white border border-gray-100 rounded-xl overflow-hidden relative group shadow-sm flex flex-col h-full">
             {/* Wishlist Button */}
             <Button

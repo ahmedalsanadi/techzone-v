@@ -46,7 +46,7 @@ export function useAuthFlowValidation({
             const redirectPath = normalizeRedirectPath(
                 redirectTo || searchParams.get('redirect'),
             );
-            router.replace(redirectPath as any);
+            router.replace(redirectPath);
             return;
         }
 
@@ -66,7 +66,7 @@ export function useAuthFlowValidation({
             const redirectPath = normalizeRedirectPath(
                 redirectTo || searchParams.get('redirect'),
             );
-            router.replace(redirectPath as any);
+            router.replace(redirectPath);
             return;
         }
 

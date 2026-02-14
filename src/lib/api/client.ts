@@ -33,6 +33,41 @@ interface FetchOptions extends RequestInit {
     isProtected?: boolean;
 }
 
+function isAbortError(error: unknown): boolean {
+    return (
+        !!error &&
+        typeof error === 'object' &&
+        'name' in error &&
+        (error as { name?: string }).name === 'AbortError'
+    );
+}
+
+function combineSignals(signals: Array<AbortSignal | undefined>): AbortSignal | undefined {
+    const active = signals.filter(Boolean) as AbortSignal[];
+    if (active.length === 0) return undefined;
+    if (active.length === 1) return active[0];
+
+    // If any is already aborted, return an already-aborted signal
+    if (active.some((s) => s.aborted)) {
+        const c = new AbortController();
+        c.abort();
+        return c.signal;
+    }
+
+    // Prefer AbortSignal.any when available
+    const anyFn = (AbortSignal as unknown as { any?: (signals: AbortSignal[]) => AbortSignal })
+        .any;
+    if (typeof anyFn === 'function') {
+        return anyFn(active);
+    }
+
+    // Fallback: manual fan-in
+    const controller = new AbortController();
+    const onAbort = () => controller.abort();
+    active.forEach((s) => s.addEventListener('abort', onAbort, { once: true }));
+    return controller.signal;
+}
+
 export async function fetchLibero<T>(
     endpoint: string,
     options: FetchOptions = {},
@@ -50,6 +85,7 @@ export async function fetchLiberoFull<T>(
 ): Promise<ApiResponse<T>> {
     const { params, isProtected, ...init } = options;
     const baseUrl = getBaseUrl();
+    const externalSignal = init.signal ?? undefined;
 
     // Determine locale
     let locale = 'ar';
@@ -102,8 +138,9 @@ export async function fetchLiberoFull<T>(
         console.log(`[API] ${init.method || 'GET'} ${url.toString()}`);
     }
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000);
+    const timeoutController = new AbortController();
+    const timeoutId = setTimeout(() => timeoutController.abort(), 30000);
+    const signal = combineSignals([externalSignal, timeoutController.signal]);
 
     try {
         const initWithNext = init as RequestInit & {
@@ -138,7 +175,7 @@ export async function fetchLiberoFull<T>(
         const response = await fetch(url.toString(), {
             ...init,
             headers,
-            signal: controller.signal,
+            signal: signal ?? timeoutController.signal,
             ...(nextOptions ? { next: nextOptions } : {}),
         });
         clearTimeout(timeoutId);
@@ -244,7 +281,10 @@ export async function fetchLiberoFull<T>(
     } catch (error: unknown) {
         clearTimeout(timeoutId);
         if (error instanceof ApiError) throw error;
-        const isAbort = error instanceof Error && error.name === 'AbortError';
+        const isAbort = isAbortError(error);
+        // If this was a caller-requested cancellation (TanStack Query), let it bubble
+        // so the caller can treat it as a cancellation instead of showing an error.
+        if (isAbort && externalSignal?.aborted) throw error;
         const isNetworkFailure =
             error instanceof Error &&
             (error.message === 'fetch failed' ||

@@ -1,7 +1,7 @@
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { storeService } from '@/services/store-service';
 import { generateCartItemId } from '@/lib/cart/utils';
@@ -59,18 +59,10 @@ export default function CartItemConfigModal({
     const [selectedVariantId, setSelectedVariantId] = useState<number | null>(
         item?.metadata?.product_variant_id || null,
     );
-    const [customFields, setCustomFields] = useState<Record<string, any>>(
+    const [customFields, setCustomFields] = useState<Record<string, unknown>>(
         item?.metadata?.custom_fields || {},
     );
     const [notes, setNotes] = useState(item?.metadata?.notes || '');
-
-    useEffect(() => {
-        if (!isOpen) return;
-        setSelectedAddons(initialAddons);
-        setSelectedVariantId(item?.metadata?.product_variant_id || null);
-        setCustomFields(item?.metadata?.custom_fields || {});
-        setNotes(item?.metadata?.notes || '');
-    }, [isOpen, initialAddons, item?.metadata]);
 
     const activeProduct = product as Product | undefined;
     const validation = activeProduct
@@ -181,16 +173,16 @@ export default function CartItemConfigModal({
                         selectedVariant?.option_values &&
                         Object.keys(selectedVariant.option_values).length > 0
                             ? selectedVariant.option_values
-                            : null,
+                            : undefined,
                     variety: selectedVariant
                         ? { name: selectedVariant.title }
-                        : null,
+                        : undefined,
                     addons: selectedAddons,
                     addonDetails,
                     custom_fields:
                         Object.keys(customFields).length > 0
                             ? customFields
-                            : null,
+                            : undefined,
                     notes: notes || undefined,
                 },
             },

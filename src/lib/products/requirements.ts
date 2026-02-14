@@ -3,7 +3,7 @@ import type { Product } from '@/types/store';
 export interface ProductSelection {
     selectedVariantId: number | null;
     selectedAddons: Record<number, Record<number, number>>;
-    customFields: Record<string, any>;
+    customFields: Record<string, unknown>;
 }
 
 export function hasVariants(product: Product): boolean {

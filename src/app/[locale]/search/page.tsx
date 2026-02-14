@@ -47,7 +47,9 @@ export default async function SearchPage({
                     {query ? (
                         <>
                             {t('results_for')}{' '}
-                            <span className="text-primary">"{query}"</span>
+                            <span className="text-primary">
+                                &ldquo;{query}&rdquo;
+                            </span>
                         </>
                     ) : (
                         t('search_products')

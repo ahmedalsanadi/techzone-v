@@ -17,7 +17,7 @@ const Pagination: React.FC<PaginationProps> = ({
     lastPage,
     onPageChange,
 }) => {
-    const t = useTranslations('Promotions');
+    const t = useTranslations('Product');
 
     if (lastPage <= 1) return null;
 
@@ -76,7 +76,7 @@ const Pagination: React.FC<PaginationProps> = ({
                 onClick={() => onPageChange(currentPage - 1)}
                 className="rounded-xl px-4 hover:bg-theme-primary/10 hover:text-theme-primary focus-visible:ring-theme-primary/30 disabled:hover:bg-transparent disabled:hover:text-gray-500">
                 <ChevronLeft className="w-4 h-4 mr-2 rtl:rotate-180" />
-                {t('previous')}
+                {t('previous') || 'Previous'}
             </Button>
 
             <div className="flex items-center gap-1">{renderPageButtons()}</div>
@@ -87,7 +87,7 @@ const Pagination: React.FC<PaginationProps> = ({
                 disabled={currentPage === lastPage}
                 onClick={() => onPageChange(currentPage + 1)}
                 className="rounded-xl px-4 hover:bg-theme-primary/10 hover:text-theme-primary focus-visible:ring-theme-primary/30 disabled:hover:bg-transparent disabled:hover:text-gray-500">
-                {t('next')}
+                {t('next') || 'Next'}
                 <ChevronRight className="w-4 h-4 ml-2 rtl:rotate-180" />
             </Button>
         </div>

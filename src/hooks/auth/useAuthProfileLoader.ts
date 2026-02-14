@@ -55,7 +55,7 @@ export function useAuthProfileLoader({
             const redirectPath = normalizeRedirectPath(
                 redirectTo || searchParams.get('redirect'),
             );
-            router.replace(redirectPath as any);
+            router.replace(redirectPath);
         } else {
             setFormData((prev: ProfileUpdateRequest) => ({
                 ...prev,
