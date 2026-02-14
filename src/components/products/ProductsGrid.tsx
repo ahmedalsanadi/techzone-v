@@ -98,8 +98,6 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
                     ))}
                 </div>
             </div>
-
-        
         </div>
     );
 };

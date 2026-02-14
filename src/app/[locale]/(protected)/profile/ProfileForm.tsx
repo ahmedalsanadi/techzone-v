@@ -5,7 +5,6 @@ import { useTranslations } from 'next-intl';
 import type { CustomerProfile, ProfileUpdateRequest } from '@/types/auth';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
-import PhoneInput from '@/components/ui/PhoneInput';
 import { Label } from '@/components/ui/LabelField';
 import { Loader2 } from 'lucide-react';
 

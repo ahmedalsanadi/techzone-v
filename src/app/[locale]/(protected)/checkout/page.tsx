@@ -4,7 +4,6 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import { Button } from '@/components/ui/Button';
 import OrderTypeCard from '@/components/checkout/OrderTypeCard';

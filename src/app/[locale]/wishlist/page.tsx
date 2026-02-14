@@ -5,12 +5,12 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useWishlistStore } from '@/store/useWishlistStore';
 import { useWishlistActions } from '@/hooks/wishlist';
-import { Link, useRouter } from '@/i18n/navigation';
+import { Link } from '@/i18n/navigation';
 import { Heart, ShoppingBag, Trash2 } from 'lucide-react';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
 import { Button } from '@/components/ui/Button';
 import { useAuthStore } from '@/store/useAuthStore';
-import { useCartActions } from '@/hooks/cart';
+import { useProductConfigFlow } from '@/hooks/products';
 
 const WishlistPage = () => {
     const t = useTranslations('Wishlist');
@@ -18,7 +18,8 @@ const WishlistPage = () => {
         useWishlistStore();
     const { isAuthenticated } = useAuthStore();
     const { toggleWishlist, removeFromWishlist } = useWishlistActions();
-    const { addToCart } = useCartActions();
+    const { loadingProductId, handleAddClick } = useProductConfigFlow();
+
     // const router = useRouter();
     const isMounted = useSyncExternalStore(
         () => () => {
@@ -40,22 +41,19 @@ const WishlistPage = () => {
         // If not authenticated, wishlist page will show local guest wishlist (or empty)
     }, [isMounted, isAuthenticated, isGuestMode, syncWithAPI]);
 
-    const handleMoveToCart = async (item: typeof items[0]) => {
-        // Add to cart with basic product info
-        await addToCart(
-            {
-                id: String(item.productId),
-                name: item.name,
-                image: item.image,
-                price: item.salePrice || item.price,
-                categoryId: item.productId.toString(),
-                metadata: {
-                    productId: item.productId,
-                    productSlug: item.slug,
-                },
-            },
-            1,
-        );
+    const handleMoveToCart = async (item: (typeof items)[0]) => {
+        // Construct a partial product for the config flow
+        // The flow will fetch full details using the slug
+        const partialProduct = {
+            id: item.productId,
+            slug: item.slug,
+            title: item.name,
+            cover_image_url: item.image,
+            price: item.price,
+            sale_price: item.salePrice || undefined,
+        } as any;
+
+        await handleAddClick(partialProduct);
     };
 
     if (!isMounted) return null;
@@ -72,7 +70,11 @@ const WishlistPage = () => {
                 <p className="text-gray-500 max-w-sm mb-8 leading-relaxed">
                     {t('emptyDesc')}
                 </p>
-                <Button asChild variant="primary" size="2xl" className="hover:-translate-y-1 active:scale-95">
+                <Button
+                    asChild
+                    variant="primary"
+                    size="2xl"
+                    className="hover:-translate-y-1 active:scale-95">
                     <Link href="/products">{t('backToMenu')}</Link>
                 </Button>
             </div>
@@ -92,7 +94,9 @@ const WishlistPage = () => {
                 {items.map((item) => {
                     const productUrl = `/products/${item.slug}`;
                     const finalPrice = item.salePrice || item.price;
-                    const hasDiscount = item.salePrice !== null && item.salePrice < item.price;
+                    const hasDiscount =
+                        item.salePrice !== null && item.salePrice < item.price;
+                    const isAdding = loadingProductId === item.productId;
 
                     return (
                         <div
@@ -146,10 +150,16 @@ const WishlistPage = () => {
                                             e.stopPropagation();
                                             handleMoveToCart(item);
                                         }}
-                                        disabled={isLoading}
+                                        disabled={isLoading || isAdding}
                                         className="flex-1">
-                                        <ShoppingBag className="w-4 h-4" />
-                                        <span className="text-sm">{t('addToCart')}</span>
+                                        {isAdding ? (
+                                            <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                                        ) : (
+                                            <ShoppingBag className="w-4 h-4" />
+                                        )}
+                                        <span className="text-sm">
+                                            {t('addToCart')}
+                                        </span>
                                     </Button>
 
                                     <Button
@@ -159,7 +169,7 @@ const WishlistPage = () => {
                                             e.stopPropagation();
                                             removeFromWishlist(item.productId);
                                         }}
-                                        disabled={isLoading}
+                                        disabled={isLoading || isAdding}
                                         className="shrink-0">
                                         <Trash2 size={18} />
                                     </Button>
