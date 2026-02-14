@@ -5,14 +5,55 @@
 import { useMemo, useSyncExternalStore } from 'react';
 import type { AuthStep } from '@/types/auth';
 
-function useNow(intervalMs: number) {
-    return useSyncExternalStore(
-        (onStoreChange) => {
-            const id = setInterval(onStoreChange, intervalMs);
-            return () => clearInterval(id);
+/**
+ * IMPORTANT:
+ * `useSyncExternalStore` requires `getSnapshot` to be stable between renders
+ * unless a store change occurs. Returning `Date.now()` directly from `getSnapshot`
+ * causes infinite re-render loops (Maximum update depth exceeded).
+ *
+ * This store caches "now" and only updates it on an interval tick.
+ */
+function createNowStore(intervalMs: number) {
+    let now = Date.now();
+    const listeners = new Set<() => void>();
+    let id: ReturnType<typeof setInterval> | null = null;
+
+    const start = () => {
+        if (id) return;
+        id = setInterval(() => {
+            now = Date.now();
+            listeners.forEach((l) => l());
+        }, intervalMs);
+    };
+
+    const stop = () => {
+        if (!id) return;
+        if (listeners.size > 0) return;
+        clearInterval(id);
+        id = null;
+    };
+
+    return {
+        subscribe: (onStoreChange: () => void) => {
+            listeners.add(onStoreChange);
+            start();
+            return () => {
+                listeners.delete(onStoreChange);
+                stop();
+            };
         },
-        () => Date.now(),
-        () => 0,
+        getSnapshot: () => now,
+        getServerSnapshot: () => 0,
+    };
+}
+
+const now1sStore = createNowStore(1000);
+
+function useNow1s() {
+    return useSyncExternalStore(
+        now1sStore.subscribe,
+        now1sStore.getSnapshot,
+        now1sStore.getServerSnapshot,
     );
 }
 
@@ -21,7 +62,8 @@ export function useOtpTimer(
     otpExpiresAt: number | null,
     _setOtpExpiresAt: (value: number | null) => void,
 ) {
-    const now = useNow(1000);
+    void _setOtpExpiresAt; // kept for backward compatibility with existing call sites
+    const now = useNow1s();
 
     return useMemo(() => {
         if (!otpExpiresAt || step !== 'otp') return '';
