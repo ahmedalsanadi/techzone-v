@@ -228,6 +228,137 @@ Centralized in **`src/config/env.ts`**. Used by API client, proxy, tenant resolu
 
 ---
 
+## Recent refactor & hardening (Products list + cache safety)
+
+This section documents the main changes made to the **Products listing/filtering/pagination** flow and the cross-cutting **cache-safety** work (tenant + branch + locale).
+
+### Goals
+
+- **Zero cross-tenant leaks**: cached data must never bleed between stores.
+- **Branch-safe & locale-safe**: switching branch/locale must not show stale products.
+- **URL-driven UX**: filters and pagination should be shareable, refresh-safe, and back/forward friendly.
+- **Smooth pagination** without UI lies (no “page 1” indicator while showing page 2 results).
+- **Strong UX feedback**: skeletons and background “updating” states instead of flashing/jank.
+
+### Multi-tenancy + branch context (what we standardized)
+
+- **Tenant**: derived from request host (`x-forwarded-host` first value, fallback `host`).
+- **Branch**: derived from `BRANCH_COOKIES.BRANCH_ID` and/or `useBranchStore`.
+- **Locale**: from `next-intl` (`useLocale` / server params).
+
+These values are treated as **part of the query cache identity** for product-related data.
+
+### React Query cache safety (tenant + branch + locale)
+
+We introduced a products-page query context:
+
+- **`tenantHost`**
+- **`locale`**
+- **`branchId`** (or stable `'no-branch'`)
+
+Key files:
+
+- `src/features/products-page/queryKeys.ts` — stable, context-aware keys + stable serialization (incl. canonical ordering for primitive arrays).
+- `src/features/products-page/queries.ts` — query options for products + filter vars.
+- `src/hooks/products/useProductConfigFlow.ts` — product detail prefetch/fetch is also context-aware.
+
+Why this matters:
+
+- Without it, React Query can serve **valid cached data for the wrong tenant/branch/locale**.
+
+### Removed unsafe localStorage product caching
+
+We removed previous product-detail caching in `localStorage` (tenant/branch/locale unsafe).
+
+Replacement:
+
+- **React Query in-memory cache** + prefetch, with context-aware keys.
+
+### Products page is SSR-initialized + hydrated
+
+The products list page now does an initial server prefetch and hydrates TanStack Query:
+
+- `src/app/[locale]/products/page.tsx`
+  - Parses `searchParams` → state
+  - Resolves `tenantHost` from request headers and `branchId` from cookies
+  - Prefetches:
+    - products list
+    - filters vars (conservative args)
+  - Wraps client view in `HydrationBoundary`
+  - SEO:
+    - canonical is locale-aware
+    - filtered/paginated variants are `noindex`
+
+### URL-driven filters + pagination (refresh/back/share works)
+
+The page state is derived from the URL and updates the URL on user actions:
+
+- `src/features/products-page/types.ts`
+  - `productsPageStateFromUrlParams`
+  - `productsPageStateToUrlParams`
+  - `buildProductsListParams` (canonicalizes arrays + attributes)
+
+Important implementation rule:
+
+- When a filter becomes empty (e.g. last category removed), we must **delete** stale query keys from the URL; otherwise URL→state sync will re-apply old filters.
+
+### Pagination UX correctness (no placeholder mismatch)
+
+We keep previous results **only** for pure page changes. Filter changes do a real refresh (skeletons / updating state).
+
+Key file:
+
+- `src/features/products-page/ProductsPageClient.tsx`
+
+### Applied filters UI + attribute filters
+
+- Applied filter “chips” with per-filter removal and Clear All:
+  - `src/features/products-page/components/AppliedFiltersBar.tsx`
+- Dynamic attributes rendering in the sidebar (from API filters vars):
+  - `src/features/products-page/components/ProductsFiltersSidebar.tsx`
+
+### Availability semantics
+
+Availability is single-choice (radio semantics) with an “All” option.
+
+### UI event correctness: Checkbox double-toggle fix
+
+We fixed a subtle UI bug where the checkbox could toggle twice (native `<label>` toggling + wrapper click handler).
+
+- `src/components/ui/CheckboxField.tsx`
+
+Rule of thumb:
+
+- The real `<input>` should be the single source of truth for toggling. Avoid extra wrapper `onClick` toggles.
+
+### i18n cleanup
+
+We removed hardcoded strings in the products filtering UI and standardized translation namespace usage.
+
+Key files:
+
+- `src/messages/en.json`, `src/messages/ar.json`
+- `src/components/ui/Pagination.tsx`
+- `src/features/products-page/components/*`
+
+### How to test quickly (manual QA)
+
+- **Deep link**: open `/ar/products?category_id=1&page=2&per_page=8` and confirm:
+  - page loads with correct filters applied
+  - pagination indicator matches results
+- **Pagination**: click page 2/3 quickly:
+  - should not jump back to page 1
+  - should show “Updating results…” (dim state) rather than UI flashing
+- **Toggle off last filter** (e.g. last category):
+  - checkbox should remain unchecked
+  - URL should remove `category_id`
+- **Branch switch**:
+  - product list + product details must not show stale branch data
+- **Locale switch**:
+  - no stale language content from cache
+
+---
+
 ## Quick start
 
 ```bash

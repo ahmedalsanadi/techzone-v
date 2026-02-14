@@ -2,7 +2,7 @@
 
 import { ChevronLeft, MapPin, Clock } from 'lucide-react';
 import CheckoutCard from './CheckoutCard';
-import { useState, useEffect } from 'react';
+import { useCallback, useState } from 'react';
 import { useOrderStore, getScheduledTimeAsDate } from '@/store/useOrderStore';
 import { useBranchStore } from '@/store/useBranchStore';
 import OrderTypeModal from '@/components/modals/OrderTypeModal';
@@ -11,25 +11,35 @@ import { getAddressLabel, formatAddressForDisplay } from '@/lib/address';
 import { Button } from '@/components/ui/Button';
 
 interface OrderTypeCardProps {
-    /** When true, open the order type/address modal (e.g. from "Choose address" CTA). */
-    openModal?: boolean;
-    /** Called after opening the modal so parent can reset the trigger. */
-    onModalOpened?: () => void;
+    /**
+     * Controlled mode:
+     * - Pass `isOpen` + `onOpenChange` to fully control modal visibility.
+     *
+     * Uncontrolled mode:
+     * - Omit both and the card will manage its own open state.
+     */
+    isOpen?: boolean;
+    onOpenChange?: (open: boolean) => void;
 }
 
 export default function OrderTypeCard({
-    openModal = false,
-    onModalOpened,
+    isOpen,
+    onOpenChange,
 }: OrderTypeCardProps = {}) {
     const t = useTranslations('Order');
     const checkoutT = useTranslations('Checkout');
     const subHeaderT = useTranslations('SubHeader');
     const [internalOpen, setInternalOpen] = useState(false);
-    const isModalOpen = internalOpen || openModal;
+    const isControlled = isOpen !== undefined;
+    const modalOpen = isControlled ? Boolean(isOpen) : internalOpen;
 
-    useEffect(() => {
-        if (openModal) onModalOpened?.();
-    }, [openModal, onModalOpened]);
+    const setModalOpen = useCallback(
+        (open: boolean) => {
+            if (isControlled) onOpenChange?.(open);
+            else setInternalOpen(open);
+        },
+        [isControlled, onOpenChange],
+    );
     const {
         orderType,
         deliveryAddress,
@@ -75,7 +85,7 @@ export default function OrderTypeCard({
                         type="button"
                         variant="secondaryTint"
                         size="sm"
-                        onClick={() => setInternalOpen(true)}
+                        onClick={() => setModalOpen(true)}
                         className="gap-1">
                         <span>{checkoutT('edit')}</span>
                         <ChevronLeft className="w-4 h-4" />
@@ -183,8 +193,8 @@ export default function OrderTypeCard({
             </CheckoutCard>
 
             <OrderTypeModal
-                isOpen={isModalOpen}
-                onClose={() => setInternalOpen(false)}
+                isOpen={modalOpen}
+                onClose={() => setModalOpen(false)}
             />
         </>
     );

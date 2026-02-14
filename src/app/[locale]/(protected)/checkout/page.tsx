@@ -202,8 +202,8 @@ export default function CheckoutPage() {
 
     const orderTypeCard = (
         <OrderTypeCard
-            openModal={openOrderTypeModal}
-            onModalOpened={() => setOpenOrderTypeModal(false)}
+            isOpen={openOrderTypeModal}
+            onOpenChange={setOpenOrderTypeModal}
         />
     );
 
