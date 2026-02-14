@@ -9,7 +9,7 @@ interface CheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
-    ({ className, onCheckedChange, checked, ...props }, ref) => {
+    ({ className, onCheckedChange, checked, disabled, ...props }, ref) => {
         const isChecked = checked ?? false;
 
         return (
@@ -19,20 +19,23 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
                     isChecked
                         ? 'bg-primary border-primary shadow-lg shadow-primary/20 scale-105'
                         : 'bg-white border-gray-200 hover:border-primary/50',
+                    disabled && 'opacity-60 cursor-not-allowed',
                     className,
-                )}
-                onClick={() => onCheckedChange?.(!isChecked)}>
+                )}>
                 <input
                     {...props}
                     type="checkbox"
                     ref={ref}
-                    className="sr-only"
+                    disabled={disabled}
+                    // Cover the visual box so clicks toggle the real input exactly once.
+                    // This prevents "double toggles" when used inside a <label>.
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
                     checked={isChecked}
                     onChange={(e) => onCheckedChange?.(e.target.checked)}
                 />
                 <Check
                     className={cn(
-                        'w-4 h-4 text-white transition-all duration-200 transform',
+                        'w-4 h-4 text-white transition-all duration-200 transform pointer-events-none',
                         isChecked
                             ? 'scale-100 opacity-100'
                             : 'scale-50 opacity-0',

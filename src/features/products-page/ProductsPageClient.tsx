@@ -47,6 +47,7 @@ export default function ProductsPageClient() {
 
     const stateRef = useRef<ReturnType<typeof createInitialProductsPageState> | null>(null);
     const updateFiltersRef = useRef(updateFilters);
+    const searchParamsRef = useRef('');
     const [state, dispatch] = useReducer(
         productsPageReducer,
         undefined,
@@ -60,6 +61,10 @@ export default function ProductsPageClient() {
     useEffect(() => {
         updateFiltersRef.current = updateFilters;
     }, [updateFilters]);
+
+    useEffect(() => {
+        searchParamsRef.current = searchParams.toString();
+    }, [searchParams]);
 
     useEffect(() => {
         stateRef.current = state;
@@ -169,28 +174,66 @@ export default function ProductsPageClient() {
     }, [meta.last_page, state.pagination.page]);
 
     // IMPORTANT: callbacks must be stable; otherwise debounced effects in children will rerun and reset pagination.
+    const syncUrlToState = useCallback(
+        (
+            nextState: ReturnType<typeof createInitialProductsPageState>,
+            options: { replace?: boolean; scroll?: boolean } = {},
+        ) => {
+            const nextParams = productsPageStateToUrlParams(nextState);
+
+            // CRITICAL: `productsPageStateToUrlParams` omits empty filters (e.g. no category_id),
+            // so we must explicitly delete stale keys currently in the URL, otherwise the URL->state
+            // sync will "re-apply" old filters and re-check UI controls.
+            const current = new URLSearchParams(searchParamsRef.current);
+            const patch: Record<string, string | undefined> = { ...nextParams };
+
+            const knownKeys = new Set([
+                'page',
+                'per_page',
+                'sort',
+                'order',
+                'search',
+                'category_id',
+                'brand_id',
+                'collection_id',
+                'availability',
+                'min_price',
+                'max_price',
+                'has_discount',
+                'has_variants',
+                'is_featured',
+                'is_latest',
+            ]);
+
+            current.forEach((_, key) => {
+                const isAttributeKey = /^attributes\[[^\]]+\]$/.test(key);
+                if (!knownKeys.has(key) && !isAttributeKey) return;
+                if (Object.prototype.hasOwnProperty.call(nextParams, key)) return;
+                patch[key] = undefined;
+            });
+
+            updateFiltersRef.current(patch, options);
+        },
+        [],
+    );
+
     const handleReset = useCallback(() => {
         setKeepPreviousOnNextFetch(false);
         const next = createInitialProductsPageState();
         dispatch({ type: 'setAll', state: next });
         setFiltersResetNonce((v) => v + 1);
-        updateFiltersRef.current(productsPageStateToUrlParams(next), {
-            replace: false,
-            scroll: false,
-        });
-    }, []);
+        syncUrlToState(next, { replace: false, scroll: false });
+    }, [syncUrlToState]);
 
     const handleSearchChange = useCallback((value: string) => {
         setKeepPreviousOnNextFetch(false);
         const current = stateRef.current!;
+        if (value === current.filters.search) return;
         const action = { type: 'setSearch', value } as const;
         const next = productsPageReducer(current, action);
         dispatch(action);
-        updateFiltersRef.current(productsPageStateToUrlParams(next), {
-            replace: true, // avoid history spam while typing
-            scroll: false,
-        });
-    }, []);
+        syncUrlToState(next, { replace: true, scroll: false }); // avoid history spam while typing
+    }, [syncUrlToState]);
 
     const handleToggleCategory = useCallback((id: string) => {
         setKeepPreviousOnNextFetch(false);
@@ -198,12 +241,9 @@ export default function ProductsPageClient() {
         const action = { type: 'toggleCategory', id } as const;
         const next = productsPageReducer(current, action);
         dispatch(action);
-        updateFiltersRef.current(productsPageStateToUrlParams(next), {
-            replace: false,
-            scroll: false,
-        });
+        syncUrlToState(next, { replace: false, scroll: false });
         scrollResultsIntoView();
-    }, [scrollResultsIntoView]);
+    }, [scrollResultsIntoView, syncUrlToState]);
 
     const handleToggleBrand = useCallback((id: string) => {
         setKeepPreviousOnNextFetch(false);
@@ -211,12 +251,9 @@ export default function ProductsPageClient() {
         const action = { type: 'toggleBrand', id } as const;
         const next = productsPageReducer(current, action);
         dispatch(action);
-        updateFiltersRef.current(productsPageStateToUrlParams(next), {
-            replace: false,
-            scroll: false,
-        });
+        syncUrlToState(next, { replace: false, scroll: false });
         scrollResultsIntoView();
-    }, [scrollResultsIntoView]);
+    }, [scrollResultsIntoView, syncUrlToState]);
 
     const handleToggleCollection = useCallback((id: string) => {
         setKeepPreviousOnNextFetch(false);
@@ -224,12 +261,9 @@ export default function ProductsPageClient() {
         const action = { type: 'toggleCollection', id } as const;
         const next = productsPageReducer(current, action);
         dispatch(action);
-        updateFiltersRef.current(productsPageStateToUrlParams(next), {
-            replace: false,
-            scroll: false,
-        });
+        syncUrlToState(next, { replace: false, scroll: false });
         scrollResultsIntoView();
-    }, [scrollResultsIntoView]);
+    }, [scrollResultsIntoView, syncUrlToState]);
 
     const handleToggleFlag = useCallback(
         (key: 'has_discount' | 'has_variants' | 'is_featured' | 'is_latest') => {
@@ -238,13 +272,10 @@ export default function ProductsPageClient() {
             const action = { type: 'toggleFlag', key } as const;
             const next = productsPageReducer(current, action);
             dispatch(action);
-            updateFiltersRef.current(productsPageStateToUrlParams(next), {
-                replace: false,
-                scroll: false,
-            });
+            syncUrlToState(next, { replace: false, scroll: false });
             scrollResultsIntoView();
         },
-        [scrollResultsIntoView],
+        [scrollResultsIntoView, syncUrlToState],
     );
 
     const handleSetAvailability = useCallback(
@@ -254,13 +285,10 @@ export default function ProductsPageClient() {
             const action = { type: 'setAvailability', value } as const;
             const next = productsPageReducer(current, action);
             dispatch(action);
-            updateFiltersRef.current(productsPageStateToUrlParams(next), {
-                replace: false,
-                scroll: false,
-            });
+            syncUrlToState(next, { replace: false, scroll: false });
             scrollResultsIntoView();
         },
-        [scrollResultsIntoView],
+        [scrollResultsIntoView, syncUrlToState],
     );
 
     const handleSetPriceRange = useCallback((min?: number, max?: number) => {
@@ -269,12 +297,9 @@ export default function ProductsPageClient() {
         const action = { type: 'setPriceRange', min, max } as const;
         const next = productsPageReducer(current, action);
         dispatch(action);
-        updateFiltersRef.current(productsPageStateToUrlParams(next), {
-            replace: false,
-            scroll: false,
-        });
+        syncUrlToState(next, { replace: false, scroll: false });
         scrollResultsIntoView();
-    }, [scrollResultsIntoView]);
+    }, [scrollResultsIntoView, syncUrlToState]);
 
     const handleSortChange = useCallback(
         (sort: ProductsPageSort | undefined, order: ProductsPageOrder | undefined) => {
@@ -287,13 +312,10 @@ export default function ProductsPageClient() {
             } as const;
             const next = productsPageReducer(current, action);
             dispatch(action);
-            updateFiltersRef.current(productsPageStateToUrlParams(next), {
-                replace: false,
-                scroll: false,
-            });
+            syncUrlToState(next, { replace: false, scroll: false });
             scrollResultsIntoView();
         },
-        [scrollResultsIntoView],
+        [scrollResultsIntoView, syncUrlToState],
     );
 
     const handlePageChange = useCallback((page: number) => {
@@ -302,12 +324,9 @@ export default function ProductsPageClient() {
         const action = { type: 'setPage', page: Math.max(1, page) } as const;
         const next = productsPageReducer(current, action);
         dispatch(action);
-        updateFiltersRef.current(productsPageStateToUrlParams(next), {
-            replace: false,
-            scroll: false,
-        });
+        syncUrlToState(next, { replace: false, scroll: false });
         scrollResultsIntoView();
-    }, [scrollResultsIntoView]);
+    }, [scrollResultsIntoView, syncUrlToState]);
 
     const handleToggleAttributeOption = useCallback(
         (slug: string, value: string | number) => {
@@ -316,13 +335,10 @@ export default function ProductsPageClient() {
             const action = { type: 'toggleAttributeOption', slug, value } as const;
             const next = productsPageReducer(current, action);
             dispatch(action);
-            updateFiltersRef.current(productsPageStateToUrlParams(next), {
-                replace: false,
-                scroll: false,
-            });
+            syncUrlToState(next, { replace: false, scroll: false });
             scrollResultsIntoView();
         },
-        [scrollResultsIntoView],
+        [scrollResultsIntoView, syncUrlToState],
     );
 
     const handleClearAttribute = useCallback(
@@ -332,13 +348,10 @@ export default function ProductsPageClient() {
         const action = { type: 'clearAttribute', slug } as const;
         const next = productsPageReducer(current, action);
         dispatch(action);
-        updateFiltersRef.current(productsPageStateToUrlParams(next), {
-            replace: false,
-            scroll: false,
-        });
+        syncUrlToState(next, { replace: false, scroll: false });
         scrollResultsIntoView();
         },
-        [scrollResultsIntoView],
+        [scrollResultsIntoView, syncUrlToState],
     );
 
 
@@ -351,7 +364,14 @@ export default function ProductsPageClient() {
                     {/* Prevent sticky “bounce”: cap height and scroll internally */}
                     <div className="max-h-[calc(100vh-7rem)] overflow-auto overscroll-contain">
                         <ProductsFiltersSidebar
-                            key={`${filtersResetNonce}:${searchParams.toString()}`}
+                            // IMPORTANT: do NOT include `page` in the key; otherwise pagination
+                            // remounts the sidebar and the debounced search will reset page to 1.
+                            key={[
+                                filtersResetNonce,
+                                state.filters.search,
+                                state.filters.min_price ?? '',
+                                state.filters.max_price ?? '',
+                            ].join(':')}
                             vars={filtersVarsQuery.data}
                             isLoading={filtersVarsQuery.isLoading}
                             state={state}

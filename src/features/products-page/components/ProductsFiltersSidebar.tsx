@@ -58,9 +58,11 @@ export function ProductsFiltersSidebar({
 
     // Debounce search
     useEffect(() => {
+        // Prevent pagination/reset loops: only fire when the draft differs from applied state.
+        if (searchDraft === state.filters.search) return;
         const id = window.setTimeout(() => onSearchChange(searchDraft), 350);
         return () => window.clearTimeout(id);
-    }, [searchDraft, onSearchChange]);
+    }, [searchDraft, state.filters.search, onSearchChange]);
 
     const priceBounds = useMemo(() => {
         const min = vars?.min_price ?? 0;
