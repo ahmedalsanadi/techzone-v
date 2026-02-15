@@ -1,20 +1,43 @@
 import React from 'react';
-import ProductsPageSkeleton from './ProductsPageSkeleton';
+import { Skeleton } from '@/components/ui/Skeleton';
+import {
+    FilterSidebarSkeleton,
+    ResultsHeaderSkeleton,
+    AppliedFiltersSkeleton,
+    ProductsGridSkeleton,
+    PaginationSkeleton,
+} from '@/features/products-page/components/ProductsSkeleton';
 
 export default function Loading() {
     return (
-        <main className="min-h-screen bg-gray-50/30">
+        <main className="min-h-screen bg-gray-50/30 py-12 px-4">
             <div className="container mx-auto px-4 pt-6">
                 {/* Breadcrumbs skeleton */}
-                <div className="flex items-center gap-2">
-                    <div className="h-4 w-20 rounded bg-gray-100 animate-pulse" />
-                    <div className="h-4 w-4 rounded bg-gray-100 animate-pulse" />
-                    <div className="h-4 w-24 rounded bg-gray-100 animate-pulse" />
+                <div className="flex items-center gap-2 mb-8">
+                    <Skeleton className="h-4 w-16 rounded" />
+                    <div className="h-1 w-1 rounded-full bg-gray-300" />
+                    <Skeleton className="h-4 w-20 rounded" />
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                    {/* Filters column */}
+                    <div className="lg:sticky lg:top-24 lg:self-start lg:z-10">
+                        <FilterSidebarSkeleton />
+                    </div>
+
+                    {/* Results column */}
+                    <div className="lg:col-span-3 space-y-6">
+                        <ResultsHeaderSkeleton />
+                        <AppliedFiltersSkeleton />
+                        <ProductsGridSkeleton count={8} />
+                    </div>
+                </div>
+
+                {/* Pagination skeleton */}
+                <div className="mt-12">
+                    <PaginationSkeleton />
                 </div>
             </div>
-
-            <ProductsPageSkeleton />
         </main>
     );
 }
-

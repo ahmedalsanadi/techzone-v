@@ -9,7 +9,10 @@ import React, {
     useState,
 } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { productsPageProductsQueryOptions, productsPageFiltersVarsQueryOptions } from './queries';
+import {
+    productsPageProductsQueryOptions,
+    productsPageFiltersVarsQueryOptions,
+} from './queries';
 import {
     createInitialProductsPageState,
     getSafePaginationMeta,
@@ -21,7 +24,11 @@ import {
 import type { ProductsPageOrder, ProductsPageSort } from './types';
 import { ProductsFiltersSidebar } from './components/ProductsFiltersSidebar';
 import { ProductsPaginationBar } from './components/ProductsPaginationBar';
-import { ProductsGridSkeleton } from './components/ProductsSkeleton';
+import {
+    ProductsGridSkeleton,
+    FilterSidebarSkeleton,
+    ResultsHeaderSkeleton,
+} from './components/ProductsSkeleton';
 import { EmptyState } from './components/EmptyState';
 import { ErrorState } from './components/ErrorState';
 import { ProductsResultsSection } from './components/ProductsResultsSection';
@@ -39,22 +46,28 @@ export default function ProductsPageClient() {
     const locale = useLocale();
     const queryClient = useQueryClient();
     const [filtersResetNonce, setFiltersResetNonce] = useState(0);
-    const [keepPreviousOnNextFetch, setKeepPreviousOnNextFetch] = useState(false);
+    const [keepPreviousOnNextFetch, setKeepPreviousOnNextFetch] =
+        useState(false);
     const resultsTopRef = useRef<HTMLDivElement | null>(null);
-    const { filters: urlFilters, updateFilters, searchParams } = useUrlFilters({
+    const {
+        filters: urlFilters,
+        updateFilters,
+        searchParams,
+    } = useUrlFilters({
         defaultPerPage: String(8),
     });
 
-    const stateRef = useRef<ReturnType<typeof createInitialProductsPageState> | null>(null);
+    const stateRef = useRef<ReturnType<
+        typeof createInitialProductsPageState
+    > | null>(null);
     const updateFiltersRef = useRef(updateFilters);
     const searchParamsRef = useRef('');
-    const [state, dispatch] = useReducer(
-        productsPageReducer,
-        undefined,
-        () =>
-            productsPageStateFromUrlParams(
-                urlSearchParamsToUrlParams(new URLSearchParams(searchParams.toString())),
+    const [state, dispatch] = useReducer(productsPageReducer, undefined, () =>
+        productsPageStateFromUrlParams(
+            urlSearchParamsToUrlParams(
+                new URLSearchParams(searchParams.toString()),
             ),
+        ),
     );
 
     // Keep refs updated (stable callbacks without deps)
@@ -104,7 +117,9 @@ export default function ProductsPageClient() {
     const filtersVarsArgs = useMemo(() => {
         // Keep this conservative to avoid making filters endpoint too “chatty”.
         return {
-            search: state.filters.search?.trim() ? state.filters.search.trim() : undefined,
+            search: state.filters.search?.trim()
+                ? state.filters.search.trim()
+                : undefined,
             category_id:
                 state.filters.categoryIds.length === 1
                     ? state.filters.categoryIds[0]
@@ -128,7 +143,8 @@ export default function ProductsPageClient() {
         ? meta.current_page
         : state.pagination.page;
 
-    const { loadingProductId, handleAddClick, prefetchProduct } = useProductConfigFlow();
+    const { loadingProductId, handleAddClick, prefetchProduct } =
+        useProductConfigFlow();
 
     const scrollResultsIntoView = useCallback(() => {
         requestAnimationFrame(() => {
@@ -208,7 +224,8 @@ export default function ProductsPageClient() {
             current.forEach((_, key) => {
                 const isAttributeKey = /^attributes\[[^\]]+\]$/.test(key);
                 if (!knownKeys.has(key) && !isAttributeKey) return;
-                if (Object.prototype.hasOwnProperty.call(nextParams, key)) return;
+                if (Object.prototype.hasOwnProperty.call(nextParams, key))
+                    return;
                 patch[key] = undefined;
             });
 
@@ -225,57 +242,67 @@ export default function ProductsPageClient() {
         syncUrlToState(next, { replace: false, scroll: false });
     }, [syncUrlToState]);
 
-    const handleSearchChange = useCallback((value: string) => {
-        setKeepPreviousOnNextFetch(false);
-        const current = stateRef.current!;
-        if (value === current.filters.search) return;
-        const action = { type: 'setSearch', value } as const;
-        const next = productsPageReducer(current, action);
-        dispatch(action);
-        syncUrlToState(next, { replace: true, scroll: false }); // avoid history spam while typing
-    }, [syncUrlToState]);
+    const handleSearchChange = useCallback(
+        (value: string) => {
+            setKeepPreviousOnNextFetch(false);
+            const current = stateRef.current!;
+            if (value === current.filters.search) return;
+            const action = { type: 'setSearch', value } as const;
+            const next = productsPageReducer(current, action);
+            dispatch(action);
+            syncUrlToState(next, { replace: true, scroll: false }); // avoid history spam while typing
+        },
+        [syncUrlToState],
+    );
 
-    const handleToggleCategory = useCallback((id: string) => {
-        setKeepPreviousOnNextFetch(false);
-        const current = stateRef.current!;
-        const action = { type: 'toggleCategory', id } as const;
-        const next = productsPageReducer(current, action);
-        dispatch(action);
-        syncUrlToState(next, { replace: false, scroll: false });
-        scrollResultsIntoView();
-    }, [scrollResultsIntoView, syncUrlToState]);
+    const handleToggleCategory = useCallback(
+        (id: string) => {
+            setKeepPreviousOnNextFetch(false);
+            const current = stateRef.current!;
+            const action = { type: 'toggleCategory', id } as const;
+            const next = productsPageReducer(current, action);
+            dispatch(action);
+            syncUrlToState(next, { replace: false, scroll: false });
+        },
+        [syncUrlToState],
+    );
 
-    const handleToggleBrand = useCallback((id: string) => {
-        setKeepPreviousOnNextFetch(false);
-        const current = stateRef.current!;
-        const action = { type: 'toggleBrand', id } as const;
-        const next = productsPageReducer(current, action);
-        dispatch(action);
-        syncUrlToState(next, { replace: false, scroll: false });
-        scrollResultsIntoView();
-    }, [scrollResultsIntoView, syncUrlToState]);
+    const handleToggleBrand = useCallback(
+        (id: string) => {
+            setKeepPreviousOnNextFetch(false);
+            const current = stateRef.current!;
+            const action = { type: 'toggleBrand', id } as const;
+            const next = productsPageReducer(current, action);
+            dispatch(action);
+            syncUrlToState(next, { replace: false, scroll: false });
+        },
+        [syncUrlToState],
+    );
 
-    const handleToggleCollection = useCallback((id: string) => {
-        setKeepPreviousOnNextFetch(false);
-        const current = stateRef.current!;
-        const action = { type: 'toggleCollection', id } as const;
-        const next = productsPageReducer(current, action);
-        dispatch(action);
-        syncUrlToState(next, { replace: false, scroll: false });
-        scrollResultsIntoView();
-    }, [scrollResultsIntoView, syncUrlToState]);
+    const handleToggleCollection = useCallback(
+        (id: string) => {
+            setKeepPreviousOnNextFetch(false);
+            const current = stateRef.current!;
+            const action = { type: 'toggleCollection', id } as const;
+            const next = productsPageReducer(current, action);
+            dispatch(action);
+            syncUrlToState(next, { replace: false, scroll: false });
+        },
+        [syncUrlToState],
+    );
 
     const handleToggleFlag = useCallback(
-        (key: 'has_discount' | 'has_variants' | 'is_featured' | 'is_latest') => {
+        (
+            key: 'has_discount' | 'has_variants' | 'is_featured' | 'is_latest',
+        ) => {
             setKeepPreviousOnNextFetch(false);
             const current = stateRef.current!;
             const action = { type: 'toggleFlag', key } as const;
             const next = productsPageReducer(current, action);
             dispatch(action);
             syncUrlToState(next, { replace: false, scroll: false });
-            scrollResultsIntoView();
         },
-        [scrollResultsIntoView, syncUrlToState],
+        [syncUrlToState],
     );
 
     const handleSetAvailability = useCallback(
@@ -286,23 +313,27 @@ export default function ProductsPageClient() {
             const next = productsPageReducer(current, action);
             dispatch(action);
             syncUrlToState(next, { replace: false, scroll: false });
-            scrollResultsIntoView();
         },
-        [scrollResultsIntoView, syncUrlToState],
+        [syncUrlToState],
     );
 
-    const handleSetPriceRange = useCallback((min?: number, max?: number) => {
-        setKeepPreviousOnNextFetch(false);
-        const current = stateRef.current!;
-        const action = { type: 'setPriceRange', min, max } as const;
-        const next = productsPageReducer(current, action);
-        dispatch(action);
-        syncUrlToState(next, { replace: false, scroll: false });
-        scrollResultsIntoView();
-    }, [scrollResultsIntoView, syncUrlToState]);
+    const handleSetPriceRange = useCallback(
+        (min?: number, max?: number) => {
+            setKeepPreviousOnNextFetch(false);
+            const current = stateRef.current!;
+            const action = { type: 'setPriceRange', min, max } as const;
+            const next = productsPageReducer(current, action);
+            dispatch(action);
+            syncUrlToState(next, { replace: false, scroll: false });
+        },
+        [syncUrlToState],
+    );
 
     const handleSortChange = useCallback(
-        (sort: ProductsPageSort | undefined, order: ProductsPageOrder | undefined) => {
+        (
+            sort: ProductsPageSort | undefined,
+            order: ProductsPageOrder | undefined,
+        ) => {
             setKeepPreviousOnNextFetch(false);
             const current = stateRef.current!;
             const action = {
@@ -313,26 +344,18 @@ export default function ProductsPageClient() {
             const next = productsPageReducer(current, action);
             dispatch(action);
             syncUrlToState(next, { replace: false, scroll: false });
-            scrollResultsIntoView();
         },
-        [scrollResultsIntoView, syncUrlToState],
+        [syncUrlToState],
     );
 
-    const handlePageChange = useCallback((page: number) => {
-        setKeepPreviousOnNextFetch(true);
-        const current = stateRef.current!;
-        const action = { type: 'setPage', page: Math.max(1, page) } as const;
-        const next = productsPageReducer(current, action);
-        dispatch(action);
-        syncUrlToState(next, { replace: false, scroll: false });
-        scrollResultsIntoView();
-    }, [scrollResultsIntoView, syncUrlToState]);
-
-    const handleToggleAttributeOption = useCallback(
-        (slug: string, value: string | number) => {
-            setKeepPreviousOnNextFetch(false);
+    const handlePageChange = useCallback(
+        (page: number) => {
+            setKeepPreviousOnNextFetch(true);
             const current = stateRef.current!;
-            const action = { type: 'toggleAttributeOption', slug, value } as const;
+            const action = {
+                type: 'setPage',
+                page: Math.max(1, page),
+            } as const;
             const next = productsPageReducer(current, action);
             dispatch(action);
             syncUrlToState(next, { replace: false, scroll: false });
@@ -341,19 +364,33 @@ export default function ProductsPageClient() {
         [scrollResultsIntoView, syncUrlToState],
     );
 
-    const handleClearAttribute = useCallback(
-        (slug: string) => {
-        setKeepPreviousOnNextFetch(false);
-        const current = stateRef.current!;
-        const action = { type: 'clearAttribute', slug } as const;
-        const next = productsPageReducer(current, action);
-        dispatch(action);
-        syncUrlToState(next, { replace: false, scroll: false });
-        scrollResultsIntoView();
+    const handleToggleAttributeOption = useCallback(
+        (slug: string, value: string | number) => {
+            setKeepPreviousOnNextFetch(false);
+            const current = stateRef.current!;
+            const action = {
+                type: 'toggleAttributeOption',
+                slug,
+                value,
+            } as const;
+            const next = productsPageReducer(current, action);
+            dispatch(action);
+            syncUrlToState(next, { replace: false, scroll: false });
         },
-        [scrollResultsIntoView, syncUrlToState],
+        [syncUrlToState],
     );
 
+    const handleClearAttribute = useCallback(
+        (slug: string) => {
+            setKeepPreviousOnNextFetch(false);
+            const current = stateRef.current!;
+            const action = { type: 'clearAttribute', slug } as const;
+            const next = productsPageReducer(current, action);
+            dispatch(action);
+            syncUrlToState(next, { replace: false, scroll: false });
+        },
+        [syncUrlToState],
+    );
 
     const dimmed = productsQuery.isFetching && !productsQuery.isLoading;
 
@@ -383,7 +420,9 @@ export default function ProductsPageClient() {
                             onToggleFlag={handleToggleFlag}
                             onSetAvailability={handleSetAvailability}
                             onSetPriceRange={handleSetPriceRange}
-                            onToggleAttributeOption={handleToggleAttributeOption}
+                            onToggleAttributeOption={
+                                handleToggleAttributeOption
+                            }
                             onClearAttribute={handleClearAttribute}
                         />
                     </div>
@@ -394,7 +433,8 @@ export default function ProductsPageClient() {
                     {productsQuery.isError ? (
                         <ErrorState
                             title={
-                                t('unableToLoadProducts') || 'Unable to load products'
+                                t('unableToLoadProducts') ||
+                                'Unable to load products'
                             }
                             description={
                                 productsQuery.error instanceof Error
@@ -405,12 +445,9 @@ export default function ProductsPageClient() {
                             onReset={() => dispatch({ type: 'resetAll' })}
                         />
                     ) : productsQuery.isLoading ? (
-                        <div className="space-y-8">
-                            <div className="flex items-center justify-between">
-                                <div className="h-8 w-40 bg-gray-100 rounded animate-pulse" />
-                                <div className="h-10 w-44 bg-gray-100 rounded animate-pulse" />
-                            </div>
-                            <ProductsGridSkeleton />
+                        <div className="space-y-6">
+                            <ResultsHeaderSkeleton />
+                            <ProductsGridSkeleton count={8} />
                         </div>
                     ) : products.length === 0 ? (
                         <EmptyState
@@ -435,8 +472,7 @@ export default function ProductsPageClient() {
                                     : t('addToCart') || 'Add to cart'
                             }
                             isAddingProductId={loadingProductId}
-                            onPrefetchProduct={prefetchProduct}
-                        >
+                            onPrefetchProduct={prefetchProduct}>
                             <AppliedFiltersBar
                                 state={state}
                                 vars={filtersVarsQuery.data}
@@ -449,11 +485,14 @@ export default function ProductsPageClient() {
                                 onSetPriceRange={handleSetPriceRange}
                                 onToggleFlag={handleToggleFlag}
                                 onClearAttribute={handleClearAttribute}
-                                onToggleAttributeOption={handleToggleAttributeOption}
+                                onToggleAttributeOption={
+                                    handleToggleAttributeOption
+                                }
                             />
                             {dimmed ? (
                                 <div className="mb-4 text-sm text-gray-500">
-                                    {t('updatingResults') || 'Updating results...'}
+                                    {t('updatingResults') ||
+                                        'Updating results...'}
                                 </div>
                             ) : null}
                         </ProductsResultsSection>
@@ -472,4 +511,3 @@ export default function ProductsPageClient() {
         </div>
     );
 }
-

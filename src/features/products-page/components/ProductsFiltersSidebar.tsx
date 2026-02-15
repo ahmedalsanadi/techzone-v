@@ -39,8 +39,12 @@ export function ProductsFiltersSidebar({
     onToggleCategory: (id: string) => void;
     onToggleBrand: (id: string) => void;
     onToggleCollection: (id: string) => void;
-    onToggleFlag: (key: 'has_discount' | 'has_variants' | 'is_featured' | 'is_latest') => void;
-    onSetAvailability: (value?: 'in_stock' | 'out_of_stock' | 'low_stock') => void;
+    onToggleFlag: (
+        key: 'has_discount' | 'has_variants' | 'is_featured' | 'is_latest',
+    ) => void;
+    onSetAvailability: (
+        value?: 'in_stock' | 'out_of_stock' | 'low_stock',
+    ) => void;
     onSetPriceRange: (min?: number, max?: number) => void;
     onToggleAttributeOption: (slug: string, value: string | number) => void;
     onClearAttribute: (slug: string) => void;
@@ -71,7 +75,10 @@ export function ProductsFiltersSidebar({
     }, [vars?.min_price, vars?.max_price]);
 
     const applyPrice = () => {
-        onSetPriceRange(parseNumberOrUndefined(minDraft), parseNumberOrUndefined(maxDraft));
+        onSetPriceRange(
+            parseNumberOrUndefined(minDraft),
+            parseNumberOrUndefined(maxDraft),
+        );
     };
 
     return (
@@ -111,7 +118,9 @@ export function ProductsFiltersSidebar({
                     {isLoading ? (
                         <>
                             {Array.from({ length: 6 }).map((_, i) => (
-                                <div key={i} className="flex items-center justify-between gap-3">
+                                <div
+                                    key={i}
+                                    className="flex items-center justify-between gap-3">
                                     <div className="flex items-center gap-3">
                                         <div className="w-6 h-6 bg-gray-100 rounded-md animate-pulse" />
                                         <div className="h-4 bg-gray-100 rounded animate-pulse w-32" />
@@ -124,7 +133,8 @@ export function ProductsFiltersSidebar({
                         <>
                             {(vars?.categories ?? []).map((cat) => {
                                 const id = String(cat.id);
-                                const checked = state.filters.categoryIds.includes(id);
+                                const checked =
+                                    state.filters.categoryIds.includes(id);
                                 return (
                                     <label
                                         key={cat.id}
@@ -132,13 +142,17 @@ export function ProductsFiltersSidebar({
                                         <div className="flex items-center gap-3">
                                             <Checkbox
                                                 checked={checked}
-                                                onCheckedChange={() => onToggleCategory(id)}
+                                                onCheckedChange={() =>
+                                                    onToggleCategory(id)
+                                                }
                                             />
                                             <span className="text-sm text-gray-700">
                                                 {cat.name}
                                             </span>
                                         </div>
-                                        <span className="text-xs text-gray-400">{cat.count}</span>
+                                        <span className="text-xs text-gray-400">
+                                            {cat.count}
+                                        </span>
                                     </label>
                                 );
                             })}
@@ -179,7 +193,10 @@ export function ProductsFiltersSidebar({
                     />
                 </div>
                 <div className="flex items-center gap-3">
-                    <Button variant="outlineTint" size="sm" onClick={applyPrice}>
+                    <Button
+                        variant="outlineTint"
+                        size="sm"
+                        onClick={applyPrice}>
                         {t('apply') || 'Apply'}
                     </Button>
                     <Button
@@ -204,7 +221,9 @@ export function ProductsFiltersSidebar({
                         <div className="flex items-center gap-3">
                             <Checkbox
                                 checked={!!state.filters.is_featured}
-                                onCheckedChange={() => onToggleFlag('is_featured')}
+                                onCheckedChange={() =>
+                                    onToggleFlag('is_featured')
+                                }
                             />
                             <span className="text-sm text-gray-700">
                                 {t('featured') || 'Featured'}
@@ -215,7 +234,9 @@ export function ProductsFiltersSidebar({
                         <div className="flex items-center gap-3">
                             <Checkbox
                                 checked={!!state.filters.is_latest}
-                                onCheckedChange={() => onToggleFlag('is_latest')}
+                                onCheckedChange={() =>
+                                    onToggleFlag('is_latest')
+                                }
                             />
                             <span className="text-sm text-gray-700">
                                 {t('latest') || 'Latest'}
@@ -226,7 +247,9 @@ export function ProductsFiltersSidebar({
                         <div className="flex items-center gap-3">
                             <Checkbox
                                 checked={!!state.filters.has_discount}
-                                onCheckedChange={() => onToggleFlag('has_discount')}
+                                onCheckedChange={() =>
+                                    onToggleFlag('has_discount')
+                                }
                             />
                             <span className="text-sm text-gray-700">
                                 {t('has_discount') || 'On sale'}
@@ -237,7 +260,9 @@ export function ProductsFiltersSidebar({
                         <div className="flex items-center gap-3">
                             <Checkbox
                                 checked={!!state.filters.has_variants}
-                                onCheckedChange={() => onToggleFlag('has_variants')}
+                                onCheckedChange={() =>
+                                    onToggleFlag('has_variants')
+                                }
                             />
                             <span className="text-sm text-gray-700">
                                 {t('has_variants') || 'Has options'}
@@ -252,33 +277,55 @@ export function ProductsFiltersSidebar({
                     {t('availability') || 'Availability'}
                 </div>
                 <div className="space-y-2">
-                    {isLoading ? (
-                        <>
-                            {Array.from({ length: 3 }).map((_, i) => (
-                                <div key={i} className="flex items-center justify-between gap-3">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-6 h-6 bg-gray-100 rounded-md animate-pulse" />
-                                        <div className="h-4 bg-gray-100 rounded animate-pulse w-24" />
-                                    </div>
-                                    <div className="h-3 bg-gray-100 rounded animate-pulse w-6" />
-                                </div>
-                            ))}
-                        </>
-                    ) : (
-                        <>
-                            <label className="flex items-center justify-between gap-3 cursor-pointer select-none">
+                    <label className="flex items-center justify-between gap-3 cursor-pointer select-none">
+                        <div className="flex items-center gap-3">
+                            <span
+                                className={cn(
+                                    'w-5 h-5 rounded-full border-2 flex items-center justify-center',
+                                    state.filters.availability == null
+                                        ? 'border-primary'
+                                        : 'border-gray-200',
+                                )}>
+                                <span
+                                    className={cn(
+                                        'w-2.5 h-2.5 rounded-full',
+                                        state.filters.availability == null
+                                            ? 'bg-primary'
+                                            : 'bg-transparent',
+                                    )}
+                                />
+                            </span>
+                            <input
+                                className="sr-only"
+                                type="radio"
+                                name="availability"
+                                checked={state.filters.availability == null}
+                                onChange={() => onSetAvailability(undefined)}
+                            />
+                            <span className="text-sm text-gray-700">
+                                {t('all') || 'All'}
+                            </span>
+                        </div>
+                    </label>
+                    {(vars?.availability_status ?? []).map((opt) => {
+                        const checked =
+                            state.filters.availability === opt.value;
+                        return (
+                            <label
+                                key={opt.value}
+                                className="flex items-center justify-between gap-3 cursor-pointer select-none">
                                 <div className="flex items-center gap-3">
                                     <span
                                         className={cn(
                                             'w-5 h-5 rounded-full border-2 flex items-center justify-center',
-                                            state.filters.availability == null
+                                            checked
                                                 ? 'border-primary'
                                                 : 'border-gray-200',
                                         )}>
                                         <span
                                             className={cn(
                                                 'w-2.5 h-2.5 rounded-full',
-                                                state.filters.availability == null
+                                                checked
                                                     ? 'bg-primary'
                                                     : 'bg-transparent',
                                             )}
@@ -288,62 +335,31 @@ export function ProductsFiltersSidebar({
                                         className="sr-only"
                                         type="radio"
                                         name="availability"
-                                        checked={state.filters.availability == null}
-                                        onChange={() => onSetAvailability(undefined)}
+                                        checked={checked}
+                                        onChange={() =>
+                                            onSetAvailability(
+                                                (opt.value as
+                                                    | 'in_stock'
+                                                    | 'out_of_stock'
+                                                    | 'low_stock') ?? undefined,
+                                            )
+                                        }
                                     />
                                     <span className="text-sm text-gray-700">
-                                        {t('all') || 'All'}
+                                        {opt.arabic_label || opt.label}
                                     </span>
                                 </div>
+                                <span className="text-xs text-gray-400">
+                                    {opt.count}
+                                </span>
                             </label>
-                            {(vars?.availability_status ?? []).map((opt) => {
-                                const checked = state.filters.availability === opt.value;
-                                return (
-                                    <label
-                                        key={opt.value}
-                                        className="flex items-center justify-between gap-3 cursor-pointer select-none">
-                                        <div className="flex items-center gap-3">
-                                            <span
-                                                className={cn(
-                                                    'w-5 h-5 rounded-full border-2 flex items-center justify-center',
-                                                    checked ? 'border-primary' : 'border-gray-200',
-                                                )}>
-                                                <span
-                                                    className={cn(
-                                                        'w-2.5 h-2.5 rounded-full',
-                                                        checked ? 'bg-primary' : 'bg-transparent',
-                                                    )}
-                                                />
-                                            </span>
-                                            <input
-                                                className="sr-only"
-                                                type="radio"
-                                                name="availability"
-                                                checked={checked}
-                                                onChange={() =>
-                                                    onSetAvailability(
-                                                        (opt.value as
-                                                            | 'in_stock'
-                                                            | 'out_of_stock'
-                                                            | 'low_stock') ?? undefined,
-                                                    )
-                                                }
-                                            />
-                                            <span className="text-sm text-gray-700">
-                                                {opt.arabic_label || opt.label}
-                                            </span>
-                                        </div>
-                                        <span className="text-xs text-gray-400">{opt.count}</span>
-                                    </label>
-                                );
-                            })}
-                            {!vars?.availability_status?.length ? (
-                                <div className="text-sm text-gray-400">
-                                    {t('notAvailable') || 'Not available'}
-                                </div>
-                            ) : null}
-                        </>
-                    )}
+                        );
+                    })}
+                    {!vars?.availability_status?.length ? (
+                        <div className="text-sm text-gray-400">
+                            {t('notAvailable') || 'Not available'}
+                        </div>
+                    ) : null}
                 </div>
             </div>
 
@@ -355,9 +371,12 @@ export function ProductsFiltersSidebar({
                     </summary>
                     <div className="mt-3 space-y-4">
                         {vars!.attributes.map((attr) => {
-                            const selected = state.filters.attributes[attr.slug] || [];
+                            const selected =
+                                state.filters.attributes[attr.slug] || [];
                             return (
-                                <div key={attr.slug} className="border border-gray-100 rounded-xl p-3">
+                                <div
+                                    key={attr.slug}
+                                    className="border border-gray-100 rounded-xl p-3">
                                     <div className="flex items-center justify-between gap-2">
                                         <div className="text-sm font-medium text-gray-800">
                                             {attr.name}
@@ -366,7 +385,9 @@ export function ProductsFiltersSidebar({
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
-                                                onClick={() => onClearAttribute(attr.slug)}>
+                                                onClick={() =>
+                                                    onClearAttribute(attr.slug)
+                                                }>
                                                 {t('clear') || 'Clear'}
                                             </Button>
                                         ) : null}
@@ -374,7 +395,9 @@ export function ProductsFiltersSidebar({
                                     <div className="mt-2 space-y-2 max-h-48 overflow-auto pr-1">
                                         {attr.options.map((opt) => {
                                             const checked = selected.some(
-                                                (v) => String(v) === String(opt.value),
+                                                (v) =>
+                                                    String(v) ===
+                                                    String(opt.value),
                                             );
                                             return (
                                                 <label
@@ -425,13 +448,17 @@ export function ProductsFiltersSidebar({
                                     <div className="flex items-center gap-3">
                                         <Checkbox
                                             checked={checked}
-                                            onCheckedChange={() => onToggleBrand(id)}
+                                            onCheckedChange={() =>
+                                                onToggleBrand(id)
+                                            }
                                         />
                                         <span className="text-sm text-gray-700">
                                             {b.name}
                                         </span>
                                     </div>
-                                    <span className="text-xs text-gray-400">{b.count}</span>
+                                    <span className="text-xs text-gray-400">
+                                        {b.count}
+                                    </span>
                                 </label>
                             );
                         })}
@@ -447,7 +474,8 @@ export function ProductsFiltersSidebar({
                     <div className="mt-3 space-y-2 max-h-56 overflow-auto pr-1">
                         {vars!.collections.map((c) => {
                             const id = String(c.id);
-                            const checked = state.filters.collectionIds.includes(id);
+                            const checked =
+                                state.filters.collectionIds.includes(id);
                             return (
                                 <label
                                     key={c.id}
@@ -455,13 +483,17 @@ export function ProductsFiltersSidebar({
                                     <div className="flex items-center gap-3">
                                         <Checkbox
                                             checked={checked}
-                                            onCheckedChange={() => onToggleCollection(id)}
+                                            onCheckedChange={() =>
+                                                onToggleCollection(id)
+                                            }
                                         />
                                         <span className="text-sm text-gray-700">
                                             {c.name}
                                         </span>
                                     </div>
-                                    <span className="text-xs text-gray-400">{c.count}</span>
+                                    <span className="text-xs text-gray-400">
+                                        {c.count}
+                                    </span>
                                 </label>
                             );
                         })}
@@ -471,4 +503,3 @@ export function ProductsFiltersSidebar({
         </div>
     );
 }
-

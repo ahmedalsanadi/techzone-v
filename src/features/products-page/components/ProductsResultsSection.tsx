@@ -23,7 +23,10 @@ export function ProductsResultsSection({
     products: Product[];
     sort: ProductsPageSort;
     order: ProductsPageOrder;
-    onSortChange: (sort: ProductsPageSort | undefined, order: ProductsPageOrder | undefined) => void;
+    onSortChange: (
+        sort: ProductsPageSort | undefined,
+        order: ProductsPageOrder | undefined,
+    ) => void;
     dimmed?: boolean;
     onAddToCart?: (product: Product) => void;
     getAddToCartLabel?: (product: Product) => string;
@@ -36,7 +39,9 @@ export function ProductsResultsSection({
     return (
         <div className="space-y-8 relative z-0 p-1">
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold text-gray-900">{t('products')}</h1>
+                <h1 className="text-2xl font-bold text-gray-900">
+                    {t('products')}
+                </h1>
                 <ProductsSorting
                     sortBy={sort}
                     order={order}
@@ -51,7 +56,7 @@ export function ProductsResultsSection({
 
             <div
                 className={cn(
-                    'transition-opacity duration-200',
+                    'transition-opacity duration-200 space-y-6',
                     dimmed ? 'opacity-50 pointer-events-none' : 'opacity-100',
                 )}>
                 {children}
@@ -66,4 +71,3 @@ export function ProductsResultsSection({
         </div>
     );
 }
-
