@@ -4,7 +4,7 @@ export default function Loading() {
     return (
         <div className="pb-12 bg-white">
             {/* Hero skeleton */}
-            <section className="container mx-auto px-0 md:px-4 mt-8 md:mt-6">
+            <section className="container mx-auto px-0 md:px-4 mt-8 md:mt-10">
                 <div className="h-[550px] sm:h-[600px] md:h-[500px] lg:h-[600px] rounded-2xl md:rounded-[2.5rem] bg-gray-100 animate-pulse" />
             </section>
 
