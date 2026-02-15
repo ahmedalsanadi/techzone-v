@@ -15,11 +15,10 @@ interface WalletViewProps {
 
 export default function WalletView({ balance }: WalletViewProps) {
     const t = useTranslations('Wallet');
-    const {
-        transactions,
-        isLoading,
-        error,
-    } = useWalletTransactions({ page: 1, per_page: 20 });
+    const { transactions, isLoading, error } = useWalletTransactions({
+        page: 1,
+        per_page: 20,
+    });
 
     const breadcrumbItems = [
         { label: t('home'), href: '/' },
@@ -27,8 +26,8 @@ export default function WalletView({ balance }: WalletViewProps) {
     ];
 
     return (
-        <main className="min-h-screen bg-gray-50/30 py-8">
-            <div className="container mx-auto px-6">
+        <main className="min-h-screen bg-gray-50/30 py-8 ">
+            <div className="container mx-auto px-2 sm:px-6 mt-8">
                 <Breadcrumbs items={breadcrumbItems} />
 
                 <div className="mt-8 mb-12">
@@ -49,7 +48,8 @@ export default function WalletView({ balance }: WalletViewProps) {
                             </div>
                         ) : error ? (
                             <p className="text-red-600 font-medium py-8">
-                                {t('transactionsError') || 'Failed to load transactions.'}
+                                {t('transactionsError') ||
+                                    'Failed to load transactions.'}
                             </p>
                         ) : (
                             <TransactionList transactions={transactions} />
