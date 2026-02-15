@@ -10,8 +10,8 @@
   },
   "Navbar": {
     "searchPlaceholder": "Search for anything ...",
-    "logout":"logout",
-    "signIn":"sign-in",
+    "logout": "logout",
+    "signIn": "sign-in",
     "nav": {
       "home": "Home",
       "categories": "Categories",
@@ -255,6 +255,7 @@
     "currency": "SAR",
     "share": "Share",
     "favorite": "Favorite",
+    "linkCopied": "Link copied to clipboard",
     "products": "Products",
     "product": "Product",
     "price": "Price",

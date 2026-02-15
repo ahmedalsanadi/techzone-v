@@ -11,9 +11,7 @@ import VariantSelector from './product-details/VariantSelector';
 import CustomFieldsForm from './product-details/CustomFieldsForm';
 import ProductShareActions from './product-details/ProductShareActions';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
-import {
-    generateCartItemId,
-} from '@/lib/cart/utils';
+import { generateCartItemId } from '@/lib/cart/utils';
 import { useCartActions } from '@/hooks/cart';
 import { Product } from '@/types/store';
 import { toast } from 'sonner';
@@ -54,7 +52,9 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             ? product.variants[0].id
             : null,
     );
-    const [customFields, setCustomFields] = useState<Record<string, unknown>>({});
+    const [customFields, setCustomFields] = useState<Record<string, unknown>>(
+        {},
+    );
 
     // Extract variant_options from selected variant
     const variantOptions = useMemo(() => {
@@ -327,7 +327,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-stretch">
                     {/* Info Column */}
                     <div className="lg:col-span-7 flex flex-col gap-8 order-2">
-                        <ProductShareActions />
+                        <ProductShareActions product={product} />
                         <ProductInfo
                             name={product.title}
                             subtitle={product.subtitle}
