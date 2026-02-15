@@ -10,8 +10,8 @@ import {
 
 export default function Loading() {
     return (
-        <main className="min-h-screen bg-gray-50/30 py-12 px-4">
-            <div className="container mx-auto px-4 pt-6">
+        <main className="min-h-screen bg-gray-50/30 py-12">
+            <div className="container mx-auto px-2 sm:px-4 pt-6">
                 {/* Breadcrumbs skeleton */}
                 <div className="flex items-center gap-2 mb-8">
                     <Skeleton className="h-4 w-16 rounded" />
@@ -34,7 +34,7 @@ export default function Loading() {
                 </div>
 
                 {/* Pagination skeleton */}
-                <div className="mt-12">
+                <div className="mt-6 sm:mt-12">
                     <PaginationSkeleton />
                 </div>
             </div>

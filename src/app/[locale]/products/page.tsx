@@ -63,17 +63,25 @@ export default async function ProductsPage({
     const sp = await searchParams;
 
     const requestHeaders = await headers();
-    const host = requestHeaders.get('x-forwarded-host')?.split(',')[0].trim() || requestHeaders.get('host') || 'server';
+    const host =
+        requestHeaders.get('x-forwarded-host')?.split(',')[0].trim() ||
+        requestHeaders.get('host') ||
+        'server';
     const cookieStore = await cookies();
     const branchIdRaw = cookieStore.get(BRANCH_COOKIES.BRANCH_ID)?.value;
-    const branchId = branchIdRaw && Number.isFinite(Number(branchIdRaw)) ? Number(branchIdRaw) : null;
+    const branchId =
+        branchIdRaw && Number.isFinite(Number(branchIdRaw))
+            ? Number(branchIdRaw)
+            : null;
 
     const queryClient = getQueryClient();
     const state = productsPageStateFromUrlParams(sp);
     const queryCtx = { tenantHost: host, locale, branchId };
 
     const filtersVarsArgs = {
-        search: state.filters.search?.trim() ? state.filters.search.trim() : undefined,
+        search: state.filters.search?.trim()
+            ? state.filters.search.trim()
+            : undefined,
         category_id:
             state.filters.categoryIds.length === 1
                 ? state.filters.categoryIds[0]
@@ -82,7 +90,9 @@ export default async function ProductsPage({
 
     await Promise.all([
         queryClient.prefetchQuery(
-            productsPageProductsQueryOptions(state, queryCtx, { keepPrevious: false }),
+            productsPageProductsQueryOptions(state, queryCtx, {
+                keepPrevious: false,
+            }),
         ),
         queryClient.prefetchQuery(
             productsPageFiltersVarsQueryOptions(filtersVarsArgs, queryCtx),
@@ -90,8 +100,8 @@ export default async function ProductsPage({
     ]);
 
     return (
-        <main className="min-h-screen bg-gray-50/30 py-12 px-4">
-            <div className="container mx-auto px-4 pt-6">
+        <main className="min-h-screen bg-gray-50/30 py-12">
+            <div className="container mx-auto px-2 sm:px-4 pt-6">
                 <Breadcrumbs
                     items={[
                         { label: t('home'), href: '/' },

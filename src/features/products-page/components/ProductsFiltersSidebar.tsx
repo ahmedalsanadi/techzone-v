@@ -95,7 +95,7 @@ export function ProductsFiltersSidebar({
     };
 
     return (
-        <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm space-y-6">
+        <div className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-6 shadow-sm space-y-6">
             <div className="flex items-center justify-between gap-3">
                 <div className="text-lg font-semibold text-gray-900">
                     {t('filters') || 'Filters'}

@@ -17,7 +17,7 @@ export function ProductsPaginationBar({
     className?: string;
 }) {
     return (
-        <div className={cn('mt-8', className)}>
+        <div className={cn('mt-4 sm:mt-8', className)}>
             <Pagination
                 currentPage={page}
                 lastPage={meta.last_page}
@@ -26,4 +26,3 @@ export function ProductsPaginationBar({
         </div>
     );
 }
-

@@ -6,7 +6,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 
 export function ProductsGridSkeleton({ count = 8 }: { count?: number }) {
     return (
-        <div className="grid grid-cols-1 gap-4 md:gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 md:gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
             {Array.from({ length: count }).map((_, i) => (
                 <div
                     key={i}
@@ -28,7 +28,7 @@ export function ProductsGridSkeleton({ count = 8 }: { count?: number }) {
 
 export function FilterSidebarSkeleton() {
     return (
-        <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm space-y-8">
+        <div className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-6 shadow-sm space-y-8">
             <div className="flex items-center justify-between">
                 <Skeleton className="h-7 w-24 rounded-lg" />
                 <Skeleton className="h-4 w-16 rounded-md" />
@@ -107,7 +107,7 @@ export function AppliedFiltersSkeleton() {
 
 export function PaginationSkeleton() {
     return (
-        <div className="flex items-center justify-center gap-2 pt-8 border-t border-gray-100">
+        <div className="flex items-center justify-center gap-2 pt-4 sm:pt-8 border-t border-gray-100">
             <Skeleton className="h-10 w-28 rounded-xl" />
             <div className="flex gap-1">
                 {[1, 2, 3, 4, 5].map((i) => (

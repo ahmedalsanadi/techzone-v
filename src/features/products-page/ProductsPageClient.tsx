@@ -395,7 +395,7 @@ export default function ProductsPageClient() {
     const dimmed = productsQuery.isFetching && !productsQuery.isLoading;
 
     return (
-        <div className="container mx-auto px-4 pt-10 pb-20 relative min-h-[calc(100vh-220px)] flex flex-col">
+        <div className="container mx-auto px-2 sm:px-4 pt-4 md:pt-10 pb-20 relative min-h-[calc(100vh-220px)] flex flex-col">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 flex-1 min-h-0">
                 <div className="lg:z-10">
                     {/* Prevent sticky “bounce”: cap height and scroll internally */}
@@ -428,7 +428,7 @@ export default function ProductsPageClient() {
                     </div>
                 </div>
 
-                <div className="lg:col-span-3 relative z-0 p-1 pb-6 flex flex-col min-h-0">
+                <div className="lg:col-span-3 relative z-0 p-0 sm:p-1 pb-6 flex flex-col min-h-0">
                     <div ref={resultsTopRef} />
                     {productsQuery.isError ? (
                         <ErrorState
