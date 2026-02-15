@@ -149,7 +149,7 @@ export default function ProductsPageClient() {
     const scrollResultsIntoView = useCallback(() => {
         requestAnimationFrame(() => {
             resultsTopRef.current?.scrollIntoView({
-                behavior: 'smooth',
+                behavior: 'auto',
                 block: 'start',
             });
         });
