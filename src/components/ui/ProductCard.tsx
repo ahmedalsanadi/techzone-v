@@ -76,20 +76,23 @@ const ProductCard: React.FC<ProductCardProps> = ({
     const handleWishlistClick = (e: React.MouseEvent) => {
         e.stopPropagation();
         e.preventDefault();
-        
+
         // Use custom handler if provided
         if (onWishlistClick) {
             onWishlistClick(e);
             return;
         }
-        
+
         // Otherwise use default wishlist handler
         if (productId) {
-            const numericPrice = typeof price === 'string' ? parseFloat(price) : price;
-            const numericOldPrice = oldPrice 
-                ? (typeof oldPrice === 'string' ? parseFloat(oldPrice) : oldPrice)
+            const numericPrice =
+                typeof price === 'string' ? parseFloat(price) : price;
+            const numericOldPrice = oldPrice
+                ? typeof oldPrice === 'string'
+                    ? parseFloat(oldPrice)
+                    : oldPrice
                 : null;
-            
+
             toggleWishlist(productId, {
                 productId,
                 name,
@@ -117,7 +120,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
                         ? 'text-red-500 fill-red-500'
                         : 'text-gray-400 hover:text-red-500'
                 }`}>
-                <Heart className={`w-4 h-4 ${isInWishlistState ? 'fill-current' : ''}`} />
+                <Heart
+                    className={`w-4 h-4 ${isInWishlistState ? 'fill-current' : ''}`}
+                />
             </Button>
 
             {/* Link wrapper for Image and Info */}
@@ -141,33 +146,35 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
                 {/* Product Info */}
                 <div className="p-4 text-start flex flex-col flex-1">
-                    <h3 className="text-md font-medium text-gray-900 line-clamp-2 leading-tight mb-3 min-h-10">
+                    <h3 className="text-[16px] font-medium text-gray-900 line-clamp-2 leading-tight mb-3 ">
                         {name}
                     </h3>
 
-                    {/* Price Section */}
-                    <div className="flex items-center justify-start gap-2 mb-3">
-                        <div className="flex items-center gap-1">
-                            <span className="text-lg font-bold text-gray-900">
-                                {price}
-                            </span>
-                            <CurrencySymbol className="w-3 h-3" />
+                    <div className="flex justify-between items-center">
+                        {/* Price Section */}
+                        <div className="flex items-center justify-start gap-2 mb-3">
+                            <div className="flex items-center gap-1">
+                                <span className="text-[16px] font-bold text-gray-900">
+                                    {price}
+                                </span>
+                                <CurrencySymbol className="w-3 h-3" />
+                            </div>
+                            {oldPrice && (
+                                <span className="text-[16px] text-gray-400 line-through">
+                                    {oldPrice}
+                                </span>
+                            )}
                         </div>
-                        {oldPrice && (
-                            <span className="text-sm text-gray-400 line-through">
-                                {oldPrice}
-                            </span>
+
+                        {/* Discount Badge */}
+                        {discountBadge && (
+                            <div className="mb-3">
+                                <span className="text-[14px] font-normal text-red-500 bg-red-50 px-1 py-0.5 rounded">
+                                    {discountBadge}
+                                </span>
+                            </div>
                         )}
                     </div>
-
-                    {/* Discount Badge */}
-                    {discountBadge && (
-                        <div className="mb-3">
-                            <span className="text-xs font-medium text-red-500 bg-red-50 px-2 py-1 rounded">
-                                {discountBadge}
-                            </span>
-                        </div>
-                    )}
                 </div>
             </Link>
 
@@ -194,7 +201,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     ) : (
                         <Plus className="w-4 h-4 transition-transform group-hover/btn:rotate-90" />
                     )}
-                    <span className="text-sm">
+                    <span className="text-[16px]">
                         {addToCartLabel || 'إضافة إلى السلة'}
                     </span>
                 </Button>
