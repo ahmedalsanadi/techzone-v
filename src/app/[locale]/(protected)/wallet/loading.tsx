@@ -19,7 +19,7 @@ export default function Loading() {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div className="space-y-6">
                         {/* Balance card skeleton */}
-                        <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 flex justify-between items-center">
+                        <div className="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100 flex justify-between items-center">
                             <div className="space-y-2">
                                 <Skeleton className="h-4 w-16 md:w-20 rounded" />
                                 <Skeleton className="h-10 w-32 md:h-12 md:w-48 rounded-xl" />
@@ -40,7 +40,7 @@ export default function Loading() {
                                 {Array.from({ length: 5 }).map((_, i) => (
                                     <div
                                         key={i}
-                                        className="bg-white rounded-2xl md:rounded-3xl p-5 md:p-6 shadow-sm border border-gray-100 flex items-center justify-between gap-4">
+                                        className="bg-white rounded-xl p-5 md:p-6 shadow-sm border border-gray-100 flex items-center justify-between gap-4">
                                         <div className="flex flex-col flex-1 min-w-0 gap-2">
                                             <Skeleton className="h-5 w-3/4 md:w-1/2 rounded-md" />
                                             <Skeleton className="h-6 w-24 md:h-8 md:w-32 rounded-lg" />

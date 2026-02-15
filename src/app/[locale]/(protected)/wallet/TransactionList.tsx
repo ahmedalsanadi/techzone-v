@@ -40,7 +40,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
                 {transactions.map((tx) => (
                     <div
                         key={tx.id}
-                        className="bg-white rounded-2xl md:rounded-3xl p-5 md:p-6 shadow-sm border border-gray-100 transition-all hover:shadow-md hover:shadow-gray-100 group flex items-center justify-between gap-4">
+                        className="bg-white rounded-xl p-5 md:p-6 shadow-sm border border-gray-100 transition-all hover:shadow-md hover:shadow-gray-100 group flex items-center justify-between gap-4">
                         {/* Transaction Details */}
                         <div className="flex flex-col flex-1 min-w-0">
                             <div className="flex items-center gap-2 max-w-full">

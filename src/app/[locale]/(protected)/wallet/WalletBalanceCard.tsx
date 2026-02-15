@@ -18,7 +18,7 @@ export const WalletBalanceCard: React.FC<WalletBalanceCardProps> = ({
     const locale = useLocale();
 
     return (
-        <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 relative overflow-hidden">
+        <div className="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100 relative overflow-hidden">
             <div className="flex justify-between items-center">
                 {/* Balance Info */}
                 <div className="">
