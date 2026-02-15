@@ -399,7 +399,7 @@ export default function ProductsPageClient() {
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 flex-1 min-h-0">
                 <div className="lg:z-10">
                     {/* Prevent sticky “bounce”: cap height and scroll internally */}
-                    <div className="max-h-[calc(100vh-7rem)] overflow-auto overscroll-contain">
+                    <div className="max-h-[calc(100vh-7rem)] overflow-auto overscroll-contain custom-scrollbar scrollbar-side-outer">
                         <ProductsFiltersSidebar
                             // IMPORTANT: do NOT include `page` in the key; otherwise pagination
                             // remounts the sidebar and the debounced search will reset page to 1.

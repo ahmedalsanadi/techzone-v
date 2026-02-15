@@ -8,6 +8,7 @@ import type { ProductsFiltersVars } from '@/types/store';
 import type { ProductsPageState } from '../types';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 function parseNumberOrUndefined(value: string): number | undefined {
     const trimmed = value.trim();
@@ -58,6 +59,18 @@ export function ProductsFiltersSidebar({
         state.filters.max_price != null ? String(state.filters.max_price) : '',
     );
 
+    const [collapsed, setCollapsed] = useState<Record<string, boolean>>({
+        search: false,
+        categories: false,
+        price: false,
+        quick: false,
+        availability: false,
+    });
+
+    const toggleCollapsed = (key: string) => {
+        setCollapsed((prev) => ({ ...prev, [key]: !prev[key] }));
+    };
+
     // Note: drafts are reset by parent changing the component key on URL navigation.
 
     // Debounce search
@@ -96,278 +109,351 @@ export function ProductsFiltersSidebar({
                 </Button>
             </div>
 
-            <div className="space-y-2">
-                <div className="text-sm font-medium text-gray-800">
-                    {t('search') || 'Search'}
-                </div>
-                <Input
-                    value={searchDraft}
-                    onChange={(e) => setSearchDraft(e.target.value)}
-                    placeholder={t('searchPlaceholder') || 'Search products...'}
-                    variant="default"
-                    inputSize="md"
-                    containerClassName="rounded-xl border-gray-200 shadow-none"
-                />
-            </div>
-
             <div className="space-y-3">
-                <div className="text-sm font-medium text-gray-800">
-                    {t('categories') || 'Categories'}
-                </div>
-                <div className="space-y-2 max-h-64 overflow-auto pr-1">
-                    {isLoading ? (
-                        <>
-                            {Array.from({ length: 6 }).map((_, i) => (
-                                <div
-                                    key={i}
-                                    className="flex items-center justify-between gap-3">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-6 h-6 bg-gray-100 rounded-md animate-pulse" />
-                                        <div className="h-4 bg-gray-100 rounded animate-pulse w-32" />
-                                    </div>
-                                    <div className="h-3 bg-gray-100 rounded animate-pulse w-6" />
-                                </div>
-                            ))}
-                        </>
+                <button
+                    onClick={() => toggleCollapsed('search')}
+                    className="flex items-center justify-between w-full text-sm font-medium text-gray-800 hover:text-primary transition-colors">
+                    <span>{t('search') || 'Search'}</span>
+                    {collapsed.search ? (
+                        <ChevronDown className="w-4 h-4 text-gray-400" />
                     ) : (
-                        <>
-                            {(vars?.categories ?? []).map((cat) => {
-                                const id = String(cat.id);
-                                const checked =
-                                    state.filters.categoryIds.includes(id);
-                                return (
-                                    <label
-                                        key={cat.id}
-                                        className="flex items-center justify-between gap-3 cursor-pointer select-none">
-                                        <div className="flex items-center gap-3">
-                                            <Checkbox
-                                                checked={checked}
-                                                onCheckedChange={() =>
-                                                    onToggleCategory(id)
-                                                }
-                                            />
-                                            <span className="text-sm text-gray-700">
-                                                {cat.name}
-                                            </span>
-                                        </div>
-                                        <span className="text-xs text-gray-400">
-                                            {cat.count}
-                                        </span>
-                                    </label>
-                                );
-                            })}
-                            {!vars?.categories?.length ? (
-                                <div className="text-sm text-gray-400">
-                                    {t('noCategories') || 'No categories'}
-                                </div>
-                            ) : null}
-                        </>
+                        <ChevronUp className="w-4 h-4 text-gray-400" />
                     )}
-                </div>
-            </div>
-
-            <div className="space-y-3">
-                <div className="text-sm font-medium text-gray-800">
-                    {t('price_range') || 'Price range'}
-                </div>
-                <div className="grid grid-cols-2 gap-3">
+                </button>
+                {!collapsed.search && (
                     <Input
-                        type="number"
-                        min={priceBounds.min}
-                        max={priceBounds.max}
-                        value={minDraft}
-                        onChange={(e) => setMinDraft(e.target.value)}
-                        placeholder={`${t('min') || 'Min'} (${priceBounds.min})`}
-                        containerClassName="rounded-xl border-gray-200 shadow-none"
+                        value={searchDraft}
+                        onChange={(e) => setSearchDraft(e.target.value)}
+                        placeholder={
+                            t('searchPlaceholder') || 'Search products...'
+                        }
+                        variant="default"
                         inputSize="md"
+                        containerClassName="rounded-xl border-gray-200 shadow-none bg-gray-50/50"
                     />
-                    <Input
-                        type="number"
-                        min={priceBounds.min}
-                        max={priceBounds.max}
-                        value={maxDraft}
-                        onChange={(e) => setMaxDraft(e.target.value)}
-                        placeholder={`${t('max') || 'Max'} (${priceBounds.max})`}
-                        containerClassName="rounded-xl border-gray-200 shadow-none"
-                        inputSize="md"
-                    />
-                </div>
-                <div className="flex items-center gap-3">
-                    <Button
-                        variant="outlineTint"
-                        size="sm"
-                        onClick={applyPrice}>
-                        {t('apply') || 'Apply'}
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                            setMinDraft('');
-                            setMaxDraft('');
-                            onSetPriceRange(undefined, undefined);
-                        }}>
-                        {t('reset') || 'Reset'}
-                    </Button>
-                </div>
+                )}
             </div>
 
             <div className="space-y-3">
-                <div className="text-sm font-medium text-gray-800">
-                    {t('quick_filters') || 'Quick filters'}
-                </div>
-                <div className="space-y-2">
-                    <label className="flex items-center justify-between gap-3 cursor-pointer select-none">
-                        <div className="flex items-center gap-3">
-                            <Checkbox
-                                checked={!!state.filters.is_featured}
-                                onCheckedChange={() =>
-                                    onToggleFlag('is_featured')
-                                }
-                            />
-                            <span className="text-sm text-gray-700">
-                                {t('featured') || 'Featured'}
-                            </span>
-                        </div>
-                    </label>
-                    <label className="flex items-center justify-between gap-3 cursor-pointer select-none">
-                        <div className="flex items-center gap-3">
-                            <Checkbox
-                                checked={!!state.filters.is_latest}
-                                onCheckedChange={() =>
-                                    onToggleFlag('is_latest')
-                                }
-                            />
-                            <span className="text-sm text-gray-700">
-                                {t('latest') || 'Latest'}
-                            </span>
-                        </div>
-                    </label>
-                    <label className="flex items-center justify-between gap-3 cursor-pointer select-none">
-                        <div className="flex items-center gap-3">
-                            <Checkbox
-                                checked={!!state.filters.has_discount}
-                                onCheckedChange={() =>
-                                    onToggleFlag('has_discount')
-                                }
-                            />
-                            <span className="text-sm text-gray-700">
-                                {t('has_discount') || 'On sale'}
-                            </span>
-                        </div>
-                    </label>
-                    <label className="flex items-center justify-between gap-3 cursor-pointer select-none">
-                        <div className="flex items-center gap-3">
-                            <Checkbox
-                                checked={!!state.filters.has_variants}
-                                onCheckedChange={() =>
-                                    onToggleFlag('has_variants')
-                                }
-                            />
-                            <span className="text-sm text-gray-700">
-                                {t('has_variants') || 'Has options'}
-                            </span>
-                        </div>
-                    </label>
-                </div>
+                <button
+                    onClick={() => toggleCollapsed('categories')}
+                    className="flex items-center justify-between w-full text-sm font-medium text-gray-800 hover:text-primary transition-colors">
+                    <span>{t('categories') || 'Categories'}</span>
+                    {collapsed.categories ? (
+                        <ChevronDown className="w-4 h-4 text-gray-400" />
+                    ) : (
+                        <ChevronUp className="w-4 h-4 text-gray-400" />
+                    )}
+                </button>
+                {!collapsed.categories && (
+                    <div className="space-y-2 max-h-64 overflow-auto pr-2 custom-scrollbar">
+                        {isLoading ? (
+                            <>
+                                {Array.from({ length: 6 }).map((_, i) => (
+                                    <div
+                                        key={i}
+                                        className="flex items-center justify-between gap-3">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-6 h-6 bg-gray-100 rounded-md animate-pulse" />
+                                            <div className="h-4 bg-gray-100 rounded animate-pulse w-32" />
+                                        </div>
+                                        <div className="h-3 bg-gray-100 rounded animate-pulse w-6" />
+                                    </div>
+                                ))}
+                            </>
+                        ) : (
+                            <>
+                                {(vars?.categories ?? []).map((cat) => {
+                                    const id = String(cat.id);
+                                    const checked =
+                                        state.filters.categoryIds.includes(id);
+                                    return (
+                                        <label
+                                            key={cat.id}
+                                            className="flex items-center justify-between gap-3 cursor-pointer select-none group">
+                                            <div className="flex items-center gap-3">
+                                                <Checkbox
+                                                    checked={checked}
+                                                    onCheckedChange={() =>
+                                                        onToggleCategory(id)
+                                                    }
+                                                />
+                                                <span
+                                                    className={cn(
+                                                        'text-sm transition-colors',
+                                                        checked
+                                                            ? 'text-primary font-medium'
+                                                            : 'text-gray-600 group-hover:text-gray-900',
+                                                    )}>
+                                                    {cat.name}
+                                                </span>
+                                            </div>
+                                            <span className="text-xs text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded">
+                                                {cat.count}
+                                            </span>
+                                        </label>
+                                    );
+                                })}
+                                {!vars?.categories?.length ? (
+                                    <div className="text-sm text-gray-400 py-2">
+                                        {t('noCategories') || 'No categories'}
+                                    </div>
+                                ) : null}
+                            </>
+                        )}
+                    </div>
+                )}
             </div>
 
             <div className="space-y-3">
-                <div className="text-sm font-medium text-gray-800">
-                    {t('availability') || 'Availability'}
-                </div>
-                <div className="space-y-2">
-                    <label className="flex items-center justify-between gap-3 cursor-pointer select-none">
-                        <div className="flex items-center gap-3">
-                            <span
-                                className={cn(
-                                    'w-5 h-5 rounded-full border-2 flex items-center justify-center',
-                                    state.filters.availability == null
-                                        ? 'border-primary'
-                                        : 'border-gray-200',
-                                )}>
+                <button
+                    onClick={() => toggleCollapsed('price')}
+                    className="flex items-center justify-between w-full text-sm font-medium text-gray-800 hover:text-primary transition-colors">
+                    <span>{t('price_range') || 'Price range'}</span>
+                    {collapsed.price ? (
+                        <ChevronDown className="w-4 h-4 text-gray-400" />
+                    ) : (
+                        <ChevronUp className="w-4 h-4 text-gray-400" />
+                    )}
+                </button>
+                {!collapsed.price && (
+                    <div className="space-y-4 pt-1">
+                        <div className="grid grid-cols-2 gap-3">
+                            <Input
+                                type="number"
+                                min={priceBounds.min}
+                                max={priceBounds.max}
+                                value={minDraft}
+                                onChange={(e) => setMinDraft(e.target.value)}
+                                placeholder={`${t('min') || 'Min'} (${priceBounds.min})`}
+                                containerClassName="rounded-xl border-gray-200 shadow-none bg-gray-50/30"
+                                inputSize="md"
+                            />
+                            <Input
+                                type="number"
+                                min={priceBounds.min}
+                                max={priceBounds.max}
+                                value={maxDraft}
+                                onChange={(e) => setMaxDraft(e.target.value)}
+                                placeholder={`${t('max') || 'Max'} (${priceBounds.max})`}
+                                containerClassName="rounded-xl border-gray-200 shadow-none bg-gray-50/30"
+                                inputSize="md"
+                            />
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Button
+                                variant="outlineTint"
+                                size="sm"
+                                onClick={applyPrice}
+                                className="flex-1">
+                                {t('apply') || 'Apply'}
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                    setMinDraft('');
+                                    setMaxDraft('');
+                                    onSetPriceRange(undefined, undefined);
+                                }}
+                                className="text-gray-400 hover:text-gray-600">
+                                {t('reset') || 'Reset'}
+                            </Button>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            <div className="space-y-3">
+                <button
+                    onClick={() => toggleCollapsed('quick')}
+                    className="flex items-center justify-between w-full text-sm font-medium text-gray-800 hover:text-primary transition-colors">
+                    <span>{t('quick_filters') || 'Quick filters'}</span>
+                    {collapsed.quick ? (
+                        <ChevronDown className="w-4 h-4 text-gray-400" />
+                    ) : (
+                        <ChevronUp className="w-4 h-4 text-gray-400" />
+                    )}
+                </button>
+                {!collapsed.quick && (
+                    <div className="space-y-2 pt-1">
+                        <label className="flex items-center justify-between gap-3 cursor-pointer select-none group">
+                            <div className="flex items-center gap-3">
+                                <Checkbox
+                                    checked={!!state.filters.is_featured}
+                                    onCheckedChange={() =>
+                                        onToggleFlag('is_featured')
+                                    }
+                                />
+                                <span className="text-sm text-gray-600 group-hover:text-gray-900">
+                                    {t('featured') || 'Featured'}
+                                </span>
+                            </div>
+                        </label>
+                        <label className="flex items-center justify-between gap-3 cursor-pointer select-none group">
+                            <div className="flex items-center gap-3">
+                                <Checkbox
+                                    checked={!!state.filters.is_latest}
+                                    onCheckedChange={() =>
+                                        onToggleFlag('is_latest')
+                                    }
+                                />
+                                <span className="text-sm text-gray-600 group-hover:text-gray-900">
+                                    {t('latest') || 'Latest'}
+                                </span>
+                            </div>
+                        </label>
+                        <label className="flex items-center justify-between gap-3 cursor-pointer select-none group">
+                            <div className="flex items-center gap-3">
+                                <Checkbox
+                                    checked={!!state.filters.has_discount}
+                                    onCheckedChange={() =>
+                                        onToggleFlag('has_discount')
+                                    }
+                                />
+                                <span className="text-sm text-gray-600 group-hover:text-gray-900">
+                                    {t('has_discount') || 'On sale'}
+                                </span>
+                            </div>
+                        </label>
+                        <label className="flex items-center justify-between gap-3 cursor-pointer select-none group">
+                            <div className="flex items-center gap-3">
+                                <Checkbox
+                                    checked={!!state.filters.has_variants}
+                                    onCheckedChange={() =>
+                                        onToggleFlag('has_variants')
+                                    }
+                                />
+                                <span className="text-sm text-gray-600 group-hover:text-gray-900">
+                                    {t('has_variants') || 'Has options'}
+                                </span>
+                            </div>
+                        </label>
+                    </div>
+                )}
+            </div>
+
+            <div className="space-y-3">
+                <button
+                    onClick={() => toggleCollapsed('availability')}
+                    className="flex items-center justify-between w-full text-sm font-medium text-gray-800 hover:text-primary transition-colors">
+                    <span>{t('availability') || 'Availability'}</span>
+                    {collapsed.availability ? (
+                        <ChevronDown className="w-4 h-4 text-gray-400" />
+                    ) : (
+                        <ChevronUp className="w-4 h-4 text-gray-400" />
+                    )}
+                </button>
+                {!collapsed.availability && (
+                    <div className="space-y-2 pt-1">
+                        <label className="flex items-center justify-between gap-3 cursor-pointer select-none group">
+                            <div className="flex items-center gap-3">
                                 <span
                                     className={cn(
-                                        'w-2.5 h-2.5 rounded-full',
+                                        'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors',
                                         state.filters.availability == null
-                                            ? 'bg-primary'
-                                            : 'bg-transparent',
-                                    )}
-                                />
-                            </span>
-                            <input
-                                className="sr-only"
-                                type="radio"
-                                name="availability"
-                                checked={state.filters.availability == null}
-                                onChange={() => onSetAvailability(undefined)}
-                            />
-                            <span className="text-sm text-gray-700">
-                                {t('all') || 'All'}
-                            </span>
-                        </div>
-                    </label>
-                    {(vars?.availability_status ?? []).map((opt) => {
-                        const checked =
-                            state.filters.availability === opt.value;
-                        return (
-                            <label
-                                key={opt.value}
-                                className="flex items-center justify-between gap-3 cursor-pointer select-none">
-                                <div className="flex items-center gap-3">
+                                            ? 'border-primary'
+                                            : 'border-gray-200 group-hover:border-gray-300',
+                                    )}>
                                     <span
                                         className={cn(
-                                            'w-5 h-5 rounded-full border-2 flex items-center justify-center',
-                                            checked
-                                                ? 'border-primary'
-                                                : 'border-gray-200',
-                                        )}>
+                                            'w-2.5 h-2.5 rounded-full transition-all',
+                                            state.filters.availability == null
+                                                ? 'bg-primary scale-100'
+                                                : 'bg-transparent scale-0',
+                                        )}
+                                    />
+                                </span>
+                                <input
+                                    className="sr-only"
+                                    type="radio"
+                                    name="availability"
+                                    checked={state.filters.availability == null}
+                                    onChange={() =>
+                                        onSetAvailability(undefined)
+                                    }
+                                />
+                                <span
+                                    className={cn(
+                                        'text-sm transition-colors',
+                                        state.filters.availability == null
+                                            ? 'text-primary font-medium'
+                                            : 'text-gray-600 group-hover:text-gray-900',
+                                    )}>
+                                    {t('all') || 'All'}
+                                </span>
+                            </div>
+                        </label>
+                        {(vars?.availability_status ?? []).map((opt) => {
+                            const checked =
+                                state.filters.availability === opt.value;
+                            return (
+                                <label
+                                    key={opt.value}
+                                    className="flex items-center justify-between gap-3 cursor-pointer select-none group">
+                                    <div className="flex items-center gap-3">
                                         <span
                                             className={cn(
-                                                'w-2.5 h-2.5 rounded-full',
+                                                'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors',
                                                 checked
-                                                    ? 'bg-primary'
-                                                    : 'bg-transparent',
-                                            )}
+                                                    ? 'border-primary'
+                                                    : 'border-gray-200 group-hover:border-gray-300',
+                                            )}>
+                                            <span
+                                                className={cn(
+                                                    'w-2.5 h-2.5 rounded-full transition-all',
+                                                    checked
+                                                        ? 'bg-primary scale-100'
+                                                        : 'bg-transparent scale-0',
+                                                )}
+                                            />
+                                        </span>
+                                        <input
+                                            className="sr-only"
+                                            type="radio"
+                                            name="availability"
+                                            checked={checked}
+                                            onChange={() =>
+                                                onSetAvailability(
+                                                    (opt.value as
+                                                        | 'in_stock'
+                                                        | 'out_of_stock'
+                                                        | 'low_stock') ??
+                                                        undefined,
+                                                )
+                                            }
                                         />
+                                        <span
+                                            className={cn(
+                                                'text-sm transition-colors',
+                                                checked
+                                                    ? 'text-primary font-medium'
+                                                    : 'text-gray-600 group-hover:text-gray-900',
+                                            )}>
+                                            {opt.arabic_label || opt.label}
+                                        </span>
+                                    </div>
+                                    <span className="text-xs text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded">
+                                        {opt.count}
                                     </span>
-                                    <input
-                                        className="sr-only"
-                                        type="radio"
-                                        name="availability"
-                                        checked={checked}
-                                        onChange={() =>
-                                            onSetAvailability(
-                                                (opt.value as
-                                                    | 'in_stock'
-                                                    | 'out_of_stock'
-                                                    | 'low_stock') ?? undefined,
-                                            )
-                                        }
-                                    />
-                                    <span className="text-sm text-gray-700">
-                                        {opt.arabic_label || opt.label}
-                                    </span>
-                                </div>
-                                <span className="text-xs text-gray-400">
-                                    {opt.count}
-                                </span>
-                            </label>
-                        );
-                    })}
-                    {!vars?.availability_status?.length ? (
-                        <div className="text-sm text-gray-400">
-                            {t('notAvailable') || 'Not available'}
-                        </div>
-                    ) : null}
-                </div>
+                                </label>
+                            );
+                        })}
+                        {!vars?.availability_status?.length ? (
+                            <div className="text-sm text-gray-400 py-2">
+                                {t('notAvailable') || 'Not available'}
+                            </div>
+                        ) : null}
+                    </div>
+                )}
             </div>
 
             {/* Dynamic attributes */}
             {(vars?.attributes?.length ?? 0) > 0 ? (
-                <details className="group">
-                    <summary className="cursor-pointer list-none text-sm font-medium text-gray-800">
-                        {t('attributes') || 'Attributes'}
+                <details className="group" open>
+                    <summary className="cursor-pointer list-none flex items-center justify-between w-full text-sm font-medium text-gray-800 hover:text-primary transition-colors">
+                        <span>{t('attributes') || 'Attributes'}</span>
+                        <ChevronDown className="w-4 h-4 text-gray-400 group-open:rotate-180 transition-transform" />
                     </summary>
                     <div className="mt-3 space-y-4">
                         {vars!.attributes.map((attr) => {
@@ -392,7 +478,7 @@ export function ProductsFiltersSidebar({
                                             </Button>
                                         ) : null}
                                     </div>
-                                    <div className="mt-2 space-y-2 max-h-48 overflow-auto pr-1">
+                                    <div className="mt-2 space-y-2 max-h-48 overflow-auto pr-2 custom-scrollbar">
                                         {attr.options.map((opt) => {
                                             const checked = selected.some(
                                                 (v) =>
@@ -434,10 +520,11 @@ export function ProductsFiltersSidebar({
             {/* Optional groups: brands / collections */}
             {(vars?.brands?.length ?? 0) > 0 ? (
                 <details className="group">
-                    <summary className="cursor-pointer list-none text-sm font-medium text-gray-800">
-                        {t('brands') || 'Brands'}
+                    <summary className="cursor-pointer list-none flex items-center justify-between w-full text-sm font-medium text-gray-800 hover:text-primary transition-colors">
+                        <span>{t('brands') || 'Brands'}</span>
+                        <ChevronDown className="w-4 h-4 text-gray-400 group-open:rotate-180 transition-transform" />
                     </summary>
-                    <div className="mt-3 space-y-2 max-h-56 overflow-auto pr-1">
+                    <div className="mt-3 space-y-2 max-h-56 overflow-auto pr-2 custom-scrollbar">
                         {vars!.brands.map((b) => {
                             const id = String(b.id);
                             const checked = state.filters.brandIds.includes(id);
@@ -468,10 +555,11 @@ export function ProductsFiltersSidebar({
 
             {(vars?.collections?.length ?? 0) > 0 ? (
                 <details className="group">
-                    <summary className="cursor-pointer list-none text-sm font-medium text-gray-800">
-                        {t('collections') || 'Collections'}
+                    <summary className="cursor-pointer list-none flex items-center justify-between w-full text-sm font-medium text-gray-800 hover:text-primary transition-colors">
+                        <span>{t('collections') || 'Collections'}</span>
+                        <ChevronDown className="w-4 h-4 text-gray-400 group-open:rotate-180 transition-transform" />
                     </summary>
-                    <div className="mt-3 space-y-2 max-h-56 overflow-auto pr-1">
+                    <div className="mt-3 space-y-2 max-h-56 overflow-auto pr-2 custom-scrollbar">
                         {vars!.collections.map((c) => {
                             const id = String(c.id);
                             const checked =

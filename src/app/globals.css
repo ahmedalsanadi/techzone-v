@@ -49,13 +49,13 @@
     --sidebar-ring: oklch(0.708 0 0);
 
     /* Dynamic Theme Colors - Fallback values */
-    --theme-primary: var(--primary, #B44734);
-    --theme-secondary: var(--secondary, #FFB800);
+    --theme-primary: var(--primary, #b44734);
+    --theme-secondary: var(--secondary, #ffb800);
     --theme-primary-hover: var(--primary-hover, rgba(180, 71, 52, 0.9));
     --theme-primary-light: var(--primary-light, rgba(180, 71, 52, 0.1));
     --theme-primary-lighter: var(--primary-lighter, rgba(180, 71, 52, 0.05));
     --theme-primary-border: var(--primary-border, rgba(180, 71, 52, 0.3));
-    
+
     /* Legacy support - will be removed after migration */
     --libero-red: var(--theme-primary);
 }
@@ -63,7 +63,7 @@
 /* Global scrollbar – theme color (applies to html/body and any scrollable area) */
 html {
     scrollbar-width: thin;
-    scrollbar-color: var(--theme-primary, #B44734) transparent;
+    scrollbar-color: var(--theme-primary, #b44734) transparent;
 }
 html::-webkit-scrollbar {
     width: 8px;
@@ -73,7 +73,7 @@ html::-webkit-scrollbar-track {
     background: transparent;
 }
 html::-webkit-scrollbar-thumb {
-    background-color: var(--theme-primary, #B44734);
+    background-color: var(--theme-primary, #b44734);
     border-radius: 9999px;
     border: 2px solid transparent;
     background-clip: content-box;
@@ -85,7 +85,7 @@ html::-webkit-scrollbar-thumb:hover {
 /* Optional: theme scrollbar for any scrollable container (add class .scrollbar-theme) */
 .scrollbar-theme {
     scrollbar-width: thin;
-    scrollbar-color: var(--theme-primary, #B44734) transparent;
+    scrollbar-color: var(--theme-primary, #b44734) transparent;
 }
 .scrollbar-theme::-webkit-scrollbar {
     width: 8px;
@@ -95,7 +95,7 @@ html::-webkit-scrollbar-thumb:hover {
     background: transparent;
 }
 .scrollbar-theme::-webkit-scrollbar-thumb {
-    background-color: var(--theme-primary, #B44734);
+    background-color: var(--theme-primary, #b44734);
     border-radius: 9999px;
     border: 2px solid transparent;
     background-clip: content-box;
@@ -123,6 +123,51 @@ html::-webkit-scrollbar-thumb:hover {
 }
 .select-options-scroll::-webkit-scrollbar-thumb:hover {
     background-color: rgba(156, 163, 175, 0.75);
+}
+
+/* Premium Custom Scrollbar */
+.custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #e5e7eb transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #e5e7eb;
+    border-radius: 10px;
+    background-clip: content-box;
+    border: 1px solid transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: #d1d5db;
+}
+
+/* 
+   Move scrollbar to "outer" edge (away from content).
+   When on the left (LTR), we want scrollbar on left (direction: rtl)
+   When on the right (RTL), we want scrollbar on right (direction: ltr)
+*/
+[dir='ltr'] .scrollbar-side-outer {
+    direction: rtl;
+}
+[dir='ltr'] .scrollbar-side-outer > * {
+    direction: ltr;
+}
+
+[dir='rtl'] .scrollbar-side-outer {
+    direction: ltr;
+}
+[dir='rtl'] .scrollbar-side-outer > * {
+    direction: rtl;
 }
 
 /* .dark {
@@ -203,13 +248,13 @@ html::-webkit-scrollbar-thumb:hover {
     --sidebar-ring: oklch(0.708 0 0);
 
     /* Dynamic Theme Colors - Fallback values */
-    --theme-primary: var(--primary, #B44734);
-    --theme-secondary: var(--secondary, #FFB800);
+    --theme-primary: var(--primary, #b44734);
+    --theme-secondary: var(--secondary, #ffb800);
     --theme-primary-hover: var(--primary-hover, rgba(180, 71, 52, 0.9));
     --theme-primary-light: var(--primary-light, rgba(180, 71, 52, 0.1));
     --theme-primary-lighter: var(--primary-lighter, rgba(180, 71, 52, 0.05));
     --theme-primary-border: var(--primary-border, rgba(180, 71, 52, 0.3));
-    
+
     /* Legacy support - will be removed after migration */
     --libero-red: var(--theme-primary);
 }
@@ -249,7 +294,7 @@ html::-webkit-scrollbar-thumb:hover {
     --color-theme-primary-light: var(--theme-primary-light);
     --color-theme-primary-lighter: var(--theme-primary-lighter);
     --color-theme-primary-border: var(--theme-primary-border);
-    
+
     /* Legacy support - will be removed after migration */
     --color-libero-red: var(--libero-red);
 
@@ -406,7 +451,10 @@ html::-webkit-scrollbar-thumb:hover {
     align-items: center !important;
     gap: 12px !important;
 }
-.toaster [data-sonner-toast] [data-content]:not(:has([data-description])) [data-button] {
+.toaster
+    [data-sonner-toast]
+    [data-content]:not(:has([data-description]))
+    [data-button] {
     margin-top: 0 !important;
     margin-inline-start: auto !important;
 }
