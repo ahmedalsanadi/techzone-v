@@ -185,14 +185,25 @@ export default async function HomePage() {
     }
 
     const ordered: React.ReactNode[] = [];
-    for (const key of orderFromBackend) {
+    for (const [idx, key] of orderFromBackend.entries()) {
         const node = sections[key];
-        if (node) ordered.push(node);
+        if (node) {
+            ordered.push(
+                <div
+                    key={key}
+                    className="animate-in fade-in slide-in-from-bottom-3 duration-1000 fill-mode-both"
+                    style={{ animationDelay: `${idx * 150}ms` }}>
+                    {node}
+                </div>,
+            );
+        }
     }
 
     return (
         <div className="pb-12 bg-white">
-            <HeroSlider />
+            <div className="animate-in fade-in duration-1000">
+                <HeroSlider />
+            </div>
             <div className="container mx-auto px-4 mt-8">{ordered}</div>
         </div>
     );

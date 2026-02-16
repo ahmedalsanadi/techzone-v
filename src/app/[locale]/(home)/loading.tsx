@@ -3,7 +3,7 @@ import ProductCardSkeleton from '@/components/ui/ProductCardSkeleton';
 
 export default function Loading() {
     return (
-        <div className="pb-12 bg-white">
+        <div className="pb-12 bg-white animate-in fade-in duration-500">
             {/* Hero skeleton */}
             <section className="container mx-auto px-0 md:px-4 mt-8 md:mt-10">
                 <div className="aspect-video md:aspect-21/9 w-full rounded-2xl md:rounded-[2.5rem] bg-gray-100 animate-pulse" />
