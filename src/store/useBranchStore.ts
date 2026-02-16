@@ -12,6 +12,7 @@ interface BranchState {
     selectedBranchName: string | null; // Persisted - for immediate display
     isModalOpen: boolean;
     hasSelectedOnce: boolean;
+    tenantHost: string;
     setSelectedBranch: (branch: Branch) => void;
     setModalOpen: (open: boolean) => void;
     clearSelectedBranch: () => void;
@@ -27,6 +28,15 @@ interface PersistedState {
     selectedBranchName: string | null; // Store name for immediate display
     hasSelectedOnce: boolean;
     version: number;
+    tenantHost: string;
+}
+
+/**
+ * Get current host for tenant-aware storage keys
+ */
+export function getCurrentTenantHostForStorage(): string {
+    if (typeof window === 'undefined') return 'server';
+    return window.location.host || 'unknown-tenant';
 }
 
 export const useBranchStore = create<BranchState>()(
@@ -38,6 +48,7 @@ export const useBranchStore = create<BranchState>()(
             isModalOpen: false,
             hasSelectedOnce: false,
             _hasHydrated: false,
+            tenantHost: getCurrentTenantHostForStorage(),
             setSelectedBranch: (branch) => {
                 branchCookies.setBranchId(branch.id);
                 set({
@@ -46,6 +57,7 @@ export const useBranchStore = create<BranchState>()(
                     selectedBranchName: branch.name || null,
                     isModalOpen: false,
                     hasSelectedOnce: true,
+                    tenantHost: getCurrentTenantHostForStorage(),
                 });
             },
             setModalOpen: (open) => set({ isModalOpen: open }),
@@ -60,12 +72,9 @@ export const useBranchStore = create<BranchState>()(
                 });
             },
             syncBranchData: (branch) => {
-                // Sync the full branch object when fetched from API
-                // This is called after fetching branch by ID from persisted state
                 if (branch && branch.id === get().selectedBranchId) {
                     set({
                         selectedBranch: branch,
-                        // Update name if it changed (e.g., branch was renamed)
                         selectedBranchName: branch.name || null,
                     });
                 } else if (!branch) {
@@ -81,46 +90,54 @@ export const useBranchStore = create<BranchState>()(
             name: 'branch-storage',
             version: BRANCH_STORAGE_VERSION,
             storage: createJSONStorage(() => localStorage),
-            partialize: (state): PersistedState => ({
+            partialize: (state) => ({
                 selectedBranchId: state.selectedBranchId,
                 selectedBranchName: state.selectedBranchName,
                 hasSelectedOnce: state.hasSelectedOnce,
                 version: BRANCH_STORAGE_VERSION,
+                tenantHost: state.tenantHost,
             }),
-            // Migration: if version mismatch or structure changed, reset
-            migrate: (
-                persistedState: unknown,
-                version: number,
-            ): PersistedState => {
+            merge: (persisted, current) => {
+                const p = persisted as any;
+                if (!p) return current;
+
+                const currentHost = getCurrentTenantHostForStorage();
+                const isSameHost = p.tenantHost === currentHost;
+
+                if (!isSameHost) {
+                    return {
+                        ...current,
+                        tenantHost: currentHost,
+                    };
+                }
+
+                return {
+                    ...current,
+                    ...p,
+                    tenantHost: currentHost,
+                };
+            },
+            migrate: (persistedState: unknown, version: number): any => {
                 if (version !== BRANCH_STORAGE_VERSION) {
-                    // Version mismatch - reset to defaults
                     return {
                         selectedBranchId: null,
                         selectedBranchName: null,
                         hasSelectedOnce: false,
                         version: BRANCH_STORAGE_VERSION,
+                        tenantHost: getCurrentTenantHostForStorage(),
                     };
                 }
-                // Type guard for persisted state
-                const state = persistedState as Partial<PersistedState> & {
-                    selectedBranch?: { id?: number; name?: string };
-                };
-                // Handle legacy format (if selectedBranch was persisted)
+                const state = persistedState as any;
                 if (state?.selectedBranch && !state?.selectedBranchId) {
                     return {
                         selectedBranchId: state.selectedBranch?.id || null,
                         selectedBranchName: state.selectedBranch?.name || null,
                         hasSelectedOnce: state.hasSelectedOnce || false,
                         version: BRANCH_STORAGE_VERSION,
+                        tenantHost: getCurrentTenantHostForStorage(),
                     };
                 }
-                // Return valid persisted state or defaults
-                return {
-                    selectedBranchId: state?.selectedBranchId ?? null,
-                    selectedBranchName: state?.selectedBranchName ?? null,
-                    hasSelectedOnce: state?.hasSelectedOnce ?? false,
-                    version: BRANCH_STORAGE_VERSION,
-                };
+                return state;
             },
             onRehydrateStorage: (state) => {
                 return () => state?.setHasHydrated(true);

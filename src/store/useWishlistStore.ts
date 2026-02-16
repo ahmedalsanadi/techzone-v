@@ -34,6 +34,7 @@ interface WishlistStore {
     setGuestMode: (isGuest: boolean) => void;
     setWishlistFromAPI: (items: ApiWishlistItem[]) => void;
     getGuestWishlistItems: () => WishlistItem[];
+    tenantHost: string;
 }
 
 /**
@@ -55,35 +56,39 @@ function transformApiWishlistItemToLocal(item: ApiWishlistItem): WishlistItem {
     };
 }
 
+/**
+ * Get current host for tenant-aware storage keys
+ */
+export function getCurrentTenantHostForStorage(): string {
+    if (typeof window === 'undefined') return 'server';
+    return window.location.host || 'unknown-tenant';
+}
+
 export const useWishlistStore = create<WishlistStore>()(
     persist(
         (set, get) => ({
             items: [],
-            isGuestMode: true, // Default to guest mode
+            isGuestMode: true,
             isLoading: false,
             lastSyncedAt: null,
+            tenantHost: getCurrentTenantHostForStorage(),
 
             addItem: (item) => {
-                // If in guest mode, use local storage
                 if (get().isGuestMode) {
                     const currentItems = get().items;
-                    // Check if item already exists
                     const existingItem = currentItems.find(
                         (i) => i.productId === item.productId,
                     );
 
                     if (!existingItem) {
-                        // Generate a local ID
                         const localId = `local-${Date.now()}-${item.productId}`;
                         set({
                             items: [...currentItems, { ...item, id: localId }],
                         });
                     }
                 }
-                // If authenticated, this should be called via API (handled in useWishlistActions)
             },
             removeItem: (productId) => {
-                // If in guest mode, remove from local storage
                 if (get().isGuestMode) {
                     set({
                         items: get().items.filter(
@@ -91,7 +96,6 @@ export const useWishlistStore = create<WishlistStore>()(
                         ),
                     });
                 }
-                // If authenticated, this should be called via API (handled in useWishlistActions)
             },
             clearWishlist: () => {
                 set({ items: [] });
@@ -103,54 +107,40 @@ export const useWishlistStore = create<WishlistStore>()(
                 return get().items.length;
             },
             syncWithAPI: async () => {
-                // Determine if we should sync based on auth state
-                // This is now more flexible to allow forced syncs
                 set({ isLoading: true });
                 try {
                     const wishlist = await wishlistService.getWishlist();
-                    console.log(
-                        '[WishlistStore] Received wishlist from API:',
-                        wishlist,
-                    );
-
                     if (wishlist) {
                         get().setWishlistFromAPI(wishlist);
                         set({ lastSyncedAt: Date.now() });
                     } else {
-                        console.warn(
-                            '[WishlistStore] API returned empty wishlist data',
-                        );
                         set({ items: [] });
                     }
                 } catch (error) {
                     console.error('Failed to sync wishlist with API:', error);
-                    // Don't throw - allow fallback to local state
                 } finally {
                     set({ isLoading: false });
                 }
             },
             setGuestMode: (isGuest) => {
-                set({ isGuestMode: isGuest });
+                set({
+                    isGuestMode: isGuest,
+                    ...(isGuest
+                        ? { tenantHost: getCurrentTenantHostForStorage() }
+                        : {}),
+                });
             },
             setWishlistFromAPI: (data) => {
-                // Transform API wishlist items to local format
-                // Handle cases where data might be the full response object or missing items
                 let itemsArray: ApiWishlistItem[] = [];
 
                 if (Array.isArray(data)) {
                     itemsArray = data;
                 } else if (data && typeof data === 'object') {
-                    // Check if data is wrapped in another object (e.g. { data: [], ... })
                     const maybe = data as { data?: unknown; items?: unknown };
                     if (Array.isArray(maybe.data)) {
                         itemsArray = maybe.data as ApiWishlistItem[];
                     } else if (Array.isArray(maybe.items)) {
                         itemsArray = maybe.items as ApiWishlistItem[];
-                    } else {
-                        console.error(
-                            '[WishlistStore] Expected array in setWishlistFromAPI but got:',
-                            data,
-                        );
                     }
                 }
 
@@ -162,7 +152,6 @@ export const useWishlistStore = create<WishlistStore>()(
                 });
             },
             getGuestWishlistItems: () => {
-                // Return items only if in guest mode
                 if (get().isGuestMode) {
                     return get().items;
                 }
@@ -171,20 +160,24 @@ export const useWishlistStore = create<WishlistStore>()(
         }),
         {
             name: 'fasto-wishlist-storage',
-            // CRITICAL: Only persist when in guest mode
-            // Authenticated users should NOT have wishlist persisted to localStorage
-            // Their wishlist is managed by the API
-            partialize: (state) => {
-                // Only persist if in guest mode
-                if (state.isGuestMode) {
-                    return {
-                        items: state.items,
-                        isGuestMode: state.isGuestMode,
-                    };
-                }
-                // Don't persist anything when authenticated
+            partialize: (state) => ({
+                ...(state.isGuestMode
+                    ? { items: state.items, tenantHost: state.tenantHost }
+                    : {}),
+                isGuestMode: state.isGuestMode,
+            }),
+            merge: (persisted, current) => {
+                const p = persisted as any;
+                if (!p) return current;
+
+                const currentHost = getCurrentTenantHostForStorage();
+                const isSameHost = p.tenantHost === currentHost;
+
                 return {
-                    isGuestMode: state.isGuestMode,
+                    ...current,
+                    ...p,
+                    items: isSameHost ? (p.items ?? []) : [],
+                    tenantHost: currentHost,
                 };
             },
         },

@@ -101,11 +101,11 @@ export default async function RootLayout({
     setupLocale(locale);
 
     const isArabic = locale === 'ar';
-    const messages = await getMessages({ locale });
-
-    // Tenant data (UI + branding + layout)
-    // Using shared server context ensures single fetch per request per layout segment
-    const [storeConfig, categories, cmsPages] = await Promise.all([
+    // Execute all critical server-side fetches in parallel for maximum performance.
+    // getServerStoreConfig and others are wrapped in React cache() to ensure
+    // deduplication if called again in satisfy metadata generation or other components.
+    const [messages, storeConfig, categories, cmsPages] = await Promise.all([
+        getMessages({ locale }),
         getServerStoreConfig(),
         getStoreCategories(),
         getStorePages(),

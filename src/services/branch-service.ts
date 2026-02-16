@@ -5,6 +5,7 @@
 
 import { fetchLibero } from '@/lib/api';
 import type { Branch } from '@/types/branches';
+import { CACHE_STRATEGY, CACHE_TAGS } from '@/config/cache';
 
 /**
  * Service for branch-related data fetching
@@ -22,7 +23,10 @@ export const branchService = {
     ): Promise<Branch[]> => {
         const data = await fetchLibero<Branch[]>('/store/branches', {
             params,
-            next: { revalidate: 3600 },
+            next: {
+                revalidate: CACHE_STRATEGY.STORE_CONFIG,
+                tags: ['branches'],
+            },
         });
 
         // Validate and filter branches
@@ -65,7 +69,10 @@ export const branchService = {
     getBranch: async (id: string | number): Promise<Branch> => {
         try {
             const branch = await fetchLibero<Branch>(`/store/branches/${id}`, {
-                next: { revalidate: 3600 },
+                next: {
+                    revalidate: CACHE_STRATEGY.STORE_CONFIG,
+                    tags: ['branches'],
+                },
             });
 
             // Validate branch structure

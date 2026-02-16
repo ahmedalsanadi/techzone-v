@@ -54,7 +54,10 @@ export const storeService = {
     ): Promise<{ data: Product[]; meta: PaginationMeta }> {
         const response = await fetchLiberoFull<Product[]>('/store/products', {
             params,
-            next: { revalidate: CACHE_STRATEGY.PRODUCTS_LIST },
+            next: {
+                revalidate: CACHE_STRATEGY.PRODUCTS_LIST,
+                tags: [CACHE_TAGS.PRODUCTS],
+            },
             cache: typeof window !== 'undefined' ? 'no-store' : undefined,
             signal: options?.signal,
         });
@@ -91,7 +94,10 @@ export const storeService = {
      */
     getProduct: (slug: string) =>
         fetchLibero<Product>(`/store/products/${slug}`, {
-            next: { revalidate: CACHE_STRATEGY.PRODUCT_SINGLE },
+            next: {
+                revalidate: CACHE_STRATEGY.PRODUCT_SINGLE,
+                tags: [CACHE_TAGS.PRODUCT(slug)],
+            },
         }),
 
     /**
@@ -208,7 +214,10 @@ export const storeService = {
      */
     getCountries: () =>
         fetchLibero<Country[]>('/store/locations/countries', {
-            next: { revalidate: CACHE_STRATEGY.COUNTRIES_CITIES },
+            next: {
+                revalidate: CACHE_STRATEGY.COUNTRIES_CITIES,
+                tags: [CACHE_TAGS.LOCATIONS],
+            },
         }),
 
     /**

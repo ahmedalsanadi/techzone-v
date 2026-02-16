@@ -42,7 +42,9 @@ function isAbortError(error: unknown): boolean {
     );
 }
 
-function combineSignals(signals: Array<AbortSignal | undefined>): AbortSignal | undefined {
+function combineSignals(
+    signals: Array<AbortSignal | undefined>,
+): AbortSignal | undefined {
     const active = signals.filter(Boolean) as AbortSignal[];
     if (active.length === 0) return undefined;
     if (active.length === 1) return active[0];
@@ -55,8 +57,11 @@ function combineSignals(signals: Array<AbortSignal | undefined>): AbortSignal | 
     }
 
     // Prefer AbortSignal.any when available
-    const anyFn = (AbortSignal as unknown as { any?: (signals: AbortSignal[]) => AbortSignal })
-        .any;
+    const anyFn = (
+        AbortSignal as unknown as {
+            any?: (signals: AbortSignal[]) => AbortSignal;
+        }
+    ).any;
     if (typeof anyFn === 'function') {
         return anyFn(active);
     }
@@ -159,9 +164,19 @@ export async function fetchLiberoFull<T>(
                     (forwarded ? forwarded.split(',')[0].trim() : null) ||
                     requestHeaders.get('host');
                 const { storeKey } = resolveTenant(host);
+
                 if (storeKey) {
+                    // CRITICAL: Next.js Data Cache is keyed primarily by URL (and body).
+                    // If multiple tenants share the same API URL (e.g. api.libero.com/config)
+                    // but different headers, they MUST have different URLs to avoid
+                    // cross-tenant cache pollution.
+                    url.searchParams.set('_t', storeKey);
+
+                    // Add tenant tag for selective on-demand revalidation
+                    const { CACHE_TAGS } = await import('@/config/cache');
+                    const tenantTag = CACHE_TAGS.TENANT(storeKey);
+
                     const existingTags = nextOptions?.tags || [];
-                    const tenantTag = `tenant:${storeKey}`;
                     nextOptions = {
                         ...(nextOptions || {}),
                         tags: Array.from(new Set([...existingTags, tenantTag])),
@@ -274,7 +289,11 @@ export async function fetchLiberoFull<T>(
                     url: url.toString(),
                 });
             }
-            throw new ApiError(response.status, errorMessage, result ?? undefined);
+            throw new ApiError(
+                response.status,
+                errorMessage,
+                result ?? undefined,
+            );
         }
 
         return result;
@@ -289,7 +308,10 @@ export async function fetchLiberoFull<T>(
             error instanceof Error &&
             (error.message === 'fetch failed' ||
                 /timeout|ECONNREFUSED|ENOTFOUND|ETIMEDOUT/i.test(
-                    String((error as Error & { cause?: Error }).cause?.message ?? error.message),
+                    String(
+                        (error as Error & { cause?: Error }).cause?.message ??
+                            error.message,
+                    ),
                 ));
         const message =
             isAbort || isNetworkFailure
