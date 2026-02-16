@@ -4,8 +4,7 @@ import { storeService } from '@/services/store-service';
 import ProfileView from './ProfileView';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
-// Mark this route as dynamic since it uses cookies for authentication
-export const dynamic = 'force-dynamic';
+
 
 export async function generateMetadata({
     params,
@@ -44,11 +43,9 @@ export default async function ProfilePage({
     ];
 
     return (
-        <main className="min-h-screen bg-gray-50/30 py-12">
-            <div className="container mx-auto  max-w-5xl">
-                <Breadcrumbs className="mb-6" items={breadcrumbItems} />
-                <ProfileView initialProfile={initialProfile} />
-            </div>
-        </main>
+        <div className="space-y-6">
+            <Breadcrumbs items={breadcrumbItems} />
+            <ProfileView initialProfile={initialProfile} />
+        </div>
     );
 }

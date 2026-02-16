@@ -5,7 +5,6 @@ import { Metadata } from 'next';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import FAQList from './FAQList';
 
-
 export async function generateMetadata({
     params,
 }: {
@@ -46,18 +45,16 @@ export default async function FAQPage({
     }));
 
     return (
-        <div className="py-8 md:py-12 px-6">
-            <div className="mx-auto">
-                <Breadcrumbs items={breadcrumbItems} />
+        <div className="space-y-8">
+            <Breadcrumbs items={breadcrumbItems} />
 
-                <div className="mt-8 mb-12">
-                    <h1 className="text-4xl font-black text-gray-900 leading-tight mb-4">
-                        {t('title')}
-                    </h1>
-                </div>
-
-                <FAQList questions={questions} />
+            <div className="mb-8">
+                <h1 className="text-4xl font-black text-gray-900 leading-tight mb-4">
+                    {t('title')}
+                </h1>
             </div>
+
+            <FAQList questions={questions} />
         </div>
     );
 }

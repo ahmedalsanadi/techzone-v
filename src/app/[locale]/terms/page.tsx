@@ -3,7 +3,14 @@ import React from 'react';
 import { getTranslations } from 'next-intl/server';
 import { Metadata } from 'next';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
-import { FileText, Shield, Lock, CreditCard, Truck, RotateCcw } from 'lucide-react';
+import {
+    FileText,
+    Shield,
+    Lock,
+    CreditCard,
+    Truck,
+    RotateCcw,
+} from 'lucide-react';
 
 export async function generateMetadata({
     params,
@@ -66,17 +73,14 @@ export default async function TermsPage({
     ];
 
     return (
-        <main className="min-h-screen bg-gray-50/30 py-8">
-            <div className="container mx-auto px-4 max-w-4xl">
+        <div className="space-y-6 py-4">
                 <Breadcrumbs items={breadcrumbItems} />
 
-                <div className="mt-8 mb-12">
+                <div className="mb-12">
                     <h1 className="text-4xl font-black text-gray-900 leading-tight mb-4">
                         {t('title')}
                     </h1>
-                    <p className="text-lg text-gray-600">
-                        {t('lastUpdated')}
-                    </p>
+                    <p className="text-lg text-gray-600">{t('lastUpdated')}</p>
                 </div>
 
                 <div className="bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-gray-100">
@@ -122,8 +126,7 @@ export default async function TermsPage({
                             </p>
                         </div>
                     </div>
-                </div>
-            </div>
-        </main>
+                </div
+        </div>
     );
 }

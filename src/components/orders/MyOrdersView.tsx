@@ -21,18 +21,14 @@ export default function MyOrdersView({
     initialMeta,
 }: MyOrdersViewProps) {
     const t = useTranslations('Orders');
-    const {
-        orders,
-        hasNextPage,
-        fetchNextPage,
-        isFetchingNextPage,
-    } = useOrdersList({ initialOrders, initialMeta });
+    const { orders, hasNextPage, fetchNextPage, isFetchingNextPage } =
+        useOrdersList({ initialOrders, initialMeta });
 
     return (
-        <section className="min-h-screen pb-16 pt-6 px-2 md:px-4">
+        <div className="space-y-8">
             <SubHeaderManager show={false} />
 
-            <div className="flex items-center justify-start my-4 md:my-12">
+            <div className="flex items-center justify-start">
                 <h1 className="text-2xl font-black text-gray-900 border-s-4 border-theme-primary ps-4">
                     {t('title')}
                 </h1>
@@ -75,6 +71,6 @@ export default function MyOrdersView({
                     </p>
                 </div>
             )}
-        </section>
+        </div>
     );
 }

@@ -26,7 +26,7 @@ export default function OffersView() {
     } = useOffersView();
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <section className="">
             <div className="space-y-6">
                 {collectionsError && (
                     <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center gap-3">
@@ -56,6 +56,6 @@ export default function OffersView() {
                     />
                 )}
             </div>
-        </div>
+        </section>
     );
 }

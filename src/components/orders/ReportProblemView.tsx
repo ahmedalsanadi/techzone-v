@@ -28,8 +28,7 @@ export default function ReportProblemView({ order }: ReportProblemViewProps) {
     ];
 
     return (
-        <section className="min-h-screen py-8">
-            <div className="container mx-auto px-4">
+            <section className="space-y-6 py-2">
                 <Breadcrumbs items={breadcrumbItems} />
                 <SubHeaderManager show={false} />
 
@@ -50,7 +49,6 @@ export default function ReportProblemView({ order }: ReportProblemViewProps) {
                         <ReportProblemForm />
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
     );
 }

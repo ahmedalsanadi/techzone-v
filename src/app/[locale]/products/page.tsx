@@ -100,19 +100,17 @@ export default async function ProductsPage({
     ]);
 
     return (
-        <main className="min-h-screen bg-gray-50/30 py-12">
-            <div className="container mx-auto px-2 sm:px-4 pt-6">
-                <Breadcrumbs
-                    items={[
-                        { label: t('home'), href: '/' },
-                        { label: t('products') },
-                    ]}
-                />
-            </div>
+        <div className="space-y-6">
+            <Breadcrumbs
+                items={[
+                    { label: t('home'), href: '/' },
+                    { label: t('products') },
+                ]}
+            />
 
             <HydrationBoundary state={dehydrate(queryClient)}>
                 <ProductsPageClient />
             </HydrationBoundary>
-        </main>
+        </div>
     );
 }

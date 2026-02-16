@@ -53,12 +53,12 @@ export default async function ContactPage({
               })) || null;
 
     return (
-        <main className="min-h-screen bg-gray-50/30 py-8">
+        <div className="space-y-8">
             <BranchErrorHandler
                 hasError={branchFetchError}
                 branchId={branch_id}
             />
-            <div className="container mx-auto p-4 py-8 min-h-screen">
+            <div className="space-y-8">
                 <Breadcrumbs items={breadcrumbItems} />
 
                 {/* Show warning if branch fetch failed */}
@@ -75,7 +75,7 @@ export default async function ContactPage({
                     />
                 )}
 
-                <div className="mt-8 mb-12">
+                <div className="mb-8">
                     <h1 className="text-4xl font-black text-gray-900 leading-tight">
                         {pageTitle}
                     </h1>
@@ -100,6 +100,6 @@ export default async function ContactPage({
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     );
 }

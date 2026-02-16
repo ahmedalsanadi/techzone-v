@@ -8,6 +8,7 @@ import Footer from './Footer';
 import { useEffect } from 'react';
 import { usePathname } from '@/i18n/navigation';
 import FloatingButtons from './FloatingButtons';
+import { cn } from '@/lib/utils';
 
 export default function PageContainer({
     children,
@@ -47,13 +48,13 @@ export default function PageContainer({
                 </div>
             </nav>
             {/*-------- Content overlaps bottom of nav when subheader shown so half of subheader sits on white ----------- */}
-            <div
-                className={`container mx-auto px-4 flex-1 ${showSubHeader ? '-mt-16 lg:-mt-12 pt-16 lg:pt-12 bg-white' : ''}`}>
-                <div className="flex flex-col gap-4 min-h-screen py-1">
+            <div className={`container mx-auto flex-1 relative`}>
+                <div className="flex flex-col gap-4 min-h-screen py-10 px-4 md:px-12">   
                     {children}
                 </div>
+                    <FloatingButtons />
             </div>
-            <FloatingButtons />
+        
             <Footer />
         </main>
     );

@@ -3,7 +3,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 
 export default function Loading() {
     return (
-        <div className="flex flex-col gap-10 md:gap-16 pb-24 relative pt-12 px-2 md:px-6 max-w-7xl mx-auto w-full">
+        <div className="flex flex-col gap-10 md:gap-16 pb-24 relative space-y-6">
             {/* Breadcrumbs skeleton */}
             <div className="flex items-center gap-2 mb-2">
                 <Skeleton className="h-4 w-16 rounded" />

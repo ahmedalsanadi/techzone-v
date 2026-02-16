@@ -3,8 +3,8 @@ import OrderCardSkeleton from '@/components/orders/OrderCardSkeleton';
 
 export default function Loading() {
     return (
-        <section className="min-h-screen pb-16 pt-6 px-2 md:px-4">
-            <div className="flex items-center justify-start my-4 md:my-12">
+        <div className="space-y-8">
+            <div className="flex items-center justify-start">
                 <div className="h-8 w-48 rounded bg-gray-100 animate-pulse" />
             </div>
 
@@ -18,7 +18,6 @@ export default function Loading() {
             <div className="flex justify-center mt-12">
                 <div className="h-12 w-[200px] rounded-xl bg-gray-100 animate-pulse" />
             </div>
-        </section>
+        </div>
     );
 }
-

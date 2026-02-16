@@ -312,7 +312,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     };
 
     return (
-        <div className="flex flex-col gap-16 pb-24 relative pt-12 px-2 md:px-6">
+        <div className="flex flex-col gap-16 pb-24 relative space-y-6">
             <div className="flex flex-col gap-6">
                 {/* Breadcrumbs */}
                 <Breadcrumbs

@@ -114,7 +114,7 @@ export default function ProfileView({ initialProfile }: ProfileViewProps) {
     }
 
     return (
-        <div className="mt-4 space-y-4 md:space-y-8">
+        <div className="space-y-4 md:space-y-8">
             <div className="bg-white rounded-2xl md:rounded-3xl p-5 md:p-10 shadow-sm border border-gray-100 flex flex-col md:flex-row items-center md:items-end justify-between gap-6 overflow-hidden relative">
                 <div className="absolute top-0 start-0 w-32 h-32 bg-theme-primary/5 rounded-full -ms-16 -mt-16" />
 

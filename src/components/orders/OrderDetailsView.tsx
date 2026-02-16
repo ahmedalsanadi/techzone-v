@@ -141,7 +141,9 @@ export default function OrderDetailsView({
             });
         } catch (error: unknown) {
             const message =
-                error instanceof Error ? error.message : t('actions.cancelError');
+                error instanceof Error
+                    ? error.message
+                    : t('actions.cancelError');
             toast.error(message);
         } finally {
             setIsCancelling(false);
@@ -239,10 +241,10 @@ export default function OrderDetailsView({
         currentStatusKey === 'WAITING_PAYMENT';
 
     return (
-        <section className="min-h-screen pb-16 pt-6 px-1 md:px-4 space-y-6">
+        <div className="space-y-6 py-2">
             <SubHeaderManager show={false} />
 
-            <div className="flex justify-start mb-6">
+            <div className="flex justify-start">
                 <nav className="flex items-center gap-2 text-[13px] text-gray-400 font-medium">
                     <Link
                         href="/"
@@ -353,6 +355,6 @@ export default function OrderDetailsView({
                 variant="danger"
                 isLoading={isCancelling}
             />
-        </section>
+        </div>
     );
 }

@@ -68,7 +68,7 @@ const Footer = () => {
     return (
         <footer className="w-full flex flex-col">
             {/* Top Section: Links & Apps */}
-            <div className="bg-theme-primary-tint py-12 md:py-18 px-4">
+            <div className="bg-theme-primary-tint py-12 md:py-18 px-4 md:px-12">
                 <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-10 lg:gap-8">
                     {/* Logo & Info */}
                     <div className="flex flex-col items-center lg:items-start text-center  ">
@@ -143,8 +143,8 @@ const Footer = () => {
 
             {/* Middle Section: Partners & Payment Strip */}
             <div className="bg-theme-primary py-8 lg:py-4 border-b border-theme-secondary/30 relative">
-                <div className="container mx-auto px-4 ">
-                    <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12">
+                <div className="container mx-auto">
+                    <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 px-4 md:px-10">
                         {/* Section: Delivery & Partners */}
                         <div className="flex flex-wrap justify-center items-center gap-4">
                             {partnerBadges.map((badge, idx) => (
@@ -188,8 +188,8 @@ const Footer = () => {
             </div>
 
             {/* Bottom Bar: Socials, Powered By & Copyright */}
-            <div className="bg-theme-primary p-6 lg:p-4">
-                <div className="container mx-auto flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-10">
+            <div className="bg-theme-primary py-6 lg:py-4 ">
+                <div className="container mx-auto px-4 md:px-12 flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-10">
                     {/* Copyright Left */}
                     <div className="text-white/90 text-sm font-bold text-center   order-3 lg:order-1">
                         {t('rights')}

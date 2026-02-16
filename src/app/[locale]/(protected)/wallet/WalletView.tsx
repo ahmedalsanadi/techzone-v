@@ -26,8 +26,7 @@ export default function WalletView({ balance }: WalletViewProps) {
     ];
 
     return (
-        <main className="min-h-screen bg-gray-50/30 py-8 ">
-            <div className="container mx-auto px-2 sm:px-6 mt-8">
+            <div className="space-y-6">
                 <Breadcrumbs items={breadcrumbItems} />
 
                 <div className="mt-8 mb-12">
@@ -57,6 +56,5 @@ export default function WalletView({ balance }: WalletViewProps) {
                     </div>
                 </div>
             </div>
-        </main>
     );
 }

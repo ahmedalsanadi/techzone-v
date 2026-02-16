@@ -46,19 +46,14 @@ export default async function OffersPage({
     const t = await getTranslations({ locale, namespace: 'Collections' });
 
     return (
-        <main className="min-h-screen bg-gray-50/30">
-            <div className="container mx-auto px-4 pt-6">
-                <Breadcrumbs
-                    items={[
-                        { label: t('home'), href: '/' },
-                        { label: t('title') },
-                    ]}
-                />
-            </div>
+        <div className="space-y-6">
+            <Breadcrumbs
+                items={[{ label: t('home'), href: '/' }, { label: t('title') }]}
+            />
 
             <Suspense fallback={<OffersPageSkeleton />}>
                 <OffersView />
             </Suspense>
-        </main>
+        </div>
     );
 }

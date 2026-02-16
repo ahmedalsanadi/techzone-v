@@ -212,7 +212,7 @@ export default function CheckoutPage() {
 
     if (isInitError) {
         return (
-            <div className="container mx-auto min-h-screen py-6 md:py-12 px-4 sm:px-6">
+            <div className="space-y-6 py-2">
                 <h1 className="text-xl sm:text-3xl font-bold mb-6">{t('title')}</h1>
                 <div id={ORDER_TYPE_SCROLL_ID} className="scroll-mt-4">
                     {orderTypeCard}
@@ -244,7 +244,7 @@ export default function CheckoutPage() {
 
     if (needsAddressOrType) {
         return (
-            <div className="container mx-auto min-h-screen py-6 md:py-12 px-4 sm:px-6 space-y-6 md:space-y-8">
+            <div className="space-y-6 py-2">
                 <div className="hidden sm:block">
                     <Breadcrumbs items={breadcrumbs} />
                 </div>
@@ -284,7 +284,7 @@ export default function CheckoutPage() {
                   : undefined;
 
     return (
-        <div className="container mx-auto min-h-screen py-6 md:py-12 px-4 sm:px-6 space-y-6 md:space-y-8">
+        <div className="space-y-6 py-2">
             <div className="hidden sm:block">
                 <Breadcrumbs items={breadcrumbs} />
             </div>

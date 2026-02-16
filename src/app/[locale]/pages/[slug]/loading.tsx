@@ -3,7 +3,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 
 export default function CMSPageLoading() {
     return (
-        <section className="min-h-screen bg-linear-to-b from-white to-gray-50/40 py-8 relative overflow-hidden">
+        <section className="min-h-screen bg-linear-to-b from-white to-gray-50/40 space-y-6 relative overflow-hidden">
             {/* Background Blurs */}
             <div className="absolute inset-0 pointer-events-none -z-10">
                 <div className="absolute -top-24 -right-20 h-64 w-64 rounded-full bg-theme-primary/10 blur-[120px]" />

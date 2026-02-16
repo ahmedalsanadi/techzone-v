@@ -53,12 +53,12 @@ export default async function CategoriesPage({
     });
 
     return (
-        <main className="min-h-screen bg-gray-50/30 pt-16 pb-20 px-8 relative">
-                <Breadcrumbs items={breadcrumbItems} />
-           
+        <div className="space-y-6">
+            <Breadcrumbs items={breadcrumbItems} />
+
             <HydrationBoundary state={dehydrate(queryClient)}>
                 <CategoryContent />
             </HydrationBoundary>
-        </main>
+        </div>
     );
 }

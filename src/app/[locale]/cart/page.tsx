@@ -66,7 +66,7 @@ const CartPage = () => {
 
     if (isLoading && items.length === 0) {
         return (
-            <div className="container mx-auto px-4 py-8 md:py-12">
+            <div className="space-y-6 py-4">
                 <div className="h-8 w-48 bg-gray-100 rounded-xl animate-pulse mb-8" />
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                     <div className="lg:col-span-2 space-y-4">
@@ -124,13 +124,14 @@ const CartPage = () => {
     }
 
     const subtotal = getTotalPrice();
-    const isCartMutating = isAuthenticated && !isGuestMode && mutationsInFlight > 0;
+    const isCartMutating =
+        isAuthenticated && !isGuestMode && mutationsInFlight > 0;
     const disableCheckout = isLoading || isCartMutating;
 
     return (
         <>
-            <div className="container mx-auto px-4 py-8 md:py-12">
-                <h1 className="text-3xl md:text-4xl font-black text-gray-900 mb-10 flex items-center gap-3">
+            <div className="space-y-6 py-4">
+                <h1 className="text-3xl md:text-4xl font-black text-gray-900 flex items-center gap-3">
                     {t('title')}
                     <span className="text-sm font-medium text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
                         {t('items', { count: getTotalItems() })}
@@ -248,51 +249,50 @@ const CartPage = () => {
 
                                             {/* Display Addons */}
                                             {item.metadata?.addonDetails &&
-                                            item.metadata.addonDetails.length > 0 ? (
-                                                    <div className="mt-2 space-y-1">
-                                                        {item.metadata.addonDetails.map(
-                                                            (
-                                                                addonGroup: {
-                                                                    groupName: string;
-                                                                    items: Array<{
-                                                                        name: string;
-                                                                        quantity: number;
-                                                                    }>;
-                                                                },
-                                                                idx: number,
-                                                            ) => (
-                                                                <div
-                                                                    key={idx}
-                                                                    className="text-xs text-gray-600">
-                                                                    <span className="font-semibold text-gray-700">
-                                                                        {
-                                                                            addonGroup.groupName
-                                                                        }
-                                                                        :
-                                                                    </span>{' '}
-                                                                    {addonGroup.items
-                                                                        .map(
-                                                                            (addonItem: {
-                                                                                name: string;
-                                                                                quantity: number;
-                                                                            }) =>
-                                                                                `${
-                                                                                    addonItem.name
-                                                                                }${
-                                                                                    addonItem.quantity >
-                                                                                    1
-                                                                                        ? ` (x${addonItem.quantity})`
-                                                                                        : ''
-                                                                                }`,
-                                                                        )
-                                                                        .join(
-                                                                            ', ',
-                                                                        )}
-                                                                </div>
-                                                            ),
-                                                        )}
-                                                    </div>
-                                                ) : null}
+                                            item.metadata.addonDetails.length >
+                                                0 ? (
+                                                <div className="mt-2 space-y-1">
+                                                    {item.metadata.addonDetails.map(
+                                                        (
+                                                            addonGroup: {
+                                                                groupName: string;
+                                                                items: Array<{
+                                                                    name: string;
+                                                                    quantity: number;
+                                                                }>;
+                                                            },
+                                                            idx: number,
+                                                        ) => (
+                                                            <div
+                                                                key={idx}
+                                                                className="text-xs text-gray-600">
+                                                                <span className="font-semibold text-gray-700">
+                                                                    {
+                                                                        addonGroup.groupName
+                                                                    }
+                                                                    :
+                                                                </span>{' '}
+                                                                {addonGroup.items
+                                                                    .map(
+                                                                        (addonItem: {
+                                                                            name: string;
+                                                                            quantity: number;
+                                                                        }) =>
+                                                                            `${
+                                                                                addonItem.name
+                                                                            }${
+                                                                                addonItem.quantity >
+                                                                                1
+                                                                                    ? ` (x${addonItem.quantity})`
+                                                                                    : ''
+                                                                            }`,
+                                                                    )
+                                                                    .join(', ')}
+                                                            </div>
+                                                        ),
+                                                    )}
+                                                </div>
+                                            ) : null}
 
                                             {/* Display Variant Options */}
                                             {item.metadata?.variant_options &&
@@ -331,7 +331,8 @@ const CartPage = () => {
                                             <div className="flex items-center gap-1 mt-1 text-theme-primary font-black">
                                                 <span>
                                                     {formatMoneyAmount(
-                                                        item.metadata?.apiPricing
+                                                        item.metadata
+                                                            ?.apiPricing
                                                             ?.total_price ??
                                                             item.price *
                                                                 item.quantity,
@@ -430,7 +431,9 @@ const CartPage = () => {
                                                 }}
                                                 disabled={disableCheckout}
                                                 className="hover:text-theme-primary"
-                                                aria-label={t('editItem') || 'Edit item'}>
+                                                aria-label={
+                                                    t('editItem') || 'Edit item'
+                                                }>
                                                 <Edit />
                                             </Button>
 
@@ -444,7 +447,10 @@ const CartPage = () => {
                                                 }}
                                                 disabled={disableCheckout}
                                                 className="hover:text-red-500 hover:bg-red-50"
-                                                aria-label={t('removeItem') || 'Remove item'}>
+                                                aria-label={
+                                                    t('removeItem') ||
+                                                    'Remove item'
+                                                }>
                                                 <Trash2 />
                                             </Button>
                                         </div>
@@ -466,7 +472,10 @@ const CartPage = () => {
                                     <span>{t('subtotal')}</span>
                                     <div className="flex items-center gap-1 font-bold text-gray-900">
                                         <span>
-                                            {formatMoneyAmount(subtotal, locale)}
+                                            {formatMoneyAmount(
+                                                subtotal,
+                                                locale,
+                                            )}
                                         </span>
                                         <CurrencySymbol className="w-3.5 h-3.5" />
                                     </div>
@@ -486,7 +495,10 @@ const CartPage = () => {
                                     </span>
                                     <div className="flex items-center gap-1.5 text-2xl font-black text-theme-primary">
                                         <span>
-                                            {formatMoneyAmount(subtotal, locale)}
+                                            {formatMoneyAmount(
+                                                subtotal,
+                                                locale,
+                                            )}
                                         </span>
                                         <CurrencySymbol className="w-5 h-5" />
                                     </div>

@@ -35,7 +35,6 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
             image={collection.image_url || ''}
             isSelected={isSelected}
             onClick={onClick}
-            fallbackComponent={fallbackComponent}
             title={collection.name}
             variant="muted"
         />

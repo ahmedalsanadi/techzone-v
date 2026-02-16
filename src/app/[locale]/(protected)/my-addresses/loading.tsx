@@ -2,15 +2,7 @@ import React from 'react';
 
 export default function Loading() {
     return (
-        <div className="mt-4 space-y-4 sm:space-y-6 md:space-y-8">
-            <div className="px-0 sm:px-1">
-                {/* Breadcrumbs skeleton */}
-                <div className="flex items-center gap-2">
-                    <div className="h-4 w-16 rounded bg-gray-100 animate-pulse" />
-                    <div className="h-4 w-4 rounded bg-gray-100 animate-pulse" />
-                    <div className="h-4 w-28 rounded bg-gray-100 animate-pulse" />
-                </div>
-            </div>
+        <div className="space-y-6 py-2">
 
             {/* Header card skeleton (matches MyAddressesView hero card) */}
             <div className="bg-white shadow-sm border border-gray-100 flex flex-col md:flex-row items-center md:items-end justify-between gap-3 sm:gap-4 md:gap-6 overflow-hidden relative rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl p-3 sm:p-4 md:p-6 lg:p-8 xl:p-10">
@@ -28,7 +20,7 @@ export default function Loading() {
             </div>
 
             {/* Addresses list skeleton */}
-            <div className="bg-gray-50/50 rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl p-3 sm:p-4 md:p-6 lg:p-8 xl:p-10 border border-gray-100/80 min-h-[260px] sm:min-h-[320px] md:min-h-[400px] flex flex-col items-center justify-center w-full">
+            <div className="bg-theme-primary/5 rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl p-3 sm:p-4 md:p-6 lg:p-8 xl:p-10 border border-gray-100/80 min-h-[260px] sm:min-h-[320px] md:min-h-[400px] flex flex-col items-center justify-center w-full">
                 <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
                     {Array.from({ length: 4 }).map((_, i) => (
                         <div

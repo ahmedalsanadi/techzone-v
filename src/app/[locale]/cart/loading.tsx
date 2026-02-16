@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function Loading() {
     return (
-        <div className="container mx-auto px-4 py-8 md:py-12">
+        <div className="space-y-6 py-4">
             <div className="h-10 w-56 bg-gray-100 rounded-xl animate-pulse mb-10" />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">

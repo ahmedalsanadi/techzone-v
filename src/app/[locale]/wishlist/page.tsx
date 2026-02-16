@@ -60,7 +60,7 @@ const WishlistPage = () => {
 
     if (items.length === 0) {
         return (
-            <div className="min-h-[70vh] flex flex-col items-center justify-center px-4 text-center">
+            <div className="min-h-[70vh] flex flex-col items-center justify-center text-center">
                 <div className="w-24 h-24 md:w-32 md:h-32 bg-gray-50 rounded-full flex items-center justify-center mb-6">
                     <Heart size={48} className="text-gray-300" />
                 </div>
@@ -82,8 +82,8 @@ const WishlistPage = () => {
     }
 
     return (
-        <div className="container mx-auto px-4 py-8 md:py-12">
-            <h1 className="text-3xl md:text-4xl font-black text-gray-900 mb-10 flex items-center gap-3">
+        <div className="space-y-10">
+            <h1 className="text-3xl md:text-4xl font-black text-gray-900 flex items-center gap-3">
                 {t('title')}
                 <span className="text-sm font-medium text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
                     {t('items', { count: getTotalItems() })}

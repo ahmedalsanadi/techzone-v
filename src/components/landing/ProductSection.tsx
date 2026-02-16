@@ -34,7 +34,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
     }
 
     return (
-        <section className="mt-12 mb-16 animate-in fade-in duration-700 fill-mode-both">
+        <section className="animate-in fade-in duration-700 fill-mode-both">
             {/* Section Header */}
             <div className="flex items-center justify-between mb-8">
                 <h2 className="text-3xl font-black text-gray-900 tracking-tight">

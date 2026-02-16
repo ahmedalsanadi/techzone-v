@@ -200,11 +200,11 @@ export default async function HomePage() {
     }
 
     return (
-        <div className="pb-12 bg-white">
+        <div className="space-y-12">
             <div className="animate-in fade-in duration-1000">
                 <HeroSlider />
             </div>
-            <div className="container mx-auto px-4 mt-8">{ordered}</div>
+            <div className="flex flex-col gap-8">{ordered}</div>
         </div>
     );
 }

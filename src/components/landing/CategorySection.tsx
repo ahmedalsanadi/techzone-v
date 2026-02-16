@@ -20,8 +20,8 @@ const CategorySection = () => {
     // instead of rendering nothing (better perceived performance).
     if (homeCategories.length === 0) {
         return (
-            <section className="mt-8 mb-12">
-                <div className="flex items-center gap-2.5 md:gap-4 overflow-x-auto pb-4 scrollbar-hide rtl justify-start lg:justify-center px-4">
+            <section className="animate-in fade-in duration-700 fill-mode-both">
+                <div className="flex items-center gap-2.5 md:gap-4 overflow-x-auto pb-4 scrollbar-hide rtl justify-start lg:justify-center">
                     {Array.from({ length: 9 }).map((_, i) => (
                         <CategoryCardSkeleton key={i} />
                     ))}
@@ -31,8 +31,8 @@ const CategorySection = () => {
     }
 
     return (
-        <section className="mt-8 mb-12 animate-in fade-in duration-700 fill-mode-both">
-            <div className="flex items-center gap-2.5 md:gap-4 overflow-x-auto pb-4 scrollbar-hide rtl justify-start lg:justify-center px-4">
+        <section className="animate-in fade-in duration-700 fill-mode-both">
+            <div className="flex items-center gap-2.5 md:gap-4 overflow-x-auto pb-4 scrollbar-hide rtl justify-start lg:justify-center">
                 {homeCategories.map((cat, index) => (
                     <CategoryCard
                         key={cat.id}

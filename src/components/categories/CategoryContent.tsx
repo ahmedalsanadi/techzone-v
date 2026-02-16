@@ -146,7 +146,7 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
     };
 
     return (
-        <div className="space-y-6 pb-20">
+        <div className="space-y-6">
             {/* Top Level Category Tabs */}
             <div className="bg-transparent -mx-4 px-4 py-4 border-b border-gray-100 mb-8 overflow-hidden">
                 <CategoryTabs
@@ -156,7 +156,7 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
                 />
             </div>
 
-            <div className="container mx-auto px-4 space-y-8 pb-20">
+            <div className="space-y-8">
                 {/* Header Section */}
                 {/* <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <div className="space-y-4">

@@ -84,12 +84,12 @@ export default function MyAddressesView() {
     const breadcrumbs = [{ label: t('home'), href: '/' }, { label: t('title') }];
 
     return (
-        <div className="min-h-screen mt-4 md:mt-12 space-y-6  px-2 md:px-6">
+        <div className="space-y-6 py-2">
           
-                <Breadcrumbs items={breadcrumbs} />
+                {/* <Breadcrumbs items={breadcrumbs} /> */}
            
 
-            <div className="bg-white shadow-sm border border-gray-100 flex flex-col md:flex-row items-center md:items-end justify-between gap-3 sm:gap-4 md:gap-6 overflow-hidden relative rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl p-3 sm:p-4 md:p-6 lg:p-8 xl:p-10">
+            <div className="bg-white shadow-sm border border-gray-100 flex flex-col md:flex-row items-center md:items-end justify-between gap-3 sm:gap-4 md:gap-6 overflow-hidden relative rounded-lg sm:rounded-xl md:rounded-2xl  p-3 sm:p-4 md:p-6 lg:p-8 xl:p-10">
                 <div className="absolute top-0 start-0 w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 bg-theme-primary/5 rounded-full -ms-10 -mt-10 sm:-ms-12 sm:-mt-12 md:-ms-16 md:-mt-16" />
 
                 <div className="flex flex-col items-center md:items-start text-center md:text-start relative z-10">
@@ -115,13 +115,13 @@ export default function MyAddressesView() {
                 </Button>
             </div>
 
-            <div className="bg-gray-50/50 rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl p-3 sm:p-4 md:p-6 lg:p-8 xl:p-10 border border-gray-100/80 min-h-[260px] sm:min-h-[320px] md:min-h-[400px] flex flex-col items-center justify-center">
+            <div className=" bg-theme-primary/5 rounded-lg sm:rounded-xl md:rounded-2xl  p-3 sm:p-4 md:p-6 lg:p-8 xl:p-10 border border-gray-100/80 min-h-[260px] sm:min-h-[320px] md:min-h-[400px] flex flex-col items-center justify-center">
                 {isLoading ? (
                     <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
                         {[1, 2, 3, 4].map((i) => (
                             <div
                                 key={i}
-                                className="bg-white border-2 border-gray-100 rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl p-3 sm:p-4 md:p-5 lg:p-6 animate-pulse">
+                                className="bg-white border-2 border-gray-100 rounded-lg sm:rounded-xl md:rounded-2xl  p-3 sm:p-4 md:p-5 lg:p-6 animate-pulse">
                                 <div className="flex items-start justify-between gap-3 sm:gap-4">
                                     <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
                                         <div className="w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg sm:rounded-xl bg-gray-100" />
