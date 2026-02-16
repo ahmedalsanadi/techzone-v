@@ -74,59 +74,59 @@ export default async function TermsPage({
 
     return (
         <div className="space-y-6 py-4">
-                <Breadcrumbs items={breadcrumbItems} />
+            <Breadcrumbs items={breadcrumbItems} />
 
-                <div className="mb-12">
-                    <h1 className="text-4xl font-black text-gray-900 leading-tight mb-4">
-                        {t('title')}
-                    </h1>
-                    <p className="text-lg text-gray-600">{t('lastUpdated')}</p>
-                </div>
+            <div className="mb-12">
+                <h1 className="text-4xl font-black text-gray-900 leading-tight mb-4">
+                    {t('title')}
+                </h1>
+                <p className="text-lg text-gray-600">{t('lastUpdated')}</p>
+            </div>
 
-                <div className="bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-gray-100">
-                    <div className="space-y-12">
-                        {/* Introduction */}
-                        <div className="prose prose-lg max-w-none">
-                            <p className="text-gray-700 leading-relaxed text-lg">
-                                {t('introduction')}
-                            </p>
-                        </div>
-
-                        {/* Sections */}
-                        {sections.map((section, index) => {
-                            const Icon = section.icon;
-                            return (
-                                <div
-                                    key={index}
-                                    className="border-b border-gray-100 pb-8 last:border-b-0 last:pb-0">
-                                    <div className="flex items-start gap-4 mb-4">
-                                        <div className="w-12 h-12 rounded-2xl bg-libero-red/10 flex items-center justify-center flex-shrink-0">
-                                            <Icon className="w-6 h-6 text-libero-red" />
-                                        </div>
-                                        <h2 className="text-2xl font-bold text-gray-900 flex-1">
-                                            {section.title}
-                                        </h2>
-                                    </div>
-                                    <div className="ms-16">
-                                        <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                                            {section.content}
-                                        </p>
-                                    </div>
-                                </div>
-                            );
-                        })}
-
-                        {/* Contact Information */}
-                        <div className="mt-12 p-6 rounded-2xl bg-gray-50 border border-gray-100">
-                            <h3 className="text-xl font-bold text-gray-900 mb-3">
-                                {t('contact.title')}
-                            </h3>
-                            <p className="text-gray-700 leading-relaxed">
-                                {t('contact.content')}
-                            </p>
-                        </div>
+            <div className="bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-gray-100">
+                <div className="space-y-12">
+                    {/* Introduction */}
+                    <div className="prose prose-lg max-w-none">
+                        <p className="text-gray-700 leading-relaxed text-lg">
+                            {t('introduction')}
+                        </p>
                     </div>
-                </div
+
+                    {/* Sections */}
+                    {sections.map((section, index) => {
+                        const Icon = section.icon;
+                        return (
+                            <div
+                                key={index}
+                                className="border-b border-gray-100 pb-8 last:border-b-0 last:pb-0">
+                                <div className="flex items-start gap-4 mb-4">
+                                    <div className="w-12 h-12 rounded-2xl bg-libero-red/10 flex items-center justify-center flex-shrink-0">
+                                        <Icon className="w-6 h-6 text-libero-red" />
+                                    </div>
+                                    <h2 className="text-2xl font-bold text-gray-900 flex-1">
+                                        {section.title}
+                                    </h2>
+                                </div>
+                                <div className="ms-16">
+                                    <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+                                        {section.content}
+                                    </p>
+                                </div>
+                            </div>
+                        );
+                    })}
+
+                    {/* Contact Information */}
+                    <div className="mt-12 p-6 rounded-2xl bg-gray-50 border border-gray-100">
+                        <h3 className="text-xl font-bold text-gray-900 mb-3">
+                            {t('contact.title')}
+                        </h3>
+                        <p className="text-gray-700 leading-relaxed">
+                            {t('contact.content')}
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

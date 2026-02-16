@@ -26,7 +26,7 @@ export const cmsService = {
         fetchLibero<CMSPage>(`/store/pages/${slug}`, {
             next: {
                 revalidate: CACHE_STRATEGY.CMS_PAGE_SINGLE,
-                tags: [CACHE_TAGS.cmsPage(slug)],
+                tags: [CACHE_TAGS.CMS_PAGE(slug)],
             },
         }),
 };

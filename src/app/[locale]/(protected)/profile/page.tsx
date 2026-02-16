@@ -4,7 +4,7 @@ import { storeService } from '@/services/store-service';
 import ProfileView from './ProfileView';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
-
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({
     params,
