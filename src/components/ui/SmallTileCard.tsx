@@ -21,6 +21,7 @@ export interface SmallTileCardProps {
     title?: string;
     /** Unselected style: default (white/40) or muted (gray-100, for collection strip) */
     variant?: 'default' | 'muted';
+    index?: number;
 }
 
 /**
@@ -41,14 +42,18 @@ const SmallTileCard: React.FC<SmallTileCardProps> = ({
     imageClassName,
     title,
     variant = 'default',
+    index = 0,
 }) => {
+    const animationDelay = `${(index % 9) * 50}ms`;
+
     const content = (
         <div
             className={cn(
-                'flex flex-col w-[88px] sm:w-[100px] md:w-[116px] shrink-0',
+                'flex flex-col w-[88px] sm:w-[100px] md:w-[116px] shrink-0 animate-in fade-in zoom-in-95 duration-500 fill-mode-both',
                 !href && onClick && 'cursor-pointer',
                 className,
-            )}>
+            )}
+            style={{ animationDelay }}>
             <div
                 className={cn(
                     'flex flex-col rounded-xl overflow-hidden transition-all duration-300 ',
@@ -63,7 +68,8 @@ const SmallTileCard: React.FC<SmallTileCardProps> = ({
                 <div
                     className={cn(
                         'relative w-full aspect-square flex items-center justify-center p-3 overflow-hidden',
-                        icon && 'bg-linear-to-b from-theme-primary/5 to-transparent',
+                        icon &&
+                            'bg-linear-to-b from-theme-primary/5 to-transparent',
                     )}>
                     {icon ? (
                         <div
@@ -87,6 +93,7 @@ const SmallTileCard: React.FC<SmallTileCardProps> = ({
                                 priority={priority}
                                 className="object-cover transition-transform duration-300 group-hover:scale-105"
                                 sizes="(max-width: 768px) 88px, 116px"
+                                index={index}
                                 fallbackComponent={fallbackComponent}
                             />
                         </div>
@@ -112,7 +119,10 @@ const SmallTileCard: React.FC<SmallTileCardProps> = ({
 
     if (href) {
         return (
-            <Link href={href} scroll={scroll} className="group outline-none focus-visible:ring-2 focus-visible:ring-theme-primary focus-visible:ring-offset-2 rounded-2xl">
+            <Link
+                href={href}
+                scroll={scroll}
+                className="group outline-none focus-visible:ring-2 focus-visible:ring-theme-primary focus-visible:ring-offset-2 rounded-2xl">
                 {content}
             </Link>
         );
@@ -124,7 +134,9 @@ const SmallTileCard: React.FC<SmallTileCardProps> = ({
             className="group outline-none focus-visible:ring-2 focus-visible:ring-theme-primary focus-visible:ring-offset-2 rounded-2xl"
             role={onClick ? 'button' : undefined}
             tabIndex={onClick ? 0 : undefined}
-            onKeyDown={onClick ? (e) => e.key === 'Enter' && onClick() : undefined}>
+            onKeyDown={
+                onClick ? (e) => e.key === 'Enter' && onClick() : undefined
+            }>
             {content}
         </div>
     );

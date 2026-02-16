@@ -17,6 +17,7 @@ interface CategoryCardProps {
     onClick?: () => void;
     href?: string;
     scroll?: boolean;
+    index?: number;
 }
 
 const CategoryCard: React.FC<CategoryCardProps> = ({
@@ -29,18 +30,22 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
     onClick,
     href,
     scroll = true,
+    index = 0,
 }) => {
+    const animationDelay = `${(index % 9) * 50}ms`;
+
     if (variant === 'circular') {
         const content = (
             <div
                 className={cn(
-                    'flex flex-col items-center gap-2.5 w-[80px] sm:w-[88px] md:w-[96px] shrink-0 transition-all duration-300 rounded-2xl p-2',
+                    'flex flex-col items-center gap-2.5 w-[80px] sm:w-[88px] md:w-[96px] shrink-0 transition-all duration-300 rounded-2xl p-2 animate-in fade-in zoom-in-95 duration-500 fill-mode-both',
                     'ring-2 ring-transparent shadow-sm',
                     isActive
                         ? 'bg-white ring-theme-primary shadow-lg shadow-theme-primary/15 scale-[1.02]'
                         : 'bg-transparent group-hover:bg-white/70 group-hover:ring-theme-primary/15 group-hover:shadow-md',
                     !href && onClick && 'cursor-pointer',
-                )}>
+                )}
+                style={{ animationDelay }}>
                 <div
                     className={cn(
                         'w-14 h-14 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-2xl overflow-hidden flex items-center justify-center transition-all duration-300',
@@ -105,6 +110,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
             href={href}
             scroll={scroll}
             priority={priority}
+            index={index}
             icon={
                 isMain ? (
                     <LayoutGrid

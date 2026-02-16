@@ -33,6 +33,7 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
                                 src={image}
                                 alt={`Product image ${index + 1}`}
                                 fill
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                                 className="object-cover"
                                 priority={index === 0}
                             />

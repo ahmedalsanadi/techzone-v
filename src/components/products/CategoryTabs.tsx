@@ -31,7 +31,7 @@ const CategoryTabs: React.FC<CategoryTabsProps> = ({
             />
 
             {/* Category Tabs */}
-            {categories.map((cat) => (
+            {categories.map((cat, index) => (
                 <CategoryCard
                     key={cat.id}
                     label={cat.name}
@@ -39,6 +39,7 @@ const CategoryTabs: React.FC<CategoryTabsProps> = ({
                     isActive={activeCategoryId === cat.id.toString()}
                     href={`/categories/${cat.slug || cat.id}`}
                     scroll={false}
+                    index={index + 1}
                 />
             ))}
         </div>

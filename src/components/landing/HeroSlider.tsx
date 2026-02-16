@@ -138,9 +138,9 @@ const HeroSlider = () => {
                                             <Image
                                                 src={slide.image}
                                                 alt={slide.title}
-                                                width={500}
-                                                height={500}
-                                                
+                                                fill
+                                                sizes="(max-width: 768px) 100vw, 50vw"
+                                                quality={90}
                                                 className="object-contain drop-shadow-[0_20px_20px_rgba(0,0,0,0.5)] md:drop-shadow-[0_35px_35px_rgba(0,0,0,0.5)] transform hover:scale-105 transition-transform duration-700"
                                                 priority
                                             />

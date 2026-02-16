@@ -79,6 +79,7 @@ interface DynamicImageProps extends Omit<ImageProps, 'onLoad' | 'onError'> {
     containerClassName?: string;
     onLoad?: () => void;
     onError?: () => void;
+    index?: number;
 }
 
 /**
@@ -95,14 +96,15 @@ export default function DynamicImage({
     loading: loadingProp,
     onLoad,
     onError,
+    index,
     ...props
 }: DynamicImageProps) {
     const [error, setError] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    
+
     // ✅ Store previous src to detect changes during render
     const [prevSrc, setPrevSrc] = useState(src);
-    
+
     // ✅ Adjust state during rendering when src changes
     if (src !== prevSrc) {
         setPrevSrc(src);
@@ -120,6 +122,8 @@ export default function DynamicImage({
         setIsLoading(false);
         onError?.();
     };
+
+    const animationDelay = index ? `${(index % 8) * 150}ms` : undefined;
 
     if (error || !src) {
         return (
@@ -140,7 +144,10 @@ export default function DynamicImage({
                 containerClassName,
             )}>
             {isLoading && (
-                <div className="absolute inset-0 bg-gray-100 animate-pulse z-10" />
+                <div
+                    className="absolute inset-0 bg-gray-100 animate-pulse z-10"
+                    style={{ animationDelay }}
+                />
             )}
             <Image
                 {...props}
@@ -148,7 +155,7 @@ export default function DynamicImage({
                 alt={alt}
                 fill
                 priority={priority}
-                loading={priority ? undefined : (loadingProp || 'lazy')}
+                loading={priority ? undefined : loadingProp || 'lazy'}
                 className={cn(
                     'transition-all duration-500 ease-in-out object-cover',
                     isLoading ? 'blur-lg scale-[1.02]' : 'blur-0 scale-100',

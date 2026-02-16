@@ -4,22 +4,28 @@ import { cn } from '@/lib/utils';
 
 interface ProductCardSkeletonProps {
     className?: string;
+    index?: number;
 }
 
 const ProductCardSkeleton: React.FC<ProductCardSkeletonProps> = ({
     className,
+    index = 0,
 }) => {
+    // Calculate staggered delay based on index (cycles every 8 items)
+    const staggerDelay = `${(index % 8) * 150}ms`;
+
     return (
         <div
             className={cn(
                 'bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm flex flex-col h-full animate-pulse relative',
                 className,
-            )}>
+            )}
+            style={{ animationDelay: staggerDelay }}>
             {/* Wishlist Button Placeholder */}
-            <div className="absolute top-3 left-3 z-5 size-8 rounded-full bg-white/80 border border-gray-100" />
+            <div className="absolute top-3 left-3 z-5 size-8 rounded-full bg-theme-primary/5 border border-theme-primary/10" />
 
             {/* Image Placeholder */}
-            <div className="w-full aspect-square bg-gray-50" />
+            <div className="w-full aspect-square bg-theme-primary/5" />
 
             {/* Product Info Section */}
             <div className="p-4 flex flex-col flex-1">

@@ -14,6 +14,7 @@ interface ProductSectionProps {
     moreHref: string;
     products: Product[];
     translationNamespace?: string;
+    priority?: boolean;
 }
 
 const ProductSection: React.FC<ProductSectionProps> = ({
@@ -21,6 +22,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
     moreHref,
     products,
     translationNamespace = 'Promotions',
+    priority = false,
 }) => {
     const t = useTranslations(translationNamespace);
     const { loadingProductId, handleAddClick, prefetchProduct } =
@@ -47,7 +49,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
 
             {/* Products Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                {products.map((product) => {
+                {products.map((product, index) => {
                     // Calculate discount
                     const salePrice = product.sale_price;
                     const hasDiscount =
@@ -70,12 +72,6 @@ const ProductSection: React.FC<ProductSectionProps> = ({
                     // Generate product href
                     const productHref = `/products/${product.slug}`;
 
-                    // Get category ID for cart (use first category if available)
-                    const categoryId =
-                        product.categories && product.categories.length > 0
-                            ? String(product.categories[0].id)
-                            : 'general';
-
                     return (
                         <ProductCard
                             key={product.id}
@@ -86,6 +82,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
                             href={productHref}
                             productId={product.id}
                             productSlug={product.slug}
+                            priority={priority && index < 4}
                             discountBadge={
                                 hasDiscount
                                     ? t('save', {
@@ -95,6 +92,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
                             }
                             onAddToCartClick={() => handleAddClick(product)}
                             isAdding={loadingProductId === product.id}
+                            index={index}
                             addToCartLabel={
                                 requiresConfiguration(product)
                                     ? t('customize') || 'Customize'

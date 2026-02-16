@@ -27,6 +27,7 @@ interface ProductCardProps {
     onClick?: () => void;
     isAdding?: boolean;
     onPrefetch?: () => void;
+    index?: number;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -45,10 +46,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
     onClick,
     isAdding = false,
     onPrefetch,
+    index = 0,
 }) => {
     const cardRef = useRef<HTMLDivElement | null>(null);
     const hasPrefetchedRef = useRef(false);
     const { toggleWishlist } = useWishlistActions();
+
+    // Entrance stagger delay
+    const animationDelay = `${(index % 8) * 50}ms`;
+
     useEffect(() => {
         if (!onPrefetch || !cardRef.current) return;
         if (hasPrefetchedRef.current) return;
@@ -108,7 +114,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div
             ref={cardRef}
             onClick={onClick}
-            className="bg-white border border-gray-100 rounded-xl overflow-hidden relative group shadow-sm flex flex-col h-full">
+            className="bg-white border border-gray-100 rounded-xl overflow-hidden relative group shadow-sm flex flex-col h-full animate-in fade-in slide-in-from-bottom-2 duration-700 fill-mode-both"
+            style={{ animationDelay }}>
             {/* Wishlist Button */}
             <Button
                 type="button"
@@ -135,7 +142,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
                         fill
                         priority={priority}
                         className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 33vw, 20vw"
+                        sizes="
+                            (max-width: 639px) 100vw,
+                            (max-width: 1023px) 33vw,
+                            (max-width: 1279px) 25vw,
+                            20vw
+                            "
+                        index={index}
                         fallbackComponent={
                             <div className="flex flex-col items-center justify-center gap-2 text-gray-300 h-full w-full">
                                 <ShoppingBasket size={32} strokeWidth={1} />

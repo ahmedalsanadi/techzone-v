@@ -9,10 +9,12 @@ export default function HomeProductSection({
     namespace,
     moreHref,
     products,
+    priority,
 }: {
     namespace: 'FeaturedProducts' | 'NewArrivals' | 'Promotions';
     moreHref: string;
     products: Product[];
+    priority?: boolean;
 }) {
     const t = useTranslations(namespace);
 
@@ -22,7 +24,7 @@ export default function HomeProductSection({
             moreHref={moreHref}
             products={products}
             translationNamespace={namespace}
+            priority={priority}
         />
     );
 }
-

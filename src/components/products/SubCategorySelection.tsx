@@ -35,9 +35,10 @@ const SubCategorySelection: React.FC<SubCategorySelectionProps> = ({
                         isActive={activeSubCategoryId === 'all_sub'}
                         href={parentHref}
                         scroll={false}
+                        index={0}
                     />
 
-                    {subCategories.map((sub) => (
+                    {subCategories.map((sub, index) => (
                         <CategoryCard
                             key={sub.id}
                             label={sub.name}
@@ -45,6 +46,7 @@ const SubCategorySelection: React.FC<SubCategorySelectionProps> = ({
                             isActive={activeSubCategoryId === sub.id.toString()}
                             href={`/categories/${sub.slug || sub.id}`}
                             scroll={false}
+                            index={index + 1}
                         />
                     ))}
                 </div>

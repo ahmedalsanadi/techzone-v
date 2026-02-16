@@ -48,7 +48,7 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
                         : 'sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4',
                 )}>
                 {Array.from({ length: 8 }).map((_, i) => (
-                    <ProductCardSkeleton key={i} />
+                    <ProductCardSkeleton key={i} index={i} />
                 ))}
             </div>
         );
@@ -72,7 +72,7 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
                             ? 'sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
                             : 'sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4',
                     )}>
-                    {products.map((product) => (
+                    {products.map((product, index) => (
                         <ProductCard
                             key={product.id}
                             name={product.title}
@@ -82,6 +82,8 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
                             href={`/products/${product.slug}`}
                             productId={product.id}
                             productSlug={product.slug}
+                            priority={index < 4}
+                            index={index}
                             addToCartLabel={
                                 getAddToCartLabel?.(product) || t('addToCart')
                             }

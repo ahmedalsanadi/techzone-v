@@ -4,6 +4,7 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import CategoryCard from '@/components/ui/CategoryCard';
+import CategoryCardSkeleton from '@/components/ui/CategoryCardSkeleton';
 import { useStore } from '@/components/providers/StoreProvider';
 
 const CategorySection = () => {
@@ -22,12 +23,7 @@ const CategorySection = () => {
             <section className="mt-8 mb-12">
                 <div className="flex items-center gap-2.5 md:gap-4 overflow-x-auto pb-4 scrollbar-hide rtl justify-start lg:justify-center px-4">
                     {Array.from({ length: 9 }).map((_, i) => (
-                        <div
-                            key={i}
-                            className="shrink-0 w-[92px] md:w-[110px]">
-                            <div className="w-full aspect-square rounded-2xl bg-gray-100 animate-pulse" />
-                            <div className="mt-2 h-3 w-3/4 mx-auto rounded bg-gray-100 animate-pulse" />
-                        </div>
+                        <CategoryCardSkeleton key={i} />
                     ))}
                 </div>
             </section>
@@ -37,12 +33,14 @@ const CategorySection = () => {
     return (
         <section className="mt-8 mb-12">
             <div className="flex items-center gap-2.5 md:gap-4 overflow-x-auto pb-4 scrollbar-hide rtl justify-start lg:justify-center px-4">
-                {homeCategories.map((cat) => (
+                {homeCategories.map((cat, index) => (
                     <CategoryCard
                         key={cat.id}
                         label={cat.name}
                         image={cat.image_url}
                         href={`/categories/${cat.slug || cat.id}`}
+                        priority={index < 6}
+                        index={index}
                     />
                 ))}
             </div>
