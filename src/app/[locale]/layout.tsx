@@ -14,7 +14,11 @@ import '@/app/globals.css';
 import PageContainer from '@/components/layouts/PageContainer';
 import { ServiceUnavailableFallback } from '@/components/layouts/service-unavailable-fallback';
 import { QueryProvider } from '@/components/providers/QueryProvider';
-import { getServerStoreConfig } from '@/services/store-config';
+import {
+    getServerStoreConfig,
+    getStoreCategories,
+    getStorePages,
+} from '@/services/store-config';
 import { StoreProvider } from '@/components/providers/StoreProvider';
 import { ThemeStyles } from '@/components/providers/ThemeStyles';
 import ToasterContainer from '@/components/layouts/ToasterContainer';
@@ -99,9 +103,13 @@ export default async function RootLayout({
     const isArabic = locale === 'ar';
     const messages = await getMessages({ locale });
 
-    // Tenant config (UI + branding only, NOT metadata)
-    // Using shared server context ensures single fetch per request
-    const storeConfig = await getServerStoreConfig();
+    // Tenant data (UI + branding + layout)
+    // Using shared server context ensures single fetch per request per layout segment
+    const [storeConfig, categories, cmsPages] = await Promise.all([
+        getServerStoreConfig(),
+        getStoreCategories(),
+        getStorePages(),
+    ]);
 
     return (
         <html
@@ -146,8 +154,8 @@ export default async function RootLayout({
                             <QueryProvider>
                                 <StoreProvider
                                     config={storeConfig}
-                                    categories={[]}
-                                    cmsPages={[]}>
+                                    categories={categories}
+                                    cmsPages={cmsPages}>
                                     <ProductConfigProvider>
                                         <PageContainer>
                                             {children}

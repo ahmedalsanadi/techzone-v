@@ -34,20 +34,25 @@ export interface StoreInfo {
     default_language: string;
     default_currency: string;
     support_channels: Array<{
-        type: string;
+        type: 'phone' | 'email' | 'whatsapp' | string;
         value: string;
         title: string;
     }> | null;
     social_channels: SocialChannel[];
+    avatar_url?: string;
     custom_links?: Array<{
         title: string;
-        url: string;
+        link: string;
+        image_path?: string;
     }> | null;
     app_links?: Array<{
-        title: string;
         url: string;
+        icon: string;
+        platform: string;
     }> | null;
-    products_type: string;
+    store_industry_id?: number;
+    created_at?: string;
+    products_type: number;
     store_type: string;
     phone?: string;
     email?: string;
@@ -103,6 +108,13 @@ export interface Category {
     children?: Category[];
     parent_id?: number | string | null;
 }
+export interface FulfillmentMethod {
+    value: number;
+    label: string;
+    description: string;
+    requires_address: boolean;
+    requires_pickup_datetime: boolean;
+}
 
 export interface StoreConfig {
     theme: StoreTheme;
@@ -110,7 +122,8 @@ export interface StoreConfig {
     store: StoreInfo;
     features: StoreFeatures;
     home_sections: HomeSections;
-    checkout: CheckoutSettings;
+    fulfillment_methods: FulfillmentMethod[];
+    checkout?: CheckoutSettings;
 }
 
 export interface ProductVariety {
