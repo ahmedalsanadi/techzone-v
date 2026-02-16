@@ -100,7 +100,7 @@ export default async function CategoryPage({
     ];
 
     return (
-        <section className="min-h-screen bg-gray-50/30 py-16 px-8 relative">
+        <section className="min-h-screen relative">
             <Breadcrumbs items={breadcrumbItems} />
             <HydrationBoundary state={dehydrate(queryClient)}>
                 <CategoryContent initialCategory={category} />
