@@ -147,14 +147,10 @@ export default async function CMSPageDetail({ params }: Props) {
 
     return (
         <div className="relative space-y-6">
-            <div className="absolute inset-0 pointer-events-none -z-10">
-                <div className="absolute -top-24 -right-20 h-64 w-64 rounded-full bg-theme-primary/10 blur-[120px]" />
-                <div className="absolute top-1/3 -left-16 h-56 w-56 rounded-full bg-theme-secondary/10 blur-[120px]" />
-            </div>
 
             <Breadcrumbs items={breadcrumbItems} />
 
-            <article className="mt-6 lg:mt-10 space-y-8">
+            <article className="space-y-8">
                 <header className="rounded-3xl border border-gray-100 bg-white/80 px-6 py-8 shadow-sm backdrop-blur-sm md:px-10">
                     <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500">
                         <span className="inline-flex items-center gap-2 rounded-full bg-theme-primary/10 px-3 py-1 font-semibold text-theme-primary">
