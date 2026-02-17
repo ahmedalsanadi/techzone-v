@@ -114,7 +114,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div
             ref={cardRef}
             onClick={onClick}
-            className="bg-white border border-gray-100 rounded-xl overflow-hidden relative group shadow-sm flex flex-col h-full animate-in fade-in slide-in-from-bottom-2 duration-700 fill-mode-both"
+            className="bg-white border border-gray-100 rounded-xl overflow-hidden relative group shadow-sm flex flex-col h-full animate-in fade-in slide-in-from-bottom-2 duration-700 fill-mode-both max-w-[330px] w-full mx-auto md:max-w-full md:mx-0 transform-gpu"
             style={{ animationDelay }}>
             {/* Wishlist Button */}
             <Button
@@ -135,7 +135,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             {/* Link wrapper for Image and Info */}
             <Link href={href} className="w-full flex flex-col flex-1">
                 {/* Product Image */}
-                <div className="relative w-full aspect-square bg-gray-50 overflow-hidden">
+                <div className="relative w-full aspect-square bg-gray-50 overflow-hidden rounded-t-xl">
                     <DynamicImage
                         src={image}
                         alt={name}
