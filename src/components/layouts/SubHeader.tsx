@@ -14,8 +14,12 @@ import {
 } from '@/lib/address';
 import { Button } from '@/components/ui/Button';
 
+import { useStore } from '@/components/providers/StoreProvider';
+import { FULFILLMENT_VALUE_TO_TYPE, type OrderType } from '@/lib/checkout';
+
 export default function SubHeader() {
     const t = useTranslations('SubHeader');
+    const { config } = useStore();
     const { selectedBranchName, setModalOpen } = useBranchStore();
     const {
         orderType,
@@ -44,13 +48,22 @@ export default function SubHeader() {
         }
     };
 
-    const activeOrderType = orderType || 'delivery';
+    const allowedMethods = config?.fulfillment_methods || [];
+    const orderTypes = allowedMethods
+        .map((m) => {
+            const id = FULFILLMENT_VALUE_TO_TYPE[m.value];
+            return {
+                id,
+                label: id ? t(id as any) : m.label,
+            };
+        })
+        .filter(
+            (t): t is { id: NonNullable<OrderType>; label: string } =>
+                t.id !== null,
+        );
 
-    const orderTypes = [
-        { id: 'dineIn', label: t('dineIn') },
-        { id: 'pickup', label: t('pickup') },
-        { id: 'delivery', label: t('delivery') },
-    ];
+    const activeOrderType =
+        orderType || (orderTypes[0]?.id as any) || 'delivery';
 
     const activeStyle =
         'bg-theme-primary/5 text-theme-primary border-theme-primary-border';
@@ -167,7 +180,6 @@ export default function SubHeader() {
                     {activeOrderType === 'delivery' && deliveryAddress && (
                         <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-sm border border-gray-200 space-y-2 relative z-10">
                             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-
                                 <div className="flex-1 min-w-0 space-y-2 pointer-events-none">
                                     <div className="flex items-center gap-2 sm:gap-3 text-sm text-gray-700 min-w-0">
                                         <MapPin className="w-4 h-4 text-theme-primary shrink-0" />
@@ -193,20 +205,19 @@ export default function SubHeader() {
                                         </div>
                                     </div>
 
-                                    {orderTime === 'later' &&
-                                        scheduledTime && (
-                                            <div className="flex items-center gap-2 text-sm text-gray-700">
-                                                <Clock className="w-4 h-4 text-theme-primary shrink-0" />
-                                                <span>
-                                                    {formatScheduledTime(
-                                                        scheduledTime,
-                                                        'ar',
-                                                    )}
-                                                </span>
-                                            </div>
-                                        )}
+                                    {orderTime === 'later' && scheduledTime && (
+                                        <div className="flex items-center gap-2 text-sm text-gray-700">
+                                            <Clock className="w-4 h-4 text-theme-primary shrink-0" />
+                                            <span>
+                                                {formatScheduledTime(
+                                                    scheduledTime,
+                                                    'ar',
+                                                )}
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
-                            {/* Edit Button: */}
+                                {/* Edit Button: */}
                                 <Button
                                     type="button"
                                     variant="secondaryTint"

@@ -12,6 +12,7 @@ import { BranchList } from './BranchList';
 import { BranchMapContainer } from './BranchMapContainer';
 import { cn } from '@/lib/utils';
 import WorkingHoursModal from '../WorkingHoursModal';
+import ConfirmModal from '../ConfirmModal';
 import {
     Dialog,
     DialogPanel,
@@ -45,6 +46,10 @@ const BranchSelectionModal: React.FC = () => {
         isModalOpen,
         selectedBranchId,
         hasSelectedOnce,
+        isConfirmOpen,
+        setConfirmOpen,
+        isClearingCart,
+        handleConfirmBranchChange,
     } = useBranchSelection();
 
     return (
@@ -133,20 +138,20 @@ const BranchSelectionModal: React.FC = () => {
                             <div className="shrink-0 w-full h-[320px] md:h-auto md:min-h-0 md:flex-1 relative p-3 bg-gray-50 flex flex-col">
                                 <div className="w-full h-[280px] md:h-full md:min-h-[260px] min-w-0">
                                     <BranchMapContainer
-                                    branches={branches}
-                                    selectedBranchId={selectedBranchForMap}
-                                    isLoading={isLoading}
-                                    error={error}
-                                    onBranchSelect={(branch) => {
-                                        handleBranchSelect(branch);
-                                        const index = branches.findIndex(
-                                            (b) => b.id === branch.id,
-                                        );
-                                        if (index >= 0) {
-                                            setFocusedBranchIndex(index);
-                                        }
-                                    }}
-                                />
+                                        branches={branches}
+                                        selectedBranchId={selectedBranchForMap}
+                                        isLoading={isLoading}
+                                        error={error}
+                                        onBranchSelect={(branch) => {
+                                            handleBranchSelect(branch);
+                                            const index = branches.findIndex(
+                                                (b) => b.id === branch.id,
+                                            );
+                                            if (index >= 0) {
+                                                setFocusedBranchIndex(index);
+                                            }
+                                        }}
+                                    />
                                 </div>
                             </div>
                         </DialogPanel>
@@ -161,6 +166,18 @@ const BranchSelectionModal: React.FC = () => {
                     onClose={handleCloseWorkingHours}
                 />
             )}
+            {/* Branch Change Confirmation Sub-Modal */}
+            <ConfirmModal
+                isOpen={isConfirmOpen}
+                onClose={() => setConfirmOpen(false)}
+                onConfirm={handleConfirmBranchChange}
+                title={t('confirmBranchChangeTitle')}
+                message={t('confirmBranchChangeMessage')}
+                confirmLabel={t('confirm')}
+                cancelLabel={t('cancel')}
+                variant="danger"
+                isLoading={isClearingCart}
+            />
         </>
     );
 };

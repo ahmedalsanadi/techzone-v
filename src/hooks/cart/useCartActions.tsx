@@ -13,7 +13,10 @@ import { toast } from 'sonner';
 import { ShoppingCart } from 'lucide-react';
 import React from 'react';
 import { useRouter } from '@/i18n/navigation';
-import { transformCartItemToApiRequest, transformLocalAddonsToApi } from '@/lib/cart/utils';
+import {
+    transformCartItemToApiRequest,
+    transformLocalAddonsToApi,
+} from '@/lib/cart/utils';
 
 type PendingQty = {
     desiredQuantity: number;
@@ -71,7 +74,10 @@ export const useCartActions = () => {
                     throw new Error('Product ID is required');
                 }
 
-                const apiRequest = transformCartItemToApiRequest(item, quantity);
+                const apiRequest = transformCartItemToApiRequest(
+                    item,
+                    quantity,
+                );
 
                 // Add item via API, then update local store from returned item (avoid full refetch)
                 const apiItem = await cartService.addItem(apiRequest);
@@ -92,7 +98,7 @@ export const useCartActions = () => {
                             className="text-theme-primary"
                         />
                     ),
-               
+
                     action: {
                         label: t('viewCart'),
                         onClick: () => router.push('/cart'),
@@ -263,8 +269,7 @@ export const useCartActions = () => {
                                 transformApiCartItemToLocal(apiItem);
                             useCartStore.setState((s) => {
                                 const idx = s.items.findIndex(
-                                    (i) =>
-                                        i.metadata?.apiItemId === apiItem.id,
+                                    (i) => i.metadata?.apiItemId === apiItem.id,
                                 );
                                 if (idx === -1)
                                     return { items: [...s.items, localItem] };
@@ -277,9 +282,7 @@ export const useCartActions = () => {
                                 'Failed to update item quantity via API:',
                                 error,
                             );
-                            toast.error(
-                                t('updateError') || 'فشل تحديث الكمية',
-                            );
+                            toast.error(t('updateError') || 'فشل تحديث الكمية');
                             // Restore server truth
                             await syncWithAPI();
                         } finally {
@@ -328,8 +331,10 @@ export const useCartActions = () => {
                 // Normalize "no variant" to null on both sides.
                 // Otherwise `undefined !== null` and we incorrectly take the POST+DELETE path,
                 // which can merge items server-side and bump quantity unexpectedly.
-                const currentVariant = current.metadata?.product_variant_id ?? null;
-                const nextVariant = newItem.metadata?.product_variant_id ?? null;
+                const currentVariant =
+                    current.metadata?.product_variant_id ?? null;
+                const nextVariant =
+                    newItem.metadata?.product_variant_id ?? null;
 
                 // Optimistic UI: update visible item immediately.
                 useCartStore.setState((s) => ({
@@ -375,7 +380,8 @@ export const useCartActions = () => {
                         const idx = s.items.findIndex(
                             (i) => i.metadata?.apiItemId === apiItem.id,
                         );
-                        if (idx === -1) return { items: [...s.items, localItem] };
+                        if (idx === -1)
+                            return { items: [...s.items, localItem] };
                         const nextItems = [...s.items];
                         nextItems[idx] = localItem;
                         return { items: nextItems };
@@ -423,10 +429,30 @@ export const useCartActions = () => {
         }
     };
 
+    const clearAllCart = async () => {
+        if (isAuthenticated && !isGuestMode) {
+            beginMutation();
+            try {
+                await cartService.clearCart();
+                useCartStore.getState().clearCart();
+                toast.success(t('cartCleared') || 'تم تفريغ السلة');
+            } catch (error) {
+                console.error('Failed to clear cart via API:', error);
+                toast.error(t('clearError') || 'فشل تفريغ السلة');
+            } finally {
+                endMutation();
+            }
+        } else {
+            useCartStore.getState().clearCart();
+            toast.success(t('cartCleared') || 'تم تفريغ السلة');
+        }
+    };
+
     return {
         addToCart,
         removeFromCart,
         updateItemQuantity,
         updateItemConfiguration,
+        clearAllCart,
     };
 };

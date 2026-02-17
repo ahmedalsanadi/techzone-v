@@ -135,6 +135,7 @@ export interface CreateOrderRequest {
     epayment_method_id?: number;
     success_url?: string;
     error_url?: string;
+    shipping_speed_type?: number;
 }
 
 export interface CreateOrderResponse {
@@ -188,6 +189,7 @@ export interface EpaymentMethodOption {
 export interface CheckoutInitRequest {
     fulfillment_method: FulfillmentMethod;
     address_id?: number;
+    shipping_speed_type?: number;
 }
 
 export interface CheckoutInitCartItem {
@@ -299,7 +301,12 @@ export interface CheckoutInitResponse {
     wallet: CheckoutInitWallet;
     summary: CheckoutInitSummary;
     settings: CheckoutInitSettings;
-    shipping_options?: Array<{ value: number; label: string; description: string; fee: number }>;
+    shipping_speed_types?: Array<{
+        value: number;
+        label: string;
+        description: string;
+        fee: number;
+    }>;
 }
 
 export interface PaymentStatusResponse {

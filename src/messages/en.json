@@ -100,7 +100,9 @@
     "selectEpaymentMethod": "Select payment method",
     "codMaxAmount": "Up to {amount} SAR",
     "noPaymentMethodsAvailable": "No payment methods available. Please contact support.",
-    "payWithWalletOnly": "Your order will be paid using your wallet. No other payment method is needed."
+    "payWithWalletOnly": "Your order will be paid using your wallet. No other payment method is needed.",
+    "shippingSpeed": "Shipping Speed",
+    "deliveryToSmall": "to"
   },
   "Order": {
     "orderType": "Order Type",
@@ -440,7 +442,8 @@
     "clearPending": "Clear pending items",
     "editItem": "Edit item",
     "loading": "Loading your cart...",
-    "removeItem": "Remove item"
+    "removeItem": "Remove item",
+    "cartCleared": "Cart cleared successfully"
   },
   "Wishlist": {
     "title": "Wishlist",
@@ -592,7 +595,10 @@
       "Friday": "Friday"
     },
     "all_day": "All Day",
-    "confirm": "Confirm Selection"
+    "confirm": "Confirm Selection",
+    "confirmBranchChangeTitle": "Confirm Branch Change",
+    "confirmBranchChangeMessage": "Changing the branch will remove all items from your cart because prices and availability differ between branches. Do you want to continue?",
+    "cancel": "Cancel"
   },
   "Collections": {
     "title": "Special Offers & Collections",

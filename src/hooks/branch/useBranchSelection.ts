@@ -9,6 +9,10 @@ import { useBranchStore } from '@/store/useBranchStore';
 import { branchService } from '@/services/branch-service';
 import { BRANCH_TYPES, calculateBranchIsOpen } from '@/lib/branches';
 import type { Branch } from '@/types/branches';
+import { useCartStore } from '@/store/useCartStore';
+import { useCartActions } from '../cart/useCartActions';
+import { useQueryClient } from '@tanstack/react-query';
+import { CACHE_TAGS } from '@/config/cache';
 
 export function useBranchSelection() {
     const router = useRouter();
@@ -20,6 +24,9 @@ export function useBranchSelection() {
         hasSelectedOnce,
         selectedBranch,
     } = useBranchStore();
+    const { getTotalItems } = useCartStore();
+    const { clearAllCart } = useCartActions();
+    const queryClient = useQueryClient();
 
     const [tempSelectedBranch, setTempSelectedBranch] = useState<Branch | null>(
         null,
@@ -28,6 +35,8 @@ export function useBranchSelection() {
         null,
     );
     const [focusedBranchIndex, setFocusedBranchIndex] = useState<number>(0);
+    const [isConfirmOpen, setConfirmOpen] = useState(false);
+    const [isClearingCart, setClearingCart] = useState(false);
 
     // Fetch branches with React Query
     const {
@@ -88,12 +97,65 @@ export function useBranchSelection() {
         setTempSelectedBranch(branch);
     }, []);
 
-    const handleConfirmSelection = useCallback(() => {
-        if (tempSelectedBranch) {
-            setSelectedBranch(tempSelectedBranch);
+    const executeSelection = useCallback(
+        async (branch: Branch, isChanging: boolean) => {
+            if (isChanging) {
+                setClearingCart(true);
+                try {
+                    await clearAllCart();
+                } finally {
+                    setClearingCart(false);
+                }
+            }
+
+            setSelectedBranch(branch);
             setModalOpen(false);
+
+            // Invalidate branch-dependent queries if branch changed
+            if (isChanging) {
+                queryClient.invalidateQueries({
+                    queryKey: [CACHE_TAGS.PRODUCTS],
+                });
+                queryClient.invalidateQueries({
+                    queryKey: [CACHE_TAGS.CATEGORIES],
+                });
+                queryClient.invalidateQueries({
+                    queryKey: ['checkout'],
+                });
+
+                // Force refresh Server Components to reflect new branch data
+                router.refresh();
+            }
+        },
+        [setSelectedBranch, setModalOpen, clearAllCart, queryClient, router],
+    );
+
+    const handleConfirmSelection = useCallback(async () => {
+        if (tempSelectedBranch) {
+            const isChanging =
+                selectedBranchId && selectedBranchId !== tempSelectedBranch.id;
+            const hasItems = getTotalItems() > 0;
+
+            if (isChanging && hasItems) {
+                // Show confirmation modal if branch changes and has items
+                setConfirmOpen(true);
+                return;
+            }
+
+            // Proceed directly if no items or no branch change
+            await executeSelection(
+                tempSelectedBranch,
+                Boolean(isChanging && selectedBranchId),
+            );
         }
-    }, [tempSelectedBranch, setSelectedBranch, setModalOpen]);
+    }, [tempSelectedBranch, selectedBranchId, getTotalItems, executeSelection]);
+
+    const handleConfirmBranchChange = useCallback(async () => {
+        if (tempSelectedBranch) {
+            await executeSelection(tempSelectedBranch, true);
+            setConfirmOpen(false);
+        }
+    }, [tempSelectedBranch, executeSelection]);
 
     const handleWorkingHoursClick = useCallback(
         (e: React.MouseEvent, branch: Branch) => {
@@ -144,5 +206,9 @@ export function useBranchSelection() {
         setModalOpen,
         selectedBranchId,
         hasSelectedOnce,
+        isConfirmOpen,
+        setConfirmOpen,
+        isClearingCart,
+        handleConfirmBranchChange,
     };
 }

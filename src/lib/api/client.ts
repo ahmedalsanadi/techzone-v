@@ -172,6 +172,18 @@ export async function fetchLiberoFull<T>(
                     // cross-tenant cache pollution.
                     url.searchParams.set('_t', storeKey);
 
+                    // Also include branch ID in the cache key if available
+                    const { cookies } = await import('next/headers');
+                    const cookieStore = await cookies();
+                    const { BRANCH_COOKIES } =
+                        await import('@/lib/branches/constants');
+                    const branchId = cookieStore.get(
+                        BRANCH_COOKIES.BRANCH_ID,
+                    )?.value;
+                    if (branchId) {
+                        url.searchParams.set('_b', branchId);
+                    }
+
                     // Add tenant tag for selective on-demand revalidation
                     const { CACHE_TAGS } = await import('@/config/cache');
                     const tenantTag = CACHE_TAGS.TENANT(storeKey);

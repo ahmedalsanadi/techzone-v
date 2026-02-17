@@ -101,7 +101,9 @@
     "selectEpaymentMethod": "اختر طريقة الدفع",
     "codMaxAmount": "حتى {amount} ر.س",
     "noPaymentMethodsAvailable": "لا توجد طرق دفع متاحة. يرجى التواصل مع الدعم.",
-    "payWithWalletOnly": "سيتم دفع طلبك من المحفظة. لا حاجة لاختيار طريقة دفع أخرى."
+    "payWithWalletOnly": "سيتم دفع طلبك من المحفظة. لا حاجة لاختيار طريقة دفع أخرى.",
+    "shippingSpeed": "سرعة الشحن",
+    "deliveryToSmall": "إلى"
   },
   "Order": {
     "orderType": "نوع الطلب",
@@ -440,7 +442,8 @@
     "clearPending": "مسح العناصر المعلقة",
     "editItem": "تعديل العنصر",
     "loading": "جاري تحميل السلة...",
-    "removeItem": "حذف العنصر"
+    "removeItem": "حذف العنصر",
+    "cartCleared": "تم حذف جميع عناصر السلة بنجاح"
   },
   "Wishlist": {
     "title": "قائمة الرغبات",
@@ -595,7 +598,10 @@
       "Friday": "الجمعة"
     },
     "all_day": "طوال اليوم",
-    "confirm": "تأكيد اختيار الفرع"
+    "confirm": "تأكيد اختيار الفرع",
+    "confirmBranchChangeTitle": "تأكيد تغيير الفرع",
+    "confirmBranchChangeMessage": "تغيير الفرع سيؤدي إلى حذف جميع الأصناف من السلة لأن الأسعار والتوفر تختلف بين الفروع. هل تريد الاستمرار؟",
+    "cancel": "إلغاء"
   },
   "Collections": {
     "title": "العروض والمجموعات الخاصة",
