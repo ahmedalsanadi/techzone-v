@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronLeft, MapPin, Clock } from 'lucide-react';
+import { ChevronLeft, MapPin, Clock, Truck } from 'lucide-react';
 import CheckoutCard from './CheckoutCard';
 import { useCallback, useState } from 'react';
 import { useOrderStore, getScheduledTimeAsDate } from '@/store/useOrderStore';
@@ -20,11 +20,13 @@ interface OrderTypeCardProps {
      */
     isOpen?: boolean;
     onOpenChange?: (open: boolean) => void;
+    shippingSpeedLabel?: string;
 }
 
 export default function OrderTypeCard({
     isOpen,
     onOpenChange,
+    shippingSpeedLabel,
 }: OrderTypeCardProps = {}) {
     const t = useTranslations('Order');
     const checkoutT = useTranslations('Checkout');
@@ -189,6 +191,22 @@ export default function OrderTypeCard({
                             </div>
                         </div>
                     </div>
+
+                    {shippingSpeedLabel && orderType === 'delivery' && (
+                        <div className="flex items-start gap-3">
+                            <div className="mt-1 p-2 bg-theme-primary/5 rounded-lg">
+                                <Truck className="w-5 h-5 text-theme-primary" />
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <span className="text-gray-500 text-sm font-medium">
+                                    {checkoutT('shippingSpeed')}
+                                </span>
+                                <div className="text-gray-800 font-bold">
+                                    {shippingSpeedLabel}
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </CheckoutCard>
 

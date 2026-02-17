@@ -103,7 +103,8 @@
     "noPaymentMethodsAvailable": "لا توجد طرق دفع متاحة. يرجى التواصل مع الدعم.",
     "payWithWalletOnly": "سيتم دفع طلبك من المحفظة. لا حاجة لاختيار طريقة دفع أخرى.",
     "shippingSpeed": "سرعة الشحن",
-    "deliveryToSmall": "إلى"
+    "deliveryToSmall": "إلى",
+    "fee": "رسوم"
   },
   "Order": {
     "orderType": "نوع الطلب",
@@ -127,7 +128,8 @@
     "selectDateTime": "حدد التاريخ والوقت",
     "addressSaved": "تم حفظ العنوان بنجاح",
     "addNew": "إضافة جديد",
-    "default": "افتراضي"
+    "default": "افتراضي",
+    "pleaseSelectAddress": "يرجى اختيار عنوان التوصيل"
   },
   "Address": {
     "loading": "جاري التحميل...",

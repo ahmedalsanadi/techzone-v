@@ -3,9 +3,13 @@
 import { CreditCard, Banknote, Wallet, Check } from 'lucide-react';
 import CheckoutCard from './CheckoutCard';
 
-import { cn } from '@/lib/utils';
+import { cn, formatCurrency } from '@/lib/utils';
 import { useLocale, useTranslations } from 'next-intl';
-import { PaymentMethodType, PaymentMethod, EpaymentMethodOption } from '@/types/orders/orders.types';
+import {
+    PaymentMethodType,
+    PaymentMethod,
+    EpaymentMethodOption,
+} from '@/types/orders/orders.types';
 
 interface PaymentMethodCardProps {
     methods: PaymentMethod[];
@@ -90,7 +94,9 @@ export default function PaymentMethodCard({
                                             type="radio"
                                             checked={checked}
                                             onChange={() =>
-                                                onUseWalletChange(value === 'yes')
+                                                onUseWalletChange(
+                                                    value === 'yes',
+                                                )
                                             }
                                             className="sr-only"
                                         />
@@ -131,13 +137,16 @@ export default function PaymentMethodCard({
                         {methodsToShow.map((method) => {
                             const isCod = method.type === 'cod';
                             const disabled = isCod && codDisabled;
-                            const isSelected = selectedType === method.type && !disabled;
+                            const isSelected =
+                                selectedType === method.type && !disabled;
                             return (
                                 <button
                                     key={method.type}
                                     type="button"
                                     disabled={disabled}
-                                    onClick={() => !disabled && onChange(method.type)}
+                                    onClick={() =>
+                                        !disabled && onChange(method.type)
+                                    }
                                     className={cn(
                                         'relative flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-right',
                                         isSelected
@@ -180,7 +189,8 @@ export default function PaymentMethodCard({
                     </div>
                 )}
 
-                {!walletCoversTotal && selectedType === 'epayment' &&
+                {!walletCoversTotal &&
+                    selectedType === 'epayment' &&
                     selectedMethod?.epayment_methods &&
                     selectedMethod.epayment_methods.length > 0 && (
                         <div className="pt-4 border-t border-gray-100">
@@ -191,8 +201,9 @@ export default function PaymentMethodCard({
                                 {(
                                     selectedMethod.epayment_methods as EpaymentMethodOption[]
                                 ).map((option) => {
-                                    const name =
-                                        isRtl ? option.name_ar : option.name_en;
+                                    const name = isRtl
+                                        ? option.name_ar
+                                        : option.name_en;
                                     const isSelected =
                                         selectedEpaymentMethodId === option.id;
                                     return (
@@ -200,7 +211,9 @@ export default function PaymentMethodCard({
                                             key={option.id}
                                             type="button"
                                             onClick={() =>
-                                                onEpaymentMethodChange(option.id)
+                                                onEpaymentMethodChange(
+                                                    option.id,
+                                                )
                                             }
                                             className={cn(
                                                 'relative flex items-center gap-3 p-4 rounded-xl border-2 transition-all text-right',
@@ -228,16 +241,28 @@ export default function PaymentMethodCard({
                                                 )}
                                             </div>
                                             <div className="flex-1">
-                                                <div className="text-sm font-bold text-gray-900">
+                                                <div className="text-sm font-bold text-gray-900 mb-0.5">
                                                     {name}
                                                 </div>
-                                                {option.service_charge > 0 && (
-                                                    <div className="text-xs text-gray-500">
-                                                        +{' '}
-                                                        {option.service_charge}{' '}
-                                                        {option.currency}
-                                                    </div>
-                                                )}
+                                                <div className="flex flex-wrap items-center gap-2">
+                                                    <span className="text-sm font-bold text-theme-primary">
+                                                        {formatCurrency(
+                                                            option.total_amount,
+                                                            locale,
+                                                        )}
+                                                    </span>
+                                                    {option.service_charge >
+                                                        0 && (
+                                                        <div className="text-[10px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-md font-bold flex items-center gap-1 border border-amber-100/50">
+                                                            +{' '}
+                                                            {formatCurrency(
+                                                                option.service_charge,
+                                                                locale,
+                                                            )}{' '}
+                                                            {t('fee')}
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
                                             {isSelected && (
                                                 <div className="size-5 rounded-full bg-theme-primary flex items-center justify-center">

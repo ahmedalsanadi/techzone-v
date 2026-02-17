@@ -65,7 +65,6 @@ export function useAddressFlow() {
             } as Address)!;
 
             setGuestAddress(newAddress);
-            setDeliveryAddress(newAddress);
             return newAddress;
         }
     };
@@ -76,7 +75,6 @@ export function useAddressFlow() {
         } else {
             if (id === GUEST_ADDRESS_ID) {
                 setGuestAddress(null);
-                setDeliveryAddress(null);
             }
             return null;
         }

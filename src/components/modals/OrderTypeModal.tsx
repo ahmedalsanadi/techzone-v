@@ -1,7 +1,8 @@
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import { ChevronRight, Clock, Plus, Edit, X } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
-import React, { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
+import React, { useState, useEffect, useMemo } from 'react';
 import { toast } from 'sonner';
 import {
     useOrderStore,
@@ -21,6 +22,11 @@ import {
     formatScheduledTime,
     showAddNewAddressButton,
 } from '@/lib/address';
+import { FULFILLMENT_VALUE_TO_TYPE } from '@/lib/checkout';
+import { useQueryClient } from '@tanstack/react-query';
+import { checkoutInitKey } from '@/hooks/checkout';
+
+import { useStore } from '@/components/providers/StoreProvider';
 
 interface OrderTypeModalProps {
     isOpen: boolean;
@@ -30,15 +36,13 @@ interface OrderTypeModalProps {
 const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
     const t = useTranslations('Order');
     const locale = useLocale();
+    const { config } = useStore();
     const {
-        orderType,
-        deliveryAddress,
-        scheduledTime: scheduledTimeRaw,
-        orderTime,
-        setOrderType,
-        setDeliveryAddress,
-        setScheduledTime,
-        setOrderTime,
+        orderType: storeOrderType,
+        deliveryAddress: storeDeliveryAddress,
+        scheduledTime: storeScheduledTimeRaw,
+        orderTime: storeOrderTime,
+        setOrderState,
     } = useOrderStore();
     const { isAuthenticated } = useAuthStore();
     const {
@@ -47,7 +51,9 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
         isError: isErrorAddresses,
         refetch: refetchAddresses,
         saveAddress,
+        setDefault,
     } = useAddressFlow();
+    const pathname = usePathname();
 
     const [showAddressModal, setShowAddressModal] = useState(false);
     const [editingAddress, setEditingAddress] = useState<Address | null>(null);
@@ -55,28 +61,67 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
     const [tempDate, setTempDate] = useState('');
     const [tempTime, setTempTime] = useState('');
 
-    const scheduledTime = getScheduledTimeAsDate(scheduledTimeRaw);
+    // Local state for modal selections - initialized to null for "isolated state" logic
+    const [tempOrderType, setTempOrderType] = useState<OrderType | null>(null);
+    const [tempDeliveryAddress, setTempDeliveryAddress] =
+        useState<Address | null>(null);
+    const [tempOrderTime, setTempOrderTime] = useState<OrderTime | null>(null);
+    const [tempScheduledTime, setTempScheduledTime] = useState<Date | null>(
+        null,
+    );
 
-    // Sync deliveryAddress from available list if not set
+    const scheduledTime = tempScheduledTime;
+
+    const availableMethods = useMemo(() => {
+        const allowed = config?.fulfillment_methods || [];
+        return allowed
+            .map((m) => {
+                const type = FULFILLMENT_VALUE_TO_TYPE[m.value];
+                if (!type) return null;
+                return {
+                    type,
+                    label: m.label,
+                    description: m.description,
+                };
+            })
+            .filter(
+                (
+                    m,
+                ): m is {
+                    type: OrderType;
+                    label: string;
+                    description: string;
+                } => !!m,
+            );
+    }, [config?.fulfillment_methods]);
+
+    const availableOrderTypes = useMemo(
+        () => availableMethods.map((m: { type: OrderType }) => m.type),
+        [availableMethods],
+    );
+
+    // Unified logic: Sync from store ONLY (Run once on open)
     useEffect(() => {
-        if (displayAddresses.length > 0 && !deliveryAddress) {
-            const prioritized = isAuthenticated
-                ? displayAddresses.find((a) => a.is_default) ||
-                  displayAddresses[0]
-                : displayAddresses[0];
-            setDeliveryAddress(prioritized);
+        if (!isOpen) {
+            setTempOrderType(null);
+            setTempDeliveryAddress(null);
+            setTempOrderTime(null);
+            setTempScheduledTime(null);
+            return;
         }
-    }, [
-        displayAddresses,
-        deliveryAddress,
-        setDeliveryAddress,
-        isAuthenticated,
-    ]);
 
-    const isSelected = (addrId: number) => {
-        if (!deliveryAddress) return false;
-        return Number(deliveryAddress.id) === Number(addrId);
-    };
+        // 1. Initial Sync from Store
+        setTempOrderType(storeOrderType);
+        setTempDeliveryAddress(storeDeliveryAddress);
+        setTempOrderTime(storeOrderTime);
+        setTempScheduledTime(getScheduledTimeAsDate(storeScheduledTimeRaw));
+    }, [
+        isOpen,
+        storeOrderType,
+        storeDeliveryAddress,
+        storeOrderTime,
+        storeScheduledTimeRaw,
+    ]);
 
     const handleAddAddress = () => {
         setEditingAddress(null);
@@ -90,10 +135,14 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
 
     const handleAddressSave = async (payload: AddressFormSubmitPayload) => {
         try {
-            await saveAddress(
+            const result = await saveAddress(
                 payload,
                 editingAddress ? Number(editingAddress.id) : undefined,
             );
+            // If result contains the saved address, select it
+            if (result) {
+                setTempDeliveryAddress(result);
+            }
             toast.success(t('addressSaved') || 'Address saved');
             setShowAddressModal(false);
         } catch (error) {
@@ -103,15 +152,16 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
     };
 
     const handleTimeSelect = (time: OrderTime) => {
-        setOrderTime(time);
+        setTempOrderTime(time);
         if (time === 'now') {
-            setScheduledTime(null);
+            setTempScheduledTime(null);
             setShowDateTimePicker(false);
         }
     };
 
     const openDateTimePicker = () => {
-        const base = scheduledTime instanceof Date ? scheduledTime : new Date();
+        const base =
+            tempScheduledTime instanceof Date ? tempScheduledTime : new Date();
         const year = base.getFullYear();
         const month = String(base.getMonth() + 1).padStart(2, '0');
         const day = String(base.getDate()).padStart(2, '0');
@@ -129,10 +179,31 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
             selectedDate.setHours(hours, minutes, 0, 0);
             if (selectedDate <= new Date())
                 selectedDate.setDate(selectedDate.getDate() + 1);
-            setScheduledTime(selectedDate);
+            setTempScheduledTime(selectedDate);
             setShowDateTimePicker(false);
         }
     };
+
+    const queryClient = useQueryClient();
+    const handleConfirmSave = () => {
+        if (!tempOrderType) return;
+
+        if (tempOrderType === 'delivery' && !tempDeliveryAddress) {
+            toast.error(t('pleaseSelectAddress') || 'Please select an address');
+            return;
+        }
+
+        setOrderState({
+            orderType: tempOrderType,
+            deliveryAddress: tempDeliveryAddress,
+            orderTime: tempOrderTime || 'now',
+            scheduledTime: tempScheduledTime,
+        });
+
+        onClose();
+    };
+
+    const isSaveDisabled = tempOrderType === 'delivery' && !tempDeliveryAddress;
 
     const canAddAddress = showAddNewAddressButton(
         isAuthenticated,
@@ -177,33 +248,36 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                         {t('selectOrderType')}
                                     </h3>
                                     <div className="grid grid-cols-2 gap-1.5 sm:gap-2 md:gap-3">
-                                        {(
-                                            [
-                                                'delivery',
-                                                'dineIn',
-                                                'pickup',
-                                                'carPickup',
-                                            ] as OrderType[]
-                                        ).map((type) => (
-                                            <button
-                                                key={type}
-                                                type="button"
-                                                onClick={() =>
-                                                    setOrderType(type)
-                                                }
-                                                className={cn(
-                                                    'py-2.5 px-3 sm:py-3 sm:px-4 md:p-4 min-h-[40px] sm:min-h-[44px] md:min-h-[48px] rounded-lg sm:rounded-xl md:rounded-2xl border-2 transition-all text-right touch-manipulation text-xs sm:text-sm font-semibold leading-tight',
-                                                    orderType === type
-                                                        ? 'bg-theme-primary/5 border-theme-primary text-theme-primary font-bold shadow-sm'
-                                                        : 'bg-gray-50 border-gray-100 hover:border-gray-200 text-gray-700',
-                                                )}>
-                                                {t(type)}
-                                            </button>
-                                        ))}
+                                        {availableMethods.map(
+                                            (method: {
+                                                type: OrderType;
+                                                label: string;
+                                                description: string;
+                                            }) => (
+                                                <button
+                                                    key={method.type}
+                                                    type="button"
+                                                    onClick={() =>
+                                                        setTempOrderType(
+                                                            method.type,
+                                                        )
+                                                    }
+                                                    className={cn(
+                                                        'py-2.5 px-3 sm:py-3 sm:px-4 md:p-4 min-h-[40px] sm:min-h-[44px] md:min-h-[48px] rounded-lg sm:rounded-xl md:rounded-2xl border-2 transition-all text-right touch-manipulation text-xs sm:text-sm font-semibold leading-tight',
+                                                        tempOrderType ===
+                                                            method.type
+                                                            ? 'bg-theme-primary/5 border-theme-primary text-theme-primary font-bold shadow-sm'
+                                                            : 'bg-gray-50 border-gray-100 hover:border-gray-200 text-gray-700',
+                                                    )}>
+                                                    {t(method.type) ||
+                                                        method.label}
+                                                </button>
+                                            ),
+                                        )}
                                     </div>
                                 </div>
 
-                                {orderType === 'delivery' && (
+                                {tempOrderType === 'delivery' && (
                                     <div className="space-y-2 sm:space-y-3 md:space-y-4">
                                         <div className="flex items-center justify-between gap-2">
                                             <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-900 shrink-0">
@@ -258,66 +332,65 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                         ) : displayAddresses.length > 0 ? (
                                             <div className="space-y-2 sm:space-y-3">
                                                 {displayAddresses.map(
-                                                    (addr) => (
-                                                        <div
-                                                            key={addr.id}
-                                                            onClick={() =>
-                                                                setDeliveryAddress(
-                                                                    addr,
-                                                                )
-                                                            }
-                                                            className={cn(
-                                                                'p-3 sm:p-4 md:p-5 rounded-lg sm:rounded-xl md:rounded-2xl border-2 transition-all cursor-pointer group relative',
-                                                                isSelected(
-                                                                    addr.id,
-                                                                )
-                                                                    ? 'bg-theme-primary/5 border-theme-primary shadow-lg shadow-theme-primary/5'
-                                                                    : 'bg-white border-gray-100 hover:border-gray-200',
-                                                            )}>
-                                                            <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                                                                <div
-                                                                    className={cn(
-                                                                        'w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 transition-all flex items-center justify-center shrink-0',
-                                                                        isSelected(
-                                                                            addr.id,
-                                                                        )
-                                                                            ? 'border-theme-primary bg-theme-primary'
-                                                                            : 'border-gray-300',
-                                                                    )}>
-                                                                    {isSelected(
-                                                                        addr.id,
-                                                                    ) && (
-                                                                        <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white rounded-full" />
-                                                                    )}
-                                                                </div>
-                                                                <div className="flex-1 min-w-0">
-                                                                    <div className="font-bold text-gray-900 text-sm sm:text-base">
-                                                                        {getAddressLabel(
-                                                                            addr,
+                                                    (addr) => {
+                                                        const isSelected =
+                                                            tempDeliveryAddress?.id ===
+                                                            addr.id;
+                                                        return (
+                                                            <div
+                                                                key={addr.id}
+                                                                onClick={() =>
+                                                                    setTempDeliveryAddress(
+                                                                        addr,
+                                                                    )
+                                                                }
+                                                                className={cn(
+                                                                    'p-3 sm:p-4 md:p-5 rounded-lg sm:rounded-xl md:rounded-2xl border-2 transition-colors duration-200 cursor-pointer group relative',
+                                                                    isSelected
+                                                                        ? 'bg-theme-primary/5 border-theme-primary'
+                                                                        : 'bg-white border-gray-100 hover:border-gray-200',
+                                                                )}>
+                                                                <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                                                                    <div
+                                                                        className={cn(
+                                                                            'w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 transition-colors duration-200 flex items-center justify-center shrink-0',
+                                                                            isSelected
+                                                                                ? 'border-theme-primary bg-theme-primary'
+                                                                                : 'border-gray-300',
+                                                                        )}>
+                                                                        {isSelected && (
+                                                                            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white rounded-full" />
                                                                         )}
                                                                     </div>
-                                                                    <p className="text-xs sm:text-sm text-gray-500 line-clamp-2 mt-0.5 wrap-break-word">
-                                                                        {formatAddressForDisplay(
-                                                                            addr,
-                                                                        )}
-                                                                    </p>
+                                                                    <div className="flex-1 min-w-0">
+                                                                        <div className="font-bold text-gray-900 text-sm sm:text-base">
+                                                                            {getAddressLabel(
+                                                                                addr,
+                                                                            )}
+                                                                        </div>
+                                                                        <p className="text-xs sm:text-sm text-gray-500 line-clamp-2 mt-0.5 wrap-break-word">
+                                                                            {formatAddressForDisplay(
+                                                                                addr,
+                                                                            )}
+                                                                        </p>
+                                                                    </div>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={(
+                                                                            e,
+                                                                        ) => {
+                                                                            e.stopPropagation();
+                                                                            handleEditAddress(
+                                                                                addr,
+                                                                            );
+                                                                        }}
+                                                                        className="min-w-[44px] min-h-[44px] flex items-center justify-center p-2 bg-gray-50 rounded-lg sm:rounded-xl hover:bg-gray-100 opacity-0 group-hover:opacity-100 transition-all shrink-0 touch-manipulation">
+                                                                        <Edit className="w-4 h-4 text-gray-400" />
+                                                                    </button>
                                                                 </div>
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={(
-                                                                        e,
-                                                                    ) => {
-                                                                        e.stopPropagation();
-                                                                        handleEditAddress(
-                                                                            addr,
-                                                                        );
-                                                                    }}
-                                                                    className="min-w-[44px] min-h-[44px] flex items-center justify-center p-2 bg-gray-50 rounded-lg sm:rounded-xl hover:bg-gray-100 opacity-0 group-hover:opacity-100 transition-all shrink-0 touch-manipulation">
-                                                                    <Edit className="w-4 h-4 text-gray-400" />
-                                                                </button>
                                                             </div>
-                                                        </div>
-                                                    ),
+                                                        );
+                                                    },
                                                 )}
                                             </div>
                                         ) : (
@@ -349,7 +422,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                                     }
                                                     className={cn(
                                                         'py-2.5 px-3 sm:py-3 sm:px-4 md:p-4 min-h-[40px] sm:min-h-[44px] md:min-h-[48px] rounded-lg sm:rounded-xl md:rounded-2xl border-2 transition-all text-right touch-manipulation text-xs sm:text-sm font-semibold',
-                                                        orderTime === time
+                                                        tempOrderTime === time
                                                             ? 'bg-theme-primary/5 border-theme-primary text-theme-primary font-bold shadow-sm'
                                                             : 'bg-gray-50 border-gray-100 hover:border-gray-200 text-gray-700',
                                                     )}>
@@ -359,7 +432,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                         )}
                                     </div>
 
-                                    {orderTime === 'later' && (
+                                    {tempOrderTime === 'later' && (
                                         <div className="p-3 sm:p-4 md:p-5 bg-gray-50 rounded-lg sm:rounded-xl border border-gray-100 flex items-center justify-between gap-3">
                                             <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                                                 <div className="p-2 sm:p-2.5 bg-theme-primary/10 rounded-lg sm:rounded-xl shrink-0">
@@ -432,8 +505,13 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                             <footer className="p-2.5 sm:p-4 md:p-5 lg:p-6 border-t border-gray-100 shrink-0">
                                 <button
                                     type="button"
-                                    onClick={onClose}
-                                    className="w-full min-h-[48px] bg-theme-primary text-white font-black py-3 text-sm sm:text-base rounded-lg sm:rounded-xl shadow-xl shadow-theme-primary/20 hover:brightness-95 active:scale-[0.98] transition-all touch-manipulation">
+                                    onClick={handleConfirmSave}
+                                    disabled={isSaveDisabled}
+                                    className={cn(
+                                        'w-full min-h-[48px] bg-theme-primary text-white font-black py-3 text-sm sm:text-base rounded-lg sm:rounded-xl shadow-xl shadow-theme-primary/20 hover:brightness-95 active:scale-[0.98] transition-all touch-manipulation',
+                                        isSaveDisabled &&
+                                            'bg-gray-100 text-gray-400 cursor-not-allowed border-none shadow-none hover:brightness-100',
+                                    )}>
                                     {t('save')}
                                 </button>
                             </footer>

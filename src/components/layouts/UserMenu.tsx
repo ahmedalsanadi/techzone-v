@@ -20,6 +20,7 @@ import { Link } from '@/i18n/navigation';
 import { useRouter } from '@/i18n/navigation';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useCartStore } from '@/store/useCartStore';
+import { useOrderStore } from '@/store/useOrderStore';
 import { authService } from '@/services/auth-service';
 import { Menu, MenuButton, MenuItem } from '@headlessui/react';
 import { BaseMenuItems } from '../ui/BaseMenuItems';
@@ -120,12 +121,10 @@ const UserMenu = () => {
         logout: clearAuth,
     } = useAuthStore();
     const { setGuestMode, clearCart } = useCartStore();
+    const { clearOrder } = useOrderStore();
 
     const firstName =
-        (user?.name || '')
-            .trim()
-            .split(/\s+/)
-            .filter(Boolean)[0] || '';
+        (user?.name || '').trim().split(/\s+/).filter(Boolean)[0] || '';
 
     const handleLogout = async () => {
         try {
@@ -137,25 +136,23 @@ const UserMenu = () => {
         clearAuth();
         setGuestMode(true);
         clearCart();
+        clearOrder();
         router.refresh();
     };
 
     return (
         <Menu as="div" className="relative inline-block pe-2">
-
             <MenuButton
                 className="group relative flex items-center justify-center md:justify-start gap-2
                            rounded-full md:rounded-xl border border-gray-200 bg-white shadow-sm
                            hover:bg-gray-50 transition-colors outline-none
-                           size-9 md:h-10 md:w-auto md:px-3"
-            >
+                           size-9 md:h-10 md:w-auto md:px-3">
                 {/* Avatar Circle — smaller on mobile */}
                 <div
                     className="size-6 md:size-7 rounded-full
                                bg-linear-to-br from-gray-50 to-gray-100
                                flex items-center justify-center
-                               border-2 border-gray-200 shrink-0"
-                >
+                               border-2 border-gray-200 shrink-0">
                     <User
                         className="size-3.5 md:size-4 text-gray-600"
                         strokeWidth={2.5}
@@ -174,8 +171,7 @@ const UserMenu = () => {
                     className="absolute md:hidden  bottom-0 end-0 size-4 md:size-4 rounded-full
                                bg-white border border-gray-300
                                flex items-center justify-center
-                             "
-                >
+                             ">
                     <ChevronDown
                         className=" size-2.5 md:size-2.5 text-gray-600
                                    transition-transform group-data-open:rotate-180"
@@ -218,14 +214,20 @@ const UserMenu = () => {
                             {isAuthenticated ? (
                                 <>
                                     <div className="flex items-center justify-center gap-1.5 text-xs text-gray-500">
-                                        <Phone size={12} className="text-gray-400" />
+                                        <Phone
+                                            size={12}
+                                            className="text-gray-400"
+                                        />
                                         <span dir="ltr" className="font-medium">
                                             {user?.phone}
                                         </span>
                                     </div>
                                     {user?.email && (
                                         <div className="flex items-center justify-center gap-1.5 text-xs text-gray-500">
-                                            <Mail size={12} className="text-gray-400" />
+                                            <Mail
+                                                size={12}
+                                                className="text-gray-400"
+                                            />
                                             <span className="max-w-[180px] truncate font-medium">
                                                 {user?.email}
                                             </span>
@@ -240,7 +242,8 @@ const UserMenu = () => {
                                             strokeWidth={0}
                                         />
                                         <span className="text-xs font-bold">
-                                            {profile?.points || 0} {t('pointsEarned')}
+                                            {profile?.points || 0}{' '}
+                                            {t('pointsEarned')}
                                         </span>
                                     </div>
                                 </>

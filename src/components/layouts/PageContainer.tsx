@@ -24,6 +24,8 @@ export default function PageContainer({
     }, [pathname, setMobileMenuOpen]);
 
     const isAuthPage = pathname?.includes('/auth');
+    const isCheckoutPage = pathname?.includes('/checkout');
+    const shouldShowSubHeader = showSubHeader && !isCheckoutPage;
 
     if (isAuthPage) {
         return (
@@ -38,23 +40,23 @@ export default function PageContainer({
             {/*-------- Theme primary bg header - fixed height so blue bar never grows; z-20 so it stays above content ----------- */}
             <nav
                 className={`bg-theme-primary transition-all duration-300 relative z-20 overflow-visible flex flex-col shrink-0 ${
-                    showSubHeader
+                    shouldShowSubHeader
                         ? 'h-[190px] lg:h-[160px]'
                         : 'min-h-[75px] lg:min-h-[120px]'
                 }`}>
                 <div className="container mx-auto px-4 py-1 flex-1 flex flex-col min-h-0">
                     <Navbar />
-                    {showSubHeader && <SubHeader />}
+                    {shouldShowSubHeader && <SubHeader />}
                 </div>
             </nav>
             {/*-------- Content overlaps bottom of nav when subheader shown so half of subheader sits on white ----------- */}
             <div className={`container mx-auto flex-1 relative`}>
-                <div className="flex flex-col gap-4 min-h-screen py-10 px-4 md:px-12">   
+                <div className="flex flex-col gap-4 min-h-screen py-10 px-4 md:px-12">
                     {children}
                 </div>
-                    <FloatingButtons />
+                <FloatingButtons />
             </div>
-        
+
             <Footer />
         </main>
     );

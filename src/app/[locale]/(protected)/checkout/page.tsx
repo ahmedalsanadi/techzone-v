@@ -13,12 +13,10 @@ import OrderSummaryCard from '@/components/checkout/OrderSummaryCard';
 import { PaymentMethodType } from '@/types/orders';
 import { useCartStore } from '@/store/useCartStore';
 import { useOrderStore, getScheduledTimeAsDate } from '@/store/useOrderStore';
+import { useUiStore } from '@/store/useUiStore';
 import { formatCurrency } from '@/lib/utils';
 import { getApiErrorMessage } from '@/lib/api';
-import {
-    useCheckoutInit,
-    useCreateOrder,
-} from '@/hooks/checkout';
+import { useCheckoutInit, useCreateOrder } from '@/hooks/checkout';
 import {
     orderTypeToFulfillment,
     formatDateTimeForApi,
@@ -28,6 +26,7 @@ import {
     isEpaymentValid,
 } from '@/lib/checkout';
 import CheckoutPageSkeleton from './CheckoutPageSkeleton';
+import ShippingSpeedCard from '@/components/checkout/ShippingSpeedCard';
 
 const ORDER_TYPE_SCROLL_ID = 'checkout-order-type';
 
@@ -50,12 +49,23 @@ export default function CheckoutPage() {
         scheduledTime: scheduledTimeRaw,
         orderTime,
     } = useOrderStore();
+    const { setShowSubHeader } = useUiStore();
+
+    // Hide subheader on checkout page
+    useEffect(() => {
+        setShowSubHeader(false);
+        return () => setShowSubHeader(true);
+    }, [setShowSubHeader]);
 
     const [selectedPaymentMethodType, setSelectedPaymentMethodType] =
         useState<PaymentMethodType | null>(null);
-    const [selectedEpaymentMethodId, setSelectedEpaymentMethodId] = useState<number | null>(null);
+    const [selectedEpaymentMethodId, setSelectedEpaymentMethodId] = useState<
+        number | null
+    >(null);
     const [useWallet, setUseWallet] = useState(true); // Wallet on by default; user can turn off
     const [openOrderTypeModal, setOpenOrderTypeModal] = useState(false);
+    const [selectedShippingSpeedTypeId, setSelectedShippingSpeedTypeId] =
+        useState<number | null>(null);
 
     const fulfillment_method = orderTypeToFulfillment(orderType);
     const address_id =
@@ -67,11 +77,47 @@ export default function CheckoutPage() {
         orderType !== 'delivery' ||
         (deliveryAddress?.id != null && Number(deliveryAddress.id) > 0);
 
-    const { initData, initError, isLoading: isLoadingData, refetch } = useCheckoutInit({
+    const cartHash = items.map((i) => `${i.id}-${i.quantity}`).join('|');
+    const {
+        initData,
+        initError,
+        isLoading: isLoadingData,
+        isFetching: isFetchingData,
+        refetch,
+    } = useCheckoutInit({
         fulfillment_method,
         address_id,
+        shipping_speed_type: selectedShippingSpeedTypeId ?? undefined,
         enabled: canRunInit,
+        cartHash,
+        epayment_method_id: selectedEpaymentMethodId,
+        payment_method: selectedPaymentMethodType,
     });
+
+    // Handle shipping speed validity
+    useEffect(() => {
+        if (orderType !== 'delivery') {
+            if (selectedShippingSpeedTypeId !== null) {
+                setSelectedShippingSpeedTypeId(null);
+            }
+            return;
+        }
+
+        const availableSpeeds = initData?.shipping_speed_types || [];
+        const validIds = availableSpeeds.map((s) => s.value);
+
+        if (availableSpeeds.length > 0) {
+            // Keep selection if it's still valid, otherwise wait for user interaction
+            if (
+                selectedShippingSpeedTypeId !== null &&
+                !validIds.includes(selectedShippingSpeedTypeId)
+            ) {
+                setSelectedShippingSpeedTypeId(null);
+            }
+        } else if (selectedShippingSpeedTypeId !== null) {
+            setSelectedShippingSpeedTypeId(null);
+        }
+    }, [initData, selectedShippingSpeedTypeId, orderType]);
 
     const createOrderMutation = useCreateOrder();
 
@@ -82,6 +128,7 @@ export default function CheckoutPage() {
     const summary = initData?.summary;
     const cart_valid = initData?.cart_valid ?? false;
     const cart_issues = initData?.cart_issues ?? [];
+    const shippingSpeedTypes = initData?.shipping_speed_types ?? [];
     const totalFromSummary = summary?.total ?? 0;
     const isFullyWalletCovered = useWallet && walletBalance >= totalFromSummary;
     const discount = 0;
@@ -100,7 +147,10 @@ export default function CheckoutPage() {
         useWallet && walletBalance > 0
             ? Math.min(totalFromSummary - discount, walletBalance)
             : 0;
-    const finalTotal = Math.max(0, totalFromSummary - discount - walletDeduction);
+    const finalTotal = Math.max(
+        0,
+        totalFromSummary - discount - walletDeduction,
+    );
 
     const scrollToOrderTypeCard = useCallback(() => {
         setOpenOrderTypeModal(true);
@@ -137,7 +187,8 @@ export default function CheckoutPage() {
         }
 
         const scheduledTime = getScheduledTimeAsDate(scheduledTimeRaw);
-        const isPickupOrCurbside = orderType === 'pickup' || orderType === 'carPickup';
+        const isPickupOrCurbside =
+            orderType === 'pickup' || orderType === 'carPickup';
         const pickupDatetime =
             orderTime === 'later' && scheduledTime
                 ? formatDateTimeForApi(scheduledTime)
@@ -148,7 +199,10 @@ export default function CheckoutPage() {
         let payment_method: 'cod' | 'wallet' | 'epayment' = 'cod';
         if (isFullyWalletCovered) payment_method = 'wallet';
         else if (selectedPaymentMethodType === 'cod') payment_method = 'cod';
-        else if (selectedPaymentMethodType === 'epayment' && selectedEpaymentMethodId) {
+        else if (
+            selectedPaymentMethodType === 'epayment' &&
+            selectedEpaymentMethodId
+        ) {
             payment_method = 'epayment';
         } else {
             toast.error(t('pleaseSelectPaymentMethod'));
@@ -166,6 +220,7 @@ export default function CheckoutPage() {
             epayment_method_id: selectedEpaymentMethodId ?? undefined,
             use_wallet: useWallet && walletBalance > 0 && !isFullyWalletCovered,
             locale,
+            shipping_speed_type: selectedShippingSpeedTypeId ?? undefined,
         });
 
         try {
@@ -199,10 +254,15 @@ export default function CheckoutPage() {
     const needsAddressOrType = !canRunInit && !initData;
     const isInitError = initError != null && !initData;
 
+    const selectedSpeed = shippingSpeedTypes.find(
+        (s) => s.value === selectedShippingSpeedTypeId,
+    );
+
     const orderTypeCard = (
         <OrderTypeCard
             isOpen={openOrderTypeModal}
             onOpenChange={setOpenOrderTypeModal}
+            shippingSpeedLabel={selectedSpeed?.label}
         />
     );
 
@@ -213,13 +273,19 @@ export default function CheckoutPage() {
     if (isInitError) {
         return (
             <div className="space-y-6 py-2">
-                <h1 className="text-xl sm:text-3xl font-bold mb-6">{t('title')}</h1>
+                <h1 className="text-xl sm:text-3xl font-bold mb-6">
+                    {t('title')}
+                </h1>
                 <div id={ORDER_TYPE_SCROLL_ID} className="scroll-mt-4">
                     {orderTypeCard}
                 </div>
                 <div className="max-w-lg mt-6 p-6 bg-amber-50 border border-amber-200 rounded-2xl">
-                    <p className="text-amber-900 font-medium mb-4">{initError}</p>
-                    <p className="text-amber-800 text-sm mb-6">{t('chooseAddressOrTypeHint')}</p>
+                    <p className="text-amber-900 font-medium mb-4">
+                        {initError}
+                    </p>
+                    <p className="text-amber-800 text-sm mb-6">
+                        {t('chooseAddressOrTypeHint')}
+                    </p>
                     <div className="flex flex-wrap gap-3">
                         <Button
                             type="button"
@@ -253,8 +319,12 @@ export default function CheckoutPage() {
                     {orderTypeCard}
                 </div>
                 <div className="max-w-lg p-6 bg-theme-primary/5 border-2 border-theme-primary/20 rounded-2xl">
-                    <p className="text-gray-800 font-bold mb-2">{t('selectAddressToContinue')}</p>
-                    <p className="text-gray-600 text-sm mb-6">{t('selectAddressToContinueHint')}</p>
+                    <p className="text-gray-800 font-bold mb-2">
+                        {t('selectAddressToContinue')}
+                    </p>
+                    <p className="text-gray-600 text-sm mb-6">
+                        {t('selectAddressToContinueHint')}
+                    </p>
                     <Button
                         type="button"
                         variant="primary"
@@ -279,7 +349,8 @@ export default function CheckoutPage() {
               ? t('cartInvalid')
               : !isFullyWalletCovered && !selectedPaymentMethodType
                 ? t('pleaseSelectPaymentMethod')
-                : selectedPaymentMethodType === 'epayment' && !selectedEpaymentMethodId
+                : selectedPaymentMethodType === 'epayment' &&
+                    !selectedEpaymentMethodId
                   ? t('selectEpaymentMethod')
                   : undefined;
 
@@ -292,11 +363,14 @@ export default function CheckoutPage() {
 
             {!cart_valid && cart_issues.length > 0 && (
                 <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-amber-900">
-                    <p className="font-bold mb-1">{t('cartInvalid') || 'Cart has issues'}</p>
+                    <p className="font-bold mb-1">
+                        {t('cartInvalid') || 'Cart has issues'}
+                    </p>
                     <ul className="text-sm list-disc list-inside">
                         {cart_issues.map((issue, i) => (
                             <li key={i}>
-                                {(issue as { message?: string }).message || 'Invalid item'}
+                                {(issue as { message?: string }).message ||
+                                    'Invalid item'}
                             </li>
                         ))}
                     </ul>
@@ -309,6 +383,22 @@ export default function CheckoutPage() {
                         {orderTypeCard}
                     </div>
 
+                    {orderType === 'delivery' &&
+                        shippingSpeedTypes.length > 0 && (
+                            <ShippingSpeedCard
+                                title={t('shippingSpeed')}
+                                options={shippingSpeedTypes}
+                                selectedId={selectedShippingSpeedTypeId}
+                                onChange={(id) => {
+                                    setSelectedShippingSpeedTypeId(id);
+                                }}
+                                formatCurrency={(val) =>
+                                    formatCurrency(Number(val), locale)
+                                }
+                                isLoading={isLoadingData}
+                            />
+                        )}
+
                     <PaymentMethodCard
                         methods={paymentMethods}
                         summaryTotal={totalFromSummary}
@@ -317,12 +407,16 @@ export default function CheckoutPage() {
                         useWallet={useWallet}
                         walletCoversTotal={isFullyWalletCovered}
                         walletAvailable={walletAvailable}
-                        walletBalanceFormatted={formatCurrency(walletBalance, locale)}
+                        walletBalanceFormatted={formatCurrency(
+                            walletBalance,
+                            locale,
+                        )}
                         onUseWalletChange={setUseWallet}
                         onChange={(type) => {
                             setSelectedPaymentMethodType(type);
                             // Do not auto-select a gateway; user must click one after selecting epayment
-                            if (type !== 'epayment') setSelectedEpaymentMethodId(null);
+                            if (type !== 'epayment')
+                                setSelectedEpaymentMethodId(null);
                         }}
                         onEpaymentMethodChange={setSelectedEpaymentMethodId}
                     />
@@ -336,7 +430,8 @@ export default function CheckoutPage() {
                         total={formatCurrency(finalTotal, locale)}
                         onSubmit={handleCheckout}
                         isLoading={createOrderMutation.isPending}
-                        disabled={submitDisabled}
+                        isRefreshing={isFetchingData}
+                        disabled={submitDisabled || isFetchingData}
                         disabledReason={disabledReason}
                     />
                 </div>

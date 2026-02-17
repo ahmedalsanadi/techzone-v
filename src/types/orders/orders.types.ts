@@ -190,6 +190,8 @@ export interface CheckoutInitRequest {
     fulfillment_method: FulfillmentMethod;
     address_id?: number;
     shipping_speed_type?: number;
+    epayment_method_id?: number;
+    payment_method?: PaymentMethodSlug;
 }
 
 export interface CheckoutInitCartItem {

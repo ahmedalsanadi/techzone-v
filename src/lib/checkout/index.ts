@@ -13,6 +13,13 @@ import {
 
 export type OrderType = 'delivery' | 'pickup' | 'dineIn' | 'carPickup' | null;
 
+export const FULFILLMENT_VALUE_TO_TYPE: Record<number, OrderType> = {
+    1: 'delivery',
+    2: 'pickup',
+    3: 'carPickup',
+    4: 'dineIn',
+};
+
 const FULFILLMENT_MAP: Record<NonNullable<OrderType>, FulfillmentMethod> = {
     delivery: FulfillmentMethod.DELIVERY,
     pickup: FulfillmentMethod.PICKUP,
@@ -20,8 +27,12 @@ const FULFILLMENT_MAP: Record<NonNullable<OrderType>, FulfillmentMethod> = {
     dineIn: FulfillmentMethod.DINE_IN,
 };
 
-export function orderTypeToFulfillment(orderType: OrderType): FulfillmentMethod {
-    return (orderType && FULFILLMENT_MAP[orderType]) ?? FulfillmentMethod.DELIVERY;
+export function orderTypeToFulfillment(
+    orderType: OrderType,
+): FulfillmentMethod {
+    return (
+        (orderType && FULFILLMENT_MAP[orderType]) ?? FulfillmentMethod.DELIVERY
+    );
 }
 
 /** API expects "YYYY-MM-DD HH:mm:ss" for customer_pickup_datetime. */
@@ -42,9 +53,10 @@ export function earliestPickupDate(): Date {
     return d;
 }
 
-export function getDefaultPaymentSelection(
-    data: CheckoutInitResponse | null,
-): { type: PaymentMethodType | null; epaymentMethodId: number | null } {
+export function getDefaultPaymentSelection(data: CheckoutInitResponse | null): {
+    type: PaymentMethodType | null;
+    epaymentMethodId: number | null;
+} {
     if (!data?.payment_methods?.length) {
         return { type: null, epaymentMethodId: null };
     }
@@ -54,8 +66,7 @@ export function getDefaultPaymentSelection(
     const type = (firstNonWallet?.type ?? null) as PaymentMethodType | null;
     let epaymentMethodId: number | null = null;
     if (type === 'epayment') {
-        const first = data.payment_methods
-            .find((m) => m.type === 'epayment')
+        const first = data.payment_methods.find((m) => m.type === 'epayment')
             ?.epayment_methods?.[0];
         epaymentMethodId = first?.id ?? null;
     }
@@ -70,9 +81,12 @@ export interface BuildPayloadInput {
     epayment_method_id?: number;
     use_wallet: boolean;
     locale: string;
+    shipping_speed_type?: number;
 }
 
-export function buildCreateOrderPayload(input: BuildPayloadInput): CreateOrderRequest {
+export function buildCreateOrderPayload(
+    input: BuildPayloadInput,
+): CreateOrderRequest {
     const {
         fulfillment_method,
         address_id,
@@ -90,13 +104,17 @@ export function buildCreateOrderPayload(input: BuildPayloadInput): CreateOrderRe
         notes: '',
         payment_method,
     };
-
     if (use_wallet) payload.use_wallet = true;
     if (payment_method === 'epayment' && epayment_method_id != null) {
         payload.epayment_method_id = epayment_method_id;
-        const base = typeof window !== 'undefined' ? window.location.origin : '';
+        const base =
+            typeof window !== 'undefined' ? window.location.origin : '';
         payload.success_url = `${base}/${locale}/checkout/result?status=success`;
         payload.error_url = `${base}/${locale}/checkout/result?status=error`;
+    }
+
+    if (input.shipping_speed_type != null) {
+        payload.shipping_speed_type = input.shipping_speed_type;
     }
 
     return payload;
@@ -118,7 +136,9 @@ export interface BuildSummaryItemsInput {
     locale: string;
 }
 
-export function buildSummaryItems(input: BuildSummaryItemsInput): SummaryItem[] {
+export function buildSummaryItems(
+    input: BuildSummaryItemsInput,
+): SummaryItem[] {
     const {
         summary,
         discount,
@@ -132,8 +152,14 @@ export function buildSummaryItems(input: BuildSummaryItemsInput): SummaryItem[] 
     const items: SummaryItem[] = [];
     if (summary) {
         items.push(
-            { label: t('orderSubtotal'), value: formatCurrency(summary.items_subtotal, locale) },
-            { label: t('deliveryFee'), value: formatCurrency(summary.shipping_fee, locale) },
+            {
+                label: t('orderSubtotal'),
+                value: formatCurrency(summary.items_subtotal, locale),
+            },
+            {
+                label: t('deliveryFee'),
+                value: formatCurrency(summary.shipping_fee, locale),
+            },
         );
         if (summary.cod_fee != null && summary.cod_fee > 0) {
             items.push({
@@ -149,7 +175,10 @@ export function buildSummaryItems(input: BuildSummaryItemsInput): SummaryItem[] 
         }
     }
     if (discount > 0) {
-        items.push({ label: t('discount'), value: formatCurrency(discount, locale) });
+        items.push({
+            label: t('discount'),
+            value: formatCurrency(discount, locale),
+        });
     }
     if (useWallet && walletDeduction > 0) {
         items.push({
@@ -166,9 +195,13 @@ export function isEpaymentValid(
     selectedEpaymentMethodId: number | null,
 ): boolean {
     if (!selectedEpaymentMethodId) return false;
-    return methods
-        .find((m) => m.type === 'epayment')
-        ?.epayment_methods?.some((e) => e.id === selectedEpaymentMethodId) ?? false;
+    return (
+        methods
+            .find((m) => m.type === 'epayment')
+            ?.epayment_methods?.some(
+                (e) => e.id === selectedEpaymentMethodId,
+            ) ?? false
+    );
 }
 
 const PAYMENT_STATUS_PAID = 4;
@@ -185,13 +218,17 @@ export interface ParsePaymentResultInput {
     attemptId: string | null;
     statusParam: string | null;
     orderIdParam: string | null;
-    paymentData: { status: number; status_label: string; order_id?: number } | undefined;
+    paymentData:
+        | { status: number; status_label: string; order_id?: number }
+        | undefined;
     isLoading: boolean;
     isError: boolean;
     t: (key: string) => string;
 }
 
-export function parsePaymentResult(input: ParsePaymentResultInput): PaymentResultState {
+export function parsePaymentResult(
+    input: ParsePaymentResultInput,
+): PaymentResultState {
     const {
         attemptId,
         statusParam,
@@ -203,7 +240,9 @@ export function parsePaymentResult(input: ParsePaymentResultInput): PaymentResul
     } = input;
 
     const orderIdFromUrlParsed =
-        orderIdParam && statusParam === 'success' ? parseInt(orderIdParam, 10) : NaN;
+        orderIdParam && statusParam === 'success'
+            ? parseInt(orderIdParam, 10)
+            : NaN;
     const orderIdFromUrl = Number.isInteger(orderIdFromUrlParsed)
         ? orderIdFromUrlParsed
         : null;
@@ -214,7 +253,8 @@ export function parsePaymentResult(input: ParsePaymentResultInput): PaymentResul
             : null);
     const isSuccess: boolean =
         orderIdFromUrl != null ||
-        (paymentData?.status === PAYMENT_STATUS_PAID && !!paymentData?.order_id);
+        (paymentData?.status === PAYMENT_STATUS_PAID &&
+            !!paymentData?.order_id);
 
     const noAttemptAndNoSuccess =
         !attemptId && !(orderIdParam && statusParam === 'success');
@@ -222,7 +262,9 @@ export function parsePaymentResult(input: ParsePaymentResultInput): PaymentResul
         noAttemptAndNoSuccess ||
         (!!attemptId &&
             !isLoading &&
-            (isError || !paymentData || paymentData.status !== PAYMENT_STATUS_PAID));
+            (isError ||
+                !paymentData ||
+                paymentData.status !== PAYMENT_STATUS_PAID));
 
     let message = '';
     if (isFailed) {

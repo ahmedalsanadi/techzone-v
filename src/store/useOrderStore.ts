@@ -20,6 +20,14 @@ interface OrderState {
     setDeliveryAddress: (address: DeliveryAddress | null) => void;
     setScheduledTime: (time: Date | null) => void;
     setOrderTime: (time: OrderTime) => void;
+    setOrderState: (
+        state: Partial<
+            Pick<
+                OrderState,
+                'orderType' | 'deliveryAddress' | 'scheduledTime' | 'orderTime'
+            >
+        >,
+    ) => void;
     clearOrder: () => void;
 }
 
@@ -40,15 +48,25 @@ export const useOrderStore = create<OrderState>()(
             deliveryAddress: null,
             scheduledTime: null,
             orderTime: 'now',
-            setOrderType: (type) => set({ orderType: type }),
-            setDeliveryAddress: (address) =>
+            setOrderType: (type: OrderType) => set({ orderType: type }),
+            setDeliveryAddress: (address: DeliveryAddress | null) =>
                 set({
-                    deliveryAddress: address
-                        ? normalizeAddress(address)
-                        : null,
+                    deliveryAddress: address ? normalizeAddress(address) : null,
                 }),
-            setScheduledTime: (time) => set({ scheduledTime: time }),
-            setOrderTime: (time) => set({ orderTime: time }),
+            setScheduledTime: (time: Date | null) =>
+                set({ scheduledTime: time }),
+            setOrderTime: (time: OrderTime) => set({ orderTime: time }),
+            setOrderState: (
+                state: Partial<
+                    Pick<
+                        OrderState,
+                        | 'orderType'
+                        | 'deliveryAddress'
+                        | 'scheduledTime'
+                        | 'orderTime'
+                    >
+                >,
+            ) => set((prev) => ({ ...prev, ...state })),
             clearOrder: () =>
                 set({
                     orderType: null,

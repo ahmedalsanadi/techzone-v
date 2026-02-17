@@ -7,12 +7,14 @@ interface SummaryItem {
 import { Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
+import { cn } from '@/lib/utils';
 
 interface OrderSummaryCardProps {
     items: SummaryItem[];
     total: string;
     onSubmit?: () => void;
     isLoading?: boolean;
+    isRefreshing?: boolean;
     disabled?: boolean;
     /** Optional reason shown when submit is disabled (e.g. "Select address to continue") */
     disabledReason?: string;
@@ -23,6 +25,7 @@ export default function OrderSummaryCard({
     total,
     onSubmit,
     isLoading,
+    isRefreshing,
     disabled,
     disabledReason,
 }: OrderSummaryCardProps) {
@@ -34,7 +37,11 @@ export default function OrderSummaryCard({
                 {t('summaryTitle') || 'ملخص الطلب'}
             </h2>
 
-            <div className="space-y-4 text-md font-medium">
+            <div
+                className={cn(
+                    'space-y-4 text-md font-medium transition-opacity duration-200',
+                    isRefreshing && 'opacity-50 pointer-events-none',
+                )}>
                 {items.map((item, index) => (
                     <div
                         key={`${item.label}-${index}`}

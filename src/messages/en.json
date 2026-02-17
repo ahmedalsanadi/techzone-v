@@ -102,7 +102,8 @@
     "noPaymentMethodsAvailable": "No payment methods available. Please contact support.",
     "payWithWalletOnly": "Your order will be paid using your wallet. No other payment method is needed.",
     "shippingSpeed": "Shipping Speed",
-    "deliveryToSmall": "to"
+    "deliveryToSmall": "to",
+    "fee": "Fee"
   },
   "Order": {
     "orderType": "Order Type",
@@ -126,7 +127,8 @@
     "selectDateTime": "Select Date & Time",
     "addNew": "Add New",
     "default": "Default",
-    "addressSaved": "Address saved"
+    "addressSaved": "Address saved",
+    "pleaseSelectAddress": "Please select an address"
   },
   "Address": {
     "loading": "Loading...",
