@@ -7,7 +7,6 @@ import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import { OrderSummaryCard } from './OrderSummaryCard';
 import { Order } from '@/types/orders';
 import { ReportProblemForm } from './ReportProblemForm';
-import SubHeaderManager from '@/components/layouts/SubHeaderManager';
 
 interface ReportProblemViewProps {
     order: Order;
@@ -28,27 +27,26 @@ export default function ReportProblemView({ order }: ReportProblemViewProps) {
     ];
 
     return (
-            <section className="space-y-6 py-2">
-                <Breadcrumbs items={breadcrumbItems} />
-                <SubHeaderManager show={false} />
+        <section className="space-y-6 py-2">
+            <Breadcrumbs items={breadcrumbItems} />
 
-                <div className="mt-8 mb-12">
-                    <h1 className="text-4xl font-black text-gray-900 leading-tight">
-                        {t('title')}
-                    </h1>
+            <div className="mt-8 mb-12">
+                <h1 className="text-4xl font-black text-gray-900 leading-tight">
+                    {t('title')}
+                </h1>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                {/* Sidebar: Order Details (Right side in RTL) */}
+                <div className="space-y-6">
+                    <OrderSummaryCard order={order} />
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-                    {/* Sidebar: Order Details (Right side in RTL) */}
-                    <div className="space-y-6">
-                        <OrderSummaryCard order={order} />
-                    </div>
-
-                    {/* Main Content: Problem Form (Left side in RTL) */}
-                    <div className="lg:col-span-2">
-                        <ReportProblemForm />
-                    </div>
+                {/* Main Content: Problem Form (Left side in RTL) */}
+                <div className="lg:col-span-2">
+                    <ReportProblemForm />
                 </div>
-            </section>
+            </div>
+        </section>
     );
 }

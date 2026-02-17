@@ -48,7 +48,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
             </div>
 
             {/* Products Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 px-4 ">
                 {products.map((product, index) => {
                     // Calculate discount
                     const salePrice = product.sale_price;

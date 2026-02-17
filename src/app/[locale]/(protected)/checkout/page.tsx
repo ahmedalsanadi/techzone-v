@@ -49,13 +49,6 @@ export default function CheckoutPage() {
         scheduledTime: scheduledTimeRaw,
         orderTime,
     } = useOrderStore();
-    const { setShowSubHeader } = useUiStore();
-
-    // Hide subheader on checkout page
-    useEffect(() => {
-        setShowSubHeader(false);
-        return () => setShowSubHeader(true);
-    }, [setShowSubHeader]);
 
     const [selectedPaymentMethodType, setSelectedPaymentMethodType] =
         useState<PaymentMethodType | null>(null);

@@ -4,7 +4,6 @@
 import React, { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Star, X, RotateCcw, Info, Loader2 } from 'lucide-react';
-import SubHeaderManager from '@/components/layouts/SubHeaderManager';
 import { Button } from '@/components/ui/Button';
 import { Link, useRouter } from '@/i18n/navigation';
 import {
@@ -242,8 +241,6 @@ export default function OrderDetailsView({
 
     return (
         <div className="space-y-6 py-2">
-            <SubHeaderManager show={false} />
-
             <div className="flex justify-start">
                 <nav className="flex items-center gap-2 text-[13px] text-gray-400 font-medium">
                     <Link

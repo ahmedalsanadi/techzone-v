@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { useTranslations } from 'next-intl';
-import SubHeaderManager from '@/components/layouts/SubHeaderManager';
 import type { Order } from '@/types/orders';
 import type { PaginationMeta } from '@/types/api';
 import OrderCard from './OrderCard';
@@ -26,8 +25,6 @@ export default function MyOrdersView({
 
     return (
         <div className="space-y-8">
-            <SubHeaderManager show={false} />
-
             <div className="flex items-center justify-start">
                 <h1 className="text-2xl font-black text-gray-900 border-s-4 border-theme-primary ps-4">
                     {t('title')}

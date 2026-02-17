@@ -25,7 +25,11 @@ export default function PageContainer({
 
     const isAuthPage = pathname?.includes('/auth');
     const isCheckoutPage = pathname?.includes('/checkout');
-    const shouldShowSubHeader = showSubHeader && !isCheckoutPage;
+    const isOrdersPage = pathname?.includes('/my-orders');
+
+    // Subheader is hidden on auth, checkout, and my-orders pages by default
+    const shouldShowSubHeader =
+        showSubHeader && !isAuthPage && !isCheckoutPage && !isOrdersPage;
 
     if (isAuthPage) {
         return (
