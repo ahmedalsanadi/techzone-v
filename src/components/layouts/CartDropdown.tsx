@@ -100,101 +100,143 @@ const CartDropdown = () => {
                                                 undefined;
                                             return (
                                                 <>
-                                        <div className="relative w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded-lg overflow-hidden shrink-0">
-                                            <DynamicImage
-                                                src={item.image}
-                                                alt={item.name}
-                                                fill
-                                                className="object-contain p-1"
-                                            />
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <h4 className="text-xs sm:text-sm font-bold text-gray-900 truncate mb-0.5">
-                                                {item.name}
-                                            </h4>
-
-                                            {/* Variety */}
-                                            {metadata?.variety ? (
-                                                <p className="text-[9px] sm:text-[10px] text-gray-400 font-medium mb-0.5 sm:mb-1">
-                                                    {metadata.variety.name}
-                                                </p>
-                                            ) : null}
-
-                                            {/* Variant Options Summary */}
-                                            {metadata?.variant_options &&
-                                                Object.keys(
-                                                    metadata.variant_options,
-                                                ).length > 0 && (
-                                                    <div className="flex flex-wrap gap-0.5 sm:gap-1 mb-0.5 sm:mb-1">
-                                                        {Object.entries(
-                                                            metadata.variant_options,
-                                                        ).map(([k, v]) => (
-                                                            <span
-                                                                key={k}
-                                                                className="text-[8px] sm:text-[9px] text-gray-400 bg-gray-50 px-1 rounded border border-gray-100/50">
-                                                                {k}: {String(v)}
-                                                            </span>
-                                                        ))}
+                                                    <div className="relative w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded-lg overflow-hidden shrink-0">
+                                                        <DynamicImage
+                                                            src={item.image}
+                                                            alt={item.name}
+                                                            className="object-cover"
+                                                        />
                                                     </div>
-                                                )}
+                                                    <div className="flex-1 min-w-0">
+                                                        <h4 className="text-xs sm:text-sm font-bold text-gray-900 truncate mb-0.5">
+                                                            {item.name}
+                                                        </h4>
 
-                                            {/* Addons Summary */}
-                                            {metadata?.addonDetails &&
-                                                metadata.addonDetails.length > 0 && (
-                                                    <p className="text-[9px] sm:text-[10px] text-gray-400 line-clamp-1 mb-0.5 sm:mb-1">
-                                                        {metadata.addonDetails
-                                                            .map((g) =>
-                                                                g.items.map((i) => i.name).join(', '),
+                                                        {/* Variety */}
+                                                        {metadata?.variety ? (
+                                                            <p className="text-[9px] sm:text-[10px] text-gray-400 font-medium mb-0.5 sm:mb-1">
+                                                                {
+                                                                    metadata
+                                                                        .variety
+                                                                        .name
+                                                                }
+                                                            </p>
+                                                        ) : null}
+
+                                                        {/* Variant Options Summary */}
+                                                        {metadata?.variant_options &&
+                                                            Object.keys(
+                                                                metadata.variant_options,
+                                                            ).length > 0 && (
+                                                                <div className="flex flex-wrap gap-0.5 sm:gap-1 mb-0.5 sm:mb-1">
+                                                                    {Object.entries(
+                                                                        metadata.variant_options,
+                                                                    ).map(
+                                                                        ([
+                                                                            k,
+                                                                            v,
+                                                                        ]) => (
+                                                                            <span
+                                                                                key={
+                                                                                    k
+                                                                                }
+                                                                                className="text-[8px] sm:text-[9px] text-gray-400 bg-gray-50 px-1 rounded border border-gray-100/50">
+                                                                                {
+                                                                                    k
+                                                                                }
+                                                                                :{' '}
+                                                                                {String(
+                                                                                    v,
+                                                                                )}
+                                                                            </span>
+                                                                        ),
+                                                                    )}
+                                                                </div>
+                                                            )}
+
+                                                        {/* Addons Summary */}
+                                                        {metadata?.addonDetails &&
+                                                            metadata
+                                                                .addonDetails
+                                                                .length > 0 && (
+                                                                <p className="text-[9px] sm:text-[10px] text-gray-400 line-clamp-1 mb-0.5 sm:mb-1">
+                                                                    {metadata.addonDetails
+                                                                        .map(
+                                                                            (
+                                                                                g,
+                                                                            ) =>
+                                                                                g.items
+                                                                                    .map(
+                                                                                        (
+                                                                                            i,
+                                                                                        ) =>
+                                                                                            i.name,
+                                                                                    )
+                                                                                    .join(
+                                                                                        ', ',
+                                                                                    ),
+                                                                        )
+                                                                        .join(
+                                                                            ', ',
+                                                                        )}
+                                                                </p>
+                                                            )}
+
+                                                        {/* Custom Fields Summary */}
+                                                        {metadata?.custom_fields &&
+                                                            Object.keys(
+                                                                metadata.custom_fields,
+                                                            ).length > 0 && (
+                                                                <p className="text-[9px] sm:text-[10px] text-gray-400 line-clamp-1 italic mb-0.5 sm:mb-1">
+                                                                    {Object.entries(
+                                                                        metadata.custom_fields,
+                                                                    )
+                                                                        .map(
+                                                                            ([
+                                                                                k,
+                                                                                v,
+                                                                            ]) =>
+                                                                                `${k.replace(/_/g, ' ')}: ${v}`,
+                                                                        )
+                                                                        .join(
+                                                                            ', ',
+                                                                        )}
+                                                                </p>
+                                                            )}
+
+                                                        <p className="text-[10px] sm:text-xs text-gray-500 mb-0.5 sm:mb-1">
+                                                            x{item.quantity}
+                                                        </p>
+                                                        <div className="flex items-center gap-1 text-xs sm:text-sm font-bold text-theme-primary">
+                                                            <span>
+                                                                {formatMoneyAmount(
+                                                                    metadata
+                                                                        ?.apiPricing
+                                                                        ?.total_price ??
+                                                                        item.price *
+                                                                            item.quantity,
+                                                                    locale,
+                                                                )}
+                                                            </span>
+                                                            <CurrencySymbol className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                                                        </div>
+                                                    </div>
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="icon-sm"
+                                                        onClick={() =>
+                                                            void removeFromCart(
+                                                                item.id,
                                                             )
-                                                            .join(', ')}
-                                                    </p>
-                                                )}
-
-                                            {/* Custom Fields Summary */}
-                                            {metadata?.custom_fields &&
-                                                Object.keys(
-                                                    metadata.custom_fields,
-                                                ).length > 0 && (
-                                                    <p className="text-[9px] sm:text-[10px] text-gray-400 line-clamp-1 italic mb-0.5 sm:mb-1">
-                                                        {Object.entries(
-                                                            metadata.custom_fields,
-                                                        )
-                                                            .map(
-                                                                ([k, v]) =>
-                                                                    `${k.replace(/_/g, ' ')}: ${v}`,
-                                                            )
-                                                            .join(', ')}
-                                                    </p>
-                                                )}
-
-                                            <p className="text-[10px] sm:text-xs text-gray-500 mb-0.5 sm:mb-1">
-                                                x{item.quantity}
-                                            </p>
-                                            <div className="flex items-center gap-1 text-xs sm:text-sm font-bold text-theme-primary">
-                                                <span>
-                                                    {formatMoneyAmount(
-                                                        metadata?.apiPricing
-                                                            ?.total_price ??
-                                                            item.price *
-                                                                item.quantity,
-                                                        locale,
-                                                    )}
-                                                </span>
-                                                <CurrencySymbol className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                                            </div>
-                                        </div>
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="icon-sm"
-                                            onClick={() => void removeFromCart(item.id)}
-                                            className="hover:text-red-500 hover:bg-red-50 shrink-0">
-                                            <X
-                                                size={14}
-                                                strokeWidth={2}
-                                                className="sm:size-4"
-                                            />
-                                        </Button>
+                                                        }
+                                                        className="hover:text-red-500 hover:bg-red-50 shrink-0">
+                                                        <X
+                                                            size={14}
+                                                            strokeWidth={2}
+                                                            className="sm:size-4"
+                                                        />
+                                                    </Button>
                                                 </>
                                             );
                                         })()}
