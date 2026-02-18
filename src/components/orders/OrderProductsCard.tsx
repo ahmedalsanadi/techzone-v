@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { OrderItem } from '@/types/orders/orders.types';
-import { Badge } from '@/components/ui/Badge';
+import { Badge, type BadgeVariant } from '@/components/ui/Badge';
 import { formatCurrency } from '@/lib/utils';
 import { useLocale, useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
@@ -61,6 +61,22 @@ export function OrderProductsCard({
                                   >,
                               ).length > 0);
 
+                    // Map OrderItem status (1-5) to semantic variants
+                    const getStatusVariant = (status: number): BadgeVariant => {
+                        switch (status) {
+                            case 1:
+                                return 'warning'; // Reserved
+                            case 2:
+                                return 'secondary'; // Paid
+                            case 3:
+                            case 4:
+                            case 5:
+                                return 'destructive'; // Refunded, Partially Refunded, Cancelled
+                            default:
+                                return 'secondary';
+                        }
+                    };
+
                     return (
                         <div
                             key={item.id}
@@ -88,8 +104,10 @@ export function OrderProductsCard({
                                     {/* Item Status Badge */}
                                     {item.status_label && (
                                         <Badge
-                                            variant="secondary"
-                                            className="text-[10px] px-2 py-0 font-medium mt-1">
+                                            variant={getStatusVariant(
+                                                item.status,
+                                            )}
+                                            className="text-[10px] px-2 py-0.5 rounded-sm border-none mt-2">
                                             {item.status_label}
                                         </Badge>
                                     )}
@@ -174,7 +192,7 @@ export function OrderProductsCard({
                                                     <span className="font-semibold text-gray-600 capitalize">
                                                         {formatFieldLabel(key)}:
                                                     </span>
-                                                    <span className="truncate ml-2 text-gray-700">
+                                                    <span className="truncate mx-2 text-gray-700">
                                                         {value != null &&
                                                         value !== ''
                                                             ? String(value)
@@ -204,7 +222,7 @@ export function OrderProductsCard({
                                                 )}
                                             </span>
                                         </div>
-                                        <span className="text-sm font-bold text-gray-400 bg-gray-50 px-2 py-1 rounded-lg">
+                                        <span className="text-sm  text-gray-400 bg-gray-50 px-2 py-1 rounded-lg">
                                             {item.quantity}{' '}
                                             {t('products.quantity_unit') || 'x'}
                                         </span>
