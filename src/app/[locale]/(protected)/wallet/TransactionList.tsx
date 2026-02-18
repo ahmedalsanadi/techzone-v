@@ -4,7 +4,8 @@
 import React from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { TrendingUp, TrendingDown } from 'lucide-react';
-import { cn, formatCurrency } from '@/lib/utils';
+import { cn, formatMoneyAmount } from '@/lib/utils';
+import CurrencySymbol from '@/components/ui/CurrencySymbol';
 
 export interface Transaction {
     id: string;
@@ -64,9 +65,10 @@ export const TransactionList: React.FC<TransactionListProps> = ({
                                 ) : (
                                     <TrendingDown className="w-5 h-5 md:w-6 md:h-6 ml-1" />
                                 )}
-                                <span>
+                                <span className="flex items-center gap-1">
                                     {tx.type === 'add' ? '+' : '-'}
-                                    {formatCurrency(tx.amount, locale)}
+                                    {formatMoneyAmount(tx.amount, locale)}
+                                    <CurrencySymbol className="w-4 h-4 md:w-5 md:h-5" />
                                 </span>
                             </div>
                         </div>

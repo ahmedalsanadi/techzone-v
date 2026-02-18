@@ -9,6 +9,7 @@ export type OrderStatus =
     | 'READY_FOR_PICKUP'
     | 'SHIPPED'
     | 'DELIVERED'
+    | 'COMPLETED'
     | 'CANCELED'
     | 'REFUNDED'
     | 'PARTIALLY_REFUNDED'
@@ -23,6 +24,7 @@ export const ORDER_STATUS_NUMBER_MAP: Record<number, OrderStatus> = {
     5: 'READY_FOR_PICKUP',
     6: 'SHIPPED',
     7: 'DELIVERED',
+    11: 'COMPLETED',
     8: 'CANCELED',
     9: 'REFUNDED',
     10: 'PARTIALLY_REFUNDED',

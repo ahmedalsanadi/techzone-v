@@ -3,7 +3,8 @@
 import { CreditCard, Banknote, Wallet, Check } from 'lucide-react';
 import CheckoutCard from './CheckoutCard';
 
-import { cn, formatCurrency } from '@/lib/utils';
+import { cn, formatMoneyAmount } from '@/lib/utils';
+import CurrencySymbol from '@/components/ui/CurrencySymbol';
 import { useLocale, useTranslations } from 'next-intl';
 import {
     PaymentMethodType,
@@ -20,7 +21,7 @@ interface PaymentMethodCardProps {
     walletCoversTotal: boolean;
     /** When true, show wallet toggle at top of card (beside payment methods) */
     walletAvailable?: boolean;
-    walletBalanceFormatted?: string;
+    walletBalance?: number;
     onUseWalletChange?: (use: boolean) => void;
     onChange: (type: PaymentMethodType) => void;
     onEpaymentMethodChange: (id: number) => void;
@@ -34,7 +35,7 @@ export default function PaymentMethodCard({
     useWallet,
     walletCoversTotal,
     walletAvailable = false,
-    walletBalanceFormatted = '',
+    walletBalance = 0,
     onUseWalletChange,
     onChange,
     onEpaymentMethodChange,
@@ -75,13 +76,16 @@ export default function PaymentMethodCard({
                         <h3 className="text-md font-bold text-gray-800">
                             {t('walletDiscountTitle')}
                         </h3>
-                        <div className="inline-flex items-center gap-2 bg-gray-50 border border-gray-100 rounded-xl px-4 py-2 self-start sm:self-auto">
+                        <div className="inline-flex items-center gap-1.5 bg-gray-50 border border-gray-100 rounded-xl px-4 py-2 self-start sm:self-auto">
                             <span className="text-gray-500 text-sm">
                                 {t('walletBalanceLabel')}
                             </span>
-                            <span className="font-bold text-theme-primary">
-                                {walletBalanceFormatted}
-                            </span>
+                            <div className="flex items-center gap-1 font-bold text-theme-primary">
+                                <span>
+                                    {formatMoneyAmount(walletBalance, locale)}
+                                </span>
+                                <CurrencySymbol className="w-3.5 h-3.5" />
+                            </div>
                         </div>
                         <div className="flex items-center gap-6">
                             {(['yes', 'no'] as const).map((value) => {
@@ -245,20 +249,24 @@ export default function PaymentMethodCard({
                                                     {name}
                                                 </div>
                                                 <div className="flex flex-wrap items-center gap-2">
-                                                    <span className="text-sm font-bold text-theme-primary">
-                                                        {formatCurrency(
-                                                            option.total_amount,
-                                                            locale,
-                                                        )}
-                                                    </span>
+                                                    <div className="flex items-center gap-1 font-bold text-theme-primary">
+                                                        <span>
+                                                            {formatMoneyAmount(
+                                                                option.total_amount,
+                                                                locale,
+                                                            )}
+                                                        </span>
+                                                        <CurrencySymbol className="w-3.5 h-3.5" />
+                                                    </div>
                                                     {option.service_charge >
                                                         0 && (
                                                         <div className="text-[10px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-md font-bold flex items-center gap-1 border border-amber-100/50">
                                                             +{' '}
-                                                            {formatCurrency(
+                                                            {formatMoneyAmount(
                                                                 option.service_charge,
                                                                 locale,
-                                                            )}{' '}
+                                                            )}
+                                                            <CurrencySymbol className="w-2.5 h-2.5" />{' '}
                                                             {t('fee')}
                                                         </div>
                                                     )}

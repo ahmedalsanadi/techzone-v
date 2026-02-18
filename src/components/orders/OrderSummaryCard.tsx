@@ -3,8 +3,9 @@
 
 import React from 'react';
 import { Order } from '@/types/orders';
-import { formatCurrency } from '@/lib/utils';
+import { formatMoneyAmount } from '@/lib/utils';
 import { useLocale, useTranslations } from 'next-intl';
+import CurrencySymbol from '../ui/CurrencySymbol';
 
 interface OrderSummaryCardProps {
     order: Order;
@@ -61,7 +62,8 @@ export function OrderSummaryCard({ order }: OrderSummaryCardProps) {
             label: t('totalAmount'),
             value: (
                 <div className="flex items-center gap-1 justify-end font-semibold text-gray-900">
-                    <span>{formatCurrency(order.total, locale)}</span>
+                    <span>{formatMoneyAmount(order.total, locale)}</span>
+                    <CurrencySymbol className="w-3.5 h-3.5" />
                 </div>
             ),
         },

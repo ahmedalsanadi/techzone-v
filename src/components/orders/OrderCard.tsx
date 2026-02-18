@@ -5,7 +5,8 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Star, Store, Calendar, MapPin, Banknote, Info } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Badge, type BadgeVariant } from '@/components/ui/Badge';
-import { cn, formatCurrency } from '@/lib/utils';
+import { cn, formatMoneyAmount } from '@/lib/utils';
+import CurrencySymbol from '../ui/CurrencySymbol';
 
 import { Order, OrderStatus, ORDER_STATUS_NUMBER_MAP } from '@/types/orders';
 import { Link } from '@/i18n/navigation';
@@ -20,7 +21,7 @@ export default function OrderCard({ order }: OrderCardProps) {
 
     const statusKey =
         typeof order.status === 'number'
-            ? ORDER_STATUS_NUMBER_MAP[order.status] ?? 'WAITING_APPROVAL'
+            ? (ORDER_STATUS_NUMBER_MAP[order.status] ?? 'WAITING_APPROVAL')
             : (order.status as OrderStatus);
 
     // Semantic colors: red = canceled/refunded, amber = waiting, gray = paid/in progress, green = fulfillment done
@@ -55,6 +56,10 @@ export default function OrderCard({ order }: OrderCardProps) {
         DELIVERED: {
             variant: 'success',
             label: order.status_label || t('status.delivered'),
+        },
+        COMPLETED: {
+            variant: 'success',
+            label: order.status_label || t('status.completed'),
         },
         CANCELED: {
             variant: 'destructive',
@@ -170,10 +175,11 @@ export default function OrderCard({ order }: OrderCardProps) {
                 <div className="flex items-center gap-3 text-gray-900">
                     <Banknote className="w-5 h-5 opacity-60" />
 
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1.5">
                         <span className="text-lg font-black tracking-tight">
-                            {formatCurrency(order.total, locale)}
+                            {formatMoneyAmount(order.total, locale)}
                         </span>
+                        <CurrencySymbol className="w-4 h-4" />
                     </div>
                 </div>
             </div>
@@ -191,7 +197,10 @@ export default function OrderCard({ order }: OrderCardProps) {
                                 {t('details')}
                             </Link>
                         </Button>
-                        <Button variant="primary" size="card" className="flex-1">
+                        <Button
+                            variant="primary"
+                            size="card"
+                            className="flex-1">
                             {t('reorder')}
                         </Button>
                     </>

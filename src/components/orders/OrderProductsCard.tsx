@@ -3,11 +3,12 @@
 import React from 'react';
 import { OrderItem } from '@/types/orders/orders.types';
 import { Badge, type BadgeVariant } from '@/components/ui/Badge';
-import { formatCurrency } from '@/lib/utils';
+import { formatMoneyAmount } from '@/lib/utils';
 import { useLocale, useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 import { Star } from 'lucide-react';
 import DynamicImage from '@/components/ui/DynamicImage';
+import CurrencySymbol from '../ui/CurrencySymbol';
 
 interface OrderProductsCardProps {
     items: OrderItem[];
@@ -125,11 +126,12 @@ export function OrderProductsCard({
                                                         ? ` (x${addon.quantity})`
                                                         : ''}
                                                     {' · '}
-                                                    <span className="text-gray-400">
-                                                        {formatCurrency(
+                                                    <span className="text-gray-400 flex items-center gap-0.5">
+                                                        {formatMoneyAmount(
                                                             addon.price,
                                                             locale,
                                                         )}
+                                                        <CurrencySymbol className="w-2.5 h-2.5" />
                                                     </span>
                                                 </div>
                                             ))}
@@ -210,13 +212,16 @@ export function OrderProductsCard({
                                     {/* Price and Quantity */}
                                     <div className="flex items-center gap-3 mt-3">
                                         <div className="flex items-center gap-1 text-theme-primary font-black text-lg">
-                                            <span>
-                                                {formatCurrency(
-                                                    item.sale_unit_price ||
-                                                        item.unit_price,
-                                                    locale,
-                                                )}
-                                            </span>
+                                            <div className="flex items-center gap-0.5">
+                                                <span>
+                                                    {formatMoneyAmount(
+                                                        item.sale_unit_price ||
+                                                            item.unit_price,
+                                                        locale,
+                                                    )}
+                                                </span>
+                                                <CurrencySymbol className="w-3.5 h-3.5" />
+                                            </div>
                                         </div>
                                         <span className="text-sm  text-gray-400 bg-gray-50 px-2 py-1 rounded-lg">
                                             {item.quantity}{' '}
@@ -227,8 +232,18 @@ export function OrderProductsCard({
 
                                 <div className="flex flex-col items-start md:items-end gap-3 shrink-0">
                                     {onRateItem &&
-                                        orderStatus === 'DELIVERED' &&
-                                        !item.review && (
+                                        (orderStatus === 'DELIVERED' ||
+                                            orderStatus === 'COMPLETED') &&
+                                        (item.review ? (
+                                            <div className="flex items-center gap-1.5 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100 shrink-0">
+                                                <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+                                                <span className="text-sm font-bold text-amber-700">
+                                                    {item.review.rate.toFixed(
+                                                        1,
+                                                    )}
+                                                </span>
+                                            </div>
+                                        ) : (
                                             <Button
                                                 variant="outline"
                                                 size="sm"
@@ -238,18 +253,21 @@ export function OrderProductsCard({
                                                 {t('actions.rateProduct') ||
                                                     'تقييم المنتج'}
                                             </Button>
-                                        )}
+                                        ))}
 
                                     <div className="flex flex-col items-end">
                                         <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
                                             {t('products.totalPrice') ||
                                                 'Total'}
                                         </div>
-                                        <div className="text-base font-black text-gray-900 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
-                                            {formatCurrency(
-                                                item.total_price,
-                                                locale,
-                                            )}
+                                        <div className="text-base font-black text-gray-900 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100 flex items-center gap-1">
+                                            <span>
+                                                {formatMoneyAmount(
+                                                    item.total_price,
+                                                    locale,
+                                                )}
+                                            </span>
+                                            <CurrencySymbol className="w-4 h-4" />
                                         </div>
                                     </div>
                                 </div>

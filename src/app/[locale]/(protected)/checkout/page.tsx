@@ -385,9 +385,6 @@ export default function CheckoutPage() {
                                 onChange={(id) => {
                                     setSelectedShippingSpeedTypeId(id);
                                 }}
-                                formatCurrency={(val) =>
-                                    formatCurrency(Number(val), locale)
-                                }
                                 isLoading={isLoadingData}
                             />
                         )}
@@ -400,10 +397,7 @@ export default function CheckoutPage() {
                         useWallet={useWallet}
                         walletCoversTotal={isFullyWalletCovered}
                         walletAvailable={walletAvailable}
-                        walletBalanceFormatted={formatCurrency(
-                            walletBalance,
-                            locale,
-                        )}
+                        walletBalance={walletBalance}
                         onUseWalletChange={setUseWallet}
                         onChange={(type) => {
                             setSelectedPaymentMethodType(type);
@@ -420,7 +414,7 @@ export default function CheckoutPage() {
                 <div className="lg:w-96">
                     <OrderSummaryCard
                         items={summaryItems}
-                        total={formatCurrency(finalTotal, locale)}
+                        total={finalTotal}
                         onSubmit={handleCheckout}
                         isLoading={createOrderMutation.isPending}
                         isRefreshing={isFetchingData}

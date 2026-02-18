@@ -413,7 +413,8 @@
       "variantOptions": "الخيارات",
       "customFields": "تفاصيل مخصصة",
       "quantity": "الكمية",
-      "totalPrice": "السعر الإجمالي"
+      "totalPrice": "السعر الإجمالي",
+      "notes": "الملاحظات"
     }
   },
   "NotFound": {

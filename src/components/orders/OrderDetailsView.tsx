@@ -360,6 +360,14 @@ export default function OrderDetailsView({
                     <h1 className="text-xl md:text-2xl font-bold text-gray-900">
                         {t('orderNumberTitle', { number: order.id })}
                     </h1>
+                    {order.review && (
+                        <div className="flex items-center gap-1.5 bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-100 ms-3">
+                            <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
+                            <span className="text-md font-bold text-amber-700">
+                                {order.review.rate.toFixed(1)}
+                            </span>
+                        </div>
+                    )}
                 </div>
 
                 <div className="grid grid-cols-2 md:flex md:flex-wrap items-center gap-2 md:gap-3 w-full md:w-auto">
@@ -374,18 +382,20 @@ export default function OrderDetailsView({
                             </span>
                         </Button>
                     </Link>
-                    {currentStatusKey === 'DELIVERED' && !order.review && (
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="w-full md:w-auto"
-                            onClick={handleRateOrder}>
-                            <Star className="w-4 h-4" />
-                            <span className="truncate">
-                                {t('actions.rateOrder')}
-                            </span>
-                        </Button>
-                    )}
+                    {(currentStatusKey === 'DELIVERED' ||
+                        currentStatusKey === 'COMPLETED') &&
+                        !order.review && (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-full md:w-auto"
+                                onClick={handleRateOrder}>
+                                <Star className="w-4 h-4" />
+                                <span className="truncate">
+                                    {t('actions.rateOrder')}
+                                </span>
+                            </Button>
+                        )}
                     <Button
                         variant="outline"
                         size="sm"

@@ -123,6 +123,7 @@ export function buildCreateOrderPayload(
 export interface SummaryItem {
     label: string;
     value: string;
+    amount?: number;
     isNegative?: boolean;
 }
 
@@ -155,22 +156,26 @@ export function buildSummaryItems(
             {
                 label: t('orderSubtotal'),
                 value: formatCurrency(summary.items_subtotal, locale),
+                amount: summary.items_subtotal,
             },
             {
                 label: t('deliveryFee'),
                 value: formatCurrency(summary.shipping_fee, locale),
+                amount: summary.shipping_fee,
             },
         );
         if (summary.cod_fee != null && summary.cod_fee > 0) {
             items.push({
                 label: t('codFee') || 'COD Fee',
                 value: formatCurrency(summary.cod_fee, locale),
+                amount: summary.cod_fee,
             });
         }
         if (summary.tax_amount != null && summary.tax_amount > 0) {
             items.push({
                 label: t('tax') || 'Tax',
                 value: formatCurrency(summary.tax_amount, locale),
+                amount: summary.tax_amount,
             });
         }
     }
@@ -178,12 +183,14 @@ export function buildSummaryItems(
         items.push({
             label: t('discount'),
             value: formatCurrency(discount, locale),
+            amount: discount,
         });
     }
     if (useWallet && walletDeduction > 0) {
         items.push({
             label: t('walletDeduction'),
             value: `- ${formatCurrency(walletDeduction, locale)}`,
+            amount: walletDeduction,
             isNegative: true,
         });
     }

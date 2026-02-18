@@ -2,7 +2,9 @@
 
 import React from 'react';
 import CheckoutCard from './CheckoutCard';
-import { useTranslations } from 'next-intl';
+import { formatMoneyAmount } from '@/lib/utils';
+import { useLocale, useTranslations } from 'next-intl';
+import CurrencySymbol from '@/components/ui/CurrencySymbol';
 import { cn } from '@/lib/utils';
 import { Truck } from 'lucide-react';
 
@@ -18,7 +20,6 @@ interface ShippingSpeedCardProps {
     options: ShippingSpeedOption[];
     selectedId: number | null;
     onChange: (id: number) => void;
-    formatCurrency: (amount: number | string | undefined) => string;
     isLoading?: boolean;
 }
 
@@ -27,7 +28,6 @@ export default function ShippingSpeedCard({
     options,
     selectedId,
     onChange,
-    formatCurrency,
     isLoading = false,
 }: ShippingSpeedCardProps) {
     const t = useTranslations('Checkout');
@@ -76,9 +76,19 @@ export default function ShippingSpeedCard({
                                                   ? 'text-theme-primary'
                                                   : 'text-gray-900',
                                           )}>
-                                          {option.fee === 0
-                                              ? t('free')
-                                              : formatCurrency(option.fee)}
+                                          {option.fee === 0 ? (
+                                              t('free')
+                                          ) : (
+                                              <div className="flex items-center gap-1">
+                                                  <span>
+                                                      {formatMoneyAmount(
+                                                          option.fee,
+                                                          useLocale(),
+                                                      )}
+                                                  </span>
+                                                  <CurrencySymbol className="w-3.5 h-3.5" />
+                                              </div>
+                                          )}
                                       </span>
                                   </div>
                               </div>

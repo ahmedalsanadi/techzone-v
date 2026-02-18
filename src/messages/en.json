@@ -412,7 +412,8 @@
       "addons": "Add-ons",
       "variantOptions": "Options",
       "customFields": "Custom details",
-      "totalPrice": "Total price"
+      "totalPrice": "Total price",
+      "notes": "Notes"
     }
   },
   "NotFound": {

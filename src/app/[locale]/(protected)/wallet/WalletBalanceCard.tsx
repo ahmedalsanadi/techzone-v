@@ -5,7 +5,8 @@ import React from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { formatCurrency } from '@/lib/utils';
+import { formatMoneyAmount } from '@/lib/utils';
+import CurrencySymbol from '@/components/ui/CurrencySymbol';
 
 interface WalletBalanceCardProps {
     balance: number;
@@ -26,8 +27,9 @@ export const WalletBalanceCard: React.FC<WalletBalanceCardProps> = ({
                         {t('balance')}
                     </p>
                     <div className="flex items-center gap-1 justify-center ">
-                        <span className="text-2xl md:text-4xl font-bold text-theme-primary">
-                            {formatCurrency(balance, locale)}
+                        <span className="text-2xl md:text-4xl font-bold text-theme-primary flex items-center gap-1.5 ">
+                            {formatMoneyAmount(balance, locale)}
+                            <CurrencySymbol className="w-5 h-5 md:w-8 md:h-8" />
                         </span>
                     </div>
                 </div>

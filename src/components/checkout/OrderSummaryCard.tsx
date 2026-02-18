@@ -1,17 +1,20 @@
 interface SummaryItem {
     label: string;
     value: string;
+    amount?: number;
     isNegative?: boolean;
 }
 
 import { Loader2 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Button } from '@/components/ui/Button';
-import { cn } from '@/lib/utils';
+import { cn, formatMoneyAmount } from '@/lib/utils';
+import CurrencySymbol from '../ui/CurrencySymbol';
+import React from 'react';
 
 interface OrderSummaryCardProps {
     items: SummaryItem[];
-    total: string;
+    total: React.ReactNode;
     onSubmit?: () => void;
     isLoading?: boolean;
     isRefreshing?: boolean;
@@ -46,21 +49,46 @@ export default function OrderSummaryCard({
                     <div
                         key={`${item.label}-${index}`}
                         className="flex justify-between">
-                        <span
-                            className={
+                        <div
+                            className={cn(
+                                'flex items-center gap-1 font-bold',
                                 item.isNegative
-                                    ? 'text-green-600 font-bold'
-                                    : 'text-gray-600'
-                            }>
-                            {item.value}
-                        </span>
+                                    ? 'text-green-600'
+                                    : 'text-gray-900',
+                            )}>
+                            {item.amount != null ? (
+                                <>
+                                    <span>
+                                        {item.isNegative ? '- ' : ''}
+                                        {formatMoneyAmount(
+                                            item.amount,
+                                            useLocale(),
+                                        )}
+                                    </span>
+                                    <CurrencySymbol className="w-3.5 h-3.5" />
+                                </>
+                            ) : (
+                                <span>{item.value}</span>
+                            )}
+                        </div>
                         <span className="text-gray-700">{item.label}</span>
                     </div>
                 ))}
 
                 <div className="border-t pt-4">
                     <div className="flex justify-between">
-                        <span className="font-bold text-xl">{total}</span>
+                        <div className="flex items-center gap-1 font-bold text-xl text-theme-primary">
+                            {typeof total === 'number' ? (
+                                <>
+                                    <span>
+                                        {formatMoneyAmount(total, useLocale())}
+                                    </span>
+                                    <CurrencySymbol className="w-5 h-5 ml-0.5" />
+                                </>
+                            ) : (
+                                <span>{total}</span>
+                            )}
+                        </div>
                         <span className="font-bold text-lg">
                             {t('total') || 'الاجمالي'}
                         </span>
