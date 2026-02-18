@@ -74,7 +74,7 @@ export function OrderProductsCard({
                                     }
                                     alt={item.product_title}
                                     fill
-                                    className="object-contain p-2 group-hover:scale-105 transition-transform duration-700"
+                                    className="object-cover group-hover:scale-105 transition-transform duration-700"
                                 />
                             </div>
 

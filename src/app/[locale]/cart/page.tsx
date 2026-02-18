@@ -210,7 +210,7 @@ const CartPage = () => {
                                                 src={item.image}
                                                 alt={item.name}
                                                 fill
-                                                className="object-contain p-2"
+                                                className="object-cover"
                                             />
                                         </Link>
                                     ) : (
@@ -219,7 +219,7 @@ const CartPage = () => {
                                                 src={item.image}
                                                 alt={item.name}
                                                 fill
-                                                className="object-contain p-2"
+                                                className="object-cover"
                                             />
                                         </div>
                                     )}
