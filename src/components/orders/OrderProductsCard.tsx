@@ -1,13 +1,13 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
 import { OrderItem } from '@/types/orders/orders.types';
 import { Badge, type BadgeVariant } from '@/components/ui/Badge';
 import { formatCurrency } from '@/lib/utils';
 import { useLocale, useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 import { Star } from 'lucide-react';
+import DynamicImage from '@/components/ui/DynamicImage';
 
 interface OrderProductsCardProps {
     items: OrderItem[];
@@ -83,13 +83,9 @@ export function OrderProductsCard({
                             className="bg-white border border-gray-100 p-4 md:p-5 rounded-2xl flex flex-col md:flex-row md:items-start gap-4 md:gap-6 shadow-sm hover:shadow-md transition-shadow relative group">
                             {/* Product Image */}
                             <div className="relative w-20 h-20 md:w-28 md:h-28 bg-gray-50 rounded-xl overflow-hidden shrink-0">
-                                <Image
-                                    src={
-                                        item.product_image ||
-                                        '/images/placeholder.png'
-                                    }
+                                <DynamicImage
+                                    src={item.product_image as string}
                                     alt={item.product_title}
-                                    fill
                                     className="object-cover group-hover:scale-105 transition-transform duration-700"
                                 />
                             </div>
@@ -249,7 +245,7 @@ export function OrderProductsCard({
                                             {t('products.totalPrice') ||
                                                 'Total'}
                                         </div>
-                                        <div className="text-base font-black text-gray-900 bg-gray-50 px-3 py-1.5 rounded-xl border border-gray-100">
+                                        <div className="text-base font-black text-gray-900 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
                                             {formatCurrency(
                                                 item.total_price,
                                                 locale,

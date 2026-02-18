@@ -20,6 +20,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 import CartItemConfigModal from '@/components/modals/CartItemConfigModal';
 import { Button } from '@/components/ui/Button';
 import { formatMoneyAmount } from '@/lib/utils';
+import DynamicImage from '@/components/ui/DynamicImage';
 
 const CartPage = () => {
     const t = useTranslations('Cart');
@@ -206,19 +207,17 @@ const CartPage = () => {
                                         <Link
                                             href={productUrl}
                                             className="relative w-20 h-20 md:w-28 md:h-28 bg-gray-50 rounded-xl overflow-hidden shrink-0 hover:opacity-90 transition-opacity">
-                                            <Image
+                                            <DynamicImage
                                                 src={item.image}
                                                 alt={item.name}
-                                                fill
                                                 className="object-cover"
                                             />
                                         </Link>
                                     ) : (
                                         <div className="relative w-20 h-20 md:w-28 md:h-28 bg-gray-50 rounded-xl overflow-hidden shrink-0">
-                                            <Image
+                                            <DynamicImage
                                                 src={item.image}
                                                 alt={item.name}
-                                                fill
                                                 className="object-cover"
                                             />
                                         </div>
