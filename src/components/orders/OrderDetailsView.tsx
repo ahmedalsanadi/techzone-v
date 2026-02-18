@@ -1,13 +1,14 @@
 // src/app/[locale]/my-orders/utils/components/OrderDetailsView.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Star, X, RotateCcw, Info, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Link, useRouter } from '@/i18n/navigation';
 import {
     Order,
+    OrderItem,
     OrderStatus,
     OrderStatusUpdate,
     ORDER_STATUS_NUMBER_MAP,
@@ -20,9 +21,13 @@ import { useCartActions } from '@/hooks/cart';
 import { useCartStore } from '@/store/useCartStore';
 import { orderService } from '@/services/order-service';
 import { cartService } from '@/services/cart-service';
+import { ApiError } from '@/lib/api';
 import { toast } from 'sonner';
 import ConfirmModal from '@/components/modals/ConfirmModal';
 import dynamic from 'next/dynamic';
+import ReviewModal from '@/components/modals/ReviewModal';
+import { reviewService } from '@/services/review-service';
+import { ReviewTypeEnum } from '@/types/reviews';
 
 const LiveTrackingMap = dynamic(() => import('./LiveTrackingMap'), {
     ssr: false,
@@ -46,6 +51,10 @@ export default function OrderDetailsView({
     const [isCancelling, setIsCancelling] = useState(false);
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [isReordering, setIsReordering] = useState(false);
+    const [showReviewModal, setShowReviewModal] = useState(false);
+    const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+    const [selectedReviewItem, setSelectedReviewItem] =
+        useState<OrderItem | null>(null);
 
     const handleReorder = async () => {
         setIsReordering(true);
@@ -150,9 +159,94 @@ export default function OrderDetailsView({
         }
     };
 
-    const [mounted, setMounted] = React.useState(false);
+    const handleReviewSubmit = async (rating: number, comment: string) => {
+        setIsSubmittingReview(true);
+        try {
+            const isProductReview = !!selectedReviewItem;
+            await reviewService.addReview({
+                order_id: order.id,
+                product_id: selectedReviewItem?.product_id,
+                type: isProductReview
+                    ? ReviewTypeEnum.PRODUCT
+                    : ReviewTypeEnum.ORDER,
+                rating,
+                comment,
+            });
 
-    React.useEffect(() => {
+            // Update local state to hide buttons immediately
+            if (isProductReview && selectedReviewItem) {
+                setOrder({
+                    ...order,
+                    items:
+                        order.items?.map((item) =>
+                            item.id === selectedReviewItem.id
+                                ? { ...item, review: { rate: rating, comment } }
+                                : item,
+                        ) || [],
+                });
+            } else {
+                setOrder({
+                    ...order,
+                    review: { rate: rating, comment },
+                });
+            }
+
+            toast.success(t('actions.rateSuccess') || 'تم إضافة التقييم بنجاح');
+            setShowReviewModal(false);
+            setSelectedReviewItem(null);
+        } catch (error: unknown) {
+            const isDuplicate =
+                error instanceof ApiError && error.status === 422;
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : t('actions.rateError') || 'فشل إضافة التقييم';
+
+            toast.error(message);
+
+            // If it's a 422 (Already reviewed), close the modal and update UI
+            if (isDuplicate) {
+                const isProductReview = !!selectedReviewItem;
+                if (isProductReview && selectedReviewItem) {
+                    setOrder({
+                        ...order,
+                        items:
+                            order.items?.map((item) =>
+                                item.id === selectedReviewItem.id
+                                    ? {
+                                          ...item,
+                                          review: { rate: 5, comment: '' },
+                                      }
+                                    : item,
+                            ) || [],
+                    });
+                } else {
+                    setOrder({
+                        ...order,
+                        review: { rate: 5, comment: '' },
+                    });
+                }
+                setShowReviewModal(false);
+                setSelectedReviewItem(null);
+            }
+        } finally {
+            setIsSubmittingReview(false);
+        }
+    };
+
+    const handleRateProduct = (item: OrderItem) => {
+        setSelectedReviewItem(item);
+        setShowReviewModal(true);
+    };
+
+    const handleRateOrder = () => {
+        setSelectedReviewItem(null);
+        setShowReviewModal(true);
+    };
+
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
         setMounted(true);
     }, []);
 
@@ -280,15 +374,18 @@ export default function OrderDetailsView({
                             </span>
                         </Button>
                     </Link>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full md:w-auto">
-                        <Star className="w-4 h-4" />
-                        <span className="truncate">
-                            {t('actions.rateOrder')}
-                        </span>
-                    </Button>
+                    {currentStatusKey === 'DELIVERED' && !order.review && (
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full md:w-auto"
+                            onClick={handleRateOrder}>
+                            <Star className="w-4 h-4" />
+                            <span className="truncate">
+                                {t('actions.rateOrder')}
+                            </span>
+                        </Button>
+                    )}
                     <Button
                         variant="outline"
                         size="sm"
@@ -325,7 +422,11 @@ export default function OrderDetailsView({
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
                 <div className="flex flex-col gap-6 col-span-1 md:col-span-7">
                     <OrderSummaryCard order={order} />
-                    <OrderProductsCard items={order.items || []} />
+                    <OrderProductsCard
+                        items={order.items || []}
+                        onRateItem={handleRateProduct}
+                        orderStatus={currentStatusKey}
+                    />
                 </div>
                 <div className="flex flex-col gap-6 col-span-1 md:col-span-5">
                     {currentStatusKey === 'SHIPPED' && (
@@ -351,6 +452,21 @@ export default function OrderDetailsView({
                 cancelLabel={t('actions.back')}
                 variant="danger"
                 isLoading={isCancelling}
+            />
+
+            <ReviewModal
+                isOpen={showReviewModal}
+                onClose={() => {
+                    setShowReviewModal(false);
+                    setSelectedReviewItem(null);
+                }}
+                onSubmit={handleReviewSubmit}
+                isLoading={isSubmittingReview}
+                title={
+                    selectedReviewItem
+                        ? `${t('actions.rateProduct') || 'تقييم المنتج'}: ${selectedReviewItem.product_title}`
+                        : t('actions.rateOrder') || 'تقييم الطلب'
+                }
             />
         </div>
     );

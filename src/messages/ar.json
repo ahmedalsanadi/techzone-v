@@ -358,7 +358,10 @@
       "reorderSuccess": "تمت إضافة المنتجات إلى السلة بنجاح",
       "reorderError": "فشل إعادة الطلب",
       "confirm": "تأكيد",
-      "back": "تراجع"
+      "back": "تراجع",
+      "rateSuccess": "تم إضافة التقييم بنجاح",
+      "rateError": "فشل إضافة التقييم",
+      "rateProduct": "تقييم المنتج"
     },
     "courier": {
       "title": "طلبك في طريقه إليك!",
@@ -797,6 +800,22 @@
     "verifiedPurchaseOnly": "تقييمات لعملاء حقيقيين",
     "verifiedPurchaseDesc": "جميع التقييمات المعروضة هي لعملاء قاموا بشراء المنتج وتجربته بالفعل.",
     "writeReview": "اكتب تقييماً",
-    "verifiedPurchase": "شراء مؤكد"
+    "verifiedPurchase": "شراء مؤكد",
+    "addReview": "إضافة تقييم",
+    "submitReview": "إرسال التقييم",
+    "rateProduct": "تقييم المنتج",
+    "rateSuccess": "تم إضافة التقييم بنجاح",
+    "rateError": "فشل إضافة التقييم",
+    "commentLabel": "رأيك يهمنا (اختياري)",
+    "commentPlaceholder": "أضف تعليقك هنا...",
+    "cancel": "إلغاء",
+    "selectRating": "يرجى اختيار التقييم",
+    "ratingLabels": {
+      "1": "سيء جداً",
+      "2": "سيء",
+      "3": "مقبول",
+      "4": "جيد",
+      "5": "ممتاز"
+    }
   }
 }

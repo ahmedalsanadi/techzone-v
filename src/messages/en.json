@@ -358,7 +358,10 @@
       "reorderSuccess": "Items added to cart successfully",
       "reorderError": "Failed to reorder",
       "confirm": "Confirm",
-      "back": "Back"
+      "back": "Back",
+      "rateSuccess": "Review added successfully",
+      "rateError": "Failed to add review",
+      "rateProduct": "Rate Product"
     },
     "courier": {
       "title": "Your order is on its way!",
@@ -794,6 +797,22 @@
     "verifiedPurchaseOnly": "Verified Purchase Only",
     "verifiedPurchaseDesc": "All displayed reviews are from customers who actually purchased and tried the product.",
     "writeReview": "Write a Review",
-    "verifiedPurchase": "Verified Purchase"
+    "verifiedPurchase": "Verified Purchase",
+    "addReview": "Add Review",
+    "submitReview": "Submit Review",
+    "rateProduct": "Rate Product",
+    "rateSuccess": "Review added successfully",
+    "rateError": "Failed to add review",
+    "commentLabel": "Your feedback matters (Optional)",
+    "commentPlaceholder": "Add your comment here...",
+    "cancel": "Cancel",
+    "selectRating": "Please select a rating",
+    "ratingLabels": {
+      "1": "Very Poor",
+      "2": "Poor",
+      "3": "Average",
+      "4": "Good",
+      "5": "Excellent"
+    }
   }
 }

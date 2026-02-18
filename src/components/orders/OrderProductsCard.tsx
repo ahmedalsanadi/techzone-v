@@ -2,13 +2,17 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { OrderItem } from '@/types/orders';
+import { OrderItem } from '@/types/orders/orders.types';
 import { Badge } from '@/components/ui/Badge';
 import { formatCurrency } from '@/lib/utils';
 import { useLocale, useTranslations } from 'next-intl';
+import { Button } from '@/components/ui/Button';
+import { Star } from 'lucide-react';
 
 interface OrderProductsCardProps {
     items: OrderItem[];
+    onRateItem?: (item: OrderItem) => void;
+    orderStatus?: string | number;
 }
 
 /** Turn API key into readable label (e.g. engraving_text → Engraving text) */
@@ -19,7 +23,11 @@ function formatFieldLabel(key: string): string {
         .join(' ');
 }
 
-export function OrderProductsCard({ items }: OrderProductsCardProps) {
+export function OrderProductsCard({
+    items,
+    onRateItem,
+    orderStatus,
+}: OrderProductsCardProps) {
     const t = useTranslations('Orders');
     const locale = useLocale();
 
@@ -47,7 +55,10 @@ export function OrderProductsCard({ items }: OrderProductsCardProps) {
                             ? item.variant_options.length > 0
                             : typeof item.variant_options === 'object' &&
                               Object.keys(
-                                  item.variant_options as Record<string, unknown>,
+                                  item.variant_options as Record<
+                                      string,
+                                      unknown
+                                  >,
                               ).length > 0);
 
                     return (
@@ -80,33 +91,39 @@ export function OrderProductsCard({ items }: OrderProductsCardProps) {
                                                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">
                                                     {t('products.addons')}
                                                 </span>
-                                                {item.addons!.map((addon, i) => (
-                                                    <span
-                                                        key={i}
-                                                        className="text-[11px] md:text-[13px] font-medium text-gray-600 leading-tight">
-                                                        {addon.group_name ? (
-                                                            <>
-                                                                <span className="text-gray-500">
-                                                                    {addon.group_name}
-                                                                    :{' '}
-                                                                </span>
-                                                                {addon.title ||
-                                                                    addon.name ||
-                                                                    `#${addon.addon_item_id}`}
-                                                            </>
-                                                        ) : (
-                                                            addon.title ||
+                                                {item.addons!.map(
+                                                    (addon, i) => (
+                                                        <span
+                                                            key={i}
+                                                            className="text-[11px] md:text-[13px] font-medium text-gray-600 leading-tight">
+                                                            {addon.group_name ? (
+                                                                <>
+                                                                    <span className="text-gray-500">
+                                                                        {
+                                                                            addon.group_name
+                                                                        }
+                                                                        :{' '}
+                                                                    </span>
+                                                                    {addon.title ||
+                                                                        addon.name ||
+                                                                        `#${addon.addon_item_id}`}
+                                                                </>
+                                                            ) : (
+                                                                addon.title ||
                                                                 addon.name ||
                                                                 `${t('products.addon')} #${addon.addon_item_id}`
-                                                        )}
-                                                        {' · '}
-                                                        {addon.quantity} ×{' '}
-                                                        {formatCurrency(
-                                                            addon.price,
-                                                            locale,
-                                                        )}
-                                                    </span>
-                                                ))}
+                                                            )}
+                                                            {' · '}
+                                                            {
+                                                                addon.quantity
+                                                            } ×{' '}
+                                                            {formatCurrency(
+                                                                addon.price,
+                                                                locale,
+                                                            )}
+                                                        </span>
+                                                    ),
+                                                )}
                                             </div>
                                         )}
 
@@ -114,39 +131,58 @@ export function OrderProductsCard({ items }: OrderProductsCardProps) {
                                         {hasVariantOptions && (
                                             <div className="flex flex-col gap-0.5 mt-1">
                                                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">
-                                                    {t('products.variantOptions')}
+                                                    {t(
+                                                        'products.variantOptions',
+                                                    )}
                                                 </span>
                                                 <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] md:text-[13px] font-medium text-gray-600">
                                                     {Array.isArray(
                                                         item.variant_options,
-                                                    ) ? (
-                                                        (item.variant_options as unknown[]).map(
-                                                            (opt, i) => (
-                                                                <span key={i}>
-                                                                    {typeof opt ===
-                                                                    'object' && opt !== null
-                                                                        ? `${formatFieldLabel(
-                                                                              Object.keys(opt as object)[0] || '',
-                                                                          )}: ${Object.values(opt as object)[0] ?? ''}`
-                                                                        : String(opt)}
-                                                                </span>
-                                                            ),
-                                                        )
-                                                    ) : (
-                                                        Object.entries(
-                                                            (item.variant_options || {}) as Record<
-                                                                string,
-                                                                unknown
-                                                            >,
-                                                        ).map(([key, value]) => (
-                                                            <span key={key}>
-                                                                {formatFieldLabel(key)}:{' '}
-                                                                {value != null
-                                                                    ? String(value)
-                                                                    : '—'}
-                                                            </span>
-                                                        ))
-                                                    )}
+                                                    )
+                                                        ? (
+                                                              item.variant_options as unknown[]
+                                                          ).map((opt, i) => (
+                                                              <span key={i}>
+                                                                  {typeof opt ===
+                                                                      'object' &&
+                                                                  opt !== null
+                                                                      ? `${formatFieldLabel(
+                                                                            Object.keys(
+                                                                                opt as object,
+                                                                            )[0] ||
+                                                                                '',
+                                                                        )}: ${Object.values(opt as object)[0] ?? ''}`
+                                                                      : String(
+                                                                            opt,
+                                                                        )}
+                                                              </span>
+                                                          ))
+                                                        : Object.entries(
+                                                              (item.variant_options ||
+                                                                  {}) as Record<
+                                                                  string,
+                                                                  unknown
+                                                              >,
+                                                          ).map(
+                                                              ([
+                                                                  key,
+                                                                  value,
+                                                              ]) => (
+                                                                  <span
+                                                                      key={key}>
+                                                                      {formatFieldLabel(
+                                                                          key,
+                                                                      )}
+                                                                      :{' '}
+                                                                      {value !=
+                                                                      null
+                                                                          ? String(
+                                                                                value,
+                                                                            )
+                                                                          : '—'}
+                                                                  </span>
+                                                              ),
+                                                          )}
                                                 </div>
                                             </div>
                                         )}
@@ -164,7 +200,8 @@ export function OrderProductsCard({ items }: OrderProductsCardProps) {
                                                         <span key={key}>
                                                             {formatFieldLabel(
                                                                 key,
-                                                            )}:{' '}
+                                                            )}
+                                                            :{' '}
                                                             {value != null &&
                                                             value !== ''
                                                                 ? String(value)
@@ -207,18 +244,34 @@ export function OrderProductsCard({ items }: OrderProductsCardProps) {
                                 </div>
 
                                 {/* Quantity and item status */}
-                                <div className="mt-auto flex flex-wrap items-center gap-2">
-                                    <span className="text-sm font-black text-gray-900">
-                                        {item.quantity}{' '}
-                                        {t('products.quantity_unit') || 'x'}
-                                    </span>
-                                    {item.status_label && (
-                                        <Badge
-                                            variant="secondary"
-                                            className="text-[10px] px-2 py-0 font-medium">
-                                            {item.status_label}
-                                        </Badge>
-                                    )}
+                                <div className="mt-auto flex flex-wrap items-center justify-between gap-2">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm font-black text-gray-900">
+                                            {item.quantity}{' '}
+                                            {t('products.quantity_unit') || 'x'}
+                                        </span>
+                                        {item.status_label && (
+                                            <Badge
+                                                variant="secondary"
+                                                className="text-[10px] px-2 py-0 font-medium">
+                                                {item.status_label}
+                                            </Badge>
+                                        )}
+                                    </div>
+
+                                    {onRateItem &&
+                                        orderStatus === 'DELIVERED' &&
+                                        !item.review && (
+                                            <Button
+                                                variant="outline"
+                                                size="lg"
+                                                onClick={() => onRateItem(item)}
+                                                className="">
+                                                <Star className="w-3.5 h-3.5" />
+                                                {t('actions.rateProduct') ||
+                                                    'تقييم المنتج'}
+                                            </Button>
+                                        )}
                                 </div>
                             </div>
                         </div>

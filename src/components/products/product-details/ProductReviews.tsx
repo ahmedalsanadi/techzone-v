@@ -18,7 +18,6 @@ import { useQuery } from '@tanstack/react-query';
 import { reviewService } from '@/services/review-service';
 import { Review } from '@/types/reviews';
 import { cn } from '@/lib/utils';
-
 import {
     Select,
     SelectContent,
@@ -101,18 +100,20 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
     const averageRating =
         reviews.length > 0
             ? (
-                  reviews.reduce((acc, review) => acc + review.rating, 0) /
-                  reviews.length
+                  reviews.reduce(
+                      (acc: number, review: Review) => acc + review.rating,
+                      0,
+                  ) / reviews.length
               ).toFixed(1)
             : '0.0';
 
     // Calculate rating distribution
     const ratingDistribution = {
-        5: reviews.filter((r) => r.rating === 5).length,
-        4: reviews.filter((r) => r.rating === 4).length,
-        3: reviews.filter((r) => r.rating === 3).length,
-        2: reviews.filter((r) => r.rating === 2).length,
-        1: reviews.filter((r) => r.rating === 1).length,
+        5: reviews.filter((r: Review) => r.rating === 5).length,
+        4: reviews.filter((r: Review) => r.rating === 4).length,
+        3: reviews.filter((r: Review) => r.rating === 3).length,
+        2: reviews.filter((r: Review) => r.rating === 2).length,
+        1: reviews.filter((r: Review) => r.rating === 1).length,
     };
 
     // Load more reviews
@@ -451,7 +452,7 @@ function ReviewCard({ review }: { review: Review }) {
                     </div>
                     <div className="min-w-0 flex-1">
                         <p className="font-bold text-gray-900 truncate">
-                            {review.user_name || t('anonymous') || 'مستخدم'}
+                            {review.customer_name || t('anonymous') || 'مستخدم'}
                         </p>
                         <p className="flex items-center gap-1.5 text-sm text-gray-500 mt-0.5">
                             <Calendar

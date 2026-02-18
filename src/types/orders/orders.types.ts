@@ -74,6 +74,10 @@ export interface OrderItem {
     status: number;
     status_label: string;
     product_image: string | null;
+    review?: {
+        rate: number;
+        comment: string | null;
+    };
 }
 
 export interface Order {
