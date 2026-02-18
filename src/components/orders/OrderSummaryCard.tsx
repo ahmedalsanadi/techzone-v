@@ -68,7 +68,7 @@ export function OrderSummaryCard({ order }: OrderSummaryCardProps) {
     ];
 
     return (
-        <div className="bg-white rounded-3xl p-6 md:p-8 border border-gray-200 shadow-sm">
+        <div className="bg-white rounded-xl p-6 md:p-8 border border-gray-200 shadow-sm">
             <h3 className="text-lg font-bold text-gray-900 mb-6 text-center md:text-start">
                 {t('title')}
             </h3>

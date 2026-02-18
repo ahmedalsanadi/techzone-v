@@ -411,7 +411,9 @@
       "addon": "إضافة",
       "addons": "الإضافات",
       "variantOptions": "الخيارات",
-      "customFields": "تفاصيل مخصصة"
+      "customFields": "تفاصيل مخصصة",
+      "quantity": "الكمية",
+      "totalPrice": "السعر الإجمالي"
     }
   },
   "NotFound": {

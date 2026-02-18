@@ -32,8 +32,8 @@ export function OrderProductsCard({
     const locale = useLocale();
 
     return (
-        <div className="bg-white rounded-[32px] p-8 md:p-10 border border-gray-100/60 shadow-sm">
-            <div className="flex items-center justify-between mb-10">
+        <div className="space-y-4">
+            <div className="flex items-center justify-between px-4 md:px-2">
                 <h3 className="text-xl font-black text-gray-900">
                     {t('products.title')}
                 </h3>
@@ -42,7 +42,7 @@ export function OrderProductsCard({
                 </span>
             </div>
 
-            <div className="flex flex-col gap-12">
+            <div className="flex flex-col gap-4">
                 {items.map((item) => {
                     const hasAddons = item.addons && item.addons.length > 0;
                     const hasCustomFields =
@@ -64,9 +64,9 @@ export function OrderProductsCard({
                     return (
                         <div
                             key={item.id}
-                            className="flex gap-4 md:gap-10 relative group">
+                            className="bg-white border border-gray-100 p-4 md:p-5 rounded-2xl flex flex-col md:flex-row md:items-start gap-4 md:gap-6 shadow-sm hover:shadow-md transition-shadow relative group">
                             {/* Product Image */}
-                            <div className="relative w-28 h-28 md:w-[140px] md:h-[140px] rounded-[32px] overflow-hidden shrink-0 shadow-sm border border-gray-50/50">
+                            <div className="relative w-20 h-20 md:w-28 md:h-28 bg-gray-50 rounded-xl overflow-hidden shrink-0">
                                 <Image
                                     src={
                                         item.product_image ||
@@ -74,154 +74,128 @@ export function OrderProductsCard({
                                     }
                                     alt={item.product_title}
                                     fill
-                                    className="object-cover group-hover:scale-105 transition-transform duration-700"
+                                    className="object-contain p-2 group-hover:scale-105 transition-transform duration-700"
                                 />
                             </div>
-                            {/* Product Info */}
-                            <div className="flex flex-col flex-1 gap-2">
-                                <div className="flex items-start justify-between gap-4">
-                                    <div className="flex flex-col gap-1">
-                                        <h4 className="text-lg md:text-xl font-black text-gray-900 leading-tight">
-                                            {item.product_title}
-                                        </h4>
 
-                                        {/* Addons */}
-                                        {hasAddons && (
-                                            <div className="flex flex-col gap-0.5 mt-1">
-                                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">
-                                                    {t('products.addons')}
-                                                </span>
-                                                {item.addons!.map(
-                                                    (addon, i) => (
-                                                        <span
-                                                            key={i}
-                                                            className="text-[11px] md:text-[13px] font-medium text-gray-600 leading-tight">
-                                                            {addon.group_name ? (
-                                                                <>
-                                                                    <span className="text-gray-500">
-                                                                        {
-                                                                            addon.group_name
-                                                                        }
-                                                                        :{' '}
-                                                                    </span>
-                                                                    {addon.title ||
-                                                                        addon.name ||
-                                                                        `#${addon.addon_item_id}`}
-                                                                </>
-                                                            ) : (
-                                                                addon.title ||
-                                                                addon.name ||
-                                                                `${t('products.addon')} #${addon.addon_item_id}`
-                                                            )}
-                                                            {' · '}
-                                                            {
-                                                                addon.quantity
-                                                            } ×{' '}
-                                                            {formatCurrency(
-                                                                addon.price,
-                                                                locale,
-                                                            )}
-                                                        </span>
-                                                    ),
-                                                )}
-                                            </div>
-                                        )}
+                            <div className="flex-1 flex flex-col md:flex-row md:items-start justify-between gap-4">
+                                {/* Product Info Content */}
+                                <div className="flex-1">
+                                    <h3 className="font-bold text-gray-900 text-lg md:text-xl">
+                                        {item.product_title}
+                                    </h3>
 
-                                        {/* Variant options (e.g. size, color) */}
-                                        {hasVariantOptions && (
-                                            <div className="flex flex-col gap-0.5 mt-1">
-                                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">
-                                                    {t(
-                                                        'products.variantOptions',
-                                                    )}
-                                                </span>
-                                                <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] md:text-[13px] font-medium text-gray-600">
-                                                    {Array.isArray(
-                                                        item.variant_options,
-                                                    )
-                                                        ? (
-                                                              item.variant_options as unknown[]
-                                                          ).map((opt, i) => (
-                                                              <span key={i}>
-                                                                  {typeof opt ===
-                                                                      'object' &&
-                                                                  opt !== null
-                                                                      ? `${formatFieldLabel(
-                                                                            Object.keys(
-                                                                                opt as object,
-                                                                            )[0] ||
-                                                                                '',
-                                                                        )}: ${Object.values(opt as object)[0] ?? ''}`
-                                                                      : String(
-                                                                            opt,
-                                                                        )}
-                                                              </span>
-                                                          ))
-                                                        : Object.entries(
-                                                              (item.variant_options ||
-                                                                  {}) as Record<
-                                                                  string,
-                                                                  unknown
-                                                              >,
-                                                          ).map(
-                                                              ([
-                                                                  key,
-                                                                  value,
-                                                              ]) => (
-                                                                  <span
-                                                                      key={key}>
-                                                                      {formatFieldLabel(
-                                                                          key,
-                                                                      )}
-                                                                      :{' '}
-                                                                      {value !=
-                                                                      null
-                                                                          ? String(
-                                                                                value,
-                                                                            )
-                                                                          : '—'}
-                                                                  </span>
-                                                              ),
+                                    {/* Item Status Badge */}
+                                    {item.status_label && (
+                                        <Badge
+                                            variant="secondary"
+                                            className="text-[10px] px-2 py-0 font-medium mt-1">
+                                            {item.status_label}
+                                        </Badge>
+                                    )}
+
+                                    {/* Display Addons */}
+                                    {hasAddons && (
+                                        <div className="mt-2 space-y-1">
+                                            {item.addons!.map((addon, idx) => (
+                                                <div
+                                                    key={idx}
+                                                    className="text-xs text-gray-600">
+                                                    <span className="font-semibold text-gray-700">
+                                                        {addon.group_name ||
+                                                            t('products.addon')}
+                                                        :
+                                                    </span>{' '}
+                                                    {addon.title || addon.name}
+                                                    {addon.quantity > 1
+                                                        ? ` (x${addon.quantity})`
+                                                        : ''}
+                                                    {' · '}
+                                                    <span className="text-gray-400">
+                                                        {formatCurrency(
+                                                            addon.price,
+                                                            locale,
+                                                        )}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {/* Display Variant Options */}
+                                    {hasVariantOptions && (
+                                        <div className="mt-2 flex flex-wrap gap-1.5">
+                                            {Array.isArray(item.variant_options)
+                                                ? (
+                                                      item.variant_options as unknown[]
+                                                  ).map((opt, i) => (
+                                                      <span
+                                                          key={i}
+                                                          className="text-[11px] font-bold text-gray-500 bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100">
+                                                          {typeof opt ===
+                                                              'object' &&
+                                                          opt !== null
+                                                              ? `${formatFieldLabel(
+                                                                    Object.keys(
+                                                                        opt as object,
+                                                                    )[0] || '',
+                                                                )}: ${Object.values(opt as object)[0] ?? ''}`
+                                                              : String(opt)}
+                                                      </span>
+                                                  ))
+                                                : Object.entries(
+                                                      (item.variant_options ||
+                                                          {}) as Record<
+                                                          string,
+                                                          unknown
+                                                      >,
+                                                  ).map(([key, value]) => (
+                                                      <span
+                                                          key={key}
+                                                          className="text-[11px] font-bold text-gray-500 bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100">
+                                                          {formatFieldLabel(
+                                                              key,
                                                           )}
+                                                          : {String(value)}
+                                                      </span>
+                                                  ))}
+                                        </div>
+                                    )}
+
+                                    {/* Display Custom Fields */}
+                                    {hasCustomFields && (
+                                        <div className="mt-2 space-y-1 pt-2 border-t border-gray-50">
+                                            {Object.entries(
+                                                item.custom_fields!,
+                                            ).map(([key, value]) => (
+                                                <div
+                                                    key={key}
+                                                    className="text-[11px] text-gray-500 flex items-center justify-between max-w-[200px]">
+                                                    <span className="font-semibold text-gray-600 capitalize">
+                                                        {formatFieldLabel(key)}:
+                                                    </span>
+                                                    <span className="truncate ml-2 text-gray-700">
+                                                        {value != null &&
+                                                        value !== ''
+                                                            ? String(value)
+                                                            : '—'}
+                                                    </span>
                                                 </div>
-                                            </div>
-                                        )}
+                                            ))}
+                                        </div>
+                                    )}
 
-                                        {/* Custom fields (e.g. engraving_text, font_style) */}
-                                        {hasCustomFields && (
-                                            <div className="flex flex-col gap-0.5 mt-1">
-                                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">
-                                                    {t('products.customFields')}
-                                                </span>
-                                                <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] md:text-[13px] font-medium text-gray-600">
-                                                    {Object.entries(
-                                                        item.custom_fields!,
-                                                    ).map(([key, value]) => (
-                                                        <span key={key}>
-                                                            {formatFieldLabel(
-                                                                key,
-                                                            )}
-                                                            :{' '}
-                                                            {value != null &&
-                                                            value !== ''
-                                                                ? String(value)
-                                                                : '—'}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
+                                    {/* Display Notes */}
+                                    {item.notes && (
+                                        <div className="mt-2 text-xs text-gray-500 italic">
+                                            {t('products.notes') || 'Notes'}:{' '}
+                                            {item.notes}
+                                        </div>
+                                    )}
 
-                                        {item.notes && (
-                                            <p className="text-[11px] text-gray-500 mt-0.5 italic">
-                                                {item.notes}
-                                            </p>
-                                        )}
-                                    </div>
-
-                                    {/* Price */}
-                                    <div className="flex flex-col items-end shrink-0">
-                                        <div className="flex items-center gap-1 font-black text-theme-primary text-xl">
+                                    {/* Price and Quantity */}
+                                    <div className="flex items-center gap-3 mt-3">
+                                        <div className="flex items-center gap-1 text-theme-primary font-black text-lg">
                                             <span>
                                                 {formatCurrency(
                                                     item.sale_unit_price ||
@@ -230,48 +204,40 @@ export function OrderProductsCard({
                                                 )}
                                             </span>
                                         </div>
-                                        {item.sale_unit_price &&
-                                            item.unit_price >
-                                                item.sale_unit_price && (
-                                                <span className="text-xs font-bold text-gray-300 line-through">
-                                                    {formatCurrency(
-                                                        item.unit_price,
-                                                        locale,
-                                                    )}
-                                                </span>
-                                            )}
-                                    </div>
-                                </div>
-
-                                {/* Quantity and item status */}
-                                <div className="mt-auto flex flex-wrap items-center justify-between gap-2">
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-sm font-black text-gray-900">
+                                        <span className="text-sm font-bold text-gray-400 bg-gray-50 px-2 py-1 rounded-lg">
                                             {item.quantity}{' '}
                                             {t('products.quantity_unit') || 'x'}
                                         </span>
-                                        {item.status_label && (
-                                            <Badge
-                                                variant="secondary"
-                                                className="text-[10px] px-2 py-0 font-medium">
-                                                {item.status_label}
-                                            </Badge>
-                                        )}
                                     </div>
+                                </div>
 
+                                <div className="flex flex-col items-start md:items-end gap-3 shrink-0">
                                     {onRateItem &&
                                         orderStatus === 'DELIVERED' &&
                                         !item.review && (
                                             <Button
                                                 variant="outline"
-                                                size="lg"
+                                                size="sm"
                                                 onClick={() => onRateItem(item)}
-                                                className="">
-                                                <Star className="w-3.5 h-3.5" />
+                                                className="h-9 rounded-xl text-xs gap-1.5 border-gray-100 hover:bg-gray-50 hover:text-amber-500 hover:border-amber-200 transition-all font-bold">
+                                                <Star className="w-4 h-4" />
                                                 {t('actions.rateProduct') ||
                                                     'تقييم المنتج'}
                                             </Button>
                                         )}
+
+                                    <div className="flex flex-col items-end">
+                                        <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
+                                            {t('products.totalPrice') ||
+                                                'Total'}
+                                        </div>
+                                        <div className="text-base font-black text-gray-900 bg-gray-50 px-3 py-1.5 rounded-xl border border-gray-100">
+                                            {formatCurrency(
+                                                item.total_price,
+                                                locale,
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
