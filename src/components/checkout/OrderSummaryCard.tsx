@@ -35,7 +35,7 @@ export default function OrderSummaryCard({
     const t = useTranslations('Checkout');
 
     return (
-        <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 lg:sticky lg:top-4">
+        <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 lg:sticky lg:top-4">
             <h2 className="text-lg sm:text-xl font-bold mb-6">
                 {t('summaryTitle') || 'ملخص الطلب'}
             </h2>

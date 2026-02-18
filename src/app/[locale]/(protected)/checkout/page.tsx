@@ -376,19 +376,6 @@ export default function CheckoutPage() {
                         {orderTypeCard}
                     </div>
 
-                    {orderType === 'delivery' &&
-                        shippingSpeedTypes.length > 0 && (
-                            <ShippingSpeedCard
-                                title={t('shippingSpeed')}
-                                options={shippingSpeedTypes}
-                                selectedId={selectedShippingSpeedTypeId}
-                                onChange={(id) => {
-                                    setSelectedShippingSpeedTypeId(id);
-                                }}
-                                isLoading={isLoadingData}
-                            />
-                        )}
-
                     <PaymentMethodCard
                         methods={paymentMethods}
                         summaryTotal={totalFromSummary}
@@ -407,6 +394,19 @@ export default function CheckoutPage() {
                         }}
                         onEpaymentMethodChange={setSelectedEpaymentMethodId}
                     />
+
+                    {orderType === 'delivery' &&
+                        shippingSpeedTypes.length > 0 && (
+                            <ShippingSpeedCard
+                                title={t('shippingSpeed')}
+                                options={shippingSpeedTypes}
+                                selectedId={selectedShippingSpeedTypeId}
+                                onChange={(id) => {
+                                    setSelectedShippingSpeedTypeId(id);
+                                }}
+                                isLoading={isLoadingData}
+                            />
+                        )}
 
                     <CouponCard />
                 </div>
