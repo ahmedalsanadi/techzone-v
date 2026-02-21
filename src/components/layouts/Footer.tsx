@@ -198,7 +198,7 @@ const Footer = () => {
                         <h4 className="font-black text-gray-900 mb-6 lg:mb-8 text-xl">
                             {t('contact')}
                         </h4>
-                        <ul className="space-y-4 lg:space-y-6">
+                        <ul dir="ltr" className="space-y-4 lg:space-y-6 text-left ms-4">
                             {store?.phone && (
                                 <li className="flex items-center gap-2 text-gray-600 font-bold text-md justify-center lg:justify-start">
                                     <Phone
