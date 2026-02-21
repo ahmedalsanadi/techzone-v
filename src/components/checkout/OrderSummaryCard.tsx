@@ -33,22 +33,24 @@ export default function OrderSummaryCard({
     disabledReason,
 }: OrderSummaryCardProps) {
     const t = useTranslations('Checkout');
+    const locale = useLocale();
 
     return (
-        <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm lg:sticky lg:top-4">
+        <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm ">
             <h2 className="text-base font-bold text-gray-800 mb-4">
                 {t('summaryTitle') || 'ملخص الطلب'}
             </h2>
 
             <div
                 className={cn(
-                    'space-y-3 text-sm font-medium transition-opacity duration-200',
+                    'space-y-3 text-sm font-bold transition-opacity duration-200',
                     isRefreshing && 'opacity-50 pointer-events-none',
                 )}>
                 {items.map((item, index) => (
                     <div
                         key={`${item.label}-${index}`}
                         className="flex justify-between">
+                        <span className="text-gray-700">{item.label}</span>
                         <div
                             className={cn(
                                 'flex items-center gap-1 font-bold',
@@ -60,10 +62,7 @@ export default function OrderSummaryCard({
                                 <>
                                     <span>
                                         {item.isNegative ? '- ' : ''}
-                                        {formatMoneyAmount(
-                                            item.amount,
-                                            useLocale(),
-                                        )}
+                                        {formatMoneyAmount(item.amount, locale)}
                                     </span>
                                     <CurrencySymbol className="w-3.5 h-3.5" />
                                 </>
@@ -71,17 +70,19 @@ export default function OrderSummaryCard({
                                 <span>{item.value}</span>
                             )}
                         </div>
-                        <span className="text-gray-700">{item.label}</span>
                     </div>
                 ))}
 
                 <div className="border-t border-gray-100 pt-3 mt-3">
                     <div className="flex justify-between">
+                        <span className="font-bold text-base">
+                            {t('total') || 'الاجمالي'}
+                        </span>
                         <div className="flex items-center gap-1 font-bold text-lg text-theme-primary">
                             {typeof total === 'number' ? (
                                 <>
                                     <span>
-                                        {formatMoneyAmount(total, useLocale())}
+                                        {formatMoneyAmount(total, locale)}
                                     </span>
                                     <CurrencySymbol className="w-5 h-5 ml-0.5" />
                                 </>
@@ -89,9 +90,6 @@ export default function OrderSummaryCard({
                                 <span>{total}</span>
                             )}
                         </div>
-                        <span className="font-bold text-base">
-                            {t('total') || 'الاجمالي'}
-                        </span>
                     </div>
                 </div>
 

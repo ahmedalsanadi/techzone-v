@@ -12,6 +12,7 @@ export default function CouponCard() {
                 />
                 <Button
                     type="button"
+                    size="xl"
                     variant="outline"
                     className="px-6 py-2.5 border-theme-primary text-theme-primary rounded-lg text-lg font-semibold hover:bg-theme-primary/10 whitespace-nowrap">
                     تحقق
