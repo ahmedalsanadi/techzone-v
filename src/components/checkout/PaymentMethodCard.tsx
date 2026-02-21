@@ -83,17 +83,7 @@ export default function PaymentMethodCard({
                         <h3 className="text-sm font-bold text-gray-800">
                             {t('walletDiscountTitle')}
                         </h3>
-                        <div className="inline-flex items-center gap-1.5 bg-gray-50 border border-gray-100 rounded-xl px-4 py-2 self-start sm:self-auto">
-                            <span className="text-gray-500 text-sm">
-                                {t('walletBalanceLabel')}
-                            </span>
-                            <div className="flex items-center gap-1 font-bold text-theme-primary">
-                                <span>
-                                    {formatMoneyAmount(walletBalance, locale)}
-                                </span>
-                                <CurrencySymbol className="w-3.5 h-3.5" />
-                            </div>
-                        </div>
+ 
                         <div className="flex items-center gap-6">
                             {(['yes', 'no'] as const).map((value) => {
                                 const checked = (value === 'yes') === useWallet;
@@ -128,6 +118,17 @@ export default function PaymentMethodCard({
                                     </label>
                                 );
                             })}
+                        </div>
+                        <div className="inline-flex items-center gap-1.5 bg-gray-50 border border-gray-100 rounded-xl px-4 py-2 self-start sm:self-auto">
+                            <span className="text-gray-500 text-sm">
+                                {t('walletBalanceLabel')}
+                            </span>
+                            <div className="flex items-center gap-1 font-bold text-theme-primary">
+                                <span>
+                                    {formatMoneyAmount(walletBalance, locale)}
+                                </span>
+                                <CurrencySymbol className="w-3.5 h-3.5" />
+                            </div>
                         </div>
                     </div>
                 )}
