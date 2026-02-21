@@ -70,10 +70,10 @@ export default function PaymentMethodCard({
 
     return (
         <CheckoutCard title={t('paymentMethodTitle')}>
-            <div className="space-y-6">
+            <div className="space-y-4">
                 {walletAvailable && onUseWalletChange && (
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100">
-                        <h3 className="text-md font-bold text-gray-800">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-gray-100">
+                        <h3 className="text-sm font-bold text-gray-800">
                             {t('walletDiscountTitle')}
                         </h3>
                         <div className="inline-flex items-center gap-1.5 bg-gray-50 border border-gray-100 rounded-xl px-4 py-2 self-start sm:self-auto">
@@ -126,9 +126,9 @@ export default function PaymentMethodCard({
                 )}
 
                 {walletCoversTotal ? (
-                    <div className="flex items-center gap-3 p-4 rounded-2xl bg-theme-primary/5 border-2 border-theme-primary/20">
-                        <Wallet className="size-8 text-theme-primary shrink-0" />
-                        <p className="text-gray-800 font-medium">
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-theme-primary/5 border-2 border-theme-primary/20">
+                        <Wallet className="size-6 text-theme-primary shrink-0" />
+                        <p className="text-gray-800 font-medium text-sm">
                             {t('payWithWalletOnly')}
                         </p>
                     </div>
@@ -137,7 +137,7 @@ export default function PaymentMethodCard({
                         {t('noPaymentMethodsAvailable')}
                     </p>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                         {methodsToShow.map((method) => {
                             const isCod = method.type === 'cod';
                             const disabled = isCod && codDisabled;
@@ -152,7 +152,7 @@ export default function PaymentMethodCard({
                                         !disabled && onChange(method.type)
                                     }
                                     className={cn(
-                                        'relative flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-right',
+                                        'relative flex items-center gap-3 p-4 rounded-2xl border-2 transition-all text-right',
                                         isSelected
                                             ? 'border-theme-primary bg-theme-primary/5'
                                             : 'border-gray-100 hover:border-gray-200 bg-white',
@@ -161,15 +161,15 @@ export default function PaymentMethodCard({
                                     )}>
                                     <div
                                         className={cn(
-                                            'size-10 rounded-xl flex items-center justify-center transition-colors',
+                                            'size-9 rounded-xl flex items-center justify-center shrink-0 transition-colors',
                                             isSelected
                                                 ? 'bg-theme-primary text-white'
                                                 : 'bg-gray-100 text-gray-400',
                                         )}>
                                         {getIcon(method.type)}
                                     </div>
-                                    <div className="flex-1">
-                                        <div className="font-bold text-gray-900 leading-tight">
+                                    <div className="flex-1 min-w-0">
+                                        <div className="font-bold text-sm text-gray-900 leading-tight">
                                             {method.name}
                                         </div>
                                         {isCod &&
@@ -197,11 +197,11 @@ export default function PaymentMethodCard({
                     selectedType === 'epayment' &&
                     selectedMethod?.epayment_methods &&
                     selectedMethod.epayment_methods.length > 0 && (
-                        <div className="pt-4 border-t border-gray-100">
-                            <label className="text-sm font-bold text-gray-700 block mb-3 text-center">
+                        <div className="pt-3 border-t border-gray-100">
+                            <label className="text-xs font-bold text-gray-700 block mb-2 text-center">
                                 {t('selectEpaymentMethod')}
                             </label>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 {(
                                     selectedMethod.epayment_methods as EpaymentMethodOption[]
                                 ).map((option) => {
@@ -220,14 +220,14 @@ export default function PaymentMethodCard({
                                                 )
                                             }
                                             className={cn(
-                                                'relative flex items-center gap-3 p-4 rounded-xl border-2 transition-all text-right',
+                                                'relative flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-right',
                                                 isSelected
                                                     ? 'border-theme-primary bg-theme-primary/5'
                                                     : 'border-gray-100 hover:border-gray-200 bg-white',
                                             )}>
                                             <div
                                                 className={cn(
-                                                    'size-10 rounded-lg flex items-center justify-center overflow-hidden shrink-0 border border-gray-100',
+                                                    'size-9 rounded-lg flex items-center justify-center overflow-hidden shrink-0 border border-gray-100',
                                                     isSelected
                                                         ? 'bg-theme-primary/10'
                                                         : 'bg-white',
@@ -244,8 +244,8 @@ export default function PaymentMethodCard({
                                                     <CreditCard className="size-5 text-gray-400" />
                                                 )}
                                             </div>
-                                            <div className="flex-1">
-                                                <div className="text-sm font-bold text-gray-900 mb-0.5">
+                                            <div className="flex-1 min-w-0">
+                                                <div className="text-xs font-bold text-gray-900 mb-0.5">
                                                     {name}
                                                 </div>
                                                 <div className="flex flex-wrap items-center gap-2">

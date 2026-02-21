@@ -35,14 +35,14 @@ export default function OrderSummaryCard({
     const t = useTranslations('Checkout');
 
     return (
-        <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 lg:sticky lg:top-4">
-            <h2 className="text-lg sm:text-xl font-bold mb-6">
+        <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm lg:sticky lg:top-4">
+            <h2 className="text-base font-bold text-gray-800 mb-4">
                 {t('summaryTitle') || 'ملخص الطلب'}
             </h2>
 
             <div
                 className={cn(
-                    'space-y-4 text-md font-medium transition-opacity duration-200',
+                    'space-y-3 text-sm font-medium transition-opacity duration-200',
                     isRefreshing && 'opacity-50 pointer-events-none',
                 )}>
                 {items.map((item, index) => (
@@ -75,9 +75,9 @@ export default function OrderSummaryCard({
                     </div>
                 ))}
 
-                <div className="border-t pt-4">
+                <div className="border-t border-gray-100 pt-3 mt-3">
                     <div className="flex justify-between">
-                        <div className="flex items-center gap-1 font-bold text-xl text-theme-primary">
+                        <div className="flex items-center gap-1 font-bold text-lg text-theme-primary">
                             {typeof total === 'number' ? (
                                 <>
                                     <span>
@@ -89,20 +89,20 @@ export default function OrderSummaryCard({
                                 <span>{total}</span>
                             )}
                         </div>
-                        <span className="font-bold text-lg">
+                        <span className="font-bold text-base">
                             {t('total') || 'الاجمالي'}
                         </span>
                     </div>
                 </div>
 
                 {disabled && disabledReason && (
-                    <p className="text-amber-700 text-sm mt-2">
+                    <p className="text-amber-700 text-xs mt-2">
                         {disabledReason}
                     </p>
                 )}
                 <Button
                     variant="primary"
-                    size="xl"
+                    size="lg"
                     onClick={onSubmit}
                     disabled={disabled || isLoading}
                     className="w-full mt-4 rounded-lg">

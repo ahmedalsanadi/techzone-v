@@ -93,14 +93,14 @@ export default function OrderTypeCard({
                         <ChevronLeft className="w-4 h-4" />
                     </Button>
                 }>
-                <div className="text-md space-y-4">
+                <div className="text-sm space-y-3">
                     <div className="flex items-start gap-3">
-                        <div className="mt-1 p-2 bg-theme-primary/5 rounded-lg">
-                            <MapPin className="w-5 h-5 text-theme-primary" />
+                        <div className="mt-0.5 p-1.5 bg-theme-primary/5 rounded-lg shrink-0">
+                            <MapPin className="w-4 h-4 text-theme-primary" />
                         </div>
-                        <div className="flex flex-col gap-1">
+                        <div className="flex flex-col gap-0.5 min-w-0">
                             <div className="flex items-center gap-2">
-                                <span className="text-gray-500 text-sm font-medium">
+                                <span className="text-gray-500 text-xs font-medium">
                                     {orderType === 'delivery'
                                         ? checkoutT('deliveryTo')
                                         : checkoutT('pickupBranch')}
@@ -109,7 +109,7 @@ export default function OrderTypeCard({
                                     {deliveryTypeLabel}
                                 </span>
                             </div>
-                            <div className="flex flex-col gap-1 text-gray-800 font-medium leading-relaxed">
+                            <div className="flex flex-col gap-0.5 text-gray-800 font-medium leading-snug text-sm">
                                 {orderType === 'delivery' ? (
                                     deliveryAddress ? (
                                         <>
@@ -150,16 +150,16 @@ export default function OrderTypeCard({
                     </div>
 
                     <div className="flex items-start gap-3">
-                        <div className="mt-1 p-2 bg-theme-primary/5 rounded-lg">
-                            <Clock className="w-5 h-5 text-theme-primary" />
+                        <div className="mt-0.5 p-1.5 bg-theme-primary/5 rounded-lg shrink-0">
+                            <Clock className="w-4 h-4 text-theme-primary" />
                         </div>
-                        <div className="flex flex-col gap-1">
-                            <span className="text-gray-500 text-sm font-medium">
+                        <div className="flex flex-col gap-0.5 min-w-0">
+                            <span className="text-gray-500 text-xs font-medium">
                                 {orderType === 'delivery'
                                     ? checkoutT('deliveryTime')
                                     : checkoutT('pickupTime')}
                             </span>
-                            <div className="flex items-center gap-1.5 text-gray-800 font-medium">
+                            <div className="flex items-center gap-1.5 text-gray-800 font-medium text-sm">
                                 {orderTime === 'now' ? (
                                     <span className="text-theme-primary">
                                         {checkoutT('now')}
@@ -194,14 +194,14 @@ export default function OrderTypeCard({
 
                     {shippingSpeedLabel && orderType === 'delivery' && (
                         <div className="flex items-start gap-3">
-                            <div className="mt-1 p-2 bg-theme-primary/5 rounded-lg">
-                                <Truck className="w-5 h-5 text-theme-primary" />
+                            <div className="mt-0.5 p-1.5 bg-theme-primary/5 rounded-lg shrink-0">
+                                <Truck className="w-4 h-4 text-theme-primary" />
                             </div>
-                            <div className="flex flex-col gap-1">
-                                <span className="text-gray-500 text-sm font-medium">
+                            <div className="flex flex-col gap-0.5 min-w-0">
+                                <span className="text-gray-500 text-xs font-medium">
                                     {checkoutT('shippingSpeed')}
                                 </span>
-                                <div className="text-gray-800 font-bold">
+                                <div className="text-gray-800 font-bold text-sm">
                                     {shippingSpeedLabel}
                                 </div>
                             </div>
