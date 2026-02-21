@@ -31,7 +31,7 @@ export default function LogoImage({ brandName, brandLogo }: LogoProps) {
                     </div>
                 )}
             </div>
-            <span className="text-theme-secondary text-xl md:text-3xl font-black tracking-tighter leading-none align-middle drop-shadow-sm group-hover:drop-shadow-md transition-all">
+            <span className="text-theme-secondary text-sm md:text-3xl font-black tracking-tighter leading-none align-middle drop-shadow-sm group-hover:drop-shadow-md transition-all">
                 {brandName}
             </span>
         </Link>

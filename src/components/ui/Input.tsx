@@ -19,9 +19,9 @@ export interface InputProps
     containerClassName?: string;
 }
 
-// Container Styles
+// Container Styles (no default focus ring - let containerClassName or variant control it to avoid double border / clipped radius)
 const containerBaseStyles =
-    'group flex items-center gap-2 overflow-hidden px-3 transition-all duration-200 border border-solid outline-none focus-within:ring-[3px] focus-within:ring-ring/50';
+    'group flex items-center gap-2 overflow-hidden px-3 transition-all duration-200 border border-solid outline-none';
 
 const containerVariantStyles: Record<InputVariant, string> = {
     default: 'bg-white border-[#b8c2cc] shadow-inner',

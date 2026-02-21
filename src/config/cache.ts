@@ -5,22 +5,39 @@
  */
 export const CACHE_STRATEGY = {
     // CMS Pages
-    CMS_PAGES_LIST: 86400, // 24 hours
-    CMS_PAGE_SINGLE: 604800, // 1 week
+    // CMS_PAGES_LIST: 86400, // 24 hours (86400 seconds)
+    // CMS_PAGE_SINGLE: 604800, // 1 week (604800 seconds)
+
+    // // Store Configuration
+    // STORE_CONFIG: 86400, // 24 hours (86400 seconds)
+
+    // // Categories & Collections
+    // CATEGORIES_TREE: 3600, // 1 hour (3600 seconds)
+    // COLLECTIONS: 3600, // 1 hour (3600 seconds)
+
+    // // Products
+    // PRODUCTS_LIST: 3600, // 1 hour (3600 seconds)
+    // PRODUCT_SINGLE: 3600, // 1 hour (3600 seconds) - fixed from 500
+
+    // // Static Data
+    // COUNTRIES_CITIES: 86400, // 24 hours (86400 seconds)
+
+    CMS_PAGES_LIST: 2000, // 24 hours (86400 seconds)
+    CMS_PAGE_SINGLE: 604800, // 1 week (604800 seconds)
 
     // Store Configuration
-    STORE_CONFIG: 0, // 24 hours
+    STORE_CONFIG: 600, // 24 hours (86400 seconds)
 
     // Categories & Collections
-    CATEGORIES_TREE: 500, // 1 hour
-    COLLECTIONS: 500, // 1 hour
+    CATEGORIES_TREE: 600, // 1 hour (3600 seconds)
+    COLLECTIONS: 600, // 1 hour (3600 seconds)
 
     // Products
-    PRODUCTS_LIST: 500, // 1 hour
-    PRODUCT_SINGLE: 500, // 1 hour
+    PRODUCTS_LIST: 600, // 1 hour (3600 seconds)
+    PRODUCT_SINGLE: 600, // 1 hour (3600 seconds) - fixed from 500
 
     // Static Data
-    COUNTRIES_CITIES: 86400, // 24 hours
+    COUNTRIES_CITIES: 86400, // 24 hours (86400 seconds)
 };
 
 /**

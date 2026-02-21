@@ -176,12 +176,12 @@ const Footer = () => {
                                 height={70}
                                 className="object-contain"
                             />
-                            <h3 className="text-2xl text-theme-primary font-semibold">
+                            <h3 className="text-theme-secondary text-xl md:text-3xl font-black tracking-tighter leading-none align-middle drop-shadow-sm group-hover:drop-shadow-md transition-all">
                                 {config?.store?.name}
                             </h3>
                         </div>
                         <p className="text-gray-600 text-[14px] leading-relaxed font-medium max-w-sm">
-                            {t('description')}
+                            {config?.store?.description || t('description')}
                         </p>
                     </div>
 

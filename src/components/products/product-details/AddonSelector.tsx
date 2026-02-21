@@ -149,10 +149,10 @@ export default function AddonSelector({
     return (
         <div
             className={cn(
-                'border border-gray-100 rounded-2xl bg-white p-5 sm:p-6 flex flex-col gap-4 h-full shadow-sm',
+                'border border-gray-100 rounded-2xl bg-white p-5 sm:p-6 flex flex-col h-full shadow-sm',
                 validationError && 'border-red-200 bg-red-50/30',
             )}>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between shrink-0">
                 <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2.5">
                         <h3 className="text-sm font-bold text-gray-900 md:text-lg">
@@ -200,7 +200,7 @@ export default function AddonSelector({
                     )}
                 </div>
             </div>
-            <div className="pt-1">
+            <div className="pt-1 flex-1 min-h-0 min-w-0 overflow-x-hidden overflow-y-auto">
                 {/* Validation error message */}
                 {validationError && (
                     <div className="flex items-center gap-2 text-xs text-red-600 bg-red-50 p-2 rounded-lg mb-4 md:text-sm">
@@ -229,9 +229,9 @@ export default function AddonSelector({
                             return (
                                 <div
                                     key={item.id}
-                                    className="flex items-center justify-between py-3 group hover:bg-gray-50/50 -mx-2 px-2 rounded-xl transition-colors">
-                                    <div className="flex flex-col gap-0.5">
-                                        <span className="text-xs font-bold text-gray-700 transition-colors group-hover:text-gray-900 md:text-base">
+                                    className="flex items-center justify-between gap-3 py-3 group hover:bg-gray-50/50 -mx-2 px-2 rounded-xl transition-colors">
+                                    <div className="flex flex-col gap-0.5 min-w-0 flex-1">
+                                        <span className="text-xs font-bold text-gray-700 transition-colors group-hover:text-gray-900 md:text-base wrap-break-word">
                                             {item.title}
                                         </span>
                                         {item.description && (
@@ -319,17 +319,17 @@ export default function AddonSelector({
                         }
 
                         return (
-                            <label
+                                <label
                                 key={item.id}
                                 className={cn(
-                                    'flex items-center justify-between py-3 cursor-pointer group hover:bg-gray-50/50 -mx-2 px-2 rounded-xl transition-colors',
+                                    'flex items-center justify-between gap-3 py-3 cursor-pointer group hover:bg-gray-50/50 -mx-2 px-2 rounded-xl transition-colors',
                                     isDisabled &&
                                         'opacity-50 cursor-not-allowed',
                                 )}>
-                                <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-3 min-w-0 flex-1">
                                     <div
                                         className={cn(
-                                            'w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all',
+                                            'w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-all',
                                             isSelected
                                                 ? 'border-theme-primary bg-theme-primary text-white'
                                                 : 'border-gray-200 group-hover:border-gray-300',
@@ -338,10 +338,10 @@ export default function AddonSelector({
                                             <Check size={14} strokeWidth={3} />
                                         )}
                                     </div>
-                                    <div className="flex flex-col gap-0.5">
+                                    <div className="flex flex-col gap-0.5 min-w-0">
                                         <span
                                             className={cn(
-                                                'text-sm font-bold transition-colors md:text-base',
+                                                'text-sm font-bold transition-colors wrap-break-word md:text-base',
                                                 isSelected
                                                     ? 'text-gray-900'
                                                     : 'text-gray-700',

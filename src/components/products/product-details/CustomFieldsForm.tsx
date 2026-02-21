@@ -64,13 +64,13 @@ export default function CustomFieldsForm({
         ) : null;
 
         const inputContainerClassName = cn(
-            'h-12 rounded-lg bg-gray-50 border-gray-100 px-4',
-            'focus-within:border-theme-primary-border focus-within:ring-4 focus-within:ring-theme-primary/5',
-            hasError && 'border-red-300 focus-within:border-red-400 focus-within:ring-red-500/10',
+            'h-12 rounded-xl border px-4 bg-gray-50/80 border-gray-300',
+            'focus-within:border-gray-500 focus-within:bg-white focus-within:ring-0',
+            hasError && 'border-red-400! focus-within:border-red-500! focus-within:ring-0',
         );
 
         const inputTextClassName =
-            'font-semibold text-base text-gray-800 placeholder:text-gray-400';
+            'font-medium text-[15px] text-gray-800 placeholder:text-gray-400';
 
         switch (field.input_type) {
             case 'boolean':
@@ -155,11 +155,11 @@ export default function CustomFieldsForm({
                         </label>
                         <div
                             className={cn(
-                                'group flex items-start gap-2 overflow-hidden px-4 transition-all duration-200 border border-solid outline-none',
-                                'h-auto rounded-xl bg-gray-50 border-gray-100',
-                                'focus-within:border-theme-primary-border focus-within:ring-4 focus-within:ring-theme-primary/5',
+                                'flex items-start rounded-xl border px-4 transition-all duration-200 outline-none min-h-[120px]',
+                                'bg-gray-50/80 border-gray-300',
+                                'focus-within:border-gray-500 focus-within:bg-white focus-within:ring-0',
                                 hasError &&
-                                    'border-red-300 focus-within:border-red-400 focus-within:ring-red-500/10',
+                                    'border-red-400! focus-within:border-red-500! focus-within:ring-0',
                             )}>
                             <textarea
                                 value={stringValue}
@@ -169,8 +169,8 @@ export default function CustomFieldsForm({
                                 maxLength={field.max_limit || undefined}
                                 rows={3}
                                 className={cn(
-                                    'w-full bg-transparent py-3 text-base text-gray-800 outline-none resize-none',
-                                    'placeholder:text-gray-400 font-semibold',
+                                    'w-full bg-transparent py-3 text-[15px] text-gray-800 outline-none resize-none font-medium',
+                                    'placeholder:text-gray-400',
                                 )}
                             />
                         </div>
@@ -193,10 +193,10 @@ export default function CustomFieldsForm({
                                 className="w-full">
                                 <SelectTrigger
                                     className={cn(
-                                        'h-12 rounded-xl bg-gray-50 border-gray-100 px-4',
-                                        'focus-visible:border-theme-primary-border focus-visible:ring-4 focus-visible:ring-theme-primary/5',
+                                        'h-12 rounded-xl border px-4 bg-gray-50/80 border-gray-300',
+                                        'focus-visible:border-gray-500 focus-visible:bg-white focus-visible:ring-0',
                                         hasError &&
-                                            'border-red-300 focus-visible:border-red-400 focus-visible:ring-red-500/10',
+                                            'border-red-400! focus-visible:border-red-500! focus-visible:ring-0',
                                     )}>
                                     <SelectValue
                                         placeholder={t('select') || 'Select...'}
@@ -343,11 +343,11 @@ export default function CustomFieldsForm({
                         </label>
                         <div
                             className={cn(
-                                'group flex items-center gap-2 overflow-hidden px-4 transition-all duration-200 border border-solid outline-none',
-                                'h-12 rounded-xl bg-gray-50 border-gray-100',
-                                'focus-within:border-theme-primary-border focus-within:ring-4 focus-within:ring-theme-primary/5',
+                                'flex items-center rounded-xl border px-4 transition-all duration-200 outline-none h-12',
+                                'bg-gray-50/80 border-gray-300',
+                                'focus-within:border-gray-500 focus-within:bg-white focus-within:ring-0',
                                 hasError &&
-                                    'border-red-300 focus-within:border-red-400 focus-within:ring-red-500/10',
+                                    'border-red-400! focus-within:border-red-500! focus-within:ring-0',
                             )}>
                             <input
                                 type="file"
@@ -378,15 +378,15 @@ export default function CustomFieldsForm({
     };
 
     return (
-        <div className="border border-gray-100 rounded-2xl bg-white p-5 sm:p-6 flex flex-col gap-4 h-fit shadow-sm">
-            <div className="flex items-center justify-between">
+        <div className="border border-gray-200 rounded-2xl bg-white p-5 sm:p-6 flex flex-col h-full shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between shrink-0">
                 <div className="flex flex-col gap-1">
                     <h3 className="text-lg font-bold text-gray-900">
                         {t('customFields') || 'Additional Information'}
                     </h3>
                 </div>
             </div>
-            <div className="pt-1">
+            <div className="pt-1 flex-1 min-h-0 min-w-0 overflow-x-hidden overflow-y-auto">
                 <div className="flex flex-col divide-y divide-gray-50">
                     {customFields.map((field) => (
                         <div key={field.id}>{renderField(field)}</div>

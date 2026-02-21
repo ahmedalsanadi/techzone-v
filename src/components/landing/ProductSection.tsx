@@ -37,7 +37,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
         <section className="animate-in fade-in duration-700 fill-mode-both">
             {/* Section Header */}
             <div className="flex items-center justify-between mb-8">
-                <h2 className="text-3xl font-black text-gray-900 tracking-tight">
+                <h2 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">
                     {title}
                 </h2>
                 <Link

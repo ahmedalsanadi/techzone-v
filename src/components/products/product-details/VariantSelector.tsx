@@ -120,9 +120,9 @@ export default function VariantSelector({
     if (!variants || variants.length === 0) return null;
 
     return (
-        <div className="border border-gray-100 rounded-2xl bg-white p-5 sm:p-6 flex flex-col gap-4 h-fit shadow-sm">
-            <Field className="flex flex-col gap-4">
-                <div className="flex items-center justify-between">
+        <div className="border border-gray-100 rounded-2xl bg-white p-5 sm:p-6 flex flex-col h-full shadow-sm">
+            <Field className="flex flex-col h-full min-h-0">
+                <div className="flex items-center justify-between shrink-0">
                     <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2.5">
                             <Label className="text-sm font-bold text-gray-900 block md:text-lg">
@@ -140,11 +140,11 @@ export default function VariantSelector({
                         </div>
                     </div>
                 </div>
-                <div className="pt-1">
+                <div className="pt-1 flex-1 min-h-0 min-w-0 overflow-x-hidden overflow-y-auto">
                     <RadioGroup
                         value={selectedVariantId ?? undefined}
                         onChange={onSelect}
-                        className="flex flex-col divide-y divide-gray-50">
+                        className="flex flex-col divide-y divide-gray-100">
                         {variants.map((variant) => (
                             <VariantItem
                                 key={variant.id}
