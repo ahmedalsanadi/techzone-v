@@ -64,9 +64,16 @@ export default function PaymentMethodCard({
         codMethod.max_amount != null &&
         summaryTotal > codMethod.max_amount;
 
-    const methodsToShow = methods.filter(
-        (m) => m.type !== 'wallet' && m.available,
-    );
+    // Show epayment if available OR if it has gateway options (backend may set available: false but still return epayment_methods)
+    const methodsToShow = methods.filter((m) => {
+        if (m.type === 'wallet') return false;
+        if (m.type === 'epayment') {
+            const hasGateways =
+                m.epayment_methods != null && m.epayment_methods.length > 0;
+            return m.available || hasGateways;
+        }
+        return m.available;
+    });
 
     return (
         <CheckoutCard title={t('paymentMethodTitle')}>
