@@ -44,6 +44,7 @@
     "selectOrderType": "حدد نوع الطلب:",
     "delivery": "توصيل إلى موقعي",
     "pickup": "استلام من الفرع",
+    "carPickup": "استلام من السيارة",
     "dineIn": "تناول داخل الفرع",
     "defaultBranch": "فرع النخيل",
     "deliveryTo": "توصيل إلى",
