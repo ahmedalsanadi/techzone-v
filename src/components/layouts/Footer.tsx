@@ -166,21 +166,19 @@ const Footer = () => {
             {/* Top Section: Links & Apps */}
             <div className="bg-theme-primary-tint py-12 md:py-18 px-4 md:px-12">
                 <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-10 lg:gap-8">
-                    {/* Logo & Info */}
-                    <div className="flex flex-col items-center lg:items-start text-center  ">
-                        <div className="flex flex-col items-center lg:items-start mb-6">
-                            <Image
-                                src={config?.store?.logo_url}
-                                alt={config?.store?.name}
-                                width={90}
-                                height={70}
-                                className="object-contain"
-                            />
-                            <h3 className="text-theme-secondary text-xl md:text-3xl font-black tracking-tighter leading-none align-middle drop-shadow-sm group-hover:drop-shadow-md transition-all">
-                                {config?.store?.name}
-                            </h3>
-                        </div>
-                        <p className="text-gray-600 text-[14px] leading-relaxed font-medium max-w-sm">
+                    {/* Logo & Info — single column: aligned and spaced */}
+                    <div className="flex flex-col items-center lg:items-start text-center lg:text-start gap-4 max-w-sm">
+                        <Image
+                            src={config?.store?.logo_url}
+                            alt={config?.store?.name}
+                            width={90}
+                            height={70}
+                            className="object-contain shrink-0"
+                        />
+                        <h3 className="text-gray-900 text-lg md:text-2xl font-black tracking-tight leading-tight">
+                            {config?.store?.name}
+                        </h3>
+                        <p className="text-gray-600 text-sm leading-relaxed font-medium [&::selection]:bg-theme-primary/15">
                             {config?.store?.description || t('description')}
                         </p>
                     </div>
