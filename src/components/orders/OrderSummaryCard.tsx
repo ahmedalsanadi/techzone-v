@@ -3,7 +3,10 @@
 
 import React from 'react';
 import { Order } from '@/types/orders';
-import { formatMoneyAmount } from '@/lib/utils';
+import {
+    formatMoneyAmount,
+    formatOrderDateTime,
+} from '@/lib/utils';
 import { useLocale, useTranslations } from 'next-intl';
 import CurrencySymbol from '../ui/CurrencySymbol';
 
@@ -22,19 +25,14 @@ export function OrderSummaryCard({ order }: OrderSummaryCardProps) {
 
     const formattedDate = React.useMemo(() => {
         if (!mounted) return '';
-        try {
-            return new Date(order.created_at).toLocaleString('ar-SA', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: true,
-            });
-        } catch (e) {
-            return order.created_at;
-        }
+        return formatOrderDateTime(order.created_at);
     }, [order.created_at, mounted]);
+
+    const deliveryTimeDisplay = React.useMemo(() => {
+        if (!mounted) return t('asap');
+        const formatted = formatOrderDateTime(order.customer_pickup_datetime);
+        return formatted || t('asap');
+    }, [order.customer_pickup_datetime, mounted, t]);
 
     const details = [
         { label: t('orderNumber'), value: `#${order.id}` },
@@ -56,7 +54,7 @@ export function OrderSummaryCard({ order }: OrderSummaryCardProps) {
         },
         {
             label: t('deliveryTime'),
-            value: order.customer_pickup_datetime || t('asap'),
+            value: deliveryTimeDisplay,
         },
         {
             label: t('totalAmount'),

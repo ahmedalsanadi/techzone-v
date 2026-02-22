@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Star, Store, Calendar, MapPin, Banknote, Info } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Badge, type BadgeVariant } from '@/components/ui/Badge';
-import { cn, formatMoneyAmount } from '@/lib/utils';
+import { cn, formatMoneyAmount, formatOrderDateAndTime } from '@/lib/utils';
 import CurrencySymbol from '../ui/CurrencySymbol';
 
 import { Order, OrderStatus, ORDER_STATUS_NUMBER_MAP } from '@/types/orders';
@@ -86,25 +86,9 @@ export default function OrderCard({ order }: OrderCardProps) {
         setMounted(true);
     }, []);
 
-    const { formattedDate, formattedTime } = React.useMemo(() => {
-        if (!mounted) return { formattedDate: '', formattedTime: '' };
-        try {
-            const dateObj = new Date(order.created_at);
-            return {
-                formattedDate: dateObj.toLocaleDateString('ar-SA', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                }),
-                formattedTime: dateObj.toLocaleTimeString('ar-SA', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: true,
-                }),
-            };
-        } catch (e) {
-            return { formattedDate: '', formattedTime: '' };
-        }
+    const { date: formattedDate, time: formattedTime } = React.useMemo(() => {
+        if (!mounted) return { date: '', time: '' };
+        return formatOrderDateAndTime(order.created_at);
     }, [order.created_at, mounted]);
 
     return (
