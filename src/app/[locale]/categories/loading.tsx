@@ -52,7 +52,7 @@ export default function Loading() {
             <div className="container mx-auto px-4 space-y-4 pb-20">
                 {/* Subcategory rows skeleton */}
                 <div className="space-y-3">
-                    {Array.from({ length: 2 }).map((_, i) => (
+                    {Array.from({ length: 1 }).map((_, i) => (
                         <SubCategoryRowSkeleton key={i} />
                     ))}
                 </div>
