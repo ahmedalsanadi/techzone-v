@@ -17,7 +17,7 @@ export function OrderStatusTimeline({ timeline }: OrderStatusTimelineProps) {
     return (
         <div className="bg-gray-50 rounded-2xl p-6 border-2 border-gray-100">
             <h3 className="text-lg font-bold text-gray-900 mb-6 text-center md:text-start">
-                {t('timelineTitle')}
+                {t('timelineTitle')} 
             </h3>
 
             <div className="flex flex-col ms-2 bg-white rounded-2xl p-6 border-2 border-gray-100">

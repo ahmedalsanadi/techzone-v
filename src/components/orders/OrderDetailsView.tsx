@@ -12,6 +12,7 @@ import {
     OrderStatus,
     OrderStatusUpdate,
     ORDER_STATUS_NUMBER_MAP,
+    FulfillmentMethod,
 } from '@/types/orders/orders.types';
 import { OrderCourierCard } from './OrderCourierCard';
 import { OrderStatusTimeline } from './OrderStatusTimeline';
@@ -256,16 +257,27 @@ export default function OrderDetailsView({
             : order.status
     ) as OrderStatus;
 
-    // Timeline steps matching backend flow (1–7). Terminal states 8–10 use first N steps or single state.
-    const timelineProgressSteps: OrderStatus[] = [
-        'WAITING_APPROVAL',
-        'WAITING_PAYMENT',
-        'PAID',
-        'IN_PROCESS',
-        'READY_FOR_PICKUP',
-        'SHIPPED',
-        'DELIVERED',
-    ];
+    const isPickup = order.fulfillment_method === FulfillmentMethod.PICKUP;
+
+    // Timeline steps: for pickup omit SHIPPED/DELIVERED (استلام من الفرع).
+    const timelineProgressSteps: OrderStatus[] = isPickup
+        ? [
+              'WAITING_APPROVAL',
+              'WAITING_PAYMENT',
+              'PAID',
+              'IN_PROCESS',
+              'READY_FOR_PICKUP',
+          ]
+        : [
+              'WAITING_APPROVAL',
+              'WAITING_PAYMENT',
+              'PAID',
+              'IN_PROCESS',
+              'READY_FOR_PICKUP',
+              'SHIPPED',
+              'DELIVERED',
+          ];
+
     const timelineLabels: Record<string, string> = {
         WAITING_APPROVAL: t('status.waiting'),
         WAITING_PAYMENT: t('status.waiting_payment'),
@@ -277,13 +289,32 @@ export default function OrderDetailsView({
     };
 
     const getTimeline = (): OrderStatusUpdate[] => {
-        if (order.timeline && order.timeline.length > 0) return order.timeline;
+        if (order.timeline && order.timeline.length > 0) {
+            if (isPickup) {
+                return order.timeline.filter(
+                    (item) =>
+                        item.status !== 'SHIPPED' && item.status !== 'DELIVERED',
+                );
+            }
+            return order.timeline;
+        }
 
         const isTerminal =
             currentStatusKey === 'CANCELED' ||
             currentStatusKey === 'REFUNDED' ||
             currentStatusKey === 'PARTIALLY_REFUNDED';
-        const currentIndex = timelineProgressSteps.indexOf(currentStatusKey);
+
+        // For pickup, COMPLETED/DELIVERED from backend = all steps done; show all completed.
+        let currentIndex = timelineProgressSteps.indexOf(currentStatusKey);
+        if (
+            isPickup &&
+            (currentStatusKey === 'COMPLETED' || currentStatusKey === 'DELIVERED')
+        ) {
+            currentIndex = timelineProgressSteps.length;
+        } else if (currentIndex < 0) {
+            currentIndex = timelineProgressSteps.length;
+        }
+        const resolvedIndex = currentIndex;
 
         if (isTerminal) {
             const terminalLabel =
@@ -310,8 +341,9 @@ export default function OrderDetailsView({
         }
 
         return timelineProgressSteps.map((status, index) => {
-            const isCompleted = index < currentIndex;
-            const isActive = currentStatusKey === status;
+            const isCompleted = index < resolvedIndex;
+            const isActive =
+                index === resolvedIndex && resolvedIndex < timelineProgressSteps.length;
             const timestamp =
                 isActive && mounted
                     ? new Date(order.updated_at).toLocaleTimeString('ar-SA', {
