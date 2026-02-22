@@ -25,6 +25,7 @@ export const paymentStatusKey = ['payment-status'] as const;
 function buildInitQueryKey(
     fulfillment_method: FulfillmentMethod,
     address_id: number | undefined,
+    customer_pickup_datetime: string | undefined,
     shipping_speed_type: number | undefined,
     branch_id: number | null,
     cartHash: string,
@@ -35,6 +36,7 @@ function buildInitQueryKey(
     string,
     FulfillmentMethod,
     number | undefined,
+    string | undefined,
     number | undefined,
     number | null,
     string,
@@ -45,6 +47,7 @@ function buildInitQueryKey(
         ...checkoutInitKey,
         fulfillment_method,
         address_id,
+        customer_pickup_datetime,
         shipping_speed_type,
         branch_id,
         cartHash,
@@ -56,6 +59,7 @@ function buildInitQueryKey(
 export interface UseCheckoutInitOptions {
     fulfillment_method: FulfillmentMethod;
     address_id: number | undefined;
+    customer_pickup_datetime?: string | null;
     shipping_speed_type?: number;
     enabled: boolean;
     cartHash: string;
@@ -66,6 +70,7 @@ export interface UseCheckoutInitOptions {
 export function useCheckoutInit({
     fulfillment_method,
     address_id,
+    customer_pickup_datetime,
     shipping_speed_type,
     enabled,
     cartHash,
@@ -76,6 +81,7 @@ export function useCheckoutInit({
     const queryKey = buildInitQueryKey(
         fulfillment_method,
         address_id,
+        customer_pickup_datetime ?? undefined,
         shipping_speed_type,
         selectedBranchId,
         cartHash,
@@ -89,6 +95,7 @@ export function useCheckoutInit({
             const body: {
                 fulfillment_method: FulfillmentMethod;
                 address_id?: number;
+                customer_pickup_datetime?: string | null;
                 shipping_speed_type?: number;
                 epayment_method_id?: number;
                 payment_method?: PaymentMethodSlug;
@@ -96,6 +103,8 @@ export function useCheckoutInit({
                 fulfillment_method,
             };
             if (address_id != null) body.address_id = address_id;
+            if (customer_pickup_datetime != null)
+                body.customer_pickup_datetime = customer_pickup_datetime;
             if (shipping_speed_type != null)
                 body.shipping_speed_type = shipping_speed_type;
             if (epayment_method_id != null)

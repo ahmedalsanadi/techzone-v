@@ -6,13 +6,17 @@ import { useRouter } from '@/i18n/navigation';
 import { toast } from 'sonner';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import { Button } from '@/components/ui/Button';
+import CheckoutCard from '@/components/checkout/CheckoutCard';
 import OrderTypeCard from '@/components/checkout/OrderTypeCard';
 import PaymentMethodCard from '@/components/checkout/PaymentMethodCard';
 import CouponCard from '@/components/checkout/CouponCard';
 import OrderSummaryCard from '@/components/checkout/OrderSummaryCard';
 import { PaymentMethodType } from '@/types/orders';
 import { useCartStore } from '@/store/useCartStore';
-import { useOrderStore, getScheduledTimeAsDate } from '@/store/useOrderStore';
+import {
+    useOrderStore,
+    getCustomerPickupDatetimeAsDate,
+} from '@/store/useOrderStore';
 import { useUiStore } from '@/store/useUiStore';
 import { formatCurrency } from '@/lib/utils';
 import { getApiErrorMessage } from '@/lib/api';
@@ -46,8 +50,10 @@ export default function CheckoutPage() {
     const {
         orderType,
         deliveryAddress,
-        scheduledTime: scheduledTimeRaw,
+        customerPickupDatetime: customerPickupDatetimeRaw,
         orderTime,
+        notes: orderNotes,
+        setNotes,
     } = useOrderStore();
 
     const [selectedPaymentMethodType, setSelectedPaymentMethodType] =
@@ -70,6 +76,17 @@ export default function CheckoutPage() {
         orderType !== 'delivery' ||
         (deliveryAddress?.id != null && Number(deliveryAddress.id) > 0);
 
+    const isPickupOrCurbside =
+        orderType === 'pickup' || orderType === 'carPickup';
+    const customerPickupDatetimeDate = getCustomerPickupDatetimeAsDate(
+        customerPickupDatetimeRaw,
+    );
+    const initCustomerPickupDatetime: string | undefined = isPickupOrCurbside
+        ? orderTime === 'later' && customerPickupDatetimeDate
+            ? formatDateTimeForApi(customerPickupDatetimeDate)
+            : formatDateTimeForApi(earliestPickupDate())
+        : undefined;
+
     const cartHash = items.map((i) => `${i.id}-${i.quantity}`).join('|');
     const {
         initData,
@@ -80,6 +97,9 @@ export default function CheckoutPage() {
     } = useCheckoutInit({
         fulfillment_method,
         address_id,
+        customer_pickup_datetime: isPickupOrCurbside
+            ? initCustomerPickupDatetime
+            : undefined,
         shipping_speed_type: selectedShippingSpeedTypeId ?? undefined,
         enabled: canRunInit,
         cartHash,
@@ -179,12 +199,14 @@ export default function CheckoutPage() {
             return;
         }
 
-        const scheduledTime = getScheduledTimeAsDate(scheduledTimeRaw);
+        const customerPickupDatetimeDate = getCustomerPickupDatetimeAsDate(
+            customerPickupDatetimeRaw,
+        );
         const isPickupOrCurbside =
             orderType === 'pickup' || orderType === 'carPickup';
-        const pickupDatetime =
-            orderTime === 'later' && scheduledTime
-                ? formatDateTimeForApi(scheduledTime)
+        const customer_pickup_datetime =
+            orderTime === 'later' && customerPickupDatetimeDate
+                ? formatDateTimeForApi(customerPickupDatetimeDate)
                 : isPickupOrCurbside
                   ? formatDateTimeForApi(earliestPickupDate())
                   : undefined;
@@ -208,7 +230,8 @@ export default function CheckoutPage() {
                 orderType === 'delivery' && deliveryAddress?.id
                     ? Number(deliveryAddress.id)
                     : undefined,
-            customer_pickup_datetime: pickupDatetime,
+            customer_pickup_datetime: customer_pickup_datetime,
+            notes: (orderNotes ?? '').trim() || undefined,
             payment_method,
             epayment_method_id: selectedEpaymentMethodId ?? undefined,
             use_wallet: useWallet && walletBalance > 0 && !isFullyWalletCovered,
@@ -376,6 +399,8 @@ export default function CheckoutPage() {
                         {orderTypeCard}
                     </div>
 
+
+
                     <PaymentMethodCard
                         methods={paymentMethods}
                         summaryTotal={totalFromSummary}
@@ -409,6 +434,31 @@ export default function CheckoutPage() {
                         )}
 
                     <CouponCard />
+
+                    <CheckoutCard title={t('notes')}>
+                        <div className="space-y-2">
+                            <textarea
+                                id="checkout-notes"
+                                value={orderNotes ?? ''}
+                                onChange={(e) =>
+                                    setNotes(
+                                        e.target.value.length > 0
+                                            ? e.target.value
+                                            : null,
+                                    )
+                                }
+                                placeholder={t('notesPlaceholder')}
+                                maxLength={500}
+                                rows={3}
+                                className="w-full resize-y min-h-[80px] rounded-lg border border-gray-200 bg-gray-50/80 p-3.5 text-sm text-gray-800 placeholder:text-gray-500 focus:border-theme-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-theme-primary/20 transition-colors"
+                            />
+                            <div className="flex justify-end">
+                                <span className="text-xs text-gray-500 tabular-nums">
+                                    {(orderNotes?.length ?? 0)}/500
+                                </span>
+                            </div>
+                        </div>
+                    </CheckoutCard>
                 </div>
 
                 <div className="lg:w-96">

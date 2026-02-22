@@ -5,7 +5,10 @@ import { Building2, ChevronDown, MapPin, Clock, Edit } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useBranchStore } from '@/store/useBranchStore';
-import { useOrderStore, getScheduledTimeAsDate } from '@/store/useOrderStore';
+import {
+    useOrderStore,
+    getCustomerPickupDatetimeAsDate,
+} from '@/store/useOrderStore';
 import OrderTypeModal from '@/components/modals/OrderTypeModal';
 import {
     getAddressLabel,
@@ -24,13 +27,14 @@ export default function SubHeader() {
     const {
         orderType,
         deliveryAddress,
-        scheduledTime: scheduledTimeRaw,
+        customerPickupDatetime: customerPickupDatetimeRaw,
         orderTime,
         setOrderType,
     } = useOrderStore();
 
-    // Convert scheduledTime from string to Date if needed
-    const scheduledTime = getScheduledTimeAsDate(scheduledTimeRaw);
+    const scheduledTime = getCustomerPickupDatetimeAsDate(
+        customerPickupDatetimeRaw,
+    );
     const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
 
     // Use persisted name - no fetch needed! Name is always available immediately

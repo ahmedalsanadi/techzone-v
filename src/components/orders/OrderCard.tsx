@@ -2,10 +2,22 @@
 
 import React from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { Star, Store, Calendar, MapPin, Banknote, Info } from 'lucide-react';
+import {
+    Star,
+    Store,
+    Calendar,
+    MapPin,
+    Banknote,
+    Clock,
+    FileText,
+} from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Badge, type BadgeVariant } from '@/components/ui/Badge';
-import { cn, formatMoneyAmount, formatOrderDateAndTime } from '@/lib/utils';
+import {
+    formatMoneyAmount,
+    formatOrderDateAndTime,
+    formatOrderDateTime,
+} from '@/lib/utils';
 import CurrencySymbol from '../ui/CurrencySymbol';
 
 import { Order, OrderStatus, ORDER_STATUS_NUMBER_MAP } from '@/types/orders';
@@ -91,6 +103,20 @@ export default function OrderCard({ order }: OrderCardProps) {
         return formatOrderDateAndTime(order.created_at);
     }, [order.created_at, mounted]);
 
+    const pickupTimeFormatted = React.useMemo(() => {
+        if (!mounted || !order.customer_pickup_datetime?.trim()) return null;
+        return formatOrderDateTime(order.customer_pickup_datetime);
+    }, [order.customer_pickup_datetime, mounted]);
+
+    const notesTrimmed =
+        typeof order.notes === 'string' ? order.notes.trim() : '';
+    const addressDisplay =
+        typeof order.address === 'string' && order.address.trim()
+            ? order.address.trim()
+            : null;
+
+    const tSummary = useTranslations('Orders.summary');
+
     return (
         <div className="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col gap-5 shadow-sm hover:shadow-md transition-all duration-300 ">
             {/* Header: Status, Rating and Order Number */}
@@ -130,7 +156,6 @@ export default function OrderCard({ order }: OrderCardProps) {
                 {/* Created At */}
                 <div className="flex items-center gap-3 text-gray-500">
                     <Calendar className="w-5 h-5 opacity-60" />
-
                     <span className="text-sm font-medium" dir="rtl">
                         {t('createdAt', {
                             date: formattedDate,
@@ -139,21 +164,43 @@ export default function OrderCard({ order }: OrderCardProps) {
                     </span>
                 </div>
 
-                {/* Delivery Location */}
+                {/* Order method (fulfillment) — label only; no "Delivery to" prefix */}
                 <div className="flex items-center gap-3 text-gray-500">
                     <MapPin className="w-5 h-5 opacity-60" />
+                    <span className="text-sm font-medium">
+                        {order.fulfillment_label}
+                    </span>
+                </div>
 
-                    <div className="flex flex-col">
-                        <span className="text-[11px] opacity-70 leading-tight">
-                            {order.metadata?.notes || order.notes || ''}
-                        </span>
-                        <span className="text-sm font-medium">
-                            {t('deliveryTo', {
-                                location: order.fulfillment_label,
-                            })}
+                {/* Address (when present) */}
+                {addressDisplay !== null && (
+                    <div className="flex items-center gap-3 text-gray-500">
+                        <MapPin className="w-5 h-5 opacity-60" />
+                        <span className="text-sm font-medium wrap-break-word">
+                            {tSummary('address')}: {addressDisplay}
                         </span>
                     </div>
-                </div>
+                )}
+
+                {/* Pickup time (when present) */}
+                {pickupTimeFormatted && (
+                    <div className="flex items-center gap-3 text-gray-500">
+                        <Clock className="w-5 h-5 opacity-60" />
+                        <span className="text-sm font-medium">
+                            {tSummary('pickupTime')}: {pickupTimeFormatted}
+                        </span>
+                    </div>
+                )}
+
+                {/* Order notes (when present) */}
+                {notesTrimmed && (
+                    <div className="flex items-start gap-3 text-gray-500">
+                        <FileText className="w-5 h-5 opacity-60 shrink-0 mt-0.5" />
+                        <span className="text-sm font-medium wrap-break-word">
+                            {tSummary('notes')}: {notesTrimmed}
+                        </span>
+                    </div>
+                )}
 
                 {/* Total */}
                 <div className="flex items-center gap-3 text-gray-900">

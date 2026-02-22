@@ -77,6 +77,7 @@ export interface BuildPayloadInput {
     fulfillment_method: FulfillmentMethod;
     address_id: number | undefined;
     customer_pickup_datetime: string | undefined;
+    notes?: string | null;
     payment_method: CreateOrderRequest['payment_method'];
     epayment_method_id?: number;
     use_wallet: boolean;
@@ -91,6 +92,7 @@ export function buildCreateOrderPayload(
         fulfillment_method,
         address_id,
         customer_pickup_datetime,
+        notes,
         payment_method,
         epayment_method_id,
         use_wallet,
@@ -101,7 +103,7 @@ export function buildCreateOrderPayload(
         fulfillment_method,
         address_id,
         customer_pickup_datetime: customer_pickup_datetime ?? undefined,
-        notes: '',
+        notes: notes ?? undefined,
         payment_method,
     };
     if (use_wallet) payload.use_wallet = true;

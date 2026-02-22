@@ -105,7 +105,9 @@
     "payWithWalletOnly": "سيتم دفع طلبك من المحفظة. لا حاجة لاختيار طريقة دفع أخرى.",
     "shippingSpeed": "سرعة الشحن",
     "deliveryToSmall": "إلى",
-    "fee": "رسوم"
+    "fee": "رسوم",
+    "notes": "ملاحظات الطلب",
+    "notesPlaceholder": "أضف أي ملاحظات أو تعليمات خاصة (اختياري)"
   },
   "Order": {
     "orderType": "نوع الطلب",
@@ -402,6 +404,8 @@
       "deliveryMethod": "طريقة الطلب",
       "address": "العنوان",
       "deliveryTime": "موعد الطلب",
+      "pickupTime": "موعد الاستلام",
+      "notes": "ملاحظات الطلب",
       "totalAmount": "قيمة الطلب",
       "paymentMethod": "طريقة الدفع",
       "asap": "بأسرع وقت"

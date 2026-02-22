@@ -104,7 +104,9 @@
     "payWithWalletOnly": "Your order will be paid using your wallet. No other payment method is needed.",
     "shippingSpeed": "Shipping Speed",
     "deliveryToSmall": "to",
-    "fee": "Fee"
+    "fee": "Fee",
+    "notes": "Order notes",
+    "notesPlaceholder": "Add any notes or special instructions (optional)"
   },
   "Order": {
     "orderType": "Order Type",
@@ -402,6 +404,8 @@
       "deliveryMethod": "Order Method",
       "address": "Address",
       "deliveryTime": "Order Time",
+      "pickupTime": "Pickup Time",
+      "notes": "Order Notes",
       "totalAmount": "Order Total",
       "paymentMethod": "Payment Method",
       "asap": "ASAP"

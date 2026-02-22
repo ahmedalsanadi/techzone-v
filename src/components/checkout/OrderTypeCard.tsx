@@ -3,7 +3,10 @@
 import { ChevronLeft, MapPin, Clock, Truck } from 'lucide-react';
 import CheckoutCard from './CheckoutCard';
 import { useCallback, useState } from 'react';
-import { useOrderStore, getScheduledTimeAsDate } from '@/store/useOrderStore';
+import {
+    useOrderStore,
+    getCustomerPickupDatetimeAsDate,
+} from '@/store/useOrderStore';
 import { useBranchStore } from '@/store/useBranchStore';
 import OrderTypeModal from '@/components/modals/OrderTypeModal';
 import { useTranslations } from 'next-intl';
@@ -45,12 +48,14 @@ export default function OrderTypeCard({
     const {
         orderType,
         deliveryAddress,
-        scheduledTime: scheduledTimeRaw,
+        customerPickupDatetime: customerPickupDatetimeRaw,
         orderTime,
     } = useOrderStore();
     const { selectedBranchName } = useBranchStore();
 
-    const scheduledTime = getScheduledTimeAsDate(scheduledTimeRaw);
+    const scheduledTime = getCustomerPickupDatetimeAsDate(
+        customerPickupDatetimeRaw,
+    );
 
     const formatScheduledDate = (date: Date) => {
         const day = date.getDate().toString().padStart(2, '0');

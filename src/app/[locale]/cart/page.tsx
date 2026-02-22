@@ -420,7 +420,7 @@ const CartPage = () => {
                                                 </Button>
                                             </div>
 
-                                            <Button
+                                            {/* <Button
                                                 type="button"
                                                 variant="ghost"
                                                 size="icon"
@@ -451,7 +451,7 @@ const CartPage = () => {
                                                     'Remove item'
                                                 }>
                                                 <Trash2 />
-                                            </Button>
+                                            </Button> */}
                                         </div>
                                     </div>
                                 </div>

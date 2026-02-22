@@ -28,11 +28,18 @@ export function OrderSummaryCard({ order }: OrderSummaryCardProps) {
         return formatOrderDateTime(order.created_at);
     }, [order.created_at, mounted]);
 
-    const deliveryTimeDisplay = React.useMemo(() => {
-        if (!mounted) return t('asap');
-        const formatted = formatOrderDateTime(order.customer_pickup_datetime);
-        return formatted || t('asap');
-    }, [order.customer_pickup_datetime, mounted, t]);
+    const pickupTimeFormatted = React.useMemo(() => {
+        if (!mounted || !order.customer_pickup_datetime?.trim()) return null;
+        return formatOrderDateTime(order.customer_pickup_datetime);
+    }, [order.customer_pickup_datetime, mounted]);
+
+    const orderNotesTrimmed =
+        typeof order.notes === 'string' ? order.notes.trim() : '';
+
+    const addressDisplay =
+        typeof order.address === 'string' && order.address.trim()
+            ? order.address.trim()
+            : '—';
 
     const details = [
         { label: t('orderNumber'), value: `#${order.id}` },
@@ -42,20 +49,36 @@ export function OrderSummaryCard({ order }: OrderSummaryCardProps) {
         {
             label: t('address'),
             value: (
-                <div className="flex flex-col items-end text-right">
-                    <span className="font-semibold text-gray-900 leading-tight">
-                        {order.fulfillment_label}
-                    </span>
-                    <span className="text-xs text-gray-500 font-medium leading-tight mt-1">
-                        {order.metadata?.notes || order.notes || ''}
-                    </span>
-                </div>
+                <span className="block text-right wrap-break-word">
+                    {addressDisplay}
+                </span>
             ),
         },
-        {
-            label: t('deliveryTime'),
-            value: deliveryTimeDisplay,
-        },
+        ...(pickupTimeFormatted
+            ? [
+                  {
+                      label: t('pickupTime'),
+                      value: pickupTimeFormatted,
+                  },
+              ]
+            : [
+                  {
+                      label: t('deliveryTime'),
+                      value: t('asap'),
+                  },
+              ]),
+        ...(orderNotesTrimmed
+            ? [
+                  {
+                      label: t('notes'),
+                      value: (
+                          <span className="block text-right wrap-break-word">
+                              {orderNotesTrimmed}
+                          </span>
+                      ),
+                  },
+              ]
+            : []),
         {
             label: t('totalAmount'),
             value: (

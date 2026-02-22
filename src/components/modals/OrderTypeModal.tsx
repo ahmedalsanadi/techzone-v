@@ -1,5 +1,5 @@
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
-import { ChevronRight, Clock, Plus, Edit, X } from 'lucide-react';
+import { Clock, Plus, Edit, X } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
 import { usePathname } from 'next/navigation';
 import React, { useState, useEffect, useMemo } from 'react';
@@ -8,7 +8,7 @@ import {
     useOrderStore,
     OrderType,
     OrderTime,
-    getScheduledTimeAsDate,
+    getCustomerPickupDatetimeAsDate,
 } from '@/store/useOrderStore';
 import { useAuthStore } from '@/store/useAuthStore';
 import { Address } from '@/types/address';
@@ -24,7 +24,7 @@ import {
 } from '@/lib/address';
 import { FULFILLMENT_VALUE_TO_TYPE } from '@/lib/checkout';
 import { useQueryClient } from '@tanstack/react-query';
-import { checkoutInitKey } from '@/hooks/checkout';
+// import { checkoutInitKey } from '@/hooks/checkout';
 
 import { useStore } from '@/components/providers/StoreProvider';
 
@@ -40,7 +40,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
     const {
         orderType: storeOrderType,
         deliveryAddress: storeDeliveryAddress,
-        scheduledTime: storeScheduledTimeRaw,
+        customerPickupDatetime: storeCustomerPickupDatetimeRaw,
         orderTime: storeOrderTime,
         setOrderState,
     } = useOrderStore();
@@ -114,13 +114,15 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
         setTempOrderType(storeOrderType);
         setTempDeliveryAddress(storeDeliveryAddress);
         setTempOrderTime(storeOrderTime);
-        setTempScheduledTime(getScheduledTimeAsDate(storeScheduledTimeRaw));
+        setTempScheduledTime(
+            getCustomerPickupDatetimeAsDate(storeCustomerPickupDatetimeRaw),
+        );
     }, [
         isOpen,
         storeOrderType,
         storeDeliveryAddress,
         storeOrderTime,
-        storeScheduledTimeRaw,
+        storeCustomerPickupDatetimeRaw,
     ]);
 
     const handleAddAddress = () => {
@@ -197,7 +199,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
             orderType: tempOrderType,
             deliveryAddress: tempDeliveryAddress,
             orderTime: tempOrderTime || 'now',
-            scheduledTime: tempScheduledTime,
+            customerPickupDatetime: tempScheduledTime,
         });
 
         onClose();

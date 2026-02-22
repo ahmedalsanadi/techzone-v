@@ -108,6 +108,8 @@ export interface Order {
         notes?: string;
     };
     address_id?: number;
+    /** Formatted delivery address when order details include it (e.g. delivery orders). */
+    address?: string | null;
     notes?: string;
     created_at: string;
     updated_at: string;
@@ -195,6 +197,7 @@ export interface EpaymentMethodOption {
 export interface CheckoutInitRequest {
     fulfillment_method: FulfillmentMethod;
     address_id?: number;
+    customer_pickup_datetime?: string | null;
     shipping_speed_type?: number;
     epayment_method_id?: number;
     payment_method?: PaymentMethodSlug;
