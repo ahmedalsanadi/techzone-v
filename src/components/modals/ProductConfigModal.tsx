@@ -278,7 +278,9 @@ export default function ProductConfigModal({
                                     variant="outlineTint"
                                     size="icon"
                                     aria-label={t('viewDetails') || 'View details'}>
-                                    <Link href={`/products/${product.slug}`}>
+                                    <Link
+                                        href={`/products/${product.slug}`}
+                                        onClick={onClose}>
                                         <Eye className="w-4 h-4" />
                                         <span className="sr-only">
                                             {t('viewDetails') || 'View details'}
