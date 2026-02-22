@@ -484,7 +484,9 @@
     "items_count": "items",
     "addToCart": "Add to Cart",
     "customize": "Customize",
-    "no_products": "No products found in this category"
+    "no_products": "No products found in this category",
+    "productsLoadError": "Something went wrong loading products. Please try again.",
+    "refreshPage": "Refresh page"
   },
   "Search": {
     "results_for": "Results for",

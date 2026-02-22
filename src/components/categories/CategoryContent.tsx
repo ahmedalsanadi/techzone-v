@@ -1,7 +1,7 @@
 // src/components/pages/categories/CategoryContent.tsx
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { storeService } from '@/services/store-service';
 import { Category } from '@/types/store';
@@ -21,7 +21,30 @@ interface CategoryContentProps {
     initialCategory?: Category;
 }
 
-const PER_PAGE = 8;
+const PER_PAGE = 15;
+
+function getActivePath(
+    nodes: Category[],
+    targetSlug: string,
+    currentPath: Category[] = [],
+): Category[] | null {
+    for (const node of nodes) {
+        if (
+            node.slug === targetSlug ||
+            node.id?.toString() === targetSlug
+        ) {
+            return [...currentPath, node];
+        }
+        if (node.children?.length) {
+            const found = getActivePath(node.children, targetSlug, [
+                ...currentPath,
+                node,
+            ]);
+            if (found) return found;
+        }
+    }
+    return null;
+}
 
 const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
     const t = useTranslations('Category');
@@ -31,40 +54,26 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
     const { loadingProductId, handleAddClick, prefetchProduct } =
         useProductConfigFlow();
 
-    const slug = params.slug as string;
+    const slug = (params?.slug as string | undefined) ?? undefined;
 
-    const getActivePath = (
-        nodes: Category[],
-        targetSlug: string,
-        currentPath: Category[] = [],
-    ): Category[] | null => {
-        for (const node of nodes) {
-            if (
-                node.slug === targetSlug ||
-                node.id?.toString() === targetSlug
-            ) {
-                return [...currentPath, node];
-            }
-            if (node.children?.length) {
-                const found = getActivePath(node.children, targetSlug, [
-                    ...currentPath,
-                    node,
-                ]);
-                if (found) return found;
-            }
-        }
-        return null;
-    };
-
-    const activePath = getActivePath(allCategories, slug) || [];
+    const activePath = useMemo(
+        () =>
+            slug && String(slug).trim()
+                ? getActivePath(allCategories, String(slug).trim()) || []
+                : [],
+        [allCategories, slug],
+    );
     const currentCategory =
         activePath[activePath.length - 1] || initialCategory;
     const currentSubCategories = currentCategory?.children || [];
 
-    const baseFilters = {
-        per_page: String(PER_PAGE),
-        category_id: currentCategory?.id?.toString(),
-    };
+    const baseFilters = useMemo(
+        () => ({
+            per_page: String(PER_PAGE),
+            category_id: currentCategory?.id?.toString(),
+        }),
+        [currentCategory?.id],
+    );
 
     const {
         data: infiniteData,
@@ -75,11 +84,14 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
         error,
     } = useInfiniteQuery({
         queryKey: ['products', 'infinite', baseFilters],
-        queryFn: ({ pageParam }) =>
-            storeService.getProducts({
-                ...baseFilters,
-                page: String(pageParam),
-            }),
+        queryFn: ({ pageParam, signal }) =>
+            storeService.getProducts(
+                {
+                    ...baseFilters,
+                    page: String(pageParam),
+                },
+                { signal },
+            ),
         initialPageParam: 1,
         getNextPageParam: (lastPage) => {
             const meta = lastPage?.meta;
@@ -90,8 +102,10 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
         retry: 1,
     });
 
-    const products =
-        infiniteData?.pages.flatMap((p) => p.data ?? []) ?? [];
+    const products = useMemo(
+        () => infiniteData?.pages.flatMap((p) => p.data ?? []) ?? [],
+        [infiniteData],
+    );
     const isInternalLoading = isLoading && products.length === 0;
 
     const handleMainCategorySelect = (id: string) => {
@@ -164,16 +178,15 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
                         isFetchingNextPage ? 'opacity-60' : 'opacity-100',
                     )}>
                     {error ? (
-                        <div className="flex flex-col items-center justify-center py-20 text-red-500 bg-red-50 rounded-3xl border border-red-100 italic">
-                            <p>
-                                حدث خطأ أثناء تحميل المنتجات. يرجى المحاولة مرة
-                                أخرى.
+                        <div className="flex flex-col items-center justify-center py-20 text-red-600 bg-red-50 rounded-2xl border border-red-100">
+                            <p className="font-medium text-center px-4">
+                                {t('productsLoadError')}
                             </p>
                             <Button
                                 variant="link"
                                 onClick={() => window.location.reload()}
-                                className="mt-4 text-sm underline font-bold p-0 h-auto min-h-0">
-                                تحديث الصفحة
+                                className="mt-4 text-sm font-bold p-0 h-auto min-h-0">
+                                {t('refreshPage')}
                             </Button>
                         </div>
                     ) : (

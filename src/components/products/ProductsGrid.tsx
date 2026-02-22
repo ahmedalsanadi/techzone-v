@@ -51,8 +51,9 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
     }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
     useEffect(() => {
-        if (!loadMoreRef.current || !fetchNextPage || !hasNextPage || isFetchingNextPage) return;
+        if (!hasNextPage || isFetchingNextPage || !fetchNextPage) return;
         const el = loadMoreRef.current;
+        if (!el) return;
         const observer = new IntersectionObserver(
             (entries) => {
                 if (entries[0]?.isIntersecting) handleLoadMore();
@@ -122,8 +123,8 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
                     );
                 })}
             </div>
-            {/* Sentinel for infinite scroll: load more when this enters viewport */}
-            {hasNextPage != null && (
+            {/* Sentinel for infinite scroll: only mount when there are more pages */}
+            {hasNextPage === true && (
                 <div
                     ref={loadMoreRef}
                     className="flex justify-center py-8 min-h-[80px]"
@@ -132,7 +133,7 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
                         <div className="flex items-center gap-2 text-gray-500">
                             <Loader2 className="w-6 h-6 animate-spin" />
                             <span className="text-sm font-medium">
-                                {t('loading') || 'Loading...'}
+                                {t('loading')}
                             </span>
                         </div>
                     )}
