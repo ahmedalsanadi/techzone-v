@@ -24,6 +24,50 @@ interface CartItemConfigModalProps {
     item: CartItem | null;
 }
 
+function CartItemConfigSkeletonCard({ rows = 4 }: { rows?: number }) {
+    return (
+        <div className="border border-gray-100 rounded-2xl bg-white p-5 sm:p-6 shadow-sm animate-pulse">
+            <div className="flex items-center justify-between mb-4">
+                <div className="h-4 w-36 bg-gray-100 rounded-lg" />
+                <div className="h-5 w-16 bg-gray-100 rounded-full" />
+            </div>
+            <div className="space-y-3">
+                {Array.from({ length: rows }).map((_, i) => (
+                    <div
+                        key={i}
+                        className="flex items-center justify-between">
+                        <div className="h-3 w-40 bg-gray-100 rounded-md" />
+                        <div className="h-3 w-16 bg-gray-100 rounded-md" />
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+function CartItemConfigLoadingSkeleton() {
+    return (
+        <div className="space-y-6">
+            <CartItemConfigSkeletonCard rows={4} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <CartItemConfigSkeletonCard rows={5} />
+                <CartItemConfigSkeletonCard rows={5} />
+            </div>
+            <div className="border border-gray-100 rounded-2xl bg-white p-5 sm:p-6 shadow-sm animate-pulse">
+                <div className="h-4 w-32 bg-gray-100 rounded-lg mb-4" />
+                <div className="space-y-3">
+                    <div className="h-10 w-full bg-gray-100 rounded-xl" />
+                    <div className="h-10 w-full bg-gray-100 rounded-xl" />
+                </div>
+            </div>
+            <div className="border border-gray-100 rounded-2xl bg-white p-5 sm:p-6 shadow-sm animate-pulse">
+                <div className="h-4 w-24 bg-gray-100 rounded-lg mb-3" />
+                <div className="h-20 w-full bg-gray-100 rounded-xl" />
+            </div>
+        </div>
+    );
+}
+
 export default function CartItemConfigModal({
     isOpen,
     onClose,
@@ -130,48 +174,6 @@ export default function CartItemConfigModal({
 
     const totalPrice = calculateTotalPrice();
     const unitPrice = quantity > 0 ? totalPrice / quantity : 0;
-
-    const LoadingSkeleton = () => {
-        const Card = ({ rows = 4 }: { rows?: number }) => (
-            <div className="border border-gray-100 rounded-2xl bg-white p-5 sm:p-6 shadow-sm animate-pulse">
-                <div className="flex items-center justify-between mb-4">
-                    <div className="h-4 w-36 bg-gray-100 rounded-lg" />
-                    <div className="h-5 w-16 bg-gray-100 rounded-full" />
-                </div>
-                <div className="space-y-3">
-                    {Array.from({ length: rows }).map((_, i) => (
-                        <div
-                            key={i}
-                            className="flex items-center justify-between">
-                            <div className="h-3 w-40 bg-gray-100 rounded-md" />
-                            <div className="h-3 w-16 bg-gray-100 rounded-md" />
-                        </div>
-                    ))}
-                </div>
-            </div>
-        );
-
-        return (
-            <div className="space-y-6">
-                <Card rows={4} />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Card rows={5} />
-                    <Card rows={5} />
-                </div>
-                <div className="border border-gray-100 rounded-2xl bg-white p-5 sm:p-6 shadow-sm animate-pulse">
-                    <div className="h-4 w-32 bg-gray-100 rounded-lg mb-4" />
-                    <div className="space-y-3">
-                        <div className="h-10 w-full bg-gray-100 rounded-xl" />
-                        <div className="h-10 w-full bg-gray-100 rounded-xl" />
-                    </div>
-                </div>
-                <div className="border border-gray-100 rounded-2xl bg-white p-5 sm:p-6 shadow-sm animate-pulse">
-                    <div className="h-4 w-24 bg-gray-100 rounded-lg mb-3" />
-                    <div className="h-20 w-full bg-gray-100 rounded-xl" />
-                </div>
-            </div>
-        );
-    };
 
     const handleSave = async () => {
         if (!item || !activeProduct) return;
@@ -297,7 +299,7 @@ export default function CartItemConfigModal({
                         </header>
 
                         <main className="flex-1 overflow-y-auto p-4 sm:p-5 md:p-6 space-y-6">
-                            {isLoading ? <LoadingSkeleton /> : null}
+                            {isLoading ? <CartItemConfigLoadingSkeleton /> : null}
                             {isError && (
                                 <div className="text-sm text-red-500">
                                     {t('loadProductError') ||

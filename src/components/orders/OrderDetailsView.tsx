@@ -18,7 +18,6 @@ import { OrderCourierCard } from './OrderCourierCard';
 import { OrderStatusTimeline } from './OrderStatusTimeline';
 import { OrderSummaryCard } from './OrderSummaryCard';
 import { OrderProductsCard } from './OrderProductsCard';
-import { useCartActions } from '@/hooks/cart';
 import { useCartStore } from '@/store/useCartStore';
 import { orderService } from '@/services/order-service';
 import { cartService } from '@/services/cart-service';
@@ -47,7 +46,6 @@ export default function OrderDetailsView({
 }: OrderDetailsViewProps) {
     const t = useTranslations('Orders');
     const [order, setOrder] = useState<Order>(initialOrder);
-    const { addToCart } = useCartActions();
     const router = useRouter();
 
     const [isCancelling, setIsCancelling] = useState(false);
