@@ -7,6 +7,7 @@ import { Pagination, Autoplay, EffectFade } from 'swiper/modules';
 import { MoveRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useStore } from '@/components/providers/StoreProvider';
+import { env } from '@/config/env';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -66,7 +67,11 @@ const storeSlides = [
 
 const HeroSlider = () => {
     const { config } = useStore();
-    const storeType = config?.store?.store_type ?? 'restaurant';
+    // Prefer env override so each deployment can force hero type (e.g. when API returns wrong store_type)
+    const storeType =
+        env.storeHeroType === 'restaurant' || env.storeHeroType === 'store'
+            ? env.storeHeroType
+            : (config?.store?.store_type ?? 'restaurant');
     const isRestaurant = storeType === 'restaurant';
     const slides = isRestaurant ? restaurantSlides : storeSlides;
     const ctaLabel = isRestaurant ? 'ORDER NOW' : 'SHOP NOW';

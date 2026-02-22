@@ -26,6 +26,11 @@ export const env = {
     allowDefaultStoreKeyOnPlatformHosts:
         process.env.ALLOW_DEFAULT_STORE_KEY_ON_PLATFORM_HOSTS === 'true',
 
+    /** Force hero type per deployment when API returns wrong store_type (e.g. "restaurant" | "store"). */
+    storeHeroType:
+        (process.env.NEXT_PUBLIC_STORE_HERO_TYPE || '').trim().toLowerCase() ||
+        null,
+
     // Environment
     isDev: process.env.NODE_ENV === 'development',
     isProd: process.env.NODE_ENV === 'production',
