@@ -9,6 +9,7 @@ import Pagination from '@/components/ui/Pagination';
 import { cn } from '@/lib/utils';
 import { PaginationMeta } from '@/types/api';
 import { Product } from '@/types/store';
+import { getProductDisplayPrice } from '@/lib/products/price';
 
 interface ProductsGridProps {
     products: Product[];
@@ -72,13 +73,16 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
                             ? 'sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
                             : 'sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4',
                     )}>
-                    {products.map((product, index) => (
+                    {products.map((product, index) => {
+                        const { price, originalPrice } =
+                            getProductDisplayPrice(product);
+                        return (
                         <ProductCard
                             key={product.id}
                             name={product.title}
                             image={product.cover_image_url || ''}
-                            price={product.price}
-                            oldPrice={product.sale_price}
+                            price={price}
+                            oldPrice={originalPrice}
                             href={`/products/${product.slug}`}
                             productId={product.id}
                             productSlug={product.slug}
@@ -91,7 +95,7 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
                             isAdding={isAddingProductId === product.id}
                             onPrefetch={() => onPrefetchProduct?.(product)}
                         />
-                    ))}
+                    );})}
                 </div>
             </div>
         </div>

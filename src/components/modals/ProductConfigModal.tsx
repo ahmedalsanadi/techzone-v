@@ -10,6 +10,7 @@ import {
     hasVariants,
     validateRequiredSelections,
 } from '@/lib/products/requirements';
+import { getEffectivePrice } from '@/lib/products/price';
 import AddonSelector from '@/components/products/product-details/AddonSelector';
 import VariantSelector from '@/components/products/product-details/VariantSelector';
 import CustomFieldsForm from '@/components/products/product-details/CustomFieldsForm';
@@ -69,13 +70,11 @@ export default function ProductConfigModal({
         : null;
 
     const variantOptions = selectedVariant?.option_values || {};
-    const basePrice = selectedVariant
-        ? selectedVariant.sale_price || selectedVariant.price
-        : product.sale_price || product.price;
+    const basePrice = getEffectivePrice(product, selectedVariant);
 
     const calculateTotalPrice = () => {
+        // Respect multiply_price_by_quantity (quantity is 1 when adding from modal).
         let totalAddonsPrice = 0;
-
         Object.entries(selectedAddons).forEach(([addonGroupId, items]) => {
             const addonGroup = requiredAddonGroups.find(
                 (a) => a.id === parseInt(addonGroupId, 10),

@@ -35,6 +35,7 @@ function computeApiAddonsPrice(
     productQty: number,
 ): number {
     if (!addons || addons.length === 0) return 0;
+    // Respect multiply_by_quantity from API: when true, scale with product qty; when false, flat per line.
     return addons.reduce((sum, a) => {
         const base = (a.price || 0) * (a.quantity || 0);
         return sum + (a.multiply_by_quantity ? base * productQty : base);

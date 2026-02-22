@@ -312,6 +312,7 @@
     "minSelectionRequired": "Please select at least {count} item(s)",
     "maxSelectionExceeded": "Maximum selections exceeded",
     "perQuantity": "per quantity",
+    "addonFixedPrice": "once per order",
     "maxQuantity": "Max",
     "validationError": "Validation error",
     "variants": "Variants",

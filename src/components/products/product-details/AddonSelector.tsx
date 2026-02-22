@@ -254,12 +254,16 @@ export default function AddonSelector({
                                                 + {item.extra_price}
                                             </span>
                                             <CurrencySymbol className="w-4 h-4" />
-                                            {item.multiply_price_by_quantity && (
+                                            {item.multiply_price_by_quantity ? (
                                                 <span className="text-[10px] font-medium text-gray-500">
                                                     (
                                                     {t('perQuantity') ||
-                                                        'لكل كمية'}
+                                                        'per quantity'}
                                                     )
+                                                </span>
+                                            ) : (
+                                                <span className="text-[10px] font-medium text-gray-500" title={t('addonFixedPrice')}>
+                                                    ({t('addonFixedPrice')})
                                                 </span>
                                             )}
                                         </div>
@@ -361,6 +365,11 @@ export default function AddonSelector({
                                             + {item.extra_price}
                                         </span>
                                         <CurrencySymbol className="w-4 h-4" />
+                                        {!item.multiply_price_by_quantity && (
+                                            <span className="text-[10px] font-medium text-gray-500" title={t('addonFixedPrice')}>
+                                                ({t('addonFixedPrice')})
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
                                 <input

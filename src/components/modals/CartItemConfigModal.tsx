@@ -8,6 +8,7 @@ import { generateCartItemId } from '@/lib/cart/utils';
 import { useCartActions } from '@/hooks/cart';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
 import { validateRequiredSelections } from '@/lib/products/requirements';
+import { getEffectivePrice } from '@/lib/products/price';
 import AddonSelector from '@/components/products/product-details/AddonSelector';
 import VariantSelector from '@/components/products/product-details/VariantSelector';
 import CustomFieldsForm from '@/components/products/product-details/CustomFieldsForm';
@@ -104,14 +105,13 @@ export default function CartItemConfigModal({
         ? activeProduct?.variants?.find((v) => v.id === selectedVariantId)
         : null;
 
-    const currentPrice = selectedVariant
-        ? selectedVariant.sale_price || selectedVariant.price
-        : activeProduct?.sale_price || activeProduct?.price || 0;
+    const currentPrice = activeProduct
+        ? getEffectivePrice(activeProduct, selectedVariant)
+        : 0;
 
     const calculateTotalPrice = () => {
-        // Match `ProductDetails` pricing semantics:
-        // total = (base * productQty) + addons where `multiply_price_by_quantity`
-        // indicates per-unit addons.
+        // Match ProductDetails: respect multiply_price_by_quantity.
+        // true = scale with quantity; false = flat per line.
         let totalAddonsPrice = 0;
         (activeProduct?.addons || []).forEach((addonGroup) => {
             addonGroup.items.forEach((addonItem) => {

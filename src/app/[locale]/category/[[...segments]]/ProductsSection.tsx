@@ -5,6 +5,7 @@ import React, { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import ProductCard from '@/components/ui/ProductCard';
 import type { Product } from '@/types/store';
+import { getProductDisplayPrice } from '@/lib/products/price';
 import { TRANSITIONS, MIN_HEIGHTS } from './constants';
 import ProductsSkeleton from './ProductsSkeleton';
 import { useProductConfigFlow } from '@/hooks/products';
@@ -70,8 +71,9 @@ export default function ProductsSection({
                 {hasProducts ? (
                     <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-6">
                         {products.map((p, index) => {
-                            // First 4 products (above fold) get priority loading
                             const isAboveFold = index < 4;
+                            const { price, originalPrice } =
+                                getProductDisplayPrice(p);
 
                             return (
                                 <div
@@ -88,8 +90,8 @@ export default function ProductsSection({
                                     <ProductCard
                                         name={p.title}
                                         image={p.cover_image_url}
-                                        price={p.price}
-                                        oldPrice={p.sale_price}
+                                        price={price}
+                                        oldPrice={originalPrice}
                                         href={`/products/${p.slug}`}
                                         productId={p.id}
                                         productSlug={p.slug}

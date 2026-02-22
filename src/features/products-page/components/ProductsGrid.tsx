@@ -3,6 +3,7 @@
 import React from 'react';
 import ProductCard from '@/components/ui/ProductCard';
 import type { Product } from '@/types/store';
+import { getProductDisplayPrice } from '@/lib/products/price';
 
 export function ProductsGrid({
     products,
@@ -19,13 +20,15 @@ export function ProductsGrid({
 }) {
     return (
         <div className="grid grid-cols-1 gap-4 md:gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
-            {products.map((product) => (
+            {products.map((product) => {
+                const { price, originalPrice } = getProductDisplayPrice(product);
+                return (
                 <ProductCard
                     key={product.id}
                     name={product.title}
                     image={product.cover_image_url || ''}
-                    price={product.price}
-                    oldPrice={product.sale_price}
+                    price={price}
+                    oldPrice={originalPrice}
                     href={`/products/${product.slug}`}
                     productId={product.id}
                     productSlug={product.slug}
@@ -34,7 +37,7 @@ export function ProductsGrid({
                     isAdding={isAddingProductId === product.id}
                     onPrefetch={() => onPrefetchProduct?.(product)}
                 />
-            ))}
+            );})}
         </div>
     );
 }

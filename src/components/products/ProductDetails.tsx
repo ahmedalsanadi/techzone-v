@@ -14,6 +14,7 @@ import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import { generateCartItemId } from '@/lib/cart/utils';
 import { useCartActions } from '@/hooks/cart';
 import { Product } from '@/types/store';
+import { getEffectivePriceWithOriginal } from '@/lib/products/price';
 import { toast } from 'sonner';
 import ProductReviews from './product-details/ProductReviews';
 
@@ -69,13 +70,12 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
     const images = [product.cover_image_url, ...(product.image_urls || [])];
 
-    // Get current price - use variant price if variant is selected, otherwise product price
+    // Get current price: sale_price when set; else apply product discount to variant when product has_discount
     const selectedVariant = selectedVariantId
         ? (product.variants || []).find((v) => v.id === selectedVariantId)
         : null;
-    const currentPrice = selectedVariant
-        ? selectedVariant.sale_price || selectedVariant.price
-        : product.sale_price || product.price;
+    const { price: currentPrice, originalPrice: currentOriginalPrice } =
+        getEffectivePriceWithOriginal(product, selectedVariant);
 
     // Validate addon constraints
     const validateAddons = useCallback((): {
@@ -138,6 +138,9 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     const validation = useMemo(() => validateAddons(), [validateAddons]);
 
     const calculateTotalPrice = () => {
+        // Respect multiply_price_by_quantity from API:
+        // - true: addon scales with product quantity (per unit).
+        // - false: addon is flat per line (charge once, do not scale).
         let totalAddonsPrice = 0;
 
         Object.entries(selectedAddons).forEach(([addonGroupId, items]) => {
@@ -152,23 +155,16 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 );
                 if (!item || qty <= 0) return;
 
-                // Addon price = (extra_price * addon selection quantity)
-                const addonSelectionTotalPrice = item.extra_price * qty;
-
+                const addonSelectionTotal = item.extra_price * qty;
                 if (item.multiply_price_by_quantity) {
-                    // This addon is per-unit, so multiply by product quantity
-                    totalAddonsPrice += addonSelectionTotalPrice * quantity;
+                    totalAddonsPrice += addonSelectionTotal * quantity;
                 } else {
-                    // This addon is once per cart item, regardless of quantity
-                    totalAddonsPrice += addonSelectionTotalPrice;
+                    totalAddonsPrice += addonSelectionTotal;
                 }
             });
         });
 
-        // Base price: variant price if selected, otherwise product price
         const basePrice = Number(currentPrice);
-
-        // Total = (base price * product quantity) + total addons price
         return basePrice * quantity + totalAddonsPrice;
     };
 
@@ -333,15 +329,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                             subtitle={product.subtitle}
                             description={product.description}
                             price={Number(currentPrice)}
-                            originalPrice={
-                                selectedVariant
-                                    ? selectedVariant.sale_price
-                                        ? Number(selectedVariant.price)
-                                        : undefined
-                                    : product.has_discount
-                                      ? Number(product.price)
-                                      : undefined
-                            }
+                            originalPrice={currentOriginalPrice}
                             calories={
                                 selectedVariant?.calories || product.calories
                             }
@@ -375,8 +363,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                                 <ProductActionBar
                                     totalPrice={calculateTotalPrice()}
                                     originalPrice={
-                                        product.has_discount
-                                            ? Number(product.price) * quantity
+                                        currentOriginalPrice != null
+                                            ? currentOriginalPrice * quantity
                                             : undefined
                                     }
                                     quantity={quantity}
