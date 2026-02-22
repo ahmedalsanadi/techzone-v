@@ -6,13 +6,14 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay, EffectFade } from 'swiper/modules';
 import { MoveRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { useStore } from '@/components/providers/StoreProvider';
 
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/effect-fade';
 
-const slides = [
+const restaurantSlides = [
     {
         id: 1,
         subtitle: 'Super Delicious',
@@ -20,7 +21,7 @@ const slides = [
         deal: "Today's Best Deal",
         discount: '50% OFF',
         image: '/images/images/burger.webp',
-        bgColor: 'bg-[#212529]', // Dark charcoal background
+        bgColor: 'bg-[#212529]',
     },
     {
         id: 2,
@@ -28,12 +29,47 @@ const slides = [
         title: 'PIZZA',
         deal: 'Weekend Special',
         discount: '30% OFF',
-        image: '/images/images/pizza-hero.webp', // Reusing for now or could be another SVG
+        image: '/images/images/pizza-hero.webp',
         bgColor: 'bg-[#1a1a1a]',
     },
 ];
 
+const storeSlides = [
+    {
+        id: 1,
+        subtitle: 'New Collection',
+        title: 'FASHION',
+        deal: "This Season's Look",
+        discount: '40% OFF',
+        image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1200&q=80',
+        bgColor: 'bg-[#1e293b]',
+    },
+    {
+        id: 2,
+        subtitle: 'Trending Now',
+        title: 'STYLE',
+        deal: 'Fresh Arrivals',
+        discount: '25% OFF',
+        image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1200&q=80',
+        bgColor: 'bg-[#0f172a]',
+    },
+    {
+        id: 3,
+        subtitle: 'Look Your Best',
+        title: 'MODEL',
+        deal: 'New Arrivals',
+        discount: '35% OFF',
+        image: 'https://images.unsplash.com/photo-1625698457101-fec2f565a8f0?q=80&w=1200&auto=format&fit=crop',
+        bgColor: 'bg-[#1c1917]',
+    },
+];
+
 const HeroSlider = () => {
+    const { config } = useStore();
+    const storeType = config?.store?.store_type ?? 'restaurant';
+    const isRestaurant = storeType === 'restaurant';
+    const slides = isRestaurant ? restaurantSlides : storeSlides;
+    const ctaLabel = isRestaurant ? 'ORDER NOW' : 'SHOP NOW';
     return (
         <section className="container mx-auto ">
             <div className="relative rounded-2xl md:rounded-[2.5rem] overflow-hidden shadow-2xl group/slider">
@@ -106,7 +142,7 @@ const HeroSlider = () => {
                                                 size="2xl"
                                                 className="rounded-full hover:scale-105 active:scale-95 group hover:bg-white hover:text-black">
                                                 <span className="font-bold tracking-wider text-base md:text-lg">
-                                                    ORDER NOW
+                                                    {ctaLabel}
                                                 </span>
                                                 <div className="bg-white/20 p-1 md:p-1.5 rounded-full group-hover:bg-black/10 transition-colors">
                                                     <MoveRight className="w-5 h-5 md:w-6 md:h-6" />
