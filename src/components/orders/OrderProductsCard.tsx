@@ -209,23 +209,34 @@ export function OrderProductsCard({
                                         </div>
                                     )}
 
-                                    {/* Price and Quantity */}
-                                    <div className="flex items-center gap-3 mt-3">
+                                    {/* Price and Quantity: use API unit_price/sale_unit_price and total_price */}
+                                    <div className="flex items-center gap-3 mt-3 flex-wrap">
                                         <div className="flex items-center gap-1 text-theme-primary font-black text-lg">
                                             <div className="flex items-center gap-0.5">
+                                                {Number(item.total_discount) > 0 && (
+                                                    <span className="text-sm text-gray-400 line-through font-semibold">
+                                                        {formatMoneyAmount(
+                                                            Number(item.unit_price),
+                                                            locale,
+                                                        )}
+                                                        <CurrencySymbol className="w-3 h-3 inline ml-0.5" />
+                                                    </span>
+                                                )}
                                                 <span>
                                                     {formatMoneyAmount(
-                                                        item.sale_unit_price ||
-                                                            item.unit_price,
+                                                        Number(
+                                                            item.sale_unit_price ??
+                                                                item.unit_price,
+                                                        ),
                                                         locale,
                                                     )}
                                                 </span>
                                                 <CurrencySymbol className="w-3.5 h-3.5" />
                                             </div>
                                         </div>
-                                        <span className="text-sm  text-gray-400 bg-gray-50 px-2 py-1 rounded-lg">
-                                            {item.quantity}{' '}
-                                            {t('products.quantity_unit') || 'x'}
+                                        <span className="text-sm text-gray-400 bg-gray-50 px-2 py-1 rounded-lg">
+                                            × {item.quantity}{' '}
+                                            {t('products.quantity_unit') || 'Qty'}
                                         </span>
                                     </div>
                                 </div>
@@ -263,7 +274,7 @@ export function OrderProductsCard({
                                         <div className="text-base font-black text-gray-900 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100 flex items-center gap-1">
                                             <span>
                                                 {formatMoneyAmount(
-                                                    item.total_price,
+                                                    Number(item.total_price),
                                                     locale,
                                                 )}
                                             </span>

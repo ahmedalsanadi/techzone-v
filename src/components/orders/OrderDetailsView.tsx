@@ -29,6 +29,7 @@ import dynamic from 'next/dynamic';
 import ReviewModal from '@/components/modals/ReviewModal';
 import { reviewService } from '@/services/review-service';
 import { ReviewTypeEnum } from '@/types/reviews';
+import { formatOrderTime } from '@/lib/utils';
 
 const LiveTrackingMap = dynamic(() => import('./LiveTrackingMap'), {
     ssr: false,
@@ -331,10 +332,7 @@ export default function OrderDetailsView({
                     completed: true,
                     active: true,
                     timestamp: mounted
-                        ? new Date(order.updated_at).toLocaleTimeString(
-                              'ar-SA',
-                              { hour: '2-digit', minute: '2-digit' },
-                          )
+                        ? formatOrderTime(order.updated_at)
                         : undefined,
                 },
             ];
@@ -346,10 +344,7 @@ export default function OrderDetailsView({
                 index === resolvedIndex && resolvedIndex < timelineProgressSteps.length;
             const timestamp =
                 isActive && mounted
-                    ? new Date(order.updated_at).toLocaleTimeString('ar-SA', {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                      })
+                    ? formatOrderTime(order.updated_at)
                     : undefined;
             return {
                 status: status as string,
