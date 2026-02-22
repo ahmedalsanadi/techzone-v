@@ -24,7 +24,7 @@ Init is **not** called on the cart page or when the user clicks "Proceed to Chec
 
 ### `useOrderStore.ts` (`src/store/useOrderStore.ts`)
 
-- **State**: `orderType`, `deliveryAddress`, `orderTime`, `scheduledTime`.
+- **State**: `orderType`, `deliveryAddress`, `customerPickupDatetime`, `orderTime`, `notes`.
 - **Persistence**: `localStorage` under `order-storage`.
 - Used by checkout to build init request and create-order payload. Default `orderType` is `'delivery'`.
 
@@ -71,3 +71,9 @@ Translations are in `src/messages/` under the `Checkout` (and related) namespace
 4. **User changes type/address**: Store updates → init runs again → summary and options update.
 5. **Place order**: Create order with chosen payment (epayment/cod/wallet). Epayment → redirect to gateway → return to `/checkout/result` → payment-status → redirect to order or show failure.
 6. **Order type and address**: Stored in `useOrderStore`; address id (for delivery) is the backend address id used in init and create order.
+
+---
+
+## 8. Related: When to cancel, rate order, rate product, checkout states
+
+See **docs/ORDER_AND_CHECKOUT_BEHAVIOR.md** for when the user can cancel an order, rate the order, rate an order item (product), and for a breakdown of all checkout page situations (loading, init error, needs address/type, full checkout).
