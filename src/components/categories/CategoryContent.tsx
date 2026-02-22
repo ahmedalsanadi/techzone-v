@@ -1,22 +1,19 @@
 // src/components/pages/categories/CategoryContent.tsx
 'use client';
 
-import React, { useEffect } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import React from 'react';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { storeService } from '@/services/store-service';
 import { Category } from '@/types/store';
 import SubCategorySelection from '@/components/products/SubCategorySelection';
 import ProductsGrid from '@/components/products/ProductsGrid';
-// import { useTranslations } from 'next-intl';
 import CategoryTabs from '@/components/products/CategoryTabs';
 import { cn } from '@/lib/utils';
 import { useProductConfigFlow } from '@/hooks/products';
 import { requiresConfiguration } from '@/lib/products/requirements';
 import { useTranslations } from 'next-intl';
-import { prefetchNextProductsPage } from '@/lib/products/prefetch';
-
-import { useParams, useSearchParams } from 'next/navigation';
-import { useRouter, usePathname } from '@/i18n/navigation';
+import { useParams } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { useStore } from '@/components/providers/StoreProvider';
 import { Button } from '@/components/ui/Button';
 
@@ -24,19 +21,17 @@ interface CategoryContentProps {
     initialCategory?: Category;
 }
 
+const PER_PAGE = 8;
+
 const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
     const t = useTranslations('Category');
     const { categories: allCategories } = useStore();
-    const queryClient = useQueryClient();
     const params = useParams();
-    const searchParams = useSearchParams();
     const router = useRouter();
-    const pathname = usePathname();
     const { loadingProductId, handleAddClick, prefetchProduct } =
         useProductConfigFlow();
 
     const slug = params.slug as string;
-    const page = searchParams.get('page') || '1';
 
     const getActivePath = (
         nodes: Category[],
@@ -66,62 +61,38 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
         activePath[activePath.length - 1] || initialCategory;
     const currentSubCategories = currentCategory?.children || [];
 
-    const filters = {
-        page,
-        per_page: '8',
+    const baseFilters = {
+        per_page: String(PER_PAGE),
+        category_id: currentCategory?.id?.toString(),
     };
 
     const {
-        data: productsResult,
+        data: infiniteData,
         isLoading,
-        // isPlaceholderData,
-        isFetching,
+        isFetchingNextPage,
+        hasNextPage,
+        fetchNextPage,
         error,
-    } = useQuery({
-        queryKey: [
-            'products',
-            { ...filters, category_id: currentCategory?.id.toString() },
-        ],
-        queryFn: () =>
+    } = useInfiniteQuery({
+        queryKey: ['products', 'infinite', baseFilters],
+        queryFn: ({ pageParam }) =>
             storeService.getProducts({
-                ...filters,
-                category_id: currentCategory?.id.toString(),
+                ...baseFilters,
+                page: String(pageParam),
             }),
-        placeholderData: (previousData) => previousData,
-        staleTime: 1000 * 60 * 5, // 5 minutes
+        initialPageParam: 1,
+        getNextPageParam: (lastPage) => {
+            const meta = lastPage?.meta;
+            if (!meta || meta.current_page >= meta.last_page) return undefined;
+            return meta.current_page + 1;
+        },
+        staleTime: 1000 * 60 * 5,
         retry: 1,
     });
 
-    useEffect(() => {
-        if (!currentCategory?.id) return;
-        void prefetchNextProductsPage({
-            queryClient,
-            filters: {
-                ...filters,
-                category_id: currentCategory?.id.toString(),
-            },
-            pagination: productsResult?.meta,
-        });
-    }, [queryClient, filters, currentCategory?.id, productsResult?.meta]);
-
-    const isInternalLoading = isLoading && !productsResult;
-
-    const updateUrl = (newPath: string, newParams?: Record<string, string>) => {
-        const currentParams = new URLSearchParams(searchParams.toString());
-        if (newParams) {
-            Object.entries(newParams).forEach(([k, v]) => {
-                if (v) currentParams.set(k, v);
-                else currentParams.delete(k);
-            });
-        }
-
-        const queryString = currentParams.toString();
-        const url = `${newPath}${queryString ? `?${queryString}` : ''}`;
-
-        router.push(url, {
-            scroll: false,
-        });
-    };
+    const products =
+        infiniteData?.pages.flatMap((p) => p.data ?? []) ?? [];
+    const isInternalLoading = isLoading && products.length === 0;
 
     const handleMainCategorySelect = (id: string) => {
         if (id === 'all') {
@@ -132,17 +103,6 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
                 router.push(`/categories/${selected.slug || selected.id}`);
             }
         }
-    };
-
-    // const handleLevelReset = (levelIndex: number) => {
-    //     const target = activePath[levelIndex];
-    //     if (target) {
-    //         router.push(`/categories/${target.slug || target.id}`);
-    //     }
-    // };
-
-    const handlePageChange = (page: number) => {
-        updateUrl(pathname, { page: page.toString() });
     };
 
     return (
@@ -201,9 +161,7 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
                 <div
                     className={cn(
                         'min-h-[600px] flex flex-col transition-opacity duration-300',
-                        isFetching && !isInternalLoading
-                            ? 'opacity-60'
-                            : 'opacity-100',
+                        isFetchingNextPage ? 'opacity-60' : 'opacity-100',
                     )}>
                     {error ? (
                         <div className="flex flex-col items-center justify-center py-20 text-red-500 bg-red-50 rounded-3xl border border-red-100 italic">
@@ -220,11 +178,8 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
                         </div>
                     ) : (
                         <ProductsGrid
-                            products={productsResult?.data || []}
+                            products={products}
                             loading={isInternalLoading}
-                            currentPage={Number(page)}
-                            pagination={productsResult?.meta}
-                            onPageChange={handlePageChange}
                             onAddToCart={handleAddClick}
                             getAddToCartLabel={(product) =>
                                 requiresConfiguration(product)
@@ -233,6 +188,9 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
                             }
                             isAddingProductId={loadingProductId}
                             onPrefetchProduct={prefetchProduct}
+                            hasNextPage={hasNextPage}
+                            fetchNextPage={fetchNextPage}
+                            isFetchingNextPage={isFetchingNextPage}
                         />
                     )}
                 </div>

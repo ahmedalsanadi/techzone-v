@@ -232,7 +232,8 @@
     "customize": "Customize",
     "noProducts": "No products available currently",
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "loading": "Loading..."
   },
   "FeaturedProducts": {
     "title": "Featured Products",

@@ -232,7 +232,8 @@
     "customize": "تخصيص",
     "noProducts": "لا توجد منتجات متوفرة حالياً",
     "previous": "السابق",
-    "next": "التالي"
+    "next": "التالي",
+    "loading": "جاري التحميل..."
   },
   "FeaturedProducts": {
     "title": "المنتجات المميزة",

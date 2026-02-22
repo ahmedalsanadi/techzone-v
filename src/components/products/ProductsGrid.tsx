@@ -1,19 +1,20 @@
 // src/components/pages/products/ProductsGrid.tsx
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import ProductCard from '@/components/ui/ProductCard';
 import ProductCardSkeleton from '@/components/ui/ProductCardSkeleton';
 import { useTranslations } from 'next-intl';
-import Pagination from '@/components/ui/Pagination';
 import { cn } from '@/lib/utils';
 import { PaginationMeta } from '@/types/api';
 import { Product } from '@/types/store';
 import { getProductDisplayPrice } from '@/lib/products/price';
+import { Loader2 } from 'lucide-react';
 
 interface ProductsGridProps {
     products: Product[];
     loading?: boolean;
+    /** Optional: for non–infinite-scroll usage (e.g. search, offers) */
     currentPage?: number;
     pagination?: PaginationMeta;
     onPageChange?: (page: number) => void;
@@ -22,21 +23,45 @@ interface ProductsGridProps {
     isAddingProductId?: number | null;
     onPrefetchProduct?: (product: Product) => void;
     variant?: 'default' | 'compact';
+    /** Infinite scroll: load more when sentinel is visible */
+    hasNextPage?: boolean;
+    fetchNextPage?: () => void;
+    isFetchingNextPage?: boolean;
 }
 
 const ProductsGrid: React.FC<ProductsGridProps> = ({
     products,
     loading,
-    currentPage,
-    pagination,
-    onPageChange,
     onAddToCart,
     getAddToCartLabel,
     isAddingProductId,
     onPrefetchProduct,
     variant = 'default',
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+    // currentPage, pagination, onPageChange kept for other callers (search, offers)
 }) => {
     const t = useTranslations('Promotions');
+    const loadMoreRef = useRef<HTMLDivElement>(null);
+
+    const handleLoadMore = useCallback(() => {
+        if (!hasNextPage || isFetchingNextPage || !fetchNextPage) return;
+        fetchNextPage();
+    }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+    useEffect(() => {
+        if (!loadMoreRef.current || !fetchNextPage || !hasNextPage || isFetchingNextPage) return;
+        const el = loadMoreRef.current;
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0]?.isIntersecting) handleLoadMore();
+            },
+            { rootMargin: '200px', threshold: 0.1 },
+        );
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, [handleLoadMore, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
     if (loading && products.length === 0) {
         // ... skeleton remains same
@@ -64,19 +89,18 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
     }
 
     return (
-        <div className="flex-1 flex flex-col justify-between">
-            <div className="space-y-10">
-                <div
-                    className={cn(
-                        'grid grid-cols-1 gap-4 md:gap-6',
-                        variant === 'compact'
-                            ? 'sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-                            : 'sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4',
-                    )}>
-                    {products.map((product, index) => {
-                        const { price, originalPrice } =
-                            getProductDisplayPrice(product);
-                        return (
+        <div className="flex-1 flex flex-col">
+            <div
+                className={cn(
+                    'grid grid-cols-1 gap-4 md:gap-6',
+                    variant === 'compact'
+                        ? 'sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+                        : 'sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4',
+                )}>
+                {products.map((product, index) => {
+                    const { price, originalPrice } =
+                        getProductDisplayPrice(product);
+                    return (
                         <ProductCard
                             key={product.id}
                             name={product.title}
@@ -95,9 +119,25 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
                             isAdding={isAddingProductId === product.id}
                             onPrefetch={() => onPrefetchProduct?.(product)}
                         />
-                    );})}
-                </div>
+                    );
+                })}
             </div>
+            {/* Sentinel for infinite scroll: load more when this enters viewport */}
+            {hasNextPage != null && (
+                <div
+                    ref={loadMoreRef}
+                    className="flex justify-center py-8 min-h-[80px]"
+                    aria-hidden>
+                    {isFetchingNextPage && (
+                        <div className="flex items-center gap-2 text-gray-500">
+                            <Loader2 className="w-6 h-6 animate-spin" />
+                            <span className="text-sm font-medium">
+                                {t('loading') || 'Loading...'}
+                            </span>
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 };

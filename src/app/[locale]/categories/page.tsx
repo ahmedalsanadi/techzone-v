@@ -3,8 +3,6 @@ import React from 'react';
 import { getTranslations } from 'next-intl/server';
 import { Metadata } from 'next';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
-import { storeService } from '@/services/store-service';
-// import { Link } from '@/i18n/navigation';
 
 export async function generateMetadata({
     params,
@@ -26,15 +24,11 @@ import { getQueryClient } from '@/lib/getQueryClient';
 
 export default async function CategoriesPage({
     params,
-    searchParams,
 }: {
     params: Promise<{ locale: string }>;
-    searchParams: Promise<{ page?: string }>;
 }) {
     const { locale } = await params;
-    const { page = '1' } = await searchParams;
     const t = await getTranslations({ locale, namespace: 'Category' });
-    // const categories = await storeService.getCategories(true);
 
     const breadcrumbItems = [
         { label: t('home'), href: '/' },
@@ -42,15 +36,6 @@ export default async function CategoriesPage({
     ];
 
     const queryClient = getQueryClient();
-    const filters = {
-        page,
-        per_page: '8',
-    };
-
-    await queryClient.prefetchQuery({
-        queryKey: ['products', filters],
-        queryFn: () => storeService.getProducts(filters),
-    });
 
     return (
         <div className="space-y-6">

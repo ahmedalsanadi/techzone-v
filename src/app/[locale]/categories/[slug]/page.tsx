@@ -55,13 +55,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CategoryPage({
     params,
-    searchParams,
 }: {
     params: Promise<{ locale: string; slug: string }>;
-    searchParams: Promise<{ page?: string }>;
 }) {
     const { locale, slug } = await params;
-    const { page = '1' } = await searchParams;
     const t = await getTranslations({ locale, namespace: 'Category' });
 
     // 1. Fetch the categories tree first (cached)
@@ -80,18 +77,6 @@ export default async function CategoryPage({
     if (!category) return notFound();
 
     const queryClient = getQueryClient();
-
-    // 4. Prefetch products for the correct page
-    const filters = {
-        category_id: category.id.toString(),
-        page,
-        per_page: '8',
-    };
-
-    await queryClient.prefetchQuery({
-        queryKey: ['products', filters],
-        queryFn: () => storeService.getProducts(filters),
-    });
 
     const breadcrumbItems = [
         { label: t('home'), href: '/' },
