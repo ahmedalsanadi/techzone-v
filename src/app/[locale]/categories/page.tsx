@@ -38,7 +38,7 @@ export default async function CategoriesPage({
     const queryClient = getQueryClient();
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4">
             <Breadcrumbs items={breadcrumbItems} />
 
             <HydrationBoundary state={dehydrate(queryClient)}>

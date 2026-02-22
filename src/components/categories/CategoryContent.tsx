@@ -120,9 +120,9 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4">
             {/* Top Level Category Tabs */}
-            <div className="bg-transparent -mx-4 px-4 py-4 border-b border-gray-100 mb-8 overflow-hidden">
+            <div className="bg-transparent -mx-4 px-4 py-2 border-b border-gray-100 mb-4 overflow-hidden">
                 <CategoryTabs
                     categories={allCategories}
                     activeCategoryId={activePath[0]?.id?.toString() || 'all'}
@@ -130,7 +130,7 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
                 />
             </div>
 
-            <div className="space-y-8">
+            <div className="space-y-4">
                 {/* Header Section */}
                 {/* <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <div className="space-y-4">
@@ -169,12 +169,12 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
                 })}
 
                 {/* Vertical Spacing if no subcategories */}
-                {currentSubCategories.length === 0 && <div className="h-4" />}
+                {currentSubCategories.length === 0 && <div className="h-2" />}
 
                 {/* Products Grid */}
                 <div
                     className={cn(
-                        'min-h-[600px] flex flex-col transition-opacity duration-300',
+                        'min-h-[400px] flex flex-col transition-opacity duration-300',
                         isFetchingNextPage ? 'opacity-60' : 'opacity-100',
                     )}>
                     {error ? (

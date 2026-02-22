@@ -49,7 +49,8 @@ const nextConfig: NextConfig = {
         ],
         formats: ['image/avif', 'image/webp'],
         deviceSizes: [375, 640, 750, 828, 1080, 1200],
-        imageSizes: [16, 32, 48, 64, 96, 128, 256, 384, 512, 768, 1024],
+        // Include category/product thumbnail sizes (56, 80, 104) for optimal delivery
+        imageSizes: [16, 32, 40, 48, 56, 64, 80, 96, 104, 128, 256, 384, 512, 768, 1024],
         minimumCacheTTL: 60,
     },
     // Enable compression

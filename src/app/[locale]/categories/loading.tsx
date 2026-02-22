@@ -3,8 +3,8 @@ import ProductCardSkeleton from '@/components/ui/ProductCardSkeleton';
 
 function CategoryTabsSkeleton() {
     return (
-        <div className="bg-transparent -mx-4 px-4 py-4 border-b border-gray-100 mb-8 overflow-hidden">
-            <div className="flex items-center gap-4 md:gap-6 overflow-x-auto pb-6 pt-2 scrollbar-hide rtl justify-start lg:justify-center px-4 -mx-4 md:mx-0">
+        <div className="bg-transparent -mx-4 px-4 py-2 border-b border-gray-100 mb-4 overflow-hidden">
+            <div className="flex items-center gap-3 md:gap-4 overflow-x-auto py-2 scrollbar-hide rtl justify-start lg:justify-center px-4 -mx-4 md:mx-0">
                 {Array.from({ length: 4 }).map((_, i) => (
                     <CategoryCardSkeleton key={i} index={i} />
                 ))}
@@ -15,9 +15,9 @@ function CategoryTabsSkeleton() {
 
 function SubCategoryRowSkeleton() {
     return (
-        <div className="w-full mb-6 overflow-hidden">
-            <div className="bg-theme-primary/5 border border-theme-primary/10 rounded-2xl md:rounded-3xl py-3 md:py-8 px-2 md:px-4">
-                <div className="flex items-stretch gap-4 md:gap-8 overflow-x-auto scrollbar-hide rtl justify-start lg:justify-center p-2">
+        <div className="w-full mb-4 overflow-hidden">
+            <div className="bg-theme-primary/5 border border-theme-primary/10 rounded-xl md:rounded-2xl py-2 md:py-4 px-2 md:px-3">
+                <div className="flex items-stretch gap-3 md:gap-4 overflow-x-auto scrollbar-hide rtl justify-start lg:justify-center p-1.5">
                     {Array.from({ length: 7 }).map((_, i) => (
                         <CategoryCardSkeleton key={i} index={i} />
                     ))}
@@ -39,25 +39,25 @@ function ProductsGridSkeleton() {
 
 export default function Loading() {
     return (
-        <main className="min-h-screen bg-gray-50/30 space-y-6 ">
-            {/* Breadcrumbs skeleton */}
-            <div className="flex items-center gap-2">
-                <div className="h-4 w-20 rounded bg-gray-100 animate-pulse" />
-                <div className="h-4 w-4 rounded bg-gray-100 animate-pulse" />
-                <div className="h-4 w-28 rounded bg-gray-100 animate-pulse" />
+        <main className="min-h-screen bg-gray-50/30 space-y-4">
+            {/* Breadcrumbs skeleton - compact */}
+            <div className="flex items-center gap-1.5 pt-1">
+                <div className="h-3.5 w-16 rounded bg-gray-100 animate-pulse" />
+                <div className="h-3.5 w-3.5 rounded bg-gray-100 animate-pulse" />
+                <div className="h-3.5 w-24 rounded bg-gray-100 animate-pulse" />
             </div>
 
             <CategoryTabsSkeleton />
 
-            <div className="container mx-auto px-4 space-y-8 pb-20">
+            <div className="container mx-auto px-4 space-y-4 pb-20">
                 {/* Subcategory rows skeleton */}
-                <div className="space-y-4">
+                <div className="space-y-3">
                     {Array.from({ length: 2 }).map((_, i) => (
                         <SubCategoryRowSkeleton key={i} />
                     ))}
                 </div>
 
-                <div className="min-h-[600px] flex flex-col">
+                <div className="min-h-[400px] flex flex-col">
                     <ProductsGridSkeleton />
                 </div>
             </div>

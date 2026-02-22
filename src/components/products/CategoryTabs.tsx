@@ -20,7 +20,7 @@ const CategoryTabs: React.FC<CategoryTabsProps> = ({
     const t = useTranslations('Category');
 
     return (
-        <div className="flex items-center gap-4 md:gap-6 overflow-x-auto pb-6 pt-2 scrollbar-hide rtl justify-start lg:justify-center px-4 -mx-4 md:mx-0">
+        <div className="flex items-center gap-3 md:gap-4 overflow-x-auto py-2 scrollbar-hide rtl justify-start lg:justify-center px-4 -mx-4 md:mx-0">
             {/* All Products Tab */}
             <CategoryCard
                 label={t('all_products') || 'كل المنتجات'}

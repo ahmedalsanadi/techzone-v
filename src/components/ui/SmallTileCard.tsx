@@ -49,7 +49,7 @@ const SmallTileCard: React.FC<SmallTileCardProps> = ({
     const content = (
         <div
             className={cn(
-                'flex flex-col w-[88px] sm:w-[100px] md:w-[116px] shrink-0 animate-in fade-in zoom-in-95 duration-500 fill-mode-both',
+                'flex flex-col w-[80px] sm:w-[92px] md:w-[104px] shrink-0 animate-in fade-in zoom-in-95 duration-500 fill-mode-both',
                 !href && onClick && 'cursor-pointer',
                 className,
             )}
@@ -67,15 +67,15 @@ const SmallTileCard: React.FC<SmallTileCardProps> = ({
                 {/* Image / icon area */}
                 <div
                     className={cn(
-                        'relative w-full aspect-square flex items-center justify-center p-3 overflow-hidden',
+                        'relative w-full aspect-square flex items-center justify-center p-2 overflow-hidden',
                         icon &&
                             'bg-linear-to-b from-theme-primary/5 to-transparent',
                     )}>
                     {icon ? (
                         <div
                             className={cn(
-                                'flex items-center justify-center rounded-xl transition-transform duration-300',
-                                'w-11 h-11 md:w-12 md:h-12 bg-theme-primary/10 text-theme-primary',
+                                'flex items-center justify-center rounded-lg transition-transform duration-300 ease-out',
+                                'w-9 h-9 md:w-10 md:h-10 bg-theme-primary/10 text-theme-primary',
                                 'group-hover:bg-theme-primary/15 group-hover:scale-105',
                             )}>
                             {icon}
@@ -83,7 +83,7 @@ const SmallTileCard: React.FC<SmallTileCardProps> = ({
                     ) : (
                         <div
                             className={cn(
-                                'relative w-full h-full min-h-[44px] min-w-[44px] rounded-xl overflow-hidden bg-gray-100',
+                                'relative w-full h-full min-h-[36px] min-w-[36px] rounded-lg overflow-hidden bg-gray-100',
                                 imageClassName,
                             )}>
                             <DynamicImage
@@ -91,8 +91,8 @@ const SmallTileCard: React.FC<SmallTileCardProps> = ({
                                 alt={label}
                                 fill
                                 priority={priority}
-                                className="object-cover transition-transform duration-300 group-hover:scale-105"
-                                sizes="(max-width: 768px) 88px, 116px"
+                                className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
+                                sizes="(max-width: 768px) 80px, 104px"
                                 index={index}
                                 fallbackComponent={fallbackComponent}
                             />
@@ -101,10 +101,10 @@ const SmallTileCard: React.FC<SmallTileCardProps> = ({
                 </div>
                 {/* Label */}
                 {/* Fixed height keeps all cards identical even with 1–2 lines */}
-                <div className="h-11 px-2 pb-2 pt-1 text-center flex items-end justify-center">
+                <div className="h-8 px-1.5 pb-1 pt-0.5 text-center flex items-end justify-center">
                     <span
                         className={cn(
-                            ' text-xs font-bold leading-tight line-clamp-2 block w-full transition-colors',
+                            'text-[11px] font-bold leading-tight line-clamp-2 block w-full transition-colors',
                             isSelected
                                 ? 'text-theme-primary'
                                 : 'text-gray-800 group-hover:text-theme-primary',

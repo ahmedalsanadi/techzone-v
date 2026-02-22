@@ -21,7 +21,7 @@ const Breadcrumbs = ({ items, className }: BreadcrumbsProps) => {
         <nav
             aria-label="Breadcrumb"
             className={cn(
-                'flex items-center gap-2 text-sm md:text-lg overflow-hidden pt-2',
+                'flex items-center gap-1.5 text-xs md:text-sm overflow-hidden pt-1',
                 className,
             )}>
             {items.map((item, index) => {
@@ -48,7 +48,7 @@ const Breadcrumbs = ({ items, className }: BreadcrumbsProps) => {
                         )}
 
                         {!isLast && (
-                            <ChevronRight className="w-3.5 h-3.5 text-gray-300 rtl:rotate-180 shrink-0" />
+                            <ChevronRight className="w-3 h-3 text-gray-300 rtl:rotate-180 shrink-0" />
                         )}
                     </React.Fragment>
                 );

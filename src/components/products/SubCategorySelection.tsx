@@ -25,9 +25,9 @@ const SubCategorySelection: React.FC<SubCategorySelectionProps> = ({
     if (subCategories.length === 0) return null;
 
     return (
-        <div className="w-full mb-6 overflow-hidden">
-            <div className="bg-theme-primary/4 border border-theme-primary/30 rounded-2xl md:rounded-3xl py-3 md:py-8 px-2 md:px-4">
-                <div className="flex items-stretch gap-4 md:gap-8 overflow-x-auto scrollbar-hide rtl justify-start lg:justify-center p-2">
+        <div className="w-full mb-4 overflow-hidden">
+            <div className="bg-theme-primary/4 border border-theme-primary/30 rounded-xl md:rounded-2xl py-2 md:py-4 px-2 md:px-3">
+                <div className="flex items-stretch gap-3 md:gap-4 overflow-x-auto scrollbar-hide rtl justify-start lg:justify-center p-1.5">
                     {/* "All" option for subcategories */}
                     <CategoryCard
                         label={currentCategoryLabel || 'الكل'}

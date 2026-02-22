@@ -38,7 +38,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
         const content = (
             <div
                 className={cn(
-                    'flex flex-col items-center gap-2.5 w-[80px] sm:w-[88px] md:w-[96px] shrink-0 transition-all duration-300 rounded-2xl p-2 animate-in fade-in zoom-in-95 duration-500 fill-mode-both',
+                    'flex flex-col items-center gap-1.5 w-[72px] sm:w-[80px] md:w-[88px] shrink-0 transition-all duration-300 rounded-xl p-1.5 animate-in fade-in zoom-in-95 duration-500 fill-mode-both',
                     'ring-2 ring-transparent shadow-sm',
                     isActive
                         ? 'bg-white ring-theme-primary shadow-lg shadow-theme-primary/15 scale-[1.02]'
@@ -48,7 +48,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                 style={{ animationDelay }}>
                 <div
                     className={cn(
-                        'w-14 h-14 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-2xl overflow-hidden flex items-center justify-center transition-all duration-300',
+                        'w-11 h-11 sm:w-12 sm:h-12 md:w-12 md:h-12 rounded-xl overflow-hidden flex items-center justify-center transition-all duration-300',
                         'ring-2 ring-offset-2 ring-offset-transparent',
                         isActive
                             ? 'ring-theme-primary shadow-md'
@@ -60,14 +60,14 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                             alt={label}
                             fill
                             priority={priority}
-                            className="object-cover transition-transform duration-300 group-hover:scale-105"
+                            className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
                             sizes="(max-width: 768px) 56px, 64px"
                         />
                     </div>
                 </div>
                 <span
                     className={cn(
-                        'text-[10px] sm:text-xs font-semibold text-center line-clamp-2 px-0.5 transition-colors leading-tight',
+                        'text-[10px] font-semibold text-center line-clamp-2 px-0.5 transition-colors duration-150 leading-tight',
                         isActive
                             ? 'text-theme-primary'
                             : 'text-gray-700 group-hover:text-theme-primary',
@@ -111,10 +111,10 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
             scroll={scroll}
             priority={priority}
             index={index}
-            icon={
-                isMain ? (
+                icon={
+                    isMain ? (
                     <LayoutGrid
-                        size={26}
+                        size={22}
                         className="text-theme-primary"
                         strokeWidth={1.5}
                     />

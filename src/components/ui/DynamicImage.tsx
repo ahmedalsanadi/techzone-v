@@ -157,7 +157,7 @@ export default function DynamicImage({
                 priority={priority}
                 loading={priority ? undefined : loadingProp || 'lazy'}
                 className={cn(
-                    'transition-all duration-500 ease-in-out object-cover',
+                    'object-cover transition-[transform,filter] duration-300 ease-out',
                     isLoading ? 'blur-lg scale-[1.02]' : 'blur-0 scale-100',
                     className,
                 )}
