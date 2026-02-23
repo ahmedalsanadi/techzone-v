@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useSyncExternalStore } from 'react';
-import Image from 'next/image';
+import DynamicImage from '@/components/ui/DynamicImage';
 import { useTranslations } from 'next-intl';
 import { useWishlistStore } from '@/store/useWishlistStore';
 import { useWishlistActions } from '@/hooks/wishlist';
@@ -106,11 +106,12 @@ const WishlistPage = () => {
                             <Link
                                 href={productUrl}
                                 className="relative w-full aspect-square bg-gray-50 overflow-hidden group">
-                                <Image
+                                <DynamicImage
                                     src={item.image}
+                                    mediaSizes={item.media?.cover?.sizes}
                                     alt={item.name}
                                     fill
-                                    className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+                                    className="object-contain p-4 transition-transform duration-300 group-hover:scale-105"
                                 />
                                 {hasDiscount && item.salePrice && (
                                     <div className="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-lg">
