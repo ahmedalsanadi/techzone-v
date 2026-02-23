@@ -85,7 +85,7 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
         <div className="flex-1 flex flex-col">
             <div className="grid grid-cols-2 gap-4 md:gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 {products.map((product, index) => {
-                    const { price, originalPrice } =
+                    const { price, originalPrice, discountPercent } =
                         getProductDisplayPrice(product);
                     return (
                         <ProductCard
@@ -94,6 +94,13 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
                             image={product.cover_image_url || ''}
                             price={price}
                             oldPrice={originalPrice}
+                            discountBadge={
+                                discountPercent
+                                    ? t('save', {
+                                          amount: `${discountPercent}%`,
+                                      })
+                                    : undefined
+                            }
                             href={`/products/${product.slug}`}
                             productId={product.id}
                             productSlug={product.slug}

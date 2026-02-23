@@ -28,6 +28,7 @@ export default function ProductsSection({
     isFetching,
 }: ProductsSectionProps) {
     const t = useTranslations('Category');
+    const tPromo = useTranslations('Promotions');
     const { loadingProductId, handleAddClick, prefetchProduct } =
         useProductConfigFlow();
 
@@ -72,7 +73,7 @@ export default function ProductsSection({
                     <div className="grid grid-cols-2 gap-4 md:gap-6 sm:grid-cols-3 lg:grid-cols-5">
                         {products.map((p, index) => {
                             const isAboveFold = index < 4;
-                            const { price, originalPrice } =
+                            const { price, originalPrice, discountPercent } =
                                 getProductDisplayPrice(p);
 
                             return (
@@ -92,6 +93,13 @@ export default function ProductsSection({
                                         image={p.cover_image_url}
                                         price={price}
                                         oldPrice={originalPrice}
+                                        discountBadge={
+                                            discountPercent
+                                                ? tPromo('save', {
+                                                      amount: `${discountPercent}%`,
+                                                  })
+                                                : undefined
+                                        }
                                         href={`/products/${p.slug}`}
                                         productId={p.id}
                                         productSlug={p.slug}

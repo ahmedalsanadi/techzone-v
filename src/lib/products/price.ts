@@ -54,11 +54,21 @@ export function getEffectivePriceWithOriginal(
 export function getProductDisplayPrice(product: Product): {
     price: number;
     originalPrice: number | undefined;
+    discountPercent: number | undefined;
 } {
-    const price = Number(product.sale_price ?? product.price);
-    const originalPrice =
-        product.has_discount && product.sale_price != null
-            ? Number(product.price)
-            : undefined;
-    return { price, originalPrice };
+    const salePrice = product.sale_price;
+    const price = Number(salePrice ?? product.price);
+    const hasDiscount =
+        product.has_discount && salePrice != null && salePrice < product.price;
+
+    const originalPrice = hasDiscount ? Number(product.price) : undefined;
+    const discountPercent = hasDiscount
+        ? Math.round(
+              ((Number(product.price) - Number(salePrice)) /
+                  Number(product.price)) *
+                  100,
+          )
+        : undefined;
+
+    return { price, originalPrice, discountPercent };
 }

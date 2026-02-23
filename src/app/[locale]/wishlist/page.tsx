@@ -112,9 +112,14 @@ const WishlistPage = () => {
                                     fill
                                     className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
                                 />
-                                {hasDiscount && (
+                                {hasDiscount && item.salePrice && (
                                     <div className="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-lg">
-                                        {t('discount')}
+                                        {Math.round(
+                                            ((item.price - item.salePrice) /
+                                                item.price) *
+                                                100,
+                                        )}
+                                        %
                                     </div>
                                 )}
                             </Link>

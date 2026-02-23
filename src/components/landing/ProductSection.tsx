@@ -8,6 +8,7 @@ import { Link } from '@/i18n/navigation';
 import { Product } from '@/types/store';
 import { useProductConfigFlow } from '@/hooks/products';
 import { requiresConfiguration } from '@/lib/products/requirements';
+import { getProductDisplayPrice } from '@/lib/products/price';
 
 interface ProductSectionProps {
     title: string;
@@ -50,26 +51,8 @@ const ProductSection: React.FC<ProductSectionProps> = ({
             {/* Products Grid */}
             <div className="grid grid-cols-2 gap-4 md:gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 ">
                 {products.map((product, index) => {
-                    // Calculate discount
-                    const salePrice = product.sale_price;
-                    const hasDiscount =
-                        salePrice !== undefined &&
-                        salePrice !== null &&
-                        salePrice < product.price;
-                    const discountPercent =
-                        hasDiscount && salePrice !== undefined
-                            ? Math.round(
-                                  ((product.price - salePrice) /
-                                      product.price) *
-                                      100,
-                              )
-                            : 0;
-
-                    // Determine price and old price
-                    const displayPrice = product.sale_price || product.price;
-                    const oldPrice = hasDiscount ? product.price : undefined;
-
-                    // Generate product href
+                    const { price, originalPrice, discountPercent } =
+                        getProductDisplayPrice(product);
                     const productHref = `/products/${product.slug}`;
 
                     return (
@@ -77,14 +60,14 @@ const ProductSection: React.FC<ProductSectionProps> = ({
                             key={product.id}
                             name={product.title}
                             image={product.cover_image_url}
-                            price={displayPrice}
-                            oldPrice={oldPrice}
+                            price={price}
+                            oldPrice={originalPrice}
                             href={productHref}
                             productId={product.id}
                             productSlug={product.slug}
                             priority={priority && index < 5}
                             discountBadge={
-                                hasDiscount
+                                discountPercent
                                     ? t('save', {
                                           amount: `${discountPercent}%`,
                                       })
