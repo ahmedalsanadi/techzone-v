@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { Link } from '@/i18n/navigation';
 import { useWishlistActions } from '@/hooks/wishlist';
 import { useWishlistStore } from '@/store/useWishlistStore';
+import type { ProductMedia } from '@/types/store';
 
 interface ProductCardProps {
     name: string;
@@ -28,6 +29,7 @@ interface ProductCardProps {
     isAdding?: boolean;
     onPrefetch?: () => void;
     index?: number;
+    media?: ProductMedia;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -47,6 +49,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     isAdding = false,
     onPrefetch,
     index = 0,
+    media,
 }) => {
     const cardRef = useRef<HTMLDivElement | null>(null);
     const hasPrefetchedRef = useRef(false);
@@ -138,6 +141,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 <div className="relative w-full aspect-square bg-gray-50 overflow-hidden rounded-t-xl">
                     <DynamicImage
                         src={image}
+                        mediaSizes={media?.cover?.sizes}
                         alt={name}
                         fill
                         priority={priority}

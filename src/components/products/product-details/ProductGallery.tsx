@@ -5,6 +5,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import DynamicImage from '@/components/ui/DynamicImage';
 import { Button } from '@/components/ui/Button';
+import type { ProductMedia } from '@/types/store';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -12,10 +13,13 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
 interface ProductGalleryProps {
-    images: string[];
+    items: Array<{
+        url: string;
+        mediaSizes?: string[];
+    }>;
 }
 
-export default function ProductGallery({ images }: ProductGalleryProps) {
+export default function ProductGallery({ items }: ProductGalleryProps) {
     return (
         <div className="relative w-full aspect-video md:aspect-square rounded-3xl overflow-hidden group">
             <Swiper
@@ -26,11 +30,12 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
                 }}
                 pagination={{ clickable: true }}
                 className="w-full h-full">
-                {images.map((image, index) => (
+                {items.map((item, index) => (
                     <SwiperSlide key={index}>
                         <div className="relative w-full h-full">
                             <DynamicImage
-                                src={image}
+                                src={item.url}
+                                mediaSizes={item.mediaSizes}
                                 alt={`Product image ${index + 1}`}
                                 fill
                                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"

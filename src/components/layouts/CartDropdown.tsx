@@ -13,19 +13,7 @@ import { BaseMenuItems } from '../ui/BaseMenuItems';
 import { Button } from '@/components/ui/Button';
 import { useCartActions } from '@/hooks/cart';
 import { formatMoneyAmount } from '@/lib/utils';
-
-type CartItemAddonDetailsGroup = {
-    groupName: string;
-    items: Array<{ name: string; quantity: number; price: number }>;
-};
-
-type CartItemMetadata = {
-    variety?: { name: string };
-    variant_options?: Record<string, string>;
-    addonDetails?: CartItemAddonDetailsGroup[];
-    custom_fields?: Record<string, unknown>;
-    apiPricing?: { total_price: number };
-};
+import type { CartItemMetadata } from '@/store/useCartStore';
 
 const CartDropdown = () => {
     const t = useTranslations('Cart');
@@ -103,6 +91,11 @@ const CartDropdown = () => {
                                                     <div className="relative w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded-lg overflow-hidden shrink-0">
                                                         <DynamicImage
                                                             src={item.image}
+                                                            mediaSizes={
+                                                                metadata?.media
+                                                                    ?.cover
+                                                                    ?.sizes
+                                                            }
                                                             alt={item.name}
                                                             className="object-cover"
                                                         />
@@ -144,6 +137,7 @@ const CartDropdown = () => {
                                                                                 {
                                                                                     k
                                                                                 }
+
                                                                                 :{' '}
                                                                                 {String(
                                                                                     v,

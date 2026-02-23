@@ -191,6 +191,15 @@ export interface ProductCustomField {
     is_active?: boolean;
 }
 
+export interface ProductMediaSizes {
+    sizes: string[];
+}
+
+export interface ProductMedia {
+    cover: ProductMediaSizes;
+    gallery: ProductMediaSizes[];
+}
+
 export interface Product {
     id: number;
     title: string;
@@ -200,6 +209,7 @@ export interface Product {
     slug: string;
     cover_image_url: string;
     image_urls?: string[];
+    media?: ProductMedia;
     price: number;
     sale_price?: number;
     has_discount: boolean;

@@ -4,6 +4,7 @@ import { persist } from 'zustand/middleware';
 import { cartService } from '@/services/cart-service';
 import type { ApiCart, ApiCartItem } from '@/types/cart';
 import { generateCartItemId } from '@/lib/cart/utils';
+import type { ProductMedia } from '@/types/store';
 
 export type CartItemAddonDetailsGroup = {
     groupName: string;
@@ -14,6 +15,7 @@ export type CartItemMetadata = {
     productId?: number;
     productSlug?: string;
     product_variant_id?: number | null;
+    media?: ProductMedia;
     variant_options?: Record<string, string>;
     addons?: Record<number, Record<number, number>>;
     addonDetails?: CartItemAddonDetailsGroup[];
@@ -160,6 +162,7 @@ export function transformApiCartItemToLocal(item: ApiCartItem): CartItem {
         metadata: {
             productId: item.product.id,
             productSlug: item.product.slug,
+            media: (item.product as any).media,
             apiItemId: item.id, // Store API item ID for updates/deletes
             addons,
             addonDetails,
@@ -238,8 +241,7 @@ export const useCartStore = create<CartStore>()(
             getTotalPrice: () => {
                 return get().items.reduce((total, item) => {
                     const apiTotal =
-                        item.metadata?.apiPricing?.total_price ??
-                        undefined;
+                        item.metadata?.apiPricing?.total_price ?? undefined;
                     const lineTotal =
                         typeof apiTotal === 'number'
                             ? apiTotal
@@ -288,7 +290,9 @@ export const useCartStore = create<CartStore>()(
                 // Keep tenantHost in sync when switching into guest mode (host-based isolation).
                 set({
                     isGuestMode: isGuest,
-                    ...(isGuest ? { tenantHost: getCurrentTenantHostForStorage() } : {}),
+                    ...(isGuest
+                        ? { tenantHost: getCurrentTenantHostForStorage() }
+                        : {}),
                 });
             },
             setCartFromAPI: (cart) => {
@@ -341,12 +345,15 @@ export const useCartStore = create<CartStore>()(
                 const currentHost = getCurrentTenantHostForStorage();
                 const persistedHost = p.tenantHost;
                 const isSameHost =
-                    typeof persistedHost === 'string' && persistedHost === currentHost;
+                    typeof persistedHost === 'string' &&
+                    persistedHost === currentHost;
 
                 return {
                     ...current,
                     ...p,
-                    items: isSameHost ? (p.items as CartItem[] | undefined) ?? [] : [],
+                    items: isSameHost
+                        ? ((p.items as CartItem[] | undefined) ?? [])
+                        : [],
                     tenantHost: currentHost,
                 } as CartStore;
             },

@@ -68,7 +68,25 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     const [quantity, setQuantity] = useState(1);
     const [notes, setNotes] = useState('');
 
-    const images = [product.cover_image_url, ...(product.image_urls || [])];
+    // Prepare gallery images with their respective media sizes
+    const galleryItems = useMemo(() => {
+        const items = [
+            {
+                url: product.cover_image_url,
+                mediaSizes: product.media?.cover?.sizes,
+            },
+        ];
+
+        if (product.image_urls) {
+            product.image_urls.forEach((url, index) => {
+                items.push({
+                    url,
+                    mediaSizes: product.media?.gallery?.[index]?.sizes,
+                });
+            });
+        }
+        return items;
+    }, [product]);
 
     // Get current price: sale_price when set; else apply product discount to variant when product has_discount
     const selectedVariant = selectedVariantId
@@ -286,6 +304,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 metadata: {
                     productId: product.id,
                     productSlug: product.slug, // Store slug for navigation
+                    media: product.media,
                     product_variant_id: selectedVariantId || null,
                     variant_options:
                         Object.keys(variantOptions).length > 0
@@ -380,7 +399,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                     {/* Gallery Column */}
                     <div className="lg:col-span-5 order-1">
                         <div className="sticky top-24">
-                            <ProductGallery images={images} />
+                            <ProductGallery items={galleryItems} />
                         </div>
                     </div>
                 </div>

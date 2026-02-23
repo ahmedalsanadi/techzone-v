@@ -103,6 +103,7 @@ export default function ProductsSection({
                                         href={`/products/${p.slug}`}
                                         productId={p.id}
                                         productSlug={p.slug}
+                                        media={p.media}
                                         addToCartLabel={
                                             requiresConfiguration(p)
                                                 ? t('customize') || 'Customize'

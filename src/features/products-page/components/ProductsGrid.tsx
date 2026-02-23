@@ -41,6 +41,7 @@ export function ProductsGrid({
                         href={`/products/${product.slug}`}
                         productId={product.id}
                         productSlug={product.slug}
+                        media={product.media}
                         addToCartLabel={getAddToCartLabel?.(product)}
                         onAddToCartClick={() => onAddToCart?.(product)}
                         isAdding={isAddingProductId === product.id}

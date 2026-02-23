@@ -106,6 +106,7 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
                             productSlug={product.slug}
                             priority={index < 5}
                             index={index}
+                            media={product.media}
                             addToCartLabel={
                                 getAddToCartLabel?.(product) || t('addToCart')
                             }

@@ -24,6 +24,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         const title = product.title;
         const description = product.description;
 
+        // Use high-res cover for social sharing if available
+        const ogImage =
+            (product as any).media?.cover?.sizes?.[2] ||
+            product.cover_image_url;
+
         return {
             title,
             description,
@@ -32,7 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
                 title,
                 description,
                 type: 'website',
-                images: [{ url: product.cover_image_url }],
+                images: [{ url: ogImage }],
             },
             alternates: {
                 canonical: `${site.url}/products/${slug}`,

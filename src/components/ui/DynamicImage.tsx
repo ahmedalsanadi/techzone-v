@@ -74,7 +74,12 @@ function ThemeImageFallback() {
     );
 }
 
-interface DynamicImageProps extends Omit<ImageProps, 'onLoad' | 'onError'> {
+interface DynamicImageProps extends Omit<
+    ImageProps,
+    'onLoad' | 'onError' | 'src'
+> {
+    src: string;
+    mediaSizes?: string[];
     fallbackComponent?: React.ReactNode;
     containerClassName?: string;
     onLoad?: () => void;
@@ -89,6 +94,7 @@ interface DynamicImageProps extends Omit<ImageProps, 'onLoad' | 'onError'> {
 export default function DynamicImage({
     src,
     alt,
+    mediaSizes,
     fallbackComponent,
     containerClassName,
     className,
@@ -137,6 +143,24 @@ export default function DynamicImage({
         );
     }
 
+    const customLoader = ({ width }: { width: number }) => {
+        if (mediaSizes && mediaSizes.length >= 3) {
+            // API provides sizes like [150, 300, 600]
+            if (width <= 150) return mediaSizes[0];
+            if (width <= 300) return mediaSizes[1];
+            return mediaSizes[2];
+        }
+        if (mediaSizes && mediaSizes.length > 0) {
+            // Fallback for different number of sizes
+            const bestIndex = Math.min(
+                Math.floor((width / 600) * mediaSizes.length),
+                mediaSizes.length - 1,
+            );
+            return mediaSizes[bestIndex];
+        }
+        return src;
+    };
+
     return (
         <div
             className={cn(
@@ -151,6 +175,7 @@ export default function DynamicImage({
             )}
             <Image
                 {...props}
+                loader={mediaSizes ? customLoader : undefined}
                 src={src}
                 alt={alt}
                 fill
