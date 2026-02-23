@@ -69,7 +69,7 @@ export default function ProductsSection({
                     transitionDuration: `${TRANSITIONS.PRODUCT_FADE_DURATION}ms`,
                 }}>
                 {hasProducts ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+                    <div className="grid grid-cols-2 gap-4 md:gap-6 sm:grid-cols-3 lg:grid-cols-5">
                         {products.map((p, index) => {
                             const isAboveFold = index < 4;
                             const { price, originalPrice } =

@@ -27,7 +27,7 @@ function SectionSkeleton({ variant }: { variant: 'categories' | 'products' }) {
     if (variant === 'categories') {
         return (
             <section className="mt-8 mb-12">
-                <div className="flex items-center gap-2.5 md:gap-4 overflow-x-auto pb-4 scrollbar-hide rtl justify-start lg:justify-center px-4">
+                <div className="flex items-center gap-2.5 md:gap-4 overflow-x-auto pb-4 scrollbar-hide rtl justify-center px-4">
                     {Array.from({ length: 9 }).map((_, i) => (
                         <CategoryCardSkeleton key={i} index={i} />
                     ))}
@@ -42,7 +42,7 @@ function SectionSkeleton({ variant }: { variant: 'categories' | 'products' }) {
                 <div className="h-8 w-56 rounded bg-gray-100 animate-pulse" />
                 <div className="h-9 w-24 rounded-xl bg-gray-100 animate-pulse" />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+            <div className="grid grid-cols-2 gap-4 md:gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
                 {Array.from({ length: 10 }).map((_, i) => (
                     <ProductCardSkeleton key={i} index={i} />
                 ))}

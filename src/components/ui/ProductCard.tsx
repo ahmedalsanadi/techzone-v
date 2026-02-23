@@ -114,7 +114,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div
             ref={cardRef}
             onClick={onClick}
-            className="bg-white border border-gray-100 rounded-xl overflow-hidden relative group shadow-sm flex flex-col h-full animate-in fade-in slide-in-from-bottom-2 duration-700 fill-mode-both max-w-[330px] w-full mx-auto md:max-w-full md:mx-0 transform-gpu"
+            className="bg-white border border-gray-100 rounded-xl overflow-hidden relative group shadow-sm flex flex-col h-full animate-in fade-in slide-in-from-bottom-2 duration-700 fill-mode-both w-full mx-auto transform-gpu transition-all hover:shadow-md"
             style={{ animationDelay }}>
             {/* Wishlist Button */}
             <Button
@@ -122,13 +122,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 variant="ghost"
                 size="icon-sm"
                 onClick={handleWishlistClick}
-                className={`absolute top-3 left-3 z-5 rounded-full bg-white/90 backdrop-blur-sm shadow-sm ${
+                className={`absolute top-2 left-2 sm:top-3 sm:left-3 z-5 rounded-full bg-white/90 backdrop-blur-sm shadow-sm ${
                     isInWishlistState
                         ? 'text-red-500 fill-red-500'
                         : 'text-gray-400 hover:text-red-500'
                 }`}>
                 <Heart
-                    className={`w-4 h-4 ${isInWishlistState ? 'fill-current' : ''}`}
+                    className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isInWishlistState ? 'fill-current' : ''}`}
                 />
             </Button>
 
@@ -142,12 +142,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                         fill
                         priority={priority}
                         className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                        sizes="
-                            (max-width: 639px) 100vw,
-                            (max-width: 1023px) 33vw,
-                            (max-width: 1279px) 25vw,
-                            20vw
-                            "
+                        sizes="(max-width: 639px) 50vw, (max-width: 1023px) 33vw, (max-width: 1279px) 25vw, 20vw"
                         index={index}
                         fallbackComponent={
                             <div className="flex flex-col items-center justify-center gap-2 text-gray-300 h-full w-full">
@@ -158,22 +153,22 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 </div>
 
                 {/* Product Info */}
-                <div className="p-4 text-start flex flex-col flex-1">
-                    <h3 className="text-[16px] font-medium text-gray-900 line-clamp-2 leading-tight mb-3 ">
+                <div className="p-2 sm:p-4 text-start flex flex-col flex-1">
+                    <h3 className="text-sm sm:text-[16px] font-medium text-gray-900 line-clamp-2 leading-tight mb-2 sm:mb-3 h-8 sm:h-10">
                         {name}
                     </h3>
 
-                    <div className="flex justify-between items-center">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-2">
                         {/* Price Section */}
-                        <div className="flex items-center justify-start gap-2 mb-3">
-                            <div className="flex items-center gap-1">
-                                <span className="text-[16px] font-bold text-gray-900">
+                        <div className="flex items-center justify-start gap-1.5 sm:gap-2">
+                            <div className="flex items-center gap-0.5 sm:gap-1">
+                                <span className="text-[15px] sm:text-[16px] font-bold text-gray-900">
                                     {price}
                                 </span>
-                                <CurrencySymbol className="w-3 h-3" />
+                                <CurrencySymbol className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                             </div>
                             {oldPrice && (
-                                <span className="text-[16px] text-gray-400 line-through">
+                                <span className="text-[12px] sm:text-[14px] text-gray-400 line-through">
                                     {oldPrice}
                                 </span>
                             )}
@@ -181,8 +176,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
                         {/* Discount Badge */}
                         {discountBadge && (
-                            <div className="mb-3">
-                                <span className="text-[14px] font-normal text-red-500 bg-red-50 px-1 py-0.5 rounded">
+                            <div className="flex">
+                                <span className="text-[11px] sm:text-[13px] font-medium text-red-500 bg-red-50/80 px-1.5 py-0.5 rounded-md border border-red-100">
                                     {discountBadge}
                                 </span>
                             </div>
@@ -192,11 +187,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
             </Link>
 
             {/* Add to Cart Button */}
-            <div className="p-4 pt-0">
+            <div className="p-2 sm:p-4 pt-0">
                 <Button
                     type="button"
                     variant="outlineTint"
-                    size="lg"
+                    size="sm"
                     onClick={(e) => {
                         e.stopPropagation();
                         e.preventDefault();
@@ -206,15 +201,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     }}
                     disabled={isAdding}
                     className={cn(
-                        'w-full rounded-lg active:scale-95 group/btn',
+                        'w-full rounded-lg active:scale-95 group/btn h-9 sm:h-11',
                         isAdding && 'bg-gray-100 text-gray-400 border-gray-200',
                     )}>
                     {isAdding ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
                     ) : (
-                        <Plus className="w-4 h-4 transition-transform group-hover/btn:rotate-90" />
+                        <Plus className="w-3.5 h-3.5 transition-transform group-hover/btn:rotate-90" />
                     )}
-                    <span className="text-[16px]">
+                    <span className="text-sm sm:text-[15px] font-medium">
                         {addToCartLabel || 'إضافة إلى السلة'}
                     </span>
                 </Button>

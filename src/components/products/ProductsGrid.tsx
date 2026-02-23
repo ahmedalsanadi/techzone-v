@@ -22,7 +22,6 @@ interface ProductsGridProps {
     getAddToCartLabel?: (product: Product) => string;
     isAddingProductId?: number | null;
     onPrefetchProduct?: (product: Product) => void;
-    variant?: 'default' | 'compact';
     /** Infinite scroll: load more when sentinel is visible */
     hasNextPage?: boolean;
     fetchNextPage?: () => void;
@@ -36,7 +35,6 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
     getAddToCartLabel,
     isAddingProductId,
     onPrefetchProduct,
-    variant = 'default',
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
@@ -67,13 +65,7 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
     if (loading && products.length === 0) {
         // ... skeleton remains same
         return (
-            <div
-                className={cn(
-                    'grid grid-cols-1 gap-4 md:gap-6',
-                    variant === 'compact'
-                        ? 'sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-                        : 'sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4',
-                )}>
+            <div className="grid grid-cols-2 gap-4 md:gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 {Array.from({ length: 8 }).map((_, i) => (
                     <ProductCardSkeleton key={i} index={i} />
                 ))}
@@ -91,13 +83,7 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
 
     return (
         <div className="flex-1 flex flex-col">
-            <div
-                className={cn(
-                    'grid grid-cols-1 gap-4 md:gap-6',
-                    variant === 'compact'
-                        ? 'sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-                        : 'sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4',
-                )}>
+            <div className="grid grid-cols-2 gap-4 md:gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 {products.map((product, index) => {
                     const { price, originalPrice } =
                         getProductDisplayPrice(product);
@@ -111,7 +97,7 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
                             href={`/products/${product.slug}`}
                             productId={product.id}
                             productSlug={product.slug}
-                            priority={index < 4}
+                            priority={index < 5}
                             index={index}
                             addToCartLabel={
                                 getAddToCartLabel?.(product) || t('addToCart')

@@ -29,7 +29,7 @@ function SubCategoryRowSkeleton() {
 
 function ProductsGridSkeleton() {
     return (
-        <div className="grid grid-cols-1 gap-4 md:gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 md:gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {Array.from({ length: 8 }).map((_, i) => (
                 <ProductCardSkeleton key={i} index={i} />
             ))}
@@ -41,7 +41,7 @@ export default function Loading() {
     return (
         <main className="min-h-screen bg-gray-50/30 space-y-4">
             {/* Breadcrumbs skeleton - compact */}
-            <div className="flex items-center gap-1.5 pt-1">
+            <div className="flex items-center gap-1.5 mt-2">
                 <div className="h-3.5 w-16 rounded bg-gray-100 animate-pulse" />
                 <div className="h-3.5 w-3.5 rounded bg-gray-100 animate-pulse" />
                 <div className="h-3.5 w-24 rounded bg-gray-100 animate-pulse" />

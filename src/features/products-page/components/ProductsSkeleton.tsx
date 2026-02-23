@@ -6,19 +6,19 @@ import { Skeleton } from '@/components/ui/Skeleton';
 
 export function ProductsGridSkeleton({ count = 8 }: { count?: number }) {
     return (
-        <div className="grid grid-cols-1 gap-4 md:gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 md:gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
             {Array.from({ length: count }).map((_, i) => (
                 <div
                     key={i}
-                    className="bg-white border border-gray-100 rounded-3xl p-4 flex flex-col items-center gap-4 shadow-sm">
-                    <Skeleton className="w-full aspect-square rounded-2xl" />
-                    <div className="w-full space-y-2">
-                        <Skeleton className="w-3/4 h-5 rounded-md" />
-                        <Skeleton className="w-1/2 h-4 rounded-md opacity-50" />
+                    className="bg-white border border-gray-100 rounded-2xl p-2 sm:p-4 flex flex-col items-center gap-2 sm:gap-4 shadow-sm">
+                    <Skeleton className="w-full aspect-square rounded-xl sm:rounded-2xl" />
+                    <div className="w-full space-y-1.5 sm:space-y-2">
+                        <Skeleton className="w-3/4 h-3.5 sm:h-5 rounded-md" />
+                        <Skeleton className="w-1/2 h-3 sm:h-4 rounded-md opacity-50" />
                     </div>
-                    <div className="w-full mt-auto space-y-3">
-                        <Skeleton className="w-1/3 h-7 rounded-lg" />
-                        <Skeleton className="w-full h-11 rounded-xl" />
+                    <div className="w-full mt-auto space-y-2 sm:space-y-3">
+                        <Skeleton className="w-1/3 h-5 sm:h-7 rounded-lg" />
+                        <Skeleton className="w-full h-8 sm:h-11 rounded-lg sm:rounded-xl" />
                     </div>
                 </div>
             ))}
