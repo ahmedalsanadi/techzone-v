@@ -14,7 +14,7 @@ const NotificationDropdown = () => {
     return (
         <Menu as="div" className="relative inline-block ">
             <MenuButton className="relative p-2 text-white hover:bg-white/10 rounded-full transition-colors outline-none cursor-pointer">
-                <Bell size={24} strokeWidth={1.5} />
+                <Bell className="size-5 md:size-6" strokeWidth={1.5} />
                 {count > 0 && (
                     <span className="absolute -top-1 -right-1 bg-yellow-400 text-gray-900 text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-theme-primary shadow-sm">
                         {count > 9 ? '9+' : count}

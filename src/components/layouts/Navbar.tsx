@@ -30,14 +30,14 @@ const LanguageSwitcher = dynamic(() => import('./LanguageSwitcher'), {
 const NotificationDropdown = dynamic(() => import('./NotificationDropdown'), {
     ssr: false,
     loading: () => (
-        <div className="p-2 w-10 h-10 rounded-full bg-white/5 animate-pulse" />
+        <div className="p-2 size-9 md:size-10 rounded-full bg-white/5 animate-pulse" />
     ),
 });
 
 const CartDropdown = dynamic(() => import('./CartDropdown'), {
     ssr: false,
     loading: () => (
-        <div className="p-2 w-10 h-10 rounded-full bg-white/5 animate-pulse" />
+        <div className="p-2 size-9 md:size-10 rounded-full bg-white/5 animate-pulse" />
     ),
 });
 
@@ -107,7 +107,7 @@ export default function Navbar() {
                     />
                 </div>
 
-                <div className="relative flex items-center gap-2 min-h-10 shrink-0">
+                <div className="relative flex items-center gap-1 md:gap-2 min-h-10 shrink-0">
                     <div className="hidden lg:block">
                         <LanguageSwitcher />
                     </div>
@@ -119,11 +119,10 @@ export default function Navbar() {
                         <Link
                             href="/auth"
                             aria-label={t('signIn')}
-                            className="flex items-center justify-center gap-2 shrink-0 size-10 md:size-auto md:h-10 md:px-4 rounded-full md:rounded-lg bg-white/15 hover:bg-white/25 text-white font-semibold text-sm transition-colors">
+                            className="flex items-center justify-center gap-2 shrink-0 size-9 md:size-auto md:h-10 md:px-4 rounded-full md:rounded-lg bg-white/15 hover:bg-white/25 text-white font-semibold text-sm transition-colors">
                             <LogIn
-                                size={20}
+                                className="size-5 md:size-6 shrink-0"
                                 strokeWidth={2}
-                                className="shrink-0"
                             />
                             <span className="hidden md:inline">
                                 {t('signIn')}
