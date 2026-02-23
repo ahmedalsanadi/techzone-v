@@ -1,6 +1,4 @@
-/**
- * Wishlist-related types matching the API responses
- */
+import type { ProductMedia } from '../store';
 
 /**
  * Product information in wishlist item
@@ -12,6 +10,7 @@ export interface WishlistProduct {
     price: number;
     sale_price: number | null;
     cover_image_url: string;
+    media?: ProductMedia;
     is_available: boolean;
     type: string;
 }

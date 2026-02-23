@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { ApiWishlistItem } from '@/types/wishlist';
 import { wishlistService } from '@/services/wishlist-service';
+import type { ProductMedia } from '@/types/store';
 
 export interface WishlistItem {
     id: string;
@@ -12,6 +13,7 @@ export interface WishlistItem {
     price: number;
     salePrice: number | null;
     slug: string;
+    media?: ProductMedia;
     metadata?: Record<string, unknown>;
 }
 
@@ -49,6 +51,7 @@ function transformApiWishlistItemToLocal(item: ApiWishlistItem): WishlistItem {
         price: item.product.price,
         salePrice: item.product.sale_price,
         slug: item.product.slug,
+        media: item.product.media,
         metadata: {
             apiItemId: item.id,
             addedAt: item.added_at,
