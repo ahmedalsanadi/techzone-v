@@ -107,25 +107,40 @@ export default function DynamicImage({
 }: DynamicImageProps) {
     const [error, setError] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [showShimmer, setShowShimmer] = useState(false);
 
     // ✅ Store previous src to detect changes during render
     const [prevSrc, setPrevSrc] = useState(src);
 
-    // ✅ Adjust state during rendering when src changes
+    // ✅ Reset states when src changes
     if (src !== prevSrc) {
         setPrevSrc(src);
         setError(false);
         setIsLoading(true);
+        setShowShimmer(false);
     }
+
+    // Effect to delay shimmer appearance (Avoid flicker for cached images)
+    React.useEffect(() => {
+        if (!isLoading) return;
+
+        const timer = setTimeout(() => {
+            setShowShimmer(true);
+        }, 200); // 200ms grace period
+
+        return () => clearTimeout(timer);
+    }, [isLoading, src]);
 
     const handleLoadingComplete = () => {
         setIsLoading(false);
+        setShowShimmer(false);
         onLoad?.();
     };
 
     const handleError = () => {
         setError(true);
         setIsLoading(false);
+        setShowShimmer(false);
         onError?.();
     };
 
@@ -143,23 +158,26 @@ export default function DynamicImage({
         );
     }
 
-    const customLoader = ({ width }: { width: number }) => {
-        if (mediaSizes && mediaSizes.length >= 3) {
-            // API provides sizes like [150, 300, 600]
-            if (width <= 150) return mediaSizes[0];
-            if (width <= 300) return mediaSizes[1];
-            return mediaSizes[2];
-        }
-        if (mediaSizes && mediaSizes.length > 0) {
-            // Fallback for different number of sizes
-            const bestIndex = Math.min(
-                Math.floor((width / 600) * mediaSizes.length),
-                mediaSizes.length - 1,
-            );
-            return mediaSizes[bestIndex];
-        }
-        return src;
-    };
+    const customLoader = React.useCallback(
+        ({ width }: { width: number }) => {
+            if (mediaSizes && mediaSizes.length >= 3) {
+                // API provides sizes like [150, 300, 600]
+                if (width <= 150) return mediaSizes[0];
+                if (width <= 300) return mediaSizes[1];
+                return mediaSizes[2];
+            }
+            if (mediaSizes && mediaSizes.length > 0) {
+                // Fallback for different number of sizes
+                const bestIndex = Math.min(
+                    Math.floor((width / 600) * mediaSizes.length),
+                    mediaSizes.length - 1,
+                );
+                return mediaSizes[bestIndex];
+            }
+            return src;
+        },
+        [mediaSizes, src],
+    );
 
     return (
         <div
@@ -167,7 +185,7 @@ export default function DynamicImage({
                 'relative overflow-hidden w-full h-full',
                 containerClassName,
             )}>
-            {isLoading && (
+            {showShimmer && (
                 <div
                     className="absolute inset-0 bg-gray-100 animate-pulse z-10"
                     style={{ animationDelay }}
