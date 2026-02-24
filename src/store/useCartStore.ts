@@ -6,9 +6,17 @@ import type { ApiCart, ApiCartItem } from '@/types/cart';
 import { generateCartItemId, getCartItemLineTotal } from '@/lib/cart/utils';
 import type { ProductMedia } from '@/types/store';
 
+export type CartItemAddonDetailsItem = {
+    name: string;
+    quantity: number;
+    price: number;
+    /** When true, displayed quantity scales with cart item quantity (e.g. 4 × 2 items). */
+    multiplyByQuantity?: boolean;
+};
+
 export type CartItemAddonDetailsGroup = {
     groupName: string;
-    items: Array<{ name: string; quantity: number; price: number }>;
+    items: CartItemAddonDetailsItem[];
 };
 
 export type CartItemMetadata = {
@@ -132,11 +140,8 @@ export function transformApiCartItemToLocal(item: ApiCartItem): CartItem {
         });
     }
 
-    // Build addonDetails for display
-    const addonDetails: Array<{
-        groupName: string;
-        items: Array<{ name: string; quantity: number; price: number }>;
-    }> = [];
+    // Build addonDetails for display (include multiplyByQuantity so cart UI can scale displayed qty)
+    const addonDetails: CartItemAddonDetailsGroup[] = [];
 
     if (item.addons && item.addons.length > 0) {
         // Group addons by group name
@@ -150,13 +155,11 @@ export function transformApiCartItemToLocal(item: ApiCartItem): CartItem {
                     name: addon.addon_item_name,
                     quantity: addon.quantity,
                     price: addon.price,
+                    multiplyByQuantity: addon.multiply_by_quantity,
                 });
                 return acc;
             },
-            {} as Record<
-                string,
-                Array<{ name: string; quantity: number; price: number }>
-            >,
+            {} as Record<string, CartItemAddonDetailsItem[]>,
         );
 
         Object.entries(grouped).forEach(([groupName, items]) => {

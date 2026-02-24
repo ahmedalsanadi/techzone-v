@@ -139,6 +139,7 @@ export default function ProductConfigModal({
                 name: string;
                 quantity: number;
                 price: number;
+                multiplyByQuantity?: boolean;
             }> = [];
 
             Object.entries(items).forEach(([itemId, qty]) => {
@@ -152,6 +153,7 @@ export default function ProductConfigModal({
                     name: item.title,
                     quantity: qty,
                     price: item.extra_price,
+                    multiplyByQuantity: item.multiply_price_by_quantity,
                 });
             });
 

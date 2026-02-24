@@ -207,6 +207,7 @@ export default function CartItemConfigModal({
                 name: string;
                 quantity: number;
                 price: number;
+                multiplyByQuantity?: boolean;
             }> = [];
 
             Object.entries(items).forEach(([itemId, qty]) => {
@@ -220,6 +221,7 @@ export default function CartItemConfigModal({
                     name: addonItem.title,
                     quantity: qty,
                     price: addonItem.extra_price,
+                    multiplyByQuantity: addonItem.multiply_price_by_quantity,
                 });
             });
 

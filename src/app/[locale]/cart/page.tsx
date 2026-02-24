@@ -238,7 +238,7 @@ const CartPage = () => {
                                                 </p>
                                             ) : null}
 
-                                            {/* Display Addons */}
+                                            {/* Display Addons: each addon as "Name (quantity) price" */}
                                             {item.metadata?.addonDetails &&
                                             item.metadata.addonDetails.length >
                                                 0 ? (
@@ -250,35 +250,55 @@ const CartPage = () => {
                                                                 items: Array<{
                                                                     name: string;
                                                                     quantity: number;
+                                                                    price: number;
+                                                                    multiplyByQuantity?: boolean;
                                                                 }>;
                                                             },
-                                                            idx: number,
+                                                            groupIdx: number,
                                                         ) => (
                                                             <div
-                                                                key={idx}
-                                                                className="text-xs text-gray-600">
-                                                                <span className="font-semibold text-gray-700">
-                                                                    {
-                                                                        addonGroup.groupName
-                                                                    }
-                                                                    :
-                                                                </span>{' '}
-                                                                {addonGroup.items
-                                                                    .map(
-                                                                        (addonItem: {
+                                                                key={groupIdx}
+                                                                className="space-y-0.5">
+                                                                {addonGroup.items.map(
+                                                                    (
+                                                                        addonItem: {
                                                                             name: string;
                                                                             quantity: number;
-                                                                        }) =>
-                                                                            `${
-                                                                                addonItem.name
-                                                                            }${
-                                                                                addonItem.quantity >
-                                                                                1
-                                                                                    ? ` (x${addonItem.quantity})`
-                                                                                    : ''
-                                                                            }`,
-                                                                    )
-                                                                    .join(', ')}
+                                                                            price: number;
+                                                                            multiplyByQuantity?: boolean;
+                                                                        },
+                                                                        itemIdx: number,
+                                                                    ) => {
+                                                                        const displayQty =
+                                                                            addonItem.multiplyByQuantity
+                                                                                ? addonItem.quantity *
+                                                                                  item.quantity
+                                                                                : addonItem.quantity;
+                                                                        return (
+                                                                            <div
+                                                                                key={`${groupIdx}-${itemIdx}`}
+                                                                                className="text-xs text-gray-600 flex items-center gap-1.5 flex-wrap">
+                                                                                <span className="text-gray-700">
+                                                                                    {
+                                                                                        addonItem.name
+                                                                                    }{' '}
+                                                                                    (
+                                                                                    {
+                                                                                        displayQty
+                                                                                    }
+                                                                                    )
+                                                                                </span>
+                                                                                <span className="font-medium text-gray-800 inline-flex items-center gap-0.5">
+                                                                                    {formatMoneyAmount(
+                                                                                        addonItem.price,
+                                                                                        locale,
+                                                                                    )}
+                                                                                    <CurrencySymbol className="w-3 h-3" />
+                                                                                </span>
+                                                                            </div>
+                                                                        );
+                                                                    },
+                                                                )}
                                                             </div>
                                                         ),
                                                     )}

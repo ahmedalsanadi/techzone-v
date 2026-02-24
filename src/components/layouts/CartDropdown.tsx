@@ -149,30 +149,34 @@ const CartDropdown = () => {
                                                                 </div>
                                                             )}
 
-                                                        {/* Addons Summary */}
+                                                        {/* Addons Summary: "Name (qty) price" — qty scales with item qty when multiplyByQuantity */}
                                                         {metadata?.addonDetails &&
-                                                            metadata
-                                                                .addonDetails
+                                                            metadata.addonDetails
                                                                 .length > 0 && (
-                                                                <p className="text-[9px] sm:text-[10px] text-gray-400 line-clamp-1 mb-0.5 sm:mb-1">
+                                                                <p className="text-[9px] sm:text-[10px] text-gray-500 mb-0.5 sm:mb-1 line-clamp-2">
                                                                     {metadata.addonDetails
+                                                                        .flatMap(
+                                                                            (g) =>
+                                                                                g.items,
+                                                                        )
                                                                         .map(
                                                                             (
-                                                                                g,
-                                                                            ) =>
-                                                                                g.items
-                                                                                    .map(
-                                                                                        (
-                                                                                            i,
-                                                                                        ) =>
-                                                                                            i.name,
-                                                                                    )
-                                                                                    .join(
-                                                                                        ', ',
-                                                                                    ),
+                                                                                i: {
+                                                                                    name: string;
+                                                                                    quantity: number;
+                                                                                    price: number;
+                                                                                    multiplyByQuantity?: boolean;
+                                                                                },
+                                                                            ) => {
+                                                                                const displayQty =
+                                                                                    i.multiplyByQuantity
+                                                                                        ? i.quantity * item.quantity
+                                                                                        : i.quantity;
+                                                                                return `${i.name} (${displayQty}) ${formatMoneyAmount(i.price, locale)}`;
+                                                                            },
                                                                         )
                                                                         .join(
-                                                                            ', ',
+                                                                            ' · ',
                                                                         )}
                                                                 </p>
                                                             )}
