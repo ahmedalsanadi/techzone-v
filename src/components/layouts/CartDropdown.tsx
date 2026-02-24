@@ -13,6 +13,7 @@ import { BaseMenuItems } from '../ui/BaseMenuItems';
 import { Button } from '@/components/ui/Button';
 import { useCartActions } from '@/hooks/cart';
 import { formatMoneyAmount } from '@/lib/utils';
+import { getCartItemLineTotal } from '@/lib/cart/utils';
 import type { CartItemMetadata } from '@/store/useCartStore';
 
 const CartDropdown = () => {
@@ -204,11 +205,9 @@ const CartDropdown = () => {
                                                         <div className="flex items-center gap-1 text-xs sm:text-sm font-bold text-theme-primary">
                                                             <span>
                                                                 {formatMoneyAmount(
-                                                                    metadata
-                                                                        ?.apiPricing
-                                                                        ?.total_price ??
-                                                                        item.price *
-                                                                            item.quantity,
+                                                                    getCartItemLineTotal(
+                                                                        item,
+                                                                    ),
                                                                     locale,
                                                                 )}
                                                             </span>

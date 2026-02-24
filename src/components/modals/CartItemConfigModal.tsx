@@ -153,23 +153,31 @@ export default function CartItemConfigModal({
         ? getEffectivePrice(activeProduct, selectedVariant)
         : 0;
 
-    const calculateTotalPrice = () => {
-        // Match ProductDetails: respect multiply_price_by_quantity.
-        // true = scale with quantity; false = flat per line.
-        let totalAddonsPrice = 0;
+    const calculatePriceComponents = () => {
+        // Match ProductDetails: decompose addons into per-unit and flat parts.
+        let scaledAddonsPerUnit = 0;
+        let flatAddonsTotal = 0;
+
         (activeProduct?.addons || []).forEach((addonGroup) => {
             addonGroup.items.forEach((addonItem) => {
                 const qtySelected = selectedAddonItemQty[addonItem.id] || 0;
                 if (qtySelected <= 0) return;
                 const selectionTotal = addonItem.extra_price * qtySelected;
-                totalAddonsPrice += addonItem.multiply_price_by_quantity
-                    ? selectionTotal * quantity
-                    : selectionTotal;
+                if (addonItem.multiply_price_by_quantity) {
+                    scaledAddonsPerUnit += selectionTotal;
+                } else {
+                    flatAddonsTotal += selectionTotal;
+                }
             });
         });
 
-        const basePrice = Number(currentPrice);
-        return basePrice * quantity + totalAddonsPrice;
+        const baseUnitPrice = Number(currentPrice) + scaledAddonsPerUnit;
+        return { baseUnitPrice, flatAddonsTotal };
+    };
+
+    const calculateTotalPrice = () => {
+        const { baseUnitPrice, flatAddonsTotal } = calculatePriceComponents();
+        return baseUnitPrice * quantity + flatAddonsTotal;
     };
 
     const totalPrice = calculateTotalPrice();
@@ -223,6 +231,8 @@ export default function CartItemConfigModal({
             }
         });
 
+        const { baseUnitPrice, flatAddonsTotal } = calculatePriceComponents();
+
         await updateItemConfiguration(
             item.id,
             {
@@ -256,6 +266,10 @@ export default function CartItemConfigModal({
                             ? customFields
                             : undefined,
                     notes: notes || undefined,
+                    localPricing: {
+                        baseUnitPrice,
+                        flatAddonsTotal,
+                    },
                 },
             },
             item.quantity,

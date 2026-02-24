@@ -72,9 +72,13 @@ export default function ProductConfigModal({
     const variantOptions = selectedVariant?.option_values || {};
     const basePrice = getEffectivePrice(product, selectedVariant);
 
-    const calculateTotalPrice = () => {
-        // Respect multiply_price_by_quantity (quantity is 1 when adding from modal).
-        let totalAddonsPrice = 0;
+    const calculatePriceComponents = () => {
+        // For modal adds, quantity is always 1.
+        // We still decompose addons the same way as ProductDetails so
+        // later quantity changes in cart behave correctly.
+        let scaledAddonsPerUnit = 0;
+        let flatAddonsTotal = 0;
+
         Object.entries(selectedAddons).forEach(([addonGroupId, items]) => {
             const addonGroup = requiredAddonGroups.find(
                 (a) => a.id === parseInt(addonGroupId, 10),
@@ -86,11 +90,24 @@ export default function ProductConfigModal({
                     (i) => i.id === parseInt(itemId, 10),
                 );
                 if (!item || qty <= 0) return;
-                totalAddonsPrice += item.extra_price * qty;
+
+                const selectionTotal = item.extra_price * qty;
+                if (item.multiply_price_by_quantity) {
+                    scaledAddonsPerUnit += selectionTotal;
+                } else {
+                    flatAddonsTotal += selectionTotal;
+                }
             });
         });
 
-        return Number(basePrice) + totalAddonsPrice;
+        const baseUnitPrice = Number(basePrice) + scaledAddonsPerUnit;
+        return { baseUnitPrice, flatAddonsTotal };
+    };
+
+    const calculateTotalPrice = () => {
+        const { baseUnitPrice, flatAddonsTotal } = calculatePriceComponents();
+        // Modal adds use quantity = 1 for the initial line.
+        return baseUnitPrice + flatAddonsTotal;
     };
 
     const validation = validateRequiredSelections(product, {
@@ -146,6 +163,8 @@ export default function ProductConfigModal({
             }
         });
 
+        const { baseUnitPrice, flatAddonsTotal } = calculatePriceComponents();
+
         addToCart({
             id: generateCartItemId(product.id, {
                 variantId: selectedVariantId,
@@ -171,6 +190,10 @@ export default function ProductConfigModal({
                 addonDetails,
                 custom_fields:
                     Object.keys(customFields).length > 0 ? customFields : undefined,
+                localPricing: {
+                    baseUnitPrice,
+                    flatAddonsTotal,
+                },
             },
         });
 

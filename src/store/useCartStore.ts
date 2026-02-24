@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { cartService } from '@/services/cart-service';
 import type { ApiCart, ApiCartItem } from '@/types/cart';
-import { generateCartItemId } from '@/lib/cart/utils';
+import { generateCartItemId, getCartItemLineTotal } from '@/lib/cart/utils';
 import type { ProductMedia } from '@/types/store';
 
 export type CartItemAddonDetailsGroup = {
@@ -34,6 +34,21 @@ export type CartItemMetadata = {
         subtotal: number;
         addons_price: number;
         total_price: number;
+    };
+    /**
+     * Local pricing components for guest items.
+     *
+     * baseUnitPrice: per-unit price for the product + any addons that should
+     *                scale with quantity (multiply_price_by_quantity = true).
+     * flatAddonsTotal: total price of addons that should NOT scale with
+     *                  quantity (multiply_price_by_quantity = false).
+     *
+     * Line total formula for guest items:
+     *   lineTotal = baseUnitPrice * quantity + flatAddonsTotal
+     */
+    localPricing?: {
+        baseUnitPrice: number;
+        flatAddonsTotal: number;
     };
     custom_fields?: Record<string, unknown>;
     notes?: string;
@@ -239,15 +254,10 @@ export const useCartStore = create<CartStore>()(
                 );
             },
             getTotalPrice: () => {
-                return get().items.reduce((total, item) => {
-                    const apiTotal =
-                        item.metadata?.apiPricing?.total_price ?? undefined;
-                    const lineTotal =
-                        typeof apiTotal === 'number'
-                            ? apiTotal
-                            : item.price * item.quantity;
-                    return total + lineTotal;
-                }, 0);
+                return get().items.reduce(
+                    (total, item) => total + getCartItemLineTotal(item),
+                    0,
+                );
             },
             syncWithAPI: async () => {
                 // CRITICAL: Only sync if authenticated and not in guest mode

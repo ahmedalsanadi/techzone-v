@@ -3,11 +3,12 @@
 
 import React, { useEffect, useRef } from 'react';
 import DynamicImage from './DynamicImage';
-import { Heart, Plus, ShoppingBasket, Loader2 } from 'lucide-react';
+import { Heart, Plus, Minus, ShoppingBasket, Loader2 } from 'lucide-react';
 import CurrencySymbol from './CurrencySymbol';
 import { Button } from './Button';
 import { cn } from '@/lib/utils';
 import { Link } from '@/i18n/navigation';
+import { useCartActions, useCartProductSummary } from '@/hooks/cart';
 import { useWishlistActions } from '@/hooks/wishlist';
 import { useWishlistStore } from '@/store/useWishlistStore';
 import type { ProductMedia } from '@/types/store';
@@ -54,6 +55,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
     const cardRef = useRef<HTMLDivElement | null>(null);
     const hasPrefetchedRef = useRef(false);
     const { toggleWishlist } = useWishlistActions();
+    const cartSummary = useCartProductSummary(productId);
+    const { updateItemQuantity, removeFromCart } = useCartActions();
 
     // Entrance stagger delay
     const animationDelay = `${(index % 8) * 50}ms`;
@@ -190,33 +193,81 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 </div>
             </Link>
 
-            {/* Add to Cart Button */}
+            {/* Add to Cart / QTY Controls */}
             <div className="p-2 sm:p-4 pt-0">
-                <Button
-                    type="button"
-                    variant="outlineTint"
-                    size="sm"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        if (!isAdding) {
-                            onAddToCartClick?.(e);
-                        }
-                    }}
-                    disabled={isAdding}
-                    className={cn(
-                        'w-full rounded-lg active:scale-95 group/btn h-9 sm:h-11',
-                        isAdding && 'bg-gray-100 text-gray-400 border-gray-200',
-                    )}>
-                    {isAdding ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    ) : (
-                        <Plus className="w-3.5 h-3.5 transition-transform group-hover/btn:rotate-90" />
-                    )}
-                    <span className="text-sm sm:text-[15px] font-medium">
-                        {addToCartLabel || 'إضافة إلى السلة'}
-                    </span>
-                </Button>
+                {cartSummary ? (
+                    <div className="w-full flex items-center justify-between gap-2">
+                        <Button
+                            type="button"
+                            variant="stepper"
+                            size="icon-xs"
+                            aria-label="Decrease quantity"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                if (cartSummary.activeItemQty <= 1) {
+                                    removeFromCart(cartSummary.activeItemId);
+                                } else {
+                                    updateItemQuantity(
+                                        cartSummary.activeItemId,
+                                        cartSummary.activeItemQty - 1,
+                                    );
+                                }
+                            }}>
+                            <Minus className="w-3.5 h-3.5" />
+                        </Button>
+
+                        <div
+                            className="flex-1 h-7 sm:h-8 rounded-md bg-gray-50 border border-gray-100 flex items-center justify-center text-sm sm:text-[15px] font-bold text-gray-900"
+                            role="status"
+                            aria-live="polite">
+                            {cartSummary.totalQty}
+                        </div>
+
+                        <Button
+                            type="button"
+                            variant="stepper"
+                            size="icon-xs"
+                            aria-label="Increase quantity"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                updateItemQuantity(
+                                    cartSummary.activeItemId,
+                                    cartSummary.activeItemQty + 1,
+                                );
+                            }}>
+                            <Plus className="w-3.5 h-3.5" />
+                        </Button>
+                    </div>
+                ) : (
+                    <Button
+                        type="button"
+                        variant="outlineTint"
+                        size="sm"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            if (!isAdding) {
+                                onAddToCartClick?.(e);
+                            }
+                        }}
+                        disabled={isAdding}
+                        className={cn(
+                            'w-full rounded-lg active:scale-95 group/btn h-9 sm:h-11',
+                            isAdding &&
+                                'bg-gray-100 text-gray-400 border-gray-200',
+                        )}>
+                        {isAdding ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                            <Plus className="w-3.5 h-3.5 transition-transform group-hover/btn:rotate-90" />
+                        )}
+                        <span className="text-sm sm:text-[15px] font-medium">
+                            {addToCartLabel || 'إضافة إلى السلة'}
+                        </span>
+                    </Button>
+                )}
             </div>
         </div>
     );

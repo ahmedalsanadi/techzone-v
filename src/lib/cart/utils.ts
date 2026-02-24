@@ -74,7 +74,7 @@ export function transformLocalAddonsToApi(
     const addons: AddCartAddon[] = [];
     if (!localAddons || typeof localAddons !== 'object') return addons;
 
-    Object.entries(localAddons).forEach(([_, items]) => {
+    Object.entries(localAddons).forEach(([, items]) => {
         if (items && typeof items === 'object') {
             Object.entries(items).forEach(([itemId, qty]) => {
                 const addonQty = typeof qty === 'number' ? qty : 0;
@@ -131,4 +131,70 @@ export function transformCartItemToApiRequest(
     }
 
     return apiRequest;
+}
+
+export type CartProductSummary = {
+    totalQty: number;
+    activeItemId: string;
+    activeItemQty: number;
+};
+
+/**
+ * Summarize a product's presence in cart items.
+ *
+ * Multi-line rule:
+ * - totalQty is the sum across all matching lines
+ * - active line is the most recently added matching item (last match)
+ */
+export function summarizeCartProduct(
+    items: CartItem[],
+    productId: number,
+): CartProductSummary | null {
+    let totalQty = 0;
+    let activeItemId: string | null = null;
+    let activeItemQty = 0;
+
+    for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item?.metadata?.productId !== productId) continue;
+        const qty = typeof item.quantity === 'number' ? item.quantity : 0;
+        if (qty <= 0) continue;
+
+        totalQty += qty;
+        activeItemId = item.id;
+        activeItemQty = qty;
+    }
+
+    if (totalQty <= 0 || !activeItemId) return null;
+    return { totalQty, activeItemId, activeItemQty };
+}
+
+/**
+ * Compute the total line price for a cart item.
+ *
+ * Priority:
+ * - If API pricing is present, trust `metadata.apiPricing.total_price`.
+ * - Else, if localPricing is present (guest items), use:
+ *     lineTotal = baseUnitPrice * quantity + flatAddonsTotal.
+ * - Else, fall back to `item.price * quantity`.
+ */
+export function getCartItemLineTotal(item: CartItem): number {
+    const apiTotal = item.metadata?.apiPricing?.total_price;
+    if (typeof apiTotal === 'number') {
+        return apiTotal;
+    }
+
+    const localPricing = item.metadata?.localPricing;
+    if (
+        localPricing &&
+        typeof localPricing.baseUnitPrice === 'number' &&
+        typeof item.quantity === 'number'
+    ) {
+        const flat = typeof localPricing.flatAddonsTotal === 'number'
+            ? localPricing.flatAddonsTotal
+            : 0;
+        return localPricing.baseUnitPrice * item.quantity + flat;
+    }
+
+    return item.price * item.quantity;
 }

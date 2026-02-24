@@ -1,25 +1,17 @@
 'use client';
 
 import React, { useEffect, useState, useSyncExternalStore } from 'react';
-import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCartStore } from '@/store/useCartStore';
 import { useCartActions } from '@/hooks/cart';
 import { Link, useRouter } from '@/i18n/navigation';
-import {
-    Trash2,
-    Plus,
-    Minus,
-    ShoppingBag,
-    ArrowRight,
-    Edit,
-    Loader2,
-} from 'lucide-react';
+import { Plus, Minus, ShoppingBag, ArrowRight, Loader2 } from 'lucide-react';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
 import { useAuthStore } from '@/store/useAuthStore';
 import CartItemConfigModal from '@/components/modals/CartItemConfigModal';
 import { Button } from '@/components/ui/Button';
 import { formatMoneyAmount } from '@/lib/utils';
+import { getCartItemLineTotal } from '@/lib/cart/utils';
 import DynamicImage from '@/components/ui/DynamicImage';
 
 const CartPage = () => {
@@ -37,7 +29,7 @@ const CartPage = () => {
         clearPendingItems,
     } = useCartStore();
     const { isAuthenticated } = useAuthStore();
-    const { updateItemQuantity, removeFromCart } = useCartActions();
+    const { updateItemQuantity } = useCartActions();
     const [editingItem, setEditingItem] = useState<
         (typeof items)[number] | null
     >(null);
@@ -330,11 +322,9 @@ const CartPage = () => {
                                             <div className="flex items-center gap-1 mt-1 text-theme-primary font-black">
                                                 <span>
                                                     {formatMoneyAmount(
-                                                        item.metadata
-                                                            ?.apiPricing
-                                                            ?.total_price ??
-                                                            item.price *
-                                                                item.quantity,
+                                                        getCartItemLineTotal(
+                                                            item,
+                                                        ),
                                                         locale,
                                                     )}
                                                 </span>

@@ -155,35 +155,41 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
     const validation = useMemo(() => validateAddons(), [validateAddons]);
 
-    const calculateTotalPrice = () => {
-        // Respect multiply_price_by_quantity from API:
-        // - true: addon scales with product quantity (per unit).
-        // - false: addon is flat per line (charge once, do not scale).
-        let totalAddonsPrice = 0;
+    const calculatePriceComponents = () => {
+        // Decompose addons into:
+        // - baseUnitPrice: per-unit product price + addons that scale with quantity
+        // - flatAddonsTotal: addons charged once per line (do not scale with quantity)
+        let scaledAddonsPerUnit = 0;
+        let flatAddonsTotal = 0;
 
         Object.entries(selectedAddons).forEach(([addonGroupId, items]) => {
             const addonGroup = (product.addons || []).find(
-                (a) => a.id === parseInt(addonGroupId),
+                (a) => a.id === parseInt(addonGroupId, 10),
             );
             if (!addonGroup) return;
 
             Object.entries(items).forEach(([itemId, qty]) => {
                 const item = addonGroup.items.find(
-                    (i) => i.id === parseInt(itemId),
+                    (i) => i.id === parseInt(itemId, 10),
                 );
                 if (!item || qty <= 0) return;
 
-                const addonSelectionTotal = item.extra_price * qty;
+                const selectionTotal = item.extra_price * qty;
                 if (item.multiply_price_by_quantity) {
-                    totalAddonsPrice += addonSelectionTotal * quantity;
+                    scaledAddonsPerUnit += selectionTotal;
                 } else {
-                    totalAddonsPrice += addonSelectionTotal;
+                    flatAddonsTotal += selectionTotal;
                 }
             });
         });
 
-        const basePrice = Number(currentPrice);
-        return basePrice * quantity + totalAddonsPrice;
+        const baseUnitPrice = Number(currentPrice) + scaledAddonsPerUnit;
+        return { baseUnitPrice, flatAddonsTotal };
+    };
+
+    const calculateTotalPrice = () => {
+        const { baseUnitPrice, flatAddonsTotal } = calculatePriceComponents();
+        return baseUnitPrice * quantity + flatAddonsTotal;
     };
 
     const updateAddonSelection = (
@@ -289,6 +295,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             return;
         }
 
+        const { baseUnitPrice, flatAddonsTotal } = calculatePriceComponents();
+
         addToCart(
             {
                 id: generateCartItemId(product.id, {
@@ -315,6 +323,10 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                         : undefined,
                     addons: selectedAddons, // Keep IDs for reference
                     addonDetails, // Add names for display
+                    localPricing: {
+                        baseUnitPrice,
+                        flatAddonsTotal,
+                    },
                     custom_fields:
                         Object.keys(customFields).length > 0
                             ? customFields
