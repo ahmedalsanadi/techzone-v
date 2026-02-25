@@ -1,19 +1,17 @@
 //src/components/layouts/navbar.tsx
 'use client';
-import { usePathname } from '@/i18n/navigation';
+import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { Search, Menu as MenuIcon, LogIn } from 'lucide-react';
-import { Link } from '@/i18n/navigation';
 import { NAV_ITEMS } from '@/config/navigation';
-
 import NavItem from './NavItem';
 import { Input } from '../ui/Input';
-
 import { useLocale, useTranslations } from 'next-intl';
 import { useUiStore } from '@/store/useUiStore';
 import MobileSidebar from './MobileSidebar';
 import { useStore } from '@/components/providers/StoreProvider';
 import LogoImage from './LogoImage';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 import dynamic from 'next/dynamic';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -65,6 +63,39 @@ export default function Navbar() {
     const { toggleMobileMenu } = useUiStore();
     const { config, cmsPages } = useStore();
     const { isAuthenticated } = useAuthStore();
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const [searchQuery, setSearchQuery] = useState(
+        searchParams.get('search') || '',
+    );
+
+    // Update search query state when URL parameter changes
+    useEffect(() => {
+        const query = searchParams.get('search');
+        if (query !== null) {
+            setSearchQuery(query);
+        } else {
+            setSearchQuery('');
+        }
+    }, [searchParams]);
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            router.push(
+                `/products?search=${encodeURIComponent(searchQuery.trim())}`,
+            );
+        } else {
+            // If empty, clear search
+            router.push('/products');
+        }
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            handleSearch(e);
+        }
+    };
     const menuCMSPages = useMemo(
         () => cmsPages.filter((p) => p.show_in_menu),
         [cmsPages],
@@ -91,20 +122,35 @@ export default function Navbar() {
                     />
                 </div>
 
-                <div className="hidden lg:flex flex-1 justify-center min-w-0 max-w-md ">
-                    <Input
-                        type="text"
-                        placeholder={t('searchPlaceholder')}
-                        inputSize="md"
-                        startIcon={
-                            <Search
-                                size={22}
-                                strokeWidth={1.5}
-                                className="opacity-40"
-                            />
-                        }
-                        containerClassName="w-full w-1/2"
-                    />
+                <div className="hidden lg:flex flex-1 justify-center min-w-0 max-w-md">
+                    <form onSubmit={handleSearch} className="w-full max-w-sm">
+                        <Input
+                            type="text"
+                            placeholder={t('searchPlaceholder')}
+                            inputSize="md"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            startIcon={
+                                <Search
+                                    size={18}
+                                    strokeWidth={2}
+                                    className="opacity-40"
+                                />
+                            }
+                            endIcon={
+                                searchQuery.trim() && (
+                                    <button
+                                        type="submit"
+                                        className="p-1.5 hover:bg-gray-100 rounded-lg text-theme-primary transition-colors focus:ring-2 focus:ring-theme-primary/20 outline-none"
+                                        aria-label={t('search')}>
+                                        <Search size={18} strokeWidth={2.5} />
+                                    </button>
+                                )
+                            }
+                            containerClassName="w-full bg-white border-gray-200 focus-within:border-theme-primary/50 focus-within:ring-4 focus-within:ring-theme-primary/5 shadow-none group"
+                        />
+                    </form>
                 </div>
 
                 <div className="relative flex items-center gap-1 md:gap-2 min-h-10 shrink-0">

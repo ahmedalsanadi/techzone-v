@@ -4,9 +4,11 @@ import { X, Search, LogOut, LogIn, FileText } from 'lucide-react';
 import { useUiStore } from '@/store/useUiStore';
 import { NAV_ITEMS } from '@/config/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { Link, usePathname } from '@/i18n/navigation';
+import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import NavItem from './NavItem';
 import { Input } from '../ui/Input';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import {
     Dialog,
     DialogPanel,
@@ -34,6 +36,41 @@ export default function MobileSidebar() {
     const { setGuestMode, clearCart } = useCartStore();
     const { setGuestMode: setWishlistGuestMode, clearWishlist } =
         useWishlistStore();
+
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const [searchQuery, setSearchQuery] = useState(
+        searchParams.get('search') || '',
+    );
+
+    // Update search query state when URL parameter changes
+    useEffect(() => {
+        const query = searchParams.get('search');
+        if (query !== null) {
+            setSearchQuery(query);
+        } else {
+            setSearchQuery('');
+        }
+    }, [searchParams]);
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            setMobileMenuOpen(false);
+            router.push(
+                `/products?search=${encodeURIComponent(searchQuery.trim())}`,
+            );
+        } else {
+            setMobileMenuOpen(false);
+            router.push('/products');
+        }
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            handleSearch(e);
+        }
+    };
 
     const handleLogout = async () => {
         logout();
@@ -111,21 +148,53 @@ export default function MobileSidebar() {
                                     <div className="p-4 flex flex-col gap-4 flex-1 overflow-y-auto">
                                         {/* Search in Sidebar */}
                                         <div className="mb-2">
-                                            <Input
-                                                type="text"
-                                                placeholder={t(
-                                                    'searchPlaceholder',
-                                                )}
-                                                inputSize="md"
-                                                startIcon={
-                                                    <Search
-                                                        size={20}
-                                                        className="text-white/40"
-                                                    />
-                                                }
-                                                containerClassName="w-full bg-white/5 border-white/10 focus-within:bg-white/10 focus-within:ring-white/20"
-                                                className="text-white placeholder:text-white/40"
-                                            />
+                                            <form onSubmit={handleSearch}>
+                                                <Input
+                                                    type="text"
+                                                    placeholder={t(
+                                                        'searchPlaceholder',
+                                                    )}
+                                                    inputSize="md"
+                                                    value={searchQuery}
+                                                    onChange={(e) =>
+                                                        setSearchQuery(
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    onKeyDown={handleKeyDown}
+                                                    startIcon={
+                                                        <Search
+                                                            size={18}
+                                                            className="text-white/40"
+                                                        />
+                                                    }
+                                                    endIcon={
+                                                        <button
+                                                            type="submit"
+                                                            className={cn(
+                                                                'p-1.5 rounded-lg transition-all active:scale-95',
+                                                                searchQuery.trim()
+                                                                    ? 'bg-white text-primary shadow-lg'
+                                                                    : 'bg-white/10 text-white/40',
+                                                            )}
+                                                            aria-label={t(
+                                                                'search',
+                                                            )}
+                                                            disabled={
+                                                                !searchQuery.trim()
+                                                            }>
+                                                            <Search
+                                                                size={18}
+                                                                strokeWidth={
+                                                                    2.5
+                                                                }
+                                                            />
+                                                        </button>
+                                                    }
+                                                    containerClassName="w-full bg-white/5 border-white/10 focus-within:bg-white/10 focus-within:ring-white/20 px-1.5"
+                                                    className="text-white placeholder:text-white/40 h-11"
+                                                />
+                                            </form>
                                         </div>
 
                                         {/* Navigation Items */}
