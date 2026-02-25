@@ -1,11 +1,13 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
-import { ProductVariant } from '@/types/store';
+import { Product, ProductVariant } from '@/types/store';
 import { cn } from '@/lib/utils';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
 import { Radio, RadioGroup, Field, Label } from '@headlessui/react';
+import { getEffectivePriceWithOriginal } from '@/lib/products/price';
 
 interface VariantSelectorProps {
+    product: Product;
     variants: ProductVariant[];
     selectedVariantId: number | null;
     onSelect: (variantId: number) => void;
@@ -13,13 +15,14 @@ interface VariantSelectorProps {
 }
 
 interface VariantItemProps {
+    product: Product;
     variant: ProductVariant;
     t: (key: string) => string;
 }
 
-const VariantItem = React.memo(({ variant, t }: VariantItemProps) => {
-    const variantPrice = variant.sale_price || variant.price;
-    const originalPrice = variant.sale_price ? variant.price : undefined;
+const VariantItem = React.memo(({ product, variant, t }: VariantItemProps) => {
+    const { price: variantPrice, originalPrice } =
+        getEffectivePriceWithOriginal(product, variant);
     const isAvailable = variant.is_available !== false;
 
     return (
@@ -110,6 +113,7 @@ const VariantItem = React.memo(({ variant, t }: VariantItemProps) => {
 VariantItem.displayName = 'VariantItem';
 
 export default function VariantSelector({
+    product,
     variants,
     selectedVariantId,
     onSelect,
@@ -148,6 +152,7 @@ export default function VariantSelector({
                         {variants.map((variant) => (
                             <VariantItem
                                 key={variant.id}
+                                product={product}
                                 variant={variant}
                                 t={t}
                             />

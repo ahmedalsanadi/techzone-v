@@ -3,7 +3,8 @@ import type { Product, ProductVariant } from '@/types/store';
 /**
  * Resolve the effective price for display and calculations.
  * - Uses sale_price when available (product or variant).
- * - When product has a discount but the selected variant has no sale_price,
+ * - Respects variant.has_discount; if false, returns full price even if product is on sale.
+ * - When product has a discount but the selected variant has no sale_price (and hasn't opted out),
  *   applies the product's discount ratio to the variant price so all sizes
  *   reflect the sale (e.g. product 45→40.5, variant 50→45).
  */
@@ -15,6 +16,12 @@ export function getEffectivePrice(
         if (variant.sale_price != null && variant.sale_price > 0) {
             return Number(variant.sale_price);
         }
+
+        // If variant explicitly has no discount, return the full price
+        if (variant.has_discount === false) {
+            return Number(variant.price);
+        }
+
         if (
             product.has_discount &&
             product.sale_price != null &&
