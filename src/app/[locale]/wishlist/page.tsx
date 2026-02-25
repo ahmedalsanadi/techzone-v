@@ -1,16 +1,15 @@
 'use client';
 
 import React, { useEffect, useSyncExternalStore } from 'react';
-import DynamicImage from '@/components/ui/DynamicImage';
 import { useTranslations } from 'next-intl';
 import { useWishlistStore } from '@/store/useWishlistStore';
 import { useWishlistActions } from '@/hooks/wishlist';
 import { Link } from '@/i18n/navigation';
-import { Heart, ShoppingBag, Trash2 } from 'lucide-react';
-import CurrencySymbol from '@/components/ui/CurrencySymbol';
+import { Heart } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useProductConfigFlow } from '@/hooks/products';
+import ProductCard from '@/components/ui/ProductCard';
 
 const WishlistPage = () => {
     const t = useTranslations('Wishlist');
@@ -82,7 +81,7 @@ const WishlistPage = () => {
     }
 
     return (
-        <div className="space-y-10">
+        <div className="space-y-8">
             <h1 className="text-3xl md:text-4xl font-black text-gray-900 flex items-center gap-3">
                 {t('title')}
                 <span className="text-sm font-medium text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
@@ -90,98 +89,46 @@ const WishlistPage = () => {
                 </span>
             </h1>
 
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                {items.map((item) => {
-                    const productUrl = `/products/${item.slug}`;
+            <div className="grid grid-cols-2 gap-4 md:gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                {items.map((item, index) => {
                     const finalPrice = item.salePrice || item.price;
-                    const hasDiscount =
-                        item.salePrice !== null && item.salePrice < item.price;
-                    const isAdding = loadingProductId === item.productId;
+                    const oldPrice =
+                        item.salePrice && item.salePrice < item.price
+                            ? item.price
+                            : undefined;
+                    const discountPercent = oldPrice
+                        ? Math.round(
+                              ((item.price - item.salePrice!) / item.price) *
+                                  100,
+                          )
+                        : undefined;
 
                     return (
-                        <div
+                        <ProductCard
                             key={item.id}
-                            className="bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                            {/* Product Image - Clickable */}
-                            <Link
-                                href={productUrl}
-                                className="relative w-full aspect-square bg-gray-50 overflow-hidden group">
-                                <DynamicImage
-                                    src={item.image}
-                                    mediaSizes={item.media?.cover?.sizes}
-                                    alt={item.name}
-                                    fill
-                                    className="object-contain p-4 transition-transform duration-300 group-hover:scale-105"
-                                />
-                                {hasDiscount && item.salePrice && (
-                                    <div className="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-lg">
-                                        {Math.round(
-                                            ((item.price - item.salePrice) /
-                                                item.price) *
-                                                100,
-                                        )}
-                                        %
-                                    </div>
-                                )}
-                            </Link>
-
-                            <div className="p-4 flex-1 flex flex-col">
-                                {/* Product Info - Clickable */}
-                                <Link
-                                    href={productUrl}
-                                    className="flex-1 hover:opacity-80 transition-opacity cursor-pointer mb-3">
-                                    <h3 className="font-bold text-gray-900 text-lg md:text-xl mb-2 line-clamp-2">
-                                        {item.name}
-                                    </h3>
-
-                                    <div className="flex items-center gap-2">
-                                        {hasDiscount && (
-                                            <span className="text-sm text-gray-400 line-through">
-                                                {item.price}
-                                            </span>
-                                        )}
-                                        <div className="flex items-center gap-1 text-theme-primary font-black">
-                                            <span>{finalPrice}</span>
-                                            <CurrencySymbol className="w-3.5 h-3.5" />
-                                        </div>
-                                    </div>
-                                </Link>
-
-                                {/* Actions */}
-                                <div className="flex items-center gap-2 mt-auto">
-                                    <Button
-                                        variant="outlineTint"
-                                        size="lg"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleMoveToCart(item);
-                                        }}
-                                        disabled={isLoading || isAdding}
-                                        className="flex-1">
-                                        {isAdding ? (
-                                            <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                                        ) : (
-                                            <ShoppingBag className="w-4 h-4" />
-                                        )}
-                                        <span className="text-sm">
-                                            {t('addToCart')}
-                                        </span>
-                                    </Button>
-
-                                    <Button
-                                        variant="ghostDanger"
-                                        size="icon"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            removeFromWishlist(item.productId);
-                                        }}
-                                        disabled={isLoading || isAdding}
-                                        className="shrink-0">
-                                        <Trash2 size={18} />
-                                    </Button>
-                                </div>
-                            </div>
-                        </div>
+                            index={index}
+                            name={item.name}
+                            image={item.image}
+                            price={finalPrice}
+                            oldPrice={oldPrice}
+                            discountBadge={
+                                discountPercent
+                                    ? t('save', {
+                                          amount: `${discountPercent}%`,
+                                      })
+                                    : undefined
+                            }
+                            href={`/products/${item.slug}`}
+                            productId={item.productId}
+                            productSlug={item.slug}
+                            media={item.media}
+                            showDelete={true}
+                            onWishlistClick={() =>
+                                removeFromWishlist(item.productId)
+                            }
+                            onAddToCartClick={() => handleMoveToCart(item)}
+                            isAdding={loadingProductId === item.productId}
+                        />
                     );
                 })}
             </div>

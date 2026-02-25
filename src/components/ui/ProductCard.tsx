@@ -3,7 +3,14 @@
 
 import React, { useEffect, useRef } from 'react';
 import DynamicImage from './DynamicImage';
-import { Heart, Plus, Minus, ShoppingBasket, Loader2 } from 'lucide-react';
+import {
+    Heart,
+    Plus,
+    Minus,
+    ShoppingBasket,
+    Loader2,
+    Trash2,
+} from 'lucide-react';
 import CurrencySymbol from './CurrencySymbol';
 import { Button } from './Button';
 import { cn } from '@/lib/utils';
@@ -31,6 +38,7 @@ interface ProductCardProps {
     onPrefetch?: () => void;
     index?: number;
     media?: ProductMedia;
+    showDelete?: boolean;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -51,6 +59,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     onPrefetch,
     index = 0,
     media,
+    showDelete = false,
 }) => {
     const cardRef = useRef<HTMLDivElement | null>(null);
     const hasPrefetchedRef = useRef(false);
@@ -122,20 +131,30 @@ const ProductCard: React.FC<ProductCardProps> = ({
             onClick={onClick}
             className="bg-white border border-gray-100 rounded-xl overflow-hidden relative group shadow-sm flex flex-col h-full animate-in fade-in slide-in-from-bottom-2 duration-700 fill-mode-both w-full mx-auto transform-gpu transition-all hover:shadow-md"
             style={{ animationDelay }}>
-            {/* Wishlist Button */}
+            {/* Wishlist/Delete Button */}
             <Button
                 type="button"
                 variant="ghost"
                 size="icon-sm"
                 onClick={handleWishlistClick}
-                className={`absolute top-2 left-2 sm:top-3 sm:left-3 z-5 rounded-full bg-white/90 backdrop-blur-sm shadow-sm ${
-                    isInWishlistState
-                        ? 'text-red-500 fill-red-500'
-                        : 'text-gray-400 hover:text-red-500'
-                }`}>
-                <Heart
-                    className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isInWishlistState ? 'fill-current' : ''}`}
-                />
+                className={cn(
+                    'absolute top-2 left-2 sm:top-3 sm:left-3 z-5 rounded-full bg-white/90 backdrop-blur-sm shadow-sm',
+                    showDelete
+                        ? 'text-red-500 hover:bg-red-50'
+                        : isInWishlistState
+                          ? 'text-red-500 fill-red-500'
+                          : 'text-gray-400 hover:text-red-500',
+                )}>
+                {showDelete ? (
+                    <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                ) : (
+                    <Heart
+                        className={cn(
+                            'w-3.5 h-3.5 sm:w-4 sm:h-4',
+                            isInWishlistState && 'fill-current',
+                        )}
+                    />
+                )}
             </Button>
 
             {/* Link wrapper for Image and Info */}
