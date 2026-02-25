@@ -61,7 +61,9 @@ export default function ProductConfigModal({
     const [selectedVariantId, setSelectedVariantId] = useState<number | null>(
         product?.variants?.[0]?.id ?? null,
     );
-    const [customFields, setCustomFields] = useState<Record<string, unknown>>({});
+    const [customFields, setCustomFields] = useState<Record<string, unknown>>(
+        {},
+    );
 
     if (!product) return null;
 
@@ -191,7 +193,9 @@ export default function ProductConfigModal({
                 addons: selectedAddons,
                 addonDetails,
                 custom_fields:
-                    Object.keys(customFields).length > 0 ? customFields : undefined,
+                    Object.keys(customFields).length > 0
+                        ? customFields
+                        : undefined,
                 localPricing: {
                     baseUnitPrice,
                     flatAddonsTotal,
@@ -252,6 +256,7 @@ export default function ProductConfigModal({
                             {hasVariants(product) &&
                             product.variants?.length ? (
                                 <VariantSelector
+                                    product={product}
                                     variants={product.variants}
                                     selectedVariantId={selectedVariantId}
                                     onSelect={(variantId) =>
@@ -302,7 +307,9 @@ export default function ProductConfigModal({
                                     asChild
                                     variant="outlineTint"
                                     size="icon"
-                                    aria-label={t('viewDetails') || 'View details'}>
+                                    aria-label={
+                                        t('viewDetails') || 'View details'
+                                    }>
                                     <Link
                                         href={`/products/${product.slug}`}
                                         onClick={onClose}>

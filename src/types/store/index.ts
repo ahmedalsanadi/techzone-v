@@ -159,6 +159,8 @@ export interface ProductVariant {
     option_values: Record<string, string>;
     price: number;
     sale_price?: number | null;
+    sale_price_end_at?: string | null;
+    has_discount?: boolean;
     calories?: number | null;
     is_active?: boolean;
     is_available?: boolean;

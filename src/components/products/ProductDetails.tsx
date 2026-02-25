@@ -428,6 +428,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                     {/* Variants */}
                     {product.variants && product.variants.length > 0 && (
                         <VariantSelector
+                            product={product}
                             variants={product.variants}
                             selectedVariantId={selectedVariantId}
                             onSelect={(variantId) => {
