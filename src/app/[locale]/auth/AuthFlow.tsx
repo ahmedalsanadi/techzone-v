@@ -16,6 +16,9 @@ import { useOtpTimer } from '@/hooks/auth/useOtpTimer';
 import { useAuthFlowValidation } from '@/hooks/auth/useAuthFlowValidation';
 import { useAuthFlowHandlers } from '@/hooks/auth/useAuthFlowHandlers';
 import { useAuthProfileLoader } from '@/hooks/auth/useAuthProfileLoader';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { phoneSchema, otpSchema, profileSchema } from '@/lib/validations';
 
 // Common Input styling - shared across all auth inputs (responsive)
 const AUTH_INPUT_COMMON_CONTAINER =
@@ -41,13 +44,10 @@ export default function AuthFlow({
     redirectTo,
 }: AuthFlowProps) {
     const t = useTranslations('Auth');
+    const vt = useTranslations('Validation');
     const router = useRouter();
-    const {
-        user,
-        token,
-        isAuthenticated,
-        checkProfileComplete,
-    } = useAuthStore();
+    const { user, token, isAuthenticated, checkProfileComplete } =
+        useAuthStore();
 
     // Manage auth flow state
     const {
@@ -103,9 +103,9 @@ export default function AuthFlow({
 
     // Auth flow handlers
     const {
-        handlePhoneSubmit,
-        handleOtpSubmit,
-        handleSignupSubmit,
+        handlePhoneSubmit: originalPhoneSubmit,
+        handleOtpSubmit: originalOtpSubmit,
+        handleSignupSubmit: originalSignupSubmit,
         handleBack,
         handleResendOtp,
     } = useAuthFlowHandlers({
@@ -131,6 +131,45 @@ export default function AuthFlow({
         isAuthenticated,
     });
 
+    // Forms
+    const phoneForm = useForm({
+        resolver: zodResolver(phoneSchema),
+        defaultValues: { phone },
+        mode: 'onChange',
+    });
+
+    const otpForm = useForm({
+        resolver: zodResolver(otpSchema),
+        defaultValues: { otp: '' },
+        mode: 'onChange',
+    });
+
+    const signupForm = useForm({
+        resolver: zodResolver(profileSchema),
+        values: {
+            first_name: formData.first_name || '',
+            middle_name: formData.middle_name || '',
+            last_name: formData.last_name || '',
+            email: formData.email || '',
+        },
+        mode: 'onChange',
+    });
+
+    const onPhoneSubmit = (data: { phone: string }) => {
+        setPhone(data.phone);
+        originalPhoneSubmit(data.phone);
+    };
+
+    const onOtpSubmit = (data: { otp: string }) => {
+        setOtp(data.otp);
+        originalOtpSubmit(data.otp);
+    };
+
+    const onSignupSubmit = (data: any) => {
+        setFormData((prev) => ({ ...prev, ...data }));
+        originalSignupSubmit(data);
+    };
+
     // Render based on current step
     if (step === 'phone') {
         return (
@@ -140,11 +179,25 @@ export default function AuthFlow({
                 title={t('phoneTitle') || 'تسجيل الدخول'}
                 onBack={undefined}>
                 <div className="space-y-4 sm:space-y-6 md:space-y-8 lg:space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <form onSubmit={handlePhoneSubmit} className="space-y-3 sm:space-y-4 md:space-y-5">
+                    <form
+                        onSubmit={phoneForm.handleSubmit(onPhoneSubmit)}
+                        className="space-y-3 sm:space-y-4 md:space-y-5">
                         <PhoneInput
                             label={t('phone') || 'رقم الهاتف'}
-                            value={phone}
-                            onChange={setPhone}
+                            value={phoneForm.watch('phone')}
+                            onChange={(val) =>
+                                phoneForm.setValue('phone', val, {
+                                    shouldValidate: true,
+                                })
+                            }
+                            error={
+                                phoneForm.formState.errors.phone?.message
+                                    ? vt(
+                                          phoneForm.formState.errors.phone
+                                              .message as any,
+                                      )
+                                    : undefined
+                            }
                             required
                             inputClassName="bg-[#F4F7FA]"
                         />
@@ -164,7 +217,7 @@ export default function AuthFlow({
                             type="submit"
                             variant="primary"
                             size="xl"
-                            disabled={loading || !phone}
+                            disabled={loading || !phoneForm.formState.isValid}
                             className="w-full mt-3 sm:mt-4 md:mt-5 active:scale-[0.98]">
                             {loading ? (
                                 <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -186,9 +239,14 @@ export default function AuthFlow({
                 title={t('otpTitle') || 'تأكيد رقم الهاتف'}
                 onBack={handleBack}>
                 <OtpStep
-                    otp={otp}
-                    onOtpChange={setOtp}
-                    onSubmit={handleOtpSubmit}
+                    otp={otpForm.watch('otp')}
+                    onOtpChange={(val) => {
+                        otpForm.setValue('otp', val);
+                        if (val.length === 4) {
+                            otpForm.handleSubmit(onOtpSubmit)();
+                        }
+                    }}
+                    onSubmit={otpForm.handleSubmit(onOtpSubmit)}
                     onResend={handleResendOtp}
                     maskedPhone={maskedPhone || formatMaskedPhone(phone)}
                     subtitle={t('otpSubtitle') || 'أدخل رمز التحقق المرسل إلى'}
@@ -196,6 +254,12 @@ export default function AuthFlow({
                     resendLabel={t('resend') || 'إعادة الإرسال'}
                     timer={timer}
                     loading={loading}
+                    error={
+                        otpForm.formState.errors.otp?.message
+                            ? vt(otpForm.formState.errors.otp.message as any)
+                            : undefined
+                    }
+                    isValid={otpForm.formState.isValid}
                 />
             </AuthContainer>
         );
@@ -213,21 +277,24 @@ export default function AuthFlow({
                     {t('signupSubtitle') || 'أكمل بياناتك الشخصية للمتابعة'}
                 </p>
 
-                <form onSubmit={handleSignupSubmit} className="space-y-3 sm:space-y-4 md:space-y-5">
+                <form
+                    onSubmit={signupForm.handleSubmit(onSignupSubmit)}
+                    className="space-y-3 sm:space-y-4 md:space-y-5">
                     <div className="space-y-1 sm:space-y-1.5 md:space-y-2">
                         <label className="text-xs font-bold text-gray-400 block text-start">
                             {t('firstName') || 'الاسم الأول'} *
                         </label>
                         <Input
                             type="text"
-                            required
                             placeholder={t('firstNamePlaceholder') || 'Ahmed'}
-                            value={formData.first_name}
-                            onChange={(e) =>
-                                setFormData({
-                                    ...formData,
-                                    first_name: e.target.value,
-                                })
+                            {...signupForm.register('first_name')}
+                            error={
+                                signupForm.formState.errors.first_name?.message
+                                    ? vt(
+                                          signupForm.formState.errors.first_name
+                                              .message as any,
+                                      )
+                                    : undefined
                             }
                             variant="filled"
                             inputSize="lg"
@@ -243,18 +310,23 @@ export default function AuthFlow({
                             </label>
                             <Input
                                 type="text"
-                                placeholder={t('middleNamePlaceholder') || 'Mohammed'}
-                                value={formData.middle_name || ''}
-                                onChange={(e) =>
-                                    setFormData({
-                                        ...formData,
-                                        middle_name: e.target.value,
-                                    })
+                                placeholder={
+                                    t('middleNamePlaceholder') || 'Mohammed'
+                                }
+                                {...signupForm.register('middle_name')}
+                                error={
+                                    signupForm.formState.errors.middle_name
+                                        ?.message
+                                        ? vt(
+                                              signupForm.formState.errors
+                                                  .middle_name.message as any,
+                                          )
+                                        : undefined
                                 }
                                 variant="filled"
                                 inputSize="lg"
-                            containerClassName={AUTH_INPUT_COMMON_CONTAINER}
-                            className={`${AUTH_INPUT_COMMON_TEXT} ${AUTH_INPUT_TEXT_COLOR}`}
+                                containerClassName={AUTH_INPUT_COMMON_CONTAINER}
+                                className={`${AUTH_INPUT_COMMON_TEXT} ${AUTH_INPUT_TEXT_COLOR}`}
                             />
                         </div>
                         <div className="space-y-1 sm:space-y-1.5 md:space-y-2">
@@ -263,18 +335,23 @@ export default function AuthFlow({
                             </label>
                             <Input
                                 type="text"
-                                placeholder={t('lastNamePlaceholder') || 'Al-Sanadi'}
-                                value={formData.last_name}
-                                onChange={(e) =>
-                                    setFormData({
-                                        ...formData,
-                                        last_name: e.target.value,
-                                    })
+                                placeholder={
+                                    t('lastNamePlaceholder') || 'Al-Sanadi'
+                                }
+                                {...signupForm.register('last_name')}
+                                error={
+                                    signupForm.formState.errors.last_name
+                                        ?.message
+                                        ? vt(
+                                              signupForm.formState.errors
+                                                  .last_name.message as any,
+                                          )
+                                        : undefined
                                 }
                                 variant="filled"
                                 inputSize="lg"
-                            containerClassName={AUTH_INPUT_COMMON_CONTAINER}
-                            className={`${AUTH_INPUT_COMMON_TEXT} ${AUTH_INPUT_TEXT_COLOR}`}
+                                containerClassName={AUTH_INPUT_COMMON_CONTAINER}
+                                className={`${AUTH_INPUT_COMMON_TEXT} ${AUTH_INPUT_TEXT_COLOR}`}
                             />
                         </div>
                     </div>
@@ -295,12 +372,14 @@ export default function AuthFlow({
                         <Input
                             type="email"
                             placeholder="someone@gmail.com"
-                            value={formData.email}
-                            onChange={(e) =>
-                                setFormData({
-                                    ...formData,
-                                    email: e.target.value,
-                                })
+                            {...signupForm.register('email')}
+                            error={
+                                signupForm.formState.errors.email?.message
+                                    ? vt(
+                                          signupForm.formState.errors.email
+                                              .message as any,
+                                      )
+                                    : undefined
                             }
                             variant="filled"
                             inputSize="lg"
@@ -313,8 +392,8 @@ export default function AuthFlow({
                         type="submit"
                         variant="primary"
                         size="xl"
-                        disabled={loading || !formData.first_name.trim()}
-                        className="w-full mt-3 sm:mt-4 md:mt-5 active:scale-[0.98] bg-libero-red shadow-libero-red/20 hover:brightness-95">
+                        disabled={loading || !signupForm.formState.isValid}
+                        className="w-full mt-3 sm:mt-4 md:mt-5 active:scale-[0.98]">
                         {loading ? (
                             <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         ) : (

@@ -1,6 +1,7 @@
-'use client';
-
-import { useReducer, useCallback } from 'react';
+import { useCallback } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { addressSchema } from '@/lib/validations';
 import { AddressFormSubmitPayload } from '@/types/address';
 
 export interface FormState {
@@ -15,33 +16,6 @@ export interface FormState {
     additionalNumber: string;
     isDefault: boolean;
 }
-
-type FormAction =
-    | { type: 'SET_FIELD'; field: keyof FormState; value: string | boolean }
-    | { type: 'RESET'; payload?: Partial<FormState> };
-
-const formReducer = (state: FormState, action: FormAction): FormState => {
-    switch (action.type) {
-        case 'SET_FIELD':
-            return { ...state, [action.field]: action.value };
-        case 'RESET':
-            return {
-                addressName: '',
-                recipientName: '',
-                phone: '',
-                addressNotes: '',
-                street: '',
-                building: '',
-                unit: '',
-                postalCode: '',
-                additionalNumber: '',
-                isDefault: false,
-                ...action.payload,
-            };
-        default:
-            return state;
-    }
-};
 
 const initialState: FormState = {
     addressName: '',
@@ -60,34 +34,42 @@ const initialState: FormState = {
  * Hook to manage address form state and validation.
  */
 export function useAddressForm() {
-    const [state, dispatch] = useReducer(formReducer, initialState);
-
-    const setField = useCallback(
-        (field: keyof FormState) => (value: string | boolean) => {
-            dispatch({ type: 'SET_FIELD', field, value });
+    const form = useForm({
+        resolver: zodResolver(addressSchema),
+        mode: 'onChange',
+        defaultValues: {
+            label: '',
+            recipient_name: '',
+            phone: '',
+            notes: '',
+            street: '',
+            building_number: '',
+            unit_number: '',
+            postal_code: '',
+            additional_number: '',
+            city_id: undefined,
+            district_id: undefined,
         },
-        [],
+    });
+
+    const reset = useCallback(
+        (data?: any) => {
+            form.reset(
+                data || {
+                    label: '',
+                    recipient_name: '',
+                    phone: '',
+                    notes: '',
+                    street: '',
+                    building_number: '',
+                    unit_number: '',
+                    postal_code: '',
+                    additional_number: '',
+                },
+            );
+        },
+        [form],
     );
-
-    const reset = useCallback((payload?: Partial<FormState>) => {
-        dispatch({ type: 'RESET', payload });
-    }, []);
-
-    const isValid = (
-        selectedCountry: number | '',
-        selectedCity: number | '',
-        selectedLocation: [number, number] | null,
-    ) => {
-        return !!(
-            state.addressName.trim() &&
-            state.phone.trim() &&
-            selectedCountry &&
-            selectedCity &&
-            state.street.trim() &&
-            selectedLocation &&
-            selectedLocation[0] !== 0
-        );
-    };
 
     const buildPayload = (
         selectedCountry: number | '',
@@ -96,32 +78,30 @@ export function useAddressForm() {
         selectedLocation: [number, number],
         formattedAddress: string,
     ): AddressFormSubmitPayload => {
+        const values = form.getValues();
         return {
-            label: state.addressName.trim(),
-            recipient_name: state.recipientName.trim(),
-            phone: state.phone.trim(),
+            label: values.label.trim(),
+            recipient_name: values.recipient_name.trim(),
+            phone: values.phone.trim(),
             country_id: Number(selectedCountry),
             city_id: Number(selectedCity),
             district_id: selectedDistrict ? Number(selectedDistrict) : null,
-            street: state.street.trim(),
-            building: state.building.trim(),
-            unit: state.unit.trim(),
-            postal_code: state.postalCode.trim(),
-            additional_number: state.additionalNumber.trim(),
-            description: state.addressNotes.trim(),
-            is_default: state.isDefault,
+            street: values.street.trim(),
+            building: values.building_number.trim(),
+            unit: values.unit_number || '',
+            postal_code: values.postal_code || '',
+            additional_number: values.additional_number || '',
+            description: values.notes || '',
+            is_default: false, // Updated individually in store
             latitude: Number(selectedLocation[0]),
             longitude: Number(selectedLocation[1]),
-            // Backward compatibility for UI consumers if any
-            formatted: formattedAddress || state.street.trim(),
+            formatted: formattedAddress || values.street.trim(),
         };
     };
 
     return {
-        state,
-        setField,
+        form,
         reset,
-        isValid,
         buildPayload,
     };
 }

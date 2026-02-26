@@ -1,12 +1,14 @@
 'use client';
 
-import { FormEvent } from 'react';
 import { useTranslations } from 'next-intl';
 import type { CustomerProfile, ProfileUpdateRequest } from '@/types/auth';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Label } from '@/components/ui/LabelField';
 import { Loader2 } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { profileSchema } from '@/lib/validations';
 
 interface ProfileFormProps {
     profile: CustomerProfile;
@@ -32,24 +34,31 @@ export default function ProfileForm({
     onCancel,
 }: ProfileFormProps) {
     const t = useTranslations('Profile');
+    const vt = useTranslations('Validation');
 
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        if (!formData.first_name.trim()) {
-            return;
-        }
-        onSave(formData);
-    };
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isDirty, isValid },
+    } = useForm({
+        resolver: zodResolver(profileSchema),
+        mode: 'onChange',
+        values: {
+            first_name: formData.first_name || '',
+            middle_name: formData.middle_name || '',
+            last_name: formData.last_name || '',
+            email: formData.email || '',
+        },
+    });
 
-    const updateField = (field: keyof ProfileUpdateRequest, value: string) => {
-        onFormDataChange({
-            ...formData,
-            [field]: value,
-        });
+    const onSubmit = (data: any) => {
+        onSave(data);
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-8 md:space-y-12">
+        <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-8 md:space-y-12">
             {/* Personal Information Section */}
             <div className="space-y-6 md:space-y-8">
                 <div className="flex items-center gap-3">
@@ -68,10 +77,11 @@ export default function ProfileForm({
                         {isEditing ? (
                             <Input
                                 type="text"
-                                required
-                                value={formData.first_name}
-                                onChange={(e) =>
-                                    updateField('first_name', e.target.value)
+                                {...register('first_name')}
+                                error={
+                                    errors.first_name?.message
+                                        ? vt(errors.first_name.message as any)
+                                        : undefined
                                 }
                                 placeholder={t('firstNamePlaceholder')}
                                 containerClassName="h-12 md:h-14 rounded-xl bg-gray-50 border-gray-100 focus-within:border-theme-primary-border focus-within:ring-4 focus-within:ring-theme-primary/5 px-4 md:px-5"
@@ -92,9 +102,11 @@ export default function ProfileForm({
                         {isEditing ? (
                             <Input
                                 type="text"
-                                value={formData.last_name || ''}
-                                onChange={(e) =>
-                                    updateField('last_name', e.target.value)
+                                {...register('last_name')}
+                                error={
+                                    errors.last_name?.message
+                                        ? vt(errors.last_name.message as any)
+                                        : undefined
                                 }
                                 placeholder={t('lastNamePlaceholder')}
                                 containerClassName="h-12 md:h-14 rounded-xl bg-gray-50 border-gray-100 focus-within:border-theme-primary-border focus-within:ring-4 focus-within:ring-theme-primary/5 px-4 md:px-5"
@@ -115,9 +127,11 @@ export default function ProfileForm({
                         {isEditing ? (
                             <Input
                                 type="text"
-                                value={formData.middle_name || ''}
-                                onChange={(e) =>
-                                    updateField('middle_name', e.target.value)
+                                {...register('middle_name')}
+                                error={
+                                    errors.middle_name?.message
+                                        ? vt(errors.middle_name.message as any)
+                                        : undefined
                                 }
                                 placeholder={t('middleNamePlaceholder')}
                                 containerClassName="h-12 md:h-14 rounded-xl bg-gray-50 border-gray-100 focus-within:border-theme-primary-border focus-within:ring-4 focus-within:ring-theme-primary/5 px-4 md:px-5"
@@ -138,9 +152,11 @@ export default function ProfileForm({
                         {isEditing ? (
                             <Input
                                 type="email"
-                                value={formData.email || ''}
-                                onChange={(e) =>
-                                    updateField('email', e.target.value)
+                                {...register('email')}
+                                error={
+                                    errors.email?.message
+                                        ? vt(errors.email.message as any)
+                                        : undefined
                                 }
                                 placeholder={t('emailPlaceholder')}
                                 containerClassName="h-12 md:h-14 rounded-xl bg-gray-50 border-gray-100 focus-within:border-theme-primary-border focus-within:ring-4 focus-within:ring-theme-primary/5 px-4 md:px-5"
@@ -212,7 +228,7 @@ export default function ProfileForm({
                         type="submit"
                         variant="primary"
                         size="xl"
-                        disabled={isLoading || !formData.first_name.trim()}
+                        disabled={isLoading || !isDirty || !isValid}
                         className="w-full sm:w-auto active:scale-95">
                         {isLoading ? (
                             <>

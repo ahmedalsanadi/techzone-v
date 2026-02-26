@@ -37,8 +37,7 @@ export type ButtonSize =
     | 'icon-lg'
     | 'icon-xl';
 
-export interface ButtonProps
-    extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: ButtonVariant;
     size?: ButtonSize;
     asChild?: boolean;
@@ -49,36 +48,36 @@ import { cn } from '@/lib/utils';
 
 // Base styles that are common to all buttons (touch-manipulation for a11y, no repeated classNames at call sites)
 const baseStyles =
-    'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 outline-none focus-visible:ring-[3px] cursor-pointer touch-manipulation';
+    'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 outline-none focus-visible:ring-[3px] cursor-pointer touch-manipulation';
 
 // Variant styles – include default colors so call sites don't repeat text-gray-* for ghost
 const variantStyles: Record<ButtonVariant, string> = {
     default:
-        'bg-slate-950 text-white hover:bg-slate-900 focus-visible:ring-slate-400/50 focus-visible:border-slate-400',
+        'bg-slate-950 text-white hover:bg-slate-900 focus-visible:ring-slate-400/50 focus-visible:border-slate-400 disabled:bg-gray-100 disabled:text-gray-400',
     primary:
-        'bg-theme-primary text-white hover:brightness-[0.95] focus-visible:ring-theme-primary/30 shadow-lg shadow-theme-primary/20',
+        'bg-theme-primary text-white hover:brightness-[0.95] focus-visible:ring-theme-primary/30 shadow-lg shadow-theme-primary/20 disabled:bg-gray-100 disabled:text-gray-400 disabled:shadow-none disabled:brightness-100',
     destructive:
-        'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-400/20 border-0',
+        'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-400/20 border-0 disabled:bg-gray-100 disabled:text-gray-400',
     outline:
-        'border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 focus-visible:ring-gray-400/50 focus-visible:border-gray-400',
+        'border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 focus-visible:ring-gray-400/50 focus-visible:border-gray-400 disabled:bg-gray-50 disabled:text-gray-300 disabled:border-gray-200',
     outlineDanger:
-        'border border-red-100 bg-white text-red-500 hover:bg-red-500 hover:text-white hover:border-red-500 focus-visible:ring-red-400/50',
+        'border border-red-100 bg-white text-red-500 hover:bg-red-500 hover:text-white hover:border-red-500 focus-visible:ring-red-400/50 disabled:opacity-50',
     outlineTint:
-        'border border-theme-primary bg-theme-primary/10 text-theme-primary hover:bg-theme-primary hover:text-white focus-visible:ring-theme-primary/30',
+        'border border-theme-primary bg-theme-primary/10 text-theme-primary hover:bg-theme-primary hover:text-white focus-visible:ring-theme-primary/30 disabled:opacity-50',
     secondary:
-        'bg-gray-100 text-gray-900 hover:bg-gray-200 focus-visible:ring-gray-400/50 focus-visible:border-gray-400',
+        'bg-gray-100 text-gray-900 hover:bg-gray-200 focus-visible:ring-gray-400/50 focus-visible:border-gray-400 disabled:opacity-50',
     secondaryMuted:
-        'bg-[#F1F3F5] text-gray-600 hover:bg-gray-200 border-0 focus-visible:ring-gray-400/50',
+        'bg-[#F1F3F5] text-gray-600 hover:bg-gray-200 border-0 focus-visible:ring-gray-400/50 disabled:opacity-50',
     secondaryTint:
-        'bg-theme-primary/10 text-theme-primary hover:bg-theme-primary/5 border-0 focus-visible:ring-theme-primary/30',
-    ghost: 'text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus-visible:ring-gray-400/50 focus-visible:border-gray-400',
+        'bg-theme-primary/10 text-theme-primary hover:bg-theme-primary/5 border-0 focus-visible:ring-theme-primary/30 disabled:opacity-50',
+    ghost: 'text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus-visible:ring-gray-400/50 focus-visible:border-gray-400 disabled:opacity-50',
     ghostDanger:
-        'text-gray-300 hover:text-red-500 border border-gray-100 hover:border-red-200 bg-transparent hover:bg-red-50/50 focus-visible:ring-red-400/50 rounded-lg',
+        'text-gray-300 hover:text-red-500 border border-gray-100 hover:border-red-200 bg-transparent hover:bg-red-50/50 focus-visible:ring-red-400/50 rounded-lg disabled:opacity-50',
     iconMuted:
-        'bg-gray-50/80 text-gray-400 hover:bg-theme-primary hover:text-white border border-gray-100/50 shadow-sm focus-visible:ring-theme-primary/30 transition-colors',
+        'bg-gray-50/80 text-gray-400 hover:bg-theme-primary hover:text-white border border-gray-100/50 shadow-sm focus-visible:ring-theme-primary/30 transition-colors disabled:opacity-50',
     stepper:
-        'bg-white shadow-sm text-gray-500 hover:bg-gray-100 hover:text-theme-primary focus-visible:ring-gray-400/50 rounded-md',
-    link: 'text-slate-950 underline-offset-4 hover:underline focus-visible:ring-gray-400/50',
+        'bg-white shadow-sm text-gray-500 hover:bg-gray-100 hover:text-theme-primary focus-visible:ring-gray-400/50 rounded-md disabled:opacity-50',
+    link: 'text-slate-950 underline-offset-4 hover:underline focus-visible:ring-gray-400/50 disabled:opacity-50',
 };
 
 // Helper function to get variant styles without hover when bg-theme-primary is used
@@ -88,17 +87,21 @@ function getVariantStylesWithoutHover(
     className?: string,
 ): string {
     const variantStyle = variantStyles[variant];
-    
+
     // If className contains bg-theme-primary, remove hover states from variant
     // tailwind-merge will handle the rest, but this ensures cleaner merging
     if (className && className.includes('bg-theme-primary')) {
         // Remove hover:bg-* and hover:text-* from variant styles
         return variantStyle
             .split(' ')
-            .filter((cls) => !cls.startsWith('hover:bg-') && !cls.startsWith('hover:text-'))
+            .filter(
+                (cls) =>
+                    !cls.startsWith('hover:bg-') &&
+                    !cls.startsWith('hover:text-'),
+            )
             .join(' ');
     }
-    
+
     return variantStyle;
 }
 
@@ -109,17 +112,17 @@ function getThemePrimaryHover(className?: string): string {
     }
 
     // Check if custom className already has a hover state
-    const hasCustomHover = 
+    const hasCustomHover =
         className.includes('hover:brightness') ||
         className.includes('hover:bg-theme-primary') ||
         className.includes('hover:opacity') ||
         className.includes('hover:bg-');
-    
+
     // If no custom hover is provided and bg-theme-primary is present, add brightness hover
     if (!hasCustomHover) {
         return 'hover:brightness-[0.95]';
     }
-    
+
     return '';
 }
 
@@ -135,7 +138,8 @@ const sizeStyles: Record<ButtonSize, string> = {
     'icon-sm': 'size-8 p-0 rounded-lg',
     'icon-xs': 'w-7 h-7 min-w-7 min-h-7 p-0 rounded-md shrink-0',
     'icon-lg': 'size-10 p-0 rounded-xl',
-    'icon-xl': 'w-[44px] h-[44px] min-w-[44px] min-h-[44px] p-0 rounded-lg sm:rounded-xl shrink-0',
+    'icon-xl':
+        'w-[44px] h-[44px] min-w-[44px] min-h-[44px] p-0 rounded-lg sm:rounded-xl shrink-0',
 };
 
 // SVG size styles based on button size (consistent icon scaling, avoids flex issues)
@@ -167,22 +171,22 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ) => {
         // Get variant styles (without hover if bg-theme-primary is used)
         const variantStyle = getVariantStylesWithoutHover(variant, className);
-        
+
         // Get hover state for theme-primary buttons (applied last to ensure precedence)
         const themePrimaryHover = getThemePrimaryHover(className);
-        
+
         // If asChild is true, we need to clone the element with the appropriate classes
         if (asChild && React.isValidElement(children)) {
             const child = children as React.ReactElement<
                 React.HTMLAttributes<HTMLElement>
             >;
-            const combinedClassName = cn(
-                child.props.className,
-                className,
+            const combinedClassName = cn(child.props.className, className);
+            const childVariantStyle = getVariantStylesWithoutHover(
+                variant,
+                combinedClassName,
             );
-            const childVariantStyle = getVariantStylesWithoutHover(variant, combinedClassName);
             const childThemeHover = getThemePrimaryHover(combinedClassName);
-            
+
             return React.cloneElement(child, {
                 className: cn(
                     baseStyles,

@@ -16,6 +16,8 @@ interface OtpStepProps {
     onResend?: () => void;
     autoFocus?: boolean;
     loading?: boolean;
+    error?: string;
+    isValid?: boolean;
 }
 
 export default function OtpStep({
@@ -30,6 +32,8 @@ export default function OtpStep({
     onResend,
     autoFocus = true,
     loading = false,
+    error,
+    isValid = true,
 }: OtpStepProps) {
     return (
         <div className="space-y-4 sm:space-y-6 md:space-y-8 lg:space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
@@ -37,24 +41,33 @@ export default function OtpStep({
                 <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-[#2D3142] opacity-80">
                     {subtitle}
                 </p>
-                <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-black text-[#2D3142]" dir="ltr">
+                <p
+                    className="text-base sm:text-lg md:text-xl lg:text-2xl font-black text-[#2D3142]"
+                    dir="ltr">
                     {maskedPhone}
                 </p>
             </div>
 
-            <form onSubmit={onSubmit} className="space-y-4 sm:space-y-6 md:space-y-8 lg:space-y-10">
+            <form
+                onSubmit={onSubmit}
+                className="space-y-4 sm:space-y-6 md:space-y-8 lg:space-y-10">
                 <OtpInput
                     value={otp}
                     onChange={onOtpChange}
                     autoFocus={autoFocus}
                 />
+                {error && (
+                    <p className="text-xs text-red-500 font-medium text-center mt-2">
+                        {error}
+                    </p>
+                )}
 
                 <div className="space-y-3 sm:space-y-4 md:space-y-5 lg:space-y-6">
                     <Button
                         type="submit"
                         variant="primary"
                         size="xl"
-                        disabled={loading}
+                        disabled={loading || !isValid}
                         className="w-full active:scale-[0.98]">
                         {loading ? (
                             <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

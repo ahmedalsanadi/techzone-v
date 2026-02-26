@@ -7,7 +7,6 @@
  */
 export const PROTECTED_ROUTES = [
     '/my-orders',
-    '/payment',
     '/profile',
     '/checkout',
     '/my-addresses',

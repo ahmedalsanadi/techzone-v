@@ -1,15 +1,33 @@
-// src/app/[locale]/my-orders/utils/components/ReportProblemForm.tsx
-'use client';
-
-import React, { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 import { ImageIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { reportProblemSchema } from '@/lib/validations';
+import { Textarea } from '@/components/ui/Textarea';
+import { toast } from 'sonner';
 
 export const ReportProblemForm: React.FC = () => {
     const t = useTranslations('ReportProblem');
-    const [problemType, setProblemType] = useState<string>('');
+    const vt = useTranslations('Validation');
+
+    const {
+        register,
+        handleSubmit,
+        watch,
+        setValue,
+        reset,
+        formState: { errors, isValid, isSubmitting },
+    } = useForm({
+        resolver: zodResolver(reportProblemSchema),
+        mode: 'onChange',
+        defaultValues: {
+            problem_type: '',
+            description: '',
+        },
+    });
+
+    const currentType = watch('problem_type');
 
     const problemTypes = [
         { id: 'type1', label: t('types.type1') },
@@ -19,8 +37,20 @@ export const ReportProblemForm: React.FC = () => {
         { id: 'type5', label: t('types.type5') },
     ];
 
+    const onSubmit = async (data: any) => {
+        try {
+            // Simulate API call
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            console.log('Report Problem submitted:', data);
+            toast.success(t('success') || 'Problem reported successfully!');
+            reset();
+        } catch (error) {
+            toast.error(t('error') || 'Failed to report problem.');
+        }
+    };
+
     return (
-        <form className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Box 1: Select Type */}
             <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100">
                 <label className="text-base font-bold text-gray-900 block mb-6 text-start">
@@ -37,11 +67,14 @@ export const ReportProblemForm: React.FC = () => {
                             <div className="relative flex items-center justify-center">
                                 <input
                                     type="radio"
-                                    name="problemType"
                                     value={type.id}
-                                    checked={problemType === type.id}
+                                    checked={currentType === type.id}
                                     onChange={(e) =>
-                                        setProblemType(e.target.value)
+                                        setValue(
+                                            'problem_type',
+                                            e.target.value,
+                                            { shouldValidate: true },
+                                        )
                                     }
                                     className="peer appearance-none w-6 h-6 rounded-full border-2 border-gray-200 checked:border-theme-primary transition-all cursor-pointer"
                                 />
@@ -50,6 +83,13 @@ export const ReportProblemForm: React.FC = () => {
                         </label>
                     ))}
                 </div>
+                {errors.problem_type && (
+                    <p className="text-xs text-red-500 font-medium mt-2 text-start px-1">
+                        {errors.problem_type.message
+                            ? vt(errors.problem_type.message as any)
+                            : undefined}
+                    </p>
+                )}
             </div>
 
             {/* Box 2: Description */}
@@ -57,10 +97,15 @@ export const ReportProblemForm: React.FC = () => {
                 <label className="text-base font-bold text-gray-900 block mb-6 text-start">
                     {t('problemDescription')}
                 </label>
-                <textarea
+                <Textarea
                     rows={6}
                     placeholder={t('problemDescription')}
-                    className="w-full p-6 rounded-2xl bg-gray-50/50 border border-gray-100 focus:border-theme-primary-border focus:ring-4 focus:ring-theme-primary/5 outline-none transition-all resize-none text-start"
+                    {...register('description')}
+                    error={
+                        errors.description?.message
+                            ? vt(errors.description.message as any)
+                            : undefined
+                    }
                 />
             </div>
 
@@ -90,8 +135,13 @@ export const ReportProblemForm: React.FC = () => {
                     type="submit"
                     variant="primary"
                     size="xl"
+                    disabled={isSubmitting || !isValid}
                     className="active:scale-95">
-                    {t('submit')}
+                    {isSubmitting ? (
+                        <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                        t('submit')
+                    )}
                 </Button>
             </div>
         </form>

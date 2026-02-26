@@ -43,22 +43,24 @@ interface AddressModalProps {
 
 const InputField = ({
     label,
-    value,
-    onChange,
     required,
     type = 'text',
     placeholder,
     dir,
     className,
+    registration,
+    error,
+    vt,
 }: {
     label: string;
-    value: string;
-    onChange: (value: string) => void;
     required?: boolean;
     type?: string;
     placeholder?: string;
     dir?: string;
     className?: string;
+    registration: any;
+    error?: string;
+    vt?: any;
 }) => (
     <div className={className}>
         <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 pl-1">
@@ -67,11 +69,18 @@ const InputField = ({
         <input
             type={type}
             dir={dir}
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
-            className="w-full px-4 py-3 sm:py-3.5 min-h-[48px] rounded-xl sm:rounded-2xl bg-gray-50 border border-gray-200 focus:border-theme-primary focus:ring-2 focus:ring-theme-primary/20 outline-none transition-all font-semibold text-base"
+            {...registration}
+            className={cn(
+                'w-full px-4 py-3 sm:py-3.5 min-h-[48px] rounded-xl sm:rounded-2xl bg-gray-50 border border-gray-200 focus:border-theme-primary focus:ring-2 focus:ring-theme-primary/20 outline-none transition-all font-semibold text-base',
+                error && 'border-red-500 ring-red-500/10',
+            )}
         />
+        {error && (
+            <span className="text-xs text-red-500 font-medium px-1 mt-1 block">
+                {vt ? vt(error as any) : error}
+            </span>
+        )}
     </div>
 );
 
@@ -82,16 +91,23 @@ const AddressModal: React.FC<AddressModalProps> = ({
     initialAddress: initialAddressProp,
 }) => {
     const t = useTranslations('Address');
+    const vt = useTranslations('Validation');
     const { isAuthenticated } = useAuthStore();
+    const location = useLocationLogic(undefined, isOpen);
 
     const activeAddress = useMemo(
         () => normalizeAddress(initialAddressProp),
         [initialAddressProp],
     );
 
-    // Custom Hooks for Logic Separation
-    const location = useLocationLogic(undefined, isOpen);
-    const form = useAddressForm();
+    const { form, buildPayload, reset } = useAddressForm();
+    const {
+        register,
+        watch,
+        setValue,
+        handleSubmit,
+        formState: { errors, isValid: isFormValid },
+    } = form;
 
     // Map-related state
     const [searchQuery, setSearchQuery] = useState('');
@@ -100,27 +116,33 @@ const AddressModal: React.FC<AddressModalProps> = ({
     const [formattedAddress, setFormattedAddress] = useState('');
     const hasShownLocationToastRef = useRef(false);
 
-    const streetValueRef = useRef(form.state.street);
+    const streetValue = watch('street');
+    const streetValueRef = useRef(streetValue);
     useEffect(() => {
-        streetValueRef.current = form.state.street;
-    }, [form.state.street]);
+        streetValueRef.current = streetValue;
+    }, [streetValue]);
 
     // Re-initialize when modal opens or active data changes
     useEffect(() => {
         if (!isOpen) return;
         hasShownLocationToastRef.current = false;
         if (activeAddress) {
-            form.reset({
-                addressName: activeAddress.label || '',
-                recipientName: activeAddress.recipient_name || '',
+            reset({
+                label: activeAddress.label || '',
+                recipient_name: activeAddress.recipient_name || '',
                 phone: activeAddress.phone || '',
-                addressNotes: activeAddress.description || '',
+                notes: activeAddress.description || '',
                 street: activeAddress.street || '',
-                building: activeAddress.building || '',
-                unit: activeAddress.unit || '',
-                postalCode: activeAddress.postal_code || '',
-                additionalNumber: activeAddress.additional_number || '',
-                isDefault: activeAddress.is_default,
+                building_number: activeAddress.building || '',
+                unit_number: activeAddress.unit || '',
+                postal_code: activeAddress.postal_code || '',
+                additional_number: activeAddress.additional_number || '',
+                city_id: activeAddress.city_id
+                    ? Number(activeAddress.city_id)
+                    : undefined,
+                district_id: activeAddress.district_id
+                    ? Number(activeAddress.district_id)
+                    : undefined,
             });
 
             location.dispatch({
@@ -146,7 +168,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
             setFormattedAddress(formatAddressForDisplay(activeAddress));
             setSearchQuery('');
         } else {
-            form.reset();
+            reset();
             location.dispatch({ type: 'RESET' });
             setSelectedLocation(DEFAULT_COORDINATES);
             setFormattedAddress('');
@@ -164,15 +186,15 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 hasShownLocationToastRef.current = true;
             }
             // Only update street if empty to avoid overwriting user manual input
-            if (!streetValueRef.current.trim()) {
-                form.setField('street')(formatted);
+            if (!streetValueRef.current?.trim()) {
+                setValue('street', formatted, { shouldValidate: true });
             }
         },
-        [form.setField, t],
+        [setValue, t],
     );
 
     const handleSave = () => {
-        const payload = form.buildPayload(
+        const payload = buildPayload(
             location.state.selectedCountry,
             location.state.selectedCity,
             location.state.selectedDistrict,
@@ -187,11 +209,14 @@ const AddressModal: React.FC<AddressModalProps> = ({
         onSave(payload);
     };
 
-    const isFormValid = form.isValid(
-        location.state.selectedCountry,
-        location.state.selectedCity,
-        selectedLocation,
+    const isLocationValid = !!(
+        location.state.selectedCountry &&
+        location.state.selectedCity &&
+        selectedLocation &&
+        selectedLocation[0] !== 0
     );
+
+    const isTotalValid = isFormValid && isLocationValid;
 
     return (
         <Dialog
@@ -292,10 +317,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <InputField
                                             label={t('addressName')}
-                                            value={form.state.addressName}
-                                            onChange={form.setField(
-                                                'addressName',
-                                            )}
+                                            registration={register('label')}
+                                            error={errors.label?.message}
+                                            vt={vt}
                                             required
                                             placeholder={t(
                                                 'addressNamePlaceholder',
@@ -304,15 +328,20 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                         />
                                         <InputField
                                             label={t('recipientName')}
-                                            value={form.state.recipientName}
-                                            onChange={form.setField(
-                                                'recipientName',
+                                            registration={register(
+                                                'recipient_name',
                                             )}
+                                            error={
+                                                errors.recipient_name?.message
+                                            }
+                                            vt={vt}
+                                            required
                                         />
                                         <InputField
                                             label={t('phone')}
-                                            value={form.state.phone}
-                                            onChange={form.setField('phone')}
+                                            registration={register('phone')}
+                                            error={errors.phone?.message}
+                                            vt={vt}
                                             required
                                             type="tel"
                                             dir="ltr"
@@ -322,12 +351,12 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                             value={
                                                 location.state.selectedCountry
                                             }
-                                            onChange={(v) =>
+                                            onChange={(v) => {
                                                 location.dispatch({
                                                     type: 'SET_COUNTRY',
                                                     value: v,
-                                                })
-                                            }
+                                                });
+                                            }}
                                             options={location.countries}
                                             placeholder={t('selectCountry')}
                                             searchPlaceholder={t(
@@ -338,17 +367,28 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                         <SearchableSelect
                                             label={t('city')}
                                             value={location.state.selectedCity}
-                                            onChange={(v) =>
+                                            onChange={(v) => {
                                                 location.dispatch({
                                                     type: 'SET_CITY',
                                                     value: v,
-                                                })
-                                            }
+                                                });
+                                                setValue('city_id', Number(v), {
+                                                    shouldValidate: true,
+                                                });
+                                            }}
                                             options={location.cities}
                                             placeholder={t('selectCity')}
                                             searchPlaceholder={t(
                                                 'searchOptionPlaceholder',
                                             )}
+                                            error={
+                                                errors.city_id?.message
+                                                    ? vt(
+                                                          errors.city_id
+                                                              .message as any,
+                                                      )
+                                                    : undefined
+                                            }
                                             required
                                             isLoading={location.isLoadingCities}
                                             disabled={location.isLoadingCities}
@@ -358,17 +398,30 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                             value={
                                                 location.state.selectedDistrict
                                             }
-                                            onChange={(v) =>
+                                            onChange={(v) => {
                                                 location.dispatch({
                                                     type: 'SET_DISTRICT',
                                                     value: v,
-                                                })
-                                            }
+                                                });
+                                                setValue(
+                                                    'district_id',
+                                                    v ? Number(v) : null,
+                                                    { shouldValidate: true },
+                                                );
+                                            }}
                                             options={location.districts}
                                             placeholder={t('selectDistrict')}
                                             searchPlaceholder={t(
                                                 'searchOptionPlaceholder',
                                             )}
+                                            error={
+                                                errors.district_id?.message
+                                                    ? vt(
+                                                          errors.district_id
+                                                              .message as any,
+                                                      )
+                                                    : undefined
+                                            }
                                             className="sm:col-span-2"
                                             isLoading={
                                                 location.isLoadingDistricts
@@ -379,63 +432,77 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                         />
                                         <InputField
                                             label={t('street')}
-                                            value={form.state.street}
-                                            onChange={form.setField('street')}
+                                            registration={register('street')}
+                                            error={errors.street?.message}
+                                            vt={vt}
                                             required
                                             className="sm:col-span-2"
                                         />
                                         <InputField
                                             label={t('building')}
-                                            value={form.state.building}
-                                            onChange={form.setField('building')}
+                                            registration={register(
+                                                'building_number',
+                                            )}
+                                            error={
+                                                errors.building_number?.message
+                                            }
+                                            vt={vt}
+                                            required
                                         />
                                         <InputField
                                             label={t('unit')}
-                                            value={form.state.unit}
-                                            onChange={form.setField('unit')}
+                                            registration={register(
+                                                'unit_number',
+                                            )}
+                                            error={errors.unit_number?.message}
+                                            vt={vt}
                                         />
                                         <InputField
                                             label={t('postalCode')}
-                                            value={form.state.postalCode}
-                                            onChange={form.setField(
-                                                'postalCode',
+                                            registration={register(
+                                                'postal_code',
                                             )}
+                                            error={errors.postal_code?.message}
+                                            vt={vt}
                                         />
                                         <InputField
                                             label={t('additionalNumber')}
-                                            value={form.state.additionalNumber}
-                                            onChange={form.setField(
-                                                'additionalNumber',
+                                            registration={register(
+                                                'additional_number',
                                             )}
+                                            error={
+                                                errors.additional_number
+                                                    ?.message
+                                            }
+                                            vt={vt}
                                         />
                                         <div className="sm:col-span-2">
                                             <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 pl-1">
                                                 {t('addressNotes')}
                                             </label>
                                             <textarea
-                                                value={form.state.addressNotes}
-                                                onChange={(e) =>
-                                                    form.setField(
-                                                        'addressNotes',
-                                                    )(e.target.value)
-                                                }
+                                                {...register('notes')}
                                                 rows={2}
-                                                className="w-full px-4 py-3 rounded-xl sm:rounded-2xl bg-gray-50 border border-gray-200 focus:border-theme-primary focus:ring-2 focus:ring-theme-primary/20 outline-none resize-none text-base min-h-[80px]"
+                                                className={cn(
+                                                    'w-full px-4 py-3 rounded-xl sm:rounded-2xl bg-gray-50 border border-gray-200 focus:border-theme-primary focus:ring-2 focus:ring-theme-primary/20 outline-none resize-none text-base min-h-[80px]',
+                                                    errors.notes &&
+                                                        'border-red-500 ring-red-500/10',
+                                                )}
                                             />
+                                            {errors.notes && (
+                                                <span className="text-xs text-red-500 font-medium px-1 mt-1 block">
+                                                    {vt(
+                                                        errors.notes
+                                                            .message as any,
+                                                    )}
+                                                </span>
+                                            )}
                                         </div>
                                         {isAuthenticated && (
                                             <div className="sm:col-span-2 flex items-center gap-3">
                                                 <input
                                                     type="checkbox"
                                                     id="set-default"
-                                                    checked={
-                                                        form.state.isDefault
-                                                    }
-                                                    onChange={(e) =>
-                                                        form.setField(
-                                                            'isDefault',
-                                                        )(e.target.checked)
-                                                    }
                                                     className="w-5 h-5 rounded border-gray-300 text-theme-primary focus:ring-theme-primary"
                                                 />
                                                 <label
@@ -463,13 +530,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                 type="button"
                                 variant="primary"
                                 size="xl"
-                                onClick={handleSave}
-                                disabled={!isFormValid}
-                                className={cn(
-                                    'active:scale-[0.98]',
-                                    !isFormValid &&
-                                        'bg-gray-100 text-gray-400 border-none shadow-none hover:brightness-100',
-                                )}>
+                                onClick={handleSubmit(handleSave)}
+                                disabled={!isTotalValid}
+                                className="active:scale-[0.98]">
                                 {activeAddress ? t('save') : t('addNew')}
                             </Button>
                         </footer>

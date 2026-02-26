@@ -45,9 +45,7 @@ interface UseAuthFlowHandlersOptions {
     isAuthenticated: boolean;
 }
 
-export function useAuthFlowHandlers(
-    options: UseAuthFlowHandlersOptions,
-) {
+export function useAuthFlowHandlers(options: UseAuthFlowHandlersOptions) {
     const {
         step,
         setStep,
@@ -75,17 +73,16 @@ export function useAuthFlowHandlers(
 
     // Step 1: Send OTP
     const handlePhoneSubmit = useCallback(
-        async (e: React.FormEvent) => {
-            e.preventDefault();
+        async (submittedPhone?: string) => {
+            const phoneToUse = submittedPhone || phone;
 
-            if (!phone || phone.length < 9) {
-                toast.error(t('invalidPhone') || 'رقم الهاتف غير صحيح');
+            if (!phoneToUse || phoneToUse.length < 9) {
                 return;
             }
 
             setLoading(true);
             try {
-                const response = await authService.sendOtp(phone);
+                const response = await authService.sendOtp(phoneToUse);
                 setIsNewUser(response.is_new_user);
                 setTempToken(response.temp_token);
                 setMaskedPhone(response.masked_phone);
@@ -122,11 +119,10 @@ export function useAuthFlowHandlers(
 
     // Step 2: Verify OTP
     const handleOtpSubmit = useCallback(
-        async (e: React.FormEvent) => {
-            e.preventDefault();
+        async (submittedOtp?: string) => {
+            const otpToUse = submittedOtp || otp;
 
-            if (!otp || otp.length < 4) {
-                toast.error(t('invalidOtp') || 'رمز التحقق غير صحيح');
+            if (!otpToUse || otpToUse.length < 4) {
                 return;
             }
 
@@ -141,7 +137,11 @@ export function useAuthFlowHandlers(
 
             setLoading(true);
             try {
-                const response = await authService.login(phone, otp, tempToken);
+                const response = await authService.login(
+                    phone,
+                    otpToUse,
+                    tempToken,
+                );
 
                 if (isNewUser) {
                     setStep('signup');
@@ -211,25 +211,24 @@ export function useAuthFlowHandlers(
 
     // Step 3: Complete Profile
     const handleSignupSubmit = useCallback(
-        async (e: React.FormEvent) => {
-            e.preventDefault();
+        async (submittedData?: ProfileUpdateRequest) => {
+            const dataToUse = submittedData || formData;
 
-            if (!formData.first_name.trim()) {
-                toast.error(t('firstNameRequired') || 'الاسم الأول مطلوب');
+            if (!dataToUse.first_name.trim()) {
                 return;
             }
 
             setLoading(true);
             try {
                 const updatePayload: ProfileUpdateRequest = {
-                    first_name: formData.first_name,
-                    ...(formData.middle_name && {
-                        middle_name: formData.middle_name,
+                    first_name: dataToUse.first_name,
+                    ...(dataToUse.middle_name && {
+                        middle_name: dataToUse.middle_name,
                     }),
-                    ...(formData.last_name && {
-                        last_name: formData.last_name,
+                    ...(dataToUse.last_name && {
+                        last_name: dataToUse.last_name,
                     }),
-                    ...(formData.email && { email: formData.email }),
+                    ...(dataToUse.email && { email: dataToUse.email }),
                 };
 
                 const updatedProfile =
@@ -268,7 +267,10 @@ export function useAuthFlowHandlers(
                 });
 
                 const status = (error as { status?: number } | null)?.status;
-                if (error instanceof Error && (status === 401 || status === 403)) {
+                if (
+                    error instanceof Error &&
+                    (status === 401 || status === 403)
+                ) {
                     authStorage.clearAll();
                     setIsNewUser(false);
                     setStep('phone');

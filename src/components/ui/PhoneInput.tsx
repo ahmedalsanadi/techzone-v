@@ -16,6 +16,7 @@ interface PhoneInputProps {
     countryCode?: string;
     flagUrl?: string;
     disabled?: boolean;
+    error?: string;
 }
 
 export default function PhoneInput({
@@ -30,6 +31,7 @@ export default function PhoneInput({
     countryCode = '+966',
     flagUrl = 'https://flagcdn.com/w40/sa.png',
     disabled = false,
+    error,
 }: PhoneInputProps) {
     return (
         <div className={cn('space-y-1 sm:space-y-1.5 md:space-y-2', className)}>
@@ -64,12 +66,18 @@ export default function PhoneInput({
                     className={cn(
                         'w-full h-10 sm:h-12 md:h-14 rounded-lg sm:rounded-xl md:rounded-2xl border border-[#E2E8F0] focus:border-theme-primary-border focus:ring-2 sm:focus:ring-3 md:focus:ring-4 focus:ring-theme-primary/5 outline-none transition-all font-bold text-sm sm:text-base md:text-lg text-[#2D3142] text-start ps-24 sm:ps-28 md:ps-36',
                         disabled ? 'opacity-50 cursor-not-allowed' : '',
+                        error ? 'border-red-500 ring-red-500/10' : '',
                         inputClassName,
                     )}
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
                 />
             </div>
+            {error && (
+                <span className="text-xs text-red-500 font-medium px-1 block text-start">
+                    {error}
+                </span>
+            )}
         </div>
     );
 }

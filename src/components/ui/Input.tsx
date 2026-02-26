@@ -10,13 +10,13 @@ const cn = (...classes: (string | undefined | boolean)[]): string => {
 export type InputVariant = 'default' | 'filled' | 'outline';
 export type InputSize = 'default' | 'sm' | 'md' | 'lg';
 
-export interface InputProps
-    extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     variant?: InputVariant;
     inputSize?: InputSize;
     startIcon?: React.ReactNode;
     endIcon?: React.ReactNode;
     containerClassName?: string;
+    error?: string;
 }
 
 // Container Styles (no default focus ring - let containerClassName or variant control it to avoid double border / clipped radius)
@@ -50,33 +50,42 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             inputSize = 'default',
             startIcon,
             endIcon,
+            error,
             ...props
         },
         ref,
     ) => {
         return (
-            <div
-                className={cn(
-                    containerBaseStyles,
-                    containerVariantStyles[variant],
-                    containerSizeStyles[inputSize],
-                    containerClassName,
-                )}>
-                {startIcon && (
-                    <div className="flex shrink-0 items-center justify-center text-muted-foreground/60">
-                        {startIcon}
-                    </div>
-                )}
-                <input
-                    type={type}
-                    ref={ref}
-                    className={cn(inputBaseStyles, className)}
-                    {...props}
-                />
-                {endIcon && (
-                    <div className="flex shrink-0 items-center justify-center text-muted-foreground/60">
-                        {endIcon}
-                    </div>
+            <div className="flex flex-col gap-1 w-full">
+                <div
+                    className={cn(
+                        containerBaseStyles,
+                        containerVariantStyles[variant],
+                        containerSizeStyles[inputSize],
+                        error && 'border-red-500 ring-red-500/10',
+                        containerClassName,
+                    )}>
+                    {startIcon && (
+                        <div className="flex shrink-0 items-center justify-center text-muted-foreground/60">
+                            {startIcon}
+                        </div>
+                    )}
+                    <input
+                        type={type}
+                        ref={ref}
+                        className={cn(inputBaseStyles, className)}
+                        {...props}
+                    />
+                    {endIcon && (
+                        <div className="flex shrink-0 items-center justify-center text-muted-foreground/60">
+                            {endIcon}
+                        </div>
+                    )}
+                </div>
+                {error && (
+                    <span className="text-xs text-red-500 font-medium px-1">
+                        {error}
+                    </span>
                 )}
             </div>
         );

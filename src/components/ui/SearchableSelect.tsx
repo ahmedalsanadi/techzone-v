@@ -24,6 +24,7 @@ export interface SearchableSelectProps {
     required?: boolean;
     disabled?: boolean;
     isLoading?: boolean;
+    error?: string;
     className?: string;
     /** Optional: filter function. Default: case-insensitive name includes query */
     filterOption?: (option: SearchableSelectOption, query: string) => boolean;
@@ -43,6 +44,7 @@ export const SearchableSelect = memo(
         required,
         disabled,
         isLoading,
+        error,
         className,
         filterOption = defaultFilter,
     }: SearchableSelectProps) => {
@@ -163,6 +165,7 @@ export const SearchableSelect = memo(
                             'disabled:opacity-50 disabled:cursor-not-allowed',
                             isOpen &&
                                 'border-theme-primary ring-2 ring-theme-primary/20',
+                            error && 'border-red-500 ring-red-500/10',
                         )}
                         aria-haspopup="listbox"
                         aria-expanded={isOpen}
@@ -266,6 +269,11 @@ export const SearchableSelect = memo(
                         </div>
                     )}
                 </div>
+                {error && (
+                    <span className="text-xs text-red-500 font-medium px-1 mt-1 block text-start">
+                        {error}
+                    </span>
+                )}
             </div>
         );
     },
