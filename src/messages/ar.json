@@ -515,8 +515,9 @@
       "subject": "العنوان",
       "message": "اكتب رسالتك هنا:",
       "send": "ارسال",
-      "placeholder_email": "بريدك الالكتروني",
-      "placeholder_subject": "المشكلة"
+      "placeholder_email": "someone@example.com",
+      "placeholder_subject": "أدخل عنوان الرسالة هنا",
+      "placeholder_message": "اكتب رسالتك هنا..."
     }
   },
   "Signup": {
@@ -830,5 +831,21 @@
       "4": "جيد",
       "5": "ممتاز"
     }
+  },
+  "Validation": {
+    "required": "هذا الحقل مطلوب",
+    "invalidEmail": "البريد الإلكتروني غير صحيح",
+    "phoneMin": "رقم الهاتف يجب أن يكون 9 أرقام على الأقل",
+    "otpLength": "كود التحقق يجب أن يكون 4 أرقام",
+    "firstNameRequired": "الاسم الأول مطلوب",
+    "lastNameRequired": "اللقب مطلوب",
+    "cityRequired": "يرجى اختيار المدينة",
+    "streetRequired": "الشارع مطلوب",
+    "buildingRequired": "رقم المبنى مطلوب",
+    "problemTypeRequired": "يرجى اختيار نوع المشكلة",
+    "descriptionMin": "الوصف يجب أن يكون 10 أحرف على الأقل",
+    "subjectMin": "العنوان يجب أن يكون 3 أحرف على الأقل",
+    "messageMin": "الرسالة يجب أن تكون 10 أحرف على الأقل",
+    "invalidPhone": "رقم الهاتف غير صحيح"
   }
 }

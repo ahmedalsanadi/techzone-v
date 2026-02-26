@@ -515,7 +515,8 @@
       "message": "Write your message here:",
       "send": "Send",
       "placeholder_email": "someone@gmail.com",
-      "placeholder_subject": "The problem"
+      "placeholder_subject": "Enter subject here",
+      "placeholder_message": "Type your message here..."
     }
   },
   "Signup": {
@@ -826,5 +827,21 @@
       "4": "Good",
       "5": "Excellent"
     }
+  },
+  "Validation": {
+    "required": "This field is required",
+    "invalidEmail": "Invalid email address",
+    "phoneMin": "Phone number must be at least 9 digits",
+    "otpLength": "OTP must be 4 digits",
+    "firstNameRequired": "First name is required",
+    "lastNameRequired": "Last name is required",
+    "cityRequired": "Please select a city",
+    "streetRequired": "Street is required",
+    "buildingRequired": "Building number is required",
+    "problemTypeRequired": "Please select a problem type",
+    "descriptionMin": "Description must be at least 10 characters",
+    "subjectMin": "Subject must be at least 3 characters",
+    "messageMin": "Message must be at least 10 characters",
+    "invalidPhone": "Invalid phone number"
   }
 }
