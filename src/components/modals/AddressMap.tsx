@@ -85,13 +85,28 @@ const MapViewUpdater = memo(({ center }: { center: [number, number] }) => {
     const map = useMap();
     const prevCenterRef = useRef(center);
     useEffect(() => {
-        if (
-            prevCenterRef.current[0] !== center[0] ||
-            prevCenterRef.current[1] !== center[1]
-        ) {
-            map.setView(center, map.getZoom());
-            prevCenterRef.current = center;
-        }
+        let cancelled = false;
+        const run = () => {
+            if (cancelled) return;
+            try {
+                if (
+                    prevCenterRef.current[0] !== center[0] ||
+                    prevCenterRef.current[1] !== center[1]
+                ) {
+                    if (map.getContainer()?.parentElement) {
+                        map.setView(center, map.getZoom());
+                        prevCenterRef.current = center;
+                    }
+                }
+            } catch {
+                // ignore if map pane not ready (_leaflet_pos)
+            }
+        };
+        const id = requestAnimationFrame(() => run());
+        return () => {
+            cancelled = true;
+            cancelAnimationFrame(id);
+        };
     }, [center, map]);
     return null;
 });
@@ -100,12 +115,47 @@ MapViewUpdater.displayName = 'MapViewUpdater';
 const MapSizeInvalidator = memo(() => {
     const map = useMap();
     useEffect(() => {
-        const timer = setTimeout(() => map.invalidateSize(), 150);
-        return () => clearTimeout(timer);
+        let cancelled = false;
+        const run = () => {
+            if (cancelled) return;
+            try {
+                map.invalidateSize();
+            } catch {
+                // ignore if map pane not ready
+            }
+        };
+        const timer = setTimeout(run, 150);
+        return () => {
+            cancelled = true;
+            clearTimeout(timer);
+        };
     }, [map]);
     return null;
 });
 MapSizeInvalidator.displayName = 'MapSizeInvalidator';
+
+const ScrollWheelZoomEnabler = memo(() => {
+    const map = useMap();
+    useEffect(() => {
+        let cancelled = false;
+        const id = setTimeout(() => {
+            if (cancelled) return;
+            try {
+                if (map.scrollWheelZoom && !map.scrollWheelZoom.enabled()) {
+                    map.scrollWheelZoom.enable();
+                }
+            } catch {
+                // ignore
+            }
+        }, 400);
+        return () => {
+            cancelled = true;
+            clearTimeout(id);
+        };
+    }, [map]);
+    return null;
+});
+ScrollWheelZoomEnabler.displayName = 'ScrollWheelZoomEnabler';
 
 const AddressMap: React.FC<AddressMapProps> = ({
     center,
@@ -158,10 +208,11 @@ const AddressMap: React.FC<AddressMapProps> = ({
                 zoom={DEFAULT_MAP_ZOOM}
                 className="w-full h-full rounded-2xl"
                 style={{ height: '100%', width: '100%', zIndex: 0 }}
-                scrollWheelZoom>
+                scrollWheelZoom={false}>
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 <MapViewUpdater center={center} />
                 <MapSizeInvalidator />
+                <ScrollWheelZoomEnabler />
                 <MapClickHandler
                     onSelect={handleLocationSelect}
                     setHasInteracted={setHasInteracted}

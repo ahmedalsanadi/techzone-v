@@ -43,24 +43,76 @@ interface BranchMapProps {
     onBranchSelect: (branch: Branch) => void;
 }
 
-// Sub-component to handle map centering with smooth transition
+// Sub-component to handle map centering with smooth transition.
+// Defer until map pane has _leaflet_pos to avoid "Cannot read _leaflet_pos" during zoom.
 const ChangeView = ({ center }: { center: [number, number] }) => {
     const map = useMap();
     useEffect(() => {
-        map.flyTo(center, map.getZoom(), {
-            animate: true,
-            duration: 1.5,
+        let cancelled = false;
+        const run = () => {
+            if (cancelled) return;
+            try {
+                const container = map.getContainer();
+                if (!container?.parentElement) return;
+                map.flyTo(center, map.getZoom(), {
+                    animate: true,
+                    duration: 1.5,
+                });
+            } catch {
+                // ignore if map pane not ready
+            }
+        };
+        const id = requestAnimationFrame(() => {
+            if (cancelled) return;
+            run();
         });
+        return () => {
+            cancelled = true;
+            cancelAnimationFrame(id);
+        };
     }, [center, map]);
     return null;
 };
 
-// Fix Leaflet on small screens: container can have 0 size at first paint; invalidateSize() redraws when layout is ready
+// Enable scroll zoom after map pane is ready to avoid _leaflet_pos undefined during wheel zoom.
+const ScrollWheelZoomEnabler: React.FC = () => {
+    const map = useMap();
+    useEffect(() => {
+        let cancelled = false;
+        const enable = () => {
+            if (cancelled) return;
+            try {
+                if (map.scrollWheelZoom && !map.scrollWheelZoom.enabled()) {
+                    map.scrollWheelZoom.enable();
+                }
+            } catch {
+                // ignore if pane not ready
+            }
+        };
+        const id = window.setTimeout(enable, 400);
+        return () => {
+            cancelled = true;
+            window.clearTimeout(id);
+        };
+    }, [map]);
+    return null;
+};
+
+// Fix Leaflet on small screens: container can have 0 size at first paint; invalidateSize() redraws when layout is ready.
+// Defer first run to avoid _leaflet_pos undefined when map pane isn't ready.
 const MapInvalidateSize: React.FC = () => {
     const map = useMap();
     useEffect(() => {
-        const run = () => map.invalidateSize();
-        run();
+        let cancelled = false;
+        const run = () => {
+            if (cancelled) return;
+            try {
+                map.invalidateSize();
+            } catch {
+                // ignore if map pane not ready
+            }
+        };
+        const t0 = requestAnimationFrame(() => run());
         const t1 = window.setTimeout(run, 100);
         const t2 = window.setTimeout(run, 350);
         const el = map.getContainer();
@@ -72,6 +124,8 @@ const MapInvalidateSize: React.FC = () => {
         const onResize = () => requestAnimationFrame(run);
         window.addEventListener('resize', onResize);
         return () => {
+            cancelled = true;
+            cancelAnimationFrame(t0);
             window.clearTimeout(t1);
             window.clearTimeout(t2);
             ro?.disconnect();
@@ -160,7 +214,7 @@ const BranchMap: React.FC<BranchMapProps> = React.memo(
                 <MapContainer
                     center={center}
                     zoom={DEFAULT_MAP_ZOOM}
-                    scrollWheelZoom={true}
+                    scrollWheelZoom={false}
                     className="w-full h-full">
                     <TileLayer
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -170,6 +224,7 @@ const BranchMap: React.FC<BranchMapProps> = React.memo(
                     />
                     <ChangeView center={center} />
                     <MapInvalidateSize />
+                    <ScrollWheelZoomEnabler />
                     {branchesWithCoords.map(({ branch, coords }) => {
                         const [lat, lng] = coords;
                         const hasRealCoords =

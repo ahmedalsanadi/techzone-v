@@ -39,8 +39,20 @@ interface LiveTrackingMapProps {
 const MapSizeInvalidator = memo(() => {
     const map = useMap();
     useEffect(() => {
-        const timer = setTimeout(() => map.invalidateSize(), 150);
-        return () => clearTimeout(timer);
+        let cancelled = false;
+        const run = () => {
+            if (cancelled) return;
+            try {
+                map.invalidateSize();
+            } catch {
+                // ignore if map pane not ready (_leaflet_pos)
+            }
+        };
+        const timer = setTimeout(run, 150);
+        return () => {
+            cancelled = true;
+            clearTimeout(timer);
+        };
     }, [map]);
     return null;
 });
@@ -49,10 +61,25 @@ MapSizeInvalidator.displayName = 'MapSizeInvalidator';
 const FitBounds = memo(({ coords }: { coords: [number, number][] }) => {
     const map = useMap();
     useEffect(() => {
-        if (coords.length > 0) {
-            const bounds = L.latLngBounds(coords);
-            map.fitBounds(bounds, { padding: [50, 50] });
-        }
+        if (coords.length === 0) return;
+        let cancelled = false;
+        const run = () => {
+            if (cancelled) return;
+            try {
+                if (!map.getContainer()?.parentElement) return;
+                const bounds = L.latLngBounds(coords);
+                map.fitBounds(bounds, { padding: [50, 50] });
+            } catch {
+                // ignore if map pane not ready (_leaflet_pos)
+            }
+        };
+        const id = requestAnimationFrame(() => run());
+        const fallback = setTimeout(run, 200);
+        return () => {
+            cancelled = true;
+            cancelAnimationFrame(id);
+            clearTimeout(fallback);
+        };
     }, [coords, map]);
     return null;
 });
