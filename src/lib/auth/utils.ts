@@ -37,17 +37,19 @@ export function getInitialAuthStep(
     isAuthenticated?: boolean,
     checkProfileComplete?: () => boolean,
 ): AuthStep {
-    // Try to restore from sessionStorage first
+    // Try to restore from sessionStorage first (include tempToken for otp step)
     if (typeof window !== 'undefined') {
         const storedStep = authStorage.getStep();
         const storedIsNewUser = authStorage.getIsNewUser();
         const storedPhone = authStorage.getPhone();
+        const storedTempToken = authStorage.getTempToken();
 
         if (storedStep && storedPhone) {
             const validatedStep = validateStoredStep(
                 storedStep,
                 storedIsNewUser,
                 storedPhone,
+                storedTempToken,
             );
             if (validatedStep) return validatedStep;
         }

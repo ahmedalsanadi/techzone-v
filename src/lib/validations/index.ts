@@ -1,7 +1,10 @@
 import { z } from 'zod';
 
+/** Minimum phone length; reuse in schema and handlers. */
+export const PHONE_MIN_LENGTH = 9;
+
 export const phoneSchema = z.object({
-    phone: z.string().min(9, 'phoneMin'),
+    phone: z.string().min(PHONE_MIN_LENGTH, 'phoneMin'),
 });
 
 export const otpSchema = z.object({
@@ -25,7 +28,7 @@ export const addressSchema = z.object({
     postal_code: z.string().optional().nullable(),
     additional_number: z.string().optional().nullable(),
     notes: z.string().optional().nullable(),
-    phone: z.string().min(9, 'phoneMin'),
+    phone: z.string().min(PHONE_MIN_LENGTH, 'phoneMin'),
     recipient_name: z.string().min(1, 'required'),
 });
 

@@ -8,6 +8,8 @@ interface OtpInputProps {
     onChange?: (value: string) => void;
     className?: string;
     autoFocus?: boolean;
+    /** Base for per-digit ids (e.g. "auth-otp" → auth-otp-0, auth-otp-1). Enables a11y and satisfies form field id requirement. */
+    idBase?: string;
 }
 
 export default function OtpInput({
@@ -16,6 +18,7 @@ export default function OtpInput({
     onChange,
     className = '',
     autoFocus = false,
+    idBase = 'otp',
 }: OtpInputProps) {
     const [internalOtp, setInternalOtp] = useState<string[]>(
         Array(length).fill(''),
@@ -102,6 +105,8 @@ export default function OtpInput({
             {Array.from({ length }, (_, index) => (
                 <input
                     key={index}
+                    id={`${idBase}-${index}`}
+                    name={`${idBase}-${index}`}
                     ref={(el) => {
                         otpRefs.current[index] = el;
                     }}
@@ -114,6 +119,8 @@ export default function OtpInput({
                     onChange={(e) => handleOtpChange(index, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(index, e)}
                     onPaste={handleOtpPaste}
+                    autoComplete={index === 0 ? 'one-time-code' : 'off'}
+                    aria-label={`Digit ${index + 1} of ${length}`}
                     className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 text-center text-xl sm:text-2xl md:text-3xl font-black rounded-lg sm:rounded-xl md:rounded-2xl bg-white border border-[#E2E8F0] focus:border-theme-primary-border focus:ring-2 sm:focus:ring-3 md:focus:ring-4 focus:ring-theme-primary/5 outline-none transition-all shadow-sm text-gray-400 placeholder:text-gray-300"
                 />
             ))}

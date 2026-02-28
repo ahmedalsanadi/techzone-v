@@ -17,6 +17,12 @@ interface PhoneInputProps {
     flagUrl?: string;
     disabled?: boolean;
     error?: string;
+    /** Unique id for the input; enables label htmlFor and autofill. */
+    id?: string;
+    /** Form field name for submission/autofill (e.g. "phone"). */
+    name?: string;
+    /** Autocomplete hint (default "tel" when not disabled). */
+    autoComplete?: string;
 }
 
 export default function PhoneInput({
@@ -32,11 +38,17 @@ export default function PhoneInput({
     flagUrl = 'https://flagcdn.com/w40/sa.png',
     disabled = false,
     error,
+    id,
+    name = 'phone',
+    autoComplete,
 }: PhoneInputProps) {
+    const inputId = id ?? (label ? `phone-${label.replace(/\s+/g, '-').toLowerCase()}` : undefined);
     return (
         <div className={cn('space-y-1 sm:space-y-1.5 md:space-y-2', className)}>
             {label && (
-                <label className="text-xs font-bold text-gray-400 block text-start">
+                <label
+                    htmlFor={inputId}
+                    className="text-xs font-bold text-gray-400 block text-start">
                     {label}
                     {showRequiredIndicator && (
                         <span className="text-red-500"> *</span>
@@ -52,6 +64,7 @@ export default function PhoneInput({
                             width={32}
                             height={20}
                             className="object-cover w-full h-full"
+                            unoptimized
                         />
                     </div>
                     <span className="text-[#2D3142] font-black text-sm sm:text-base md:text-lg shrink-0">
@@ -59,10 +72,13 @@ export default function PhoneInput({
                     </span>
                 </div>
                 <input
+                    id={inputId}
+                    name={name}
                     type="tel"
                     required={required}
                     placeholder={placeholder}
                     disabled={disabled}
+                    autoComplete={autoComplete ?? (disabled ? undefined : 'tel')}
                     className={cn(
                         'w-full h-10 sm:h-12 md:h-14 rounded-lg sm:rounded-xl md:rounded-2xl border border-[#E2E8F0] focus:border-theme-primary-border focus:ring-2 sm:focus:ring-3 md:focus:ring-4 focus:ring-theme-primary/5 outline-none transition-all font-bold text-sm sm:text-base md:text-lg text-[#2D3142] text-start ps-24 sm:ps-28 md:ps-36',
                         disabled ? 'opacity-50 cursor-not-allowed' : '',

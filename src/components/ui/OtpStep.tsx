@@ -18,6 +18,8 @@ interface OtpStepProps {
     loading?: boolean;
     error?: string;
     isValid?: boolean;
+    /** Passed to OtpInput for per-digit ids (e.g. "auth-otp"). */
+    otpInputIdBase?: string;
 }
 
 export default function OtpStep({
@@ -34,6 +36,7 @@ export default function OtpStep({
     loading = false,
     error,
     isValid = true,
+    otpInputIdBase = 'auth-otp',
 }: OtpStepProps) {
     return (
         <div className="space-y-4 sm:space-y-6 md:space-y-8 lg:space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
@@ -55,6 +58,7 @@ export default function OtpStep({
                     value={otp}
                     onChange={onOtpChange}
                     autoFocus={autoFocus}
+                    idBase={otpInputIdBase}
                 />
                 {error && (
                     <p className="text-xs text-red-500 font-medium text-center mt-2">

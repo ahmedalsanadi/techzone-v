@@ -16,9 +16,23 @@ import { useOtpTimer } from '@/hooks/auth/useOtpTimer';
 import { useAuthFlowValidation } from '@/hooks/auth/useAuthFlowValidation';
 import { useAuthFlowHandlers } from '@/hooks/auth/useAuthFlowHandlers';
 import { useAuthProfileLoader } from '@/hooks/auth/useAuthProfileLoader';
-import { useForm } from 'react-hook-form';
+import { useForm, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { phoneSchema, otpSchema, profileSchema } from '@/lib/validations';
+
+type ProfileFormValues = z.infer<typeof profileSchema>;
+
+/** Get translated field error for auth forms; avoids repeating vt(errors.field?.message). */
+function getFieldError<T extends string>(
+    errors: FieldErrors,
+    field: T,
+    vt: (key: string) => string,
+): string | undefined {
+    const message = (errors as Record<string, { message?: string }>)[field]
+        ?.message;
+    return message ? vt(message) : undefined;
+}
 
 // Common Input styling - shared across all auth inputs (responsive)
 const AUTH_INPUT_COMMON_CONTAINER =
@@ -29,6 +43,14 @@ const AUTH_INPUT_COMMON_TEXT =
 
 // Input-specific text color (can be overridden per input if needed)
 const AUTH_INPUT_TEXT_COLOR = 'text-[#2D3142]!';
+
+// Shared props for signup form Inputs (DRY)
+const AUTH_SIGNUP_INPUT_PROPS = {
+    variant: 'filled' as const,
+    inputSize: 'lg' as const,
+    containerClassName: AUTH_INPUT_COMMON_CONTAINER,
+    className: `${AUTH_INPUT_COMMON_TEXT} ${AUTH_INPUT_TEXT_COLOR}`,
+};
 
 interface AuthFlowProps {
     config: StoreConfig;
@@ -131,16 +153,16 @@ export default function AuthFlow({
         isAuthenticated,
     });
 
-    // Forms
+    // Forms (phone form uses values so we don't rely on watch() and avoid extra re-renders)
     const phoneForm = useForm({
         resolver: zodResolver(phoneSchema),
-        defaultValues: { phone },
+        values: { phone },
         mode: 'onChange',
     });
 
     const otpForm = useForm({
         resolver: zodResolver(otpSchema),
-        defaultValues: { otp: '' },
+        values: { otp },
         mode: 'onChange',
     });
 
@@ -165,7 +187,7 @@ export default function AuthFlow({
         originalOtpSubmit(data.otp);
     };
 
-    const onSignupSubmit = (data: any) => {
+    const onSignupSubmit = (data: ProfileFormValues) => {
         setFormData((prev) => ({ ...prev, ...data }));
         originalSignupSubmit(data);
     };
@@ -176,28 +198,28 @@ export default function AuthFlow({
             <AuthContainer
                 config={config}
                 locale={locale}
-                title={t('phoneTitle') || 'تسجيل الدخول'}
+                title={t('phoneTitle')}
                 onBack={undefined}>
                 <div className="space-y-4 sm:space-y-6 md:space-y-8 lg:space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <form
                         onSubmit={phoneForm.handleSubmit(onPhoneSubmit)}
                         className="space-y-3 sm:space-y-4 md:space-y-5">
                         <PhoneInput
-                            label={t('phone') || 'رقم الهاتف'}
-                            value={phoneForm.watch('phone')}
-                            onChange={(val) =>
+                            id="auth-phone"
+                            name="phone"
+                            label={t('phone')}
+                            value={phone}
+                            onChange={(val) => {
+                                setPhone(val);
                                 phoneForm.setValue('phone', val, {
                                     shouldValidate: true,
-                                })
-                            }
-                            error={
-                                phoneForm.formState.errors.phone?.message
-                                    ? vt(
-                                          phoneForm.formState.errors.phone
-                                              .message as any,
-                                      )
-                                    : undefined
-                            }
+                                });
+                            }}
+                            error={getFieldError(
+                                phoneForm.formState.errors,
+                                'phone',
+                                vt,
+                            )}
                             required
                             inputClassName="bg-[#F4F7FA]"
                         />
@@ -222,7 +244,7 @@ export default function AuthFlow({
                             {loading ? (
                                 <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                             ) : (
-                                t('sendOtp') || 'إرسال رمز التحقق'
+                                t('sendOtp')
                             )}
                         </Button>
                     </form>
@@ -236,11 +258,12 @@ export default function AuthFlow({
             <AuthContainer
                 config={config}
                 locale={locale}
-                title={t('otpTitle') || 'تأكيد رقم الهاتف'}
+                title={t('otpTitle')}
                 onBack={handleBack}>
                 <OtpStep
-                    otp={otpForm.watch('otp')}
+                    otp={otp}
                     onOtpChange={(val) => {
+                        setOtp(val);
                         otpForm.setValue('otp', val);
                         if (val.length === 4) {
                             otpForm.handleSubmit(onOtpSubmit)();
@@ -249,16 +272,16 @@ export default function AuthFlow({
                     onSubmit={otpForm.handleSubmit(onOtpSubmit)}
                     onResend={handleResendOtp}
                     maskedPhone={maskedPhone || formatMaskedPhone(phone)}
-                    subtitle={t('otpSubtitle') || 'أدخل رمز التحقق المرسل إلى'}
-                    continueLabel={t('continue') || 'متابعة'}
-                    resendLabel={t('resend') || 'إعادة الإرسال'}
+                    subtitle={t('otpSubtitle')}
+                    continueLabel={t('continue')}
+                    resendLabel={t('resend')}
                     timer={timer}
                     loading={loading}
-                    error={
-                        otpForm.formState.errors.otp?.message
-                            ? vt(otpForm.formState.errors.otp.message as any)
-                            : undefined
-                    }
+                    error={getFieldError(
+                        otpForm.formState.errors,
+                        'otp',
+                        vt,
+                    )}
                     isValid={otpForm.formState.isValid}
                 />
             </AuthContainer>
@@ -270,94 +293,84 @@ export default function AuthFlow({
         <AuthContainer
             config={config}
             locale={locale}
-            title={t('signupTitle') || 'إكمال الملف الشخصي'}
+            title={t('signupTitle')}
             onBack={isAuthenticated ? undefined : handleBack}>
             <div className="space-y-3 sm:space-y-4 md:space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <p className="text-sm sm:text-base md:text-lg lg:text-xl font-black text-[#2D3142] text-start px-1 mb-2 sm:mb-3 md:mb-4">
-                    {t('signupSubtitle') || 'أكمل بياناتك الشخصية للمتابعة'}
+                    {t('signupSubtitle')}
                 </p>
 
                 <form
                     onSubmit={signupForm.handleSubmit(onSignupSubmit)}
                     className="space-y-3 sm:space-y-4 md:space-y-5">
                     <div className="space-y-1 sm:space-y-1.5 md:space-y-2">
-                        <label className="text-xs font-bold text-gray-400 block text-start">
-                            {t('firstName') || 'الاسم الأول'} *
+                        <label
+                            htmlFor="signup-first_name"
+                            className="text-xs font-bold text-gray-400 block text-start">
+                            {t('firstName')} *
                         </label>
                         <Input
+                            id="signup-first_name"
                             type="text"
-                            placeholder={t('firstNamePlaceholder') || 'Ahmed'}
+                            placeholder={t('firstNamePlaceholder')}
+                            autoComplete="given-name"
                             {...signupForm.register('first_name')}
-                            error={
-                                signupForm.formState.errors.first_name?.message
-                                    ? vt(
-                                          signupForm.formState.errors.first_name
-                                              .message as any,
-                                      )
-                                    : undefined
-                            }
-                            variant="filled"
-                            inputSize="lg"
-                            containerClassName={AUTH_INPUT_COMMON_CONTAINER}
-                            className={`${AUTH_INPUT_COMMON_TEXT} ${AUTH_INPUT_TEXT_COLOR}`}
+                            error={getFieldError(
+                                signupForm.formState.errors,
+                                'first_name',
+                                vt,
+                            )}
+                            {...AUTH_SIGNUP_INPUT_PROPS}
                         />
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 md:gap-4">
                         <div className="space-y-1 sm:space-y-1.5 md:space-y-2">
-                            <label className="text-xs font-bold text-gray-400 block text-start">
-                                {t('middleName') || 'اسم الأب'}
+                            <label
+                                htmlFor="signup-middle_name"
+                                className="text-xs font-bold text-gray-400 block text-start">
+                                {t('middleName')}
                             </label>
                             <Input
+                                id="signup-middle_name"
                                 type="text"
-                                placeholder={
-                                    t('middleNamePlaceholder') || 'Mohammed'
-                                }
+                                placeholder={t('middleNamePlaceholder')}
+                                autoComplete="additional-name"
                                 {...signupForm.register('middle_name')}
-                                error={
-                                    signupForm.formState.errors.middle_name
-                                        ?.message
-                                        ? vt(
-                                              signupForm.formState.errors
-                                                  .middle_name.message as any,
-                                          )
-                                        : undefined
-                                }
-                                variant="filled"
-                                inputSize="lg"
-                                containerClassName={AUTH_INPUT_COMMON_CONTAINER}
-                                className={`${AUTH_INPUT_COMMON_TEXT} ${AUTH_INPUT_TEXT_COLOR}`}
+                                error={getFieldError(
+                                    signupForm.formState.errors,
+                                    'middle_name',
+                                    vt,
+                                )}
+                                {...AUTH_SIGNUP_INPUT_PROPS}
                             />
                         </div>
                         <div className="space-y-1 sm:space-y-1.5 md:space-y-2">
-                            <label className="text-xs font-bold text-gray-400 block text-start">
-                                {t('lastName') || 'اللقب'}
+                            <label
+                                htmlFor="signup-last_name"
+                                className="text-xs font-bold text-gray-400 block text-start">
+                                {t('lastName')}
                             </label>
                             <Input
+                                id="signup-last_name"
                                 type="text"
-                                placeholder={
-                                    t('lastNamePlaceholder') || 'Al-Sanadi'
-                                }
+                                placeholder={t('lastNamePlaceholder')}
+                                autoComplete="family-name"
                                 {...signupForm.register('last_name')}
-                                error={
-                                    signupForm.formState.errors.last_name
-                                        ?.message
-                                        ? vt(
-                                              signupForm.formState.errors
-                                                  .last_name.message as any,
-                                          )
-                                        : undefined
-                                }
-                                variant="filled"
-                                inputSize="lg"
-                                containerClassName={AUTH_INPUT_COMMON_CONTAINER}
-                                className={`${AUTH_INPUT_COMMON_TEXT} ${AUTH_INPUT_TEXT_COLOR}`}
+                                error={getFieldError(
+                                    signupForm.formState.errors,
+                                    'last_name',
+                                    vt,
+                                )}
+                                {...AUTH_SIGNUP_INPUT_PROPS}
                             />
                         </div>
                     </div>
 
                     <PhoneInput
-                        label={t('phone') || 'رقم الهاتف'}
+                        id="signup-phone"
+                        name="phone"
+                        label={t('phone')}
                         value={phone}
                         onChange={() => {}}
                         required
@@ -366,25 +379,23 @@ export default function AuthFlow({
                     />
 
                     <div className="space-y-1 sm:space-y-1.5 md:space-y-2">
-                        <label className="text-xs font-bold text-gray-400 block text-start">
-                            {t('email') || 'البريد الإلكتروني'}
+                        <label
+                            htmlFor="signup-email"
+                            className="text-xs font-bold text-gray-400 block text-start">
+                            {t('email')}
                         </label>
                         <Input
+                            id="signup-email"
                             type="email"
-                            placeholder="someone@gmail.com"
+                            placeholder={t('emailPlaceholder')}
+                            autoComplete="email"
                             {...signupForm.register('email')}
-                            error={
-                                signupForm.formState.errors.email?.message
-                                    ? vt(
-                                          signupForm.formState.errors.email
-                                              .message as any,
-                                      )
-                                    : undefined
-                            }
-                            variant="filled"
-                            inputSize="lg"
-                            containerClassName={AUTH_INPUT_COMMON_CONTAINER}
-                            className={`${AUTH_INPUT_COMMON_TEXT} ${AUTH_INPUT_TEXT_COLOR}`}
+                            error={getFieldError(
+                                signupForm.formState.errors,
+                                'email',
+                                vt,
+                            )}
+                            {...AUTH_SIGNUP_INPUT_PROPS}
                         />
                     </div>
 
@@ -397,7 +408,7 @@ export default function AuthFlow({
                         {loading ? (
                             <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         ) : (
-                            t('completeProfile') || 'إكمال الملف الشخصي'
+                            t('completeProfile')
                         )}
                     </Button>
                 </form>

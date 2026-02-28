@@ -5,7 +5,7 @@
 import { useState, useEffect } from 'react';
 import type { AuthStep, ProfileUpdateRequest } from '@/types/auth';
 import { authStorage } from '@/lib/auth';
-import { validateStoredStep } from '@/lib/auth/utils';
+import { getInitialAuthStep } from '@/lib/auth/utils';
 
 interface UseAuthFlowStateOptions {
     initialStep?: string;
@@ -20,50 +20,29 @@ export function useAuthFlowState({
     checkProfileComplete,
     userEmail,
 }: UseAuthFlowStateOptions) {
-    // Step state
-    const [step, setStep] = useState<AuthStep>(() => {
-        if (initialStep === 'signup') return 'signup';
-        if (initialStep === 'otp') return 'otp';
-        if (!initialStep && isAuthenticated && !checkProfileComplete()) {
-            return 'signup';
-        }
-        return 'phone';
-    });
+    // Single source of truth: initial step from URL params, sessionStorage, and auth state
+    const [step, setStep] = useState<AuthStep>(() =>
+        getInitialAuthStep(initialStep, isAuthenticated, checkProfileComplete),
+    );
 
-    // Restore step from sessionStorage after hydration
+    // Run once on mount to restore OTP-related state when stored step is otp (step already set from getInitialAuthStep).
     useEffect(() => {
         const storedStep = authStorage.getStep();
-        const storedIsNewUser = authStorage.getIsNewUser();
         const storedPhone = authStorage.getPhone();
         const storedTempToken = authStorage.getTempToken();
+        if (storedStep !== 'otp' || !storedPhone || !storedTempToken) return;
 
-        if (storedStep && storedPhone) {
-            const validatedStep = validateStoredStep(
-                storedStep,
-                storedIsNewUser,
-                storedPhone,
-                storedTempToken,
-            );
-            if (validatedStep && validatedStep !== step) {
-                setStep(validatedStep);
-                // Restore temp_token and masked_phone if going to OTP step
-                if (validatedStep === 'otp' && storedTempToken) {
-                    setTempToken(storedTempToken);
-                    const storedMaskedPhone = authStorage.getMaskedPhone();
-                    if (storedMaskedPhone) {
-                        setMaskedPhone(storedMaskedPhone);
-                    }
-                    const storedExpiresAt = authStorage.getOtpExpiresAt();
-                    if (storedExpiresAt && !authStorage.isOtpExpired()) {
-                        setOtpExpiresAt(storedExpiresAt);
-                    } else if (storedExpiresAt && authStorage.isOtpExpired()) {
-                        // If expired, clear it
-                        setOtpExpiresAt(null);
-                        authStorage.setOtpExpiresAt(0);
-                    }
-                }
-            }
+        setTempToken(storedTempToken);
+        const storedMaskedPhone = authStorage.getMaskedPhone();
+        if (storedMaskedPhone) setMaskedPhone(storedMaskedPhone);
+        const storedExpiresAt = authStorage.getOtpExpiresAt();
+        if (storedExpiresAt && !authStorage.isOtpExpired()) {
+            setOtpExpiresAt(storedExpiresAt);
+        } else if (storedExpiresAt && authStorage.isOtpExpired()) {
+            setOtpExpiresAt(null);
+            authStorage.setOtpExpiresAt(0);
         }
+        // Intentionally run once on mount; step was already set via getInitialAuthStep.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 

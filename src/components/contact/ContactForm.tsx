@@ -76,12 +76,16 @@ export function ContactForm() {
                 <div className="space-y-6">
                     {/* Name */}
                     <div className="space-y-2">
-                        <label className="text-sm font-bold text-gray-700 block text-start">
+                        <label
+                            htmlFor="contact-name"
+                            className="text-sm font-bold text-gray-700 block text-start">
                             {t('form.name')}
                         </label>
                         <Input
+                            id="contact-name"
                             type="text"
                             placeholder={t('form.placeholder_name')}
+                            autoComplete="name"
                             {...register('name')}
                             error={
                                 errors.name?.message
@@ -95,12 +99,16 @@ export function ContactForm() {
 
                     {/* Email */}
                     <div className="space-y-2">
-                        <label className="text-sm font-bold text-gray-700 block text-start">
+                        <label
+                            htmlFor="contact-email"
+                            className="text-sm font-bold text-gray-700 block text-start">
                             {t('form.email')}
                         </label>
                         <Input
+                            id="contact-email"
                             type="email"
                             placeholder={t('form.placeholder_email')}
+                            autoComplete="email"
                             {...register('email')}
                             error={emailError}
                             containerClassName={inputClass}
@@ -110,12 +118,16 @@ export function ContactForm() {
 
                     {/* Phone */}
                     <div className="space-y-2">
-                        <label className="text-sm font-bold text-gray-700 block text-start">
+                        <label
+                            htmlFor="contact-phone"
+                            className="text-sm font-bold text-gray-700 block text-start">
                             {t('form.phone')}
                         </label>
                         <Input
+                            id="contact-phone"
                             type="tel"
                             placeholder={t('form.placeholder_phone')}
+                            autoComplete="tel"
                             {...register('phone')}
                             error={phoneError}
                             containerClassName={inputClass}
@@ -125,12 +137,16 @@ export function ContactForm() {
 
                     {/* Subject */}
                     <div className="space-y-2">
-                        <label className="text-sm font-bold text-gray-700 block text-start">
+                        <label
+                            htmlFor="contact-subject"
+                            className="text-sm font-bold text-gray-700 block text-start">
                             {t('form.subject')}
                         </label>
                         <Input
+                            id="contact-subject"
                             type="text"
                             placeholder={t('form.placeholder_subject')}
+                            autoComplete="off"
                             {...register('subject')}
                             error={
                                 errors.subject?.message
@@ -144,11 +160,15 @@ export function ContactForm() {
 
                     {/* Message */}
                     <div className="space-y-2">
-                        <label className="text-sm font-bold text-gray-700 block text-start">
+                        <label
+                            htmlFor="contact-message"
+                            className="text-sm font-bold text-gray-700 block text-start">
                             {t('form.message')}
                         </label>
                         <Textarea
+                            id="contact-message"
                             rows={8}
+                            autoComplete="off"
                             {...register('message')}
                             error={
                                 errors.message?.message

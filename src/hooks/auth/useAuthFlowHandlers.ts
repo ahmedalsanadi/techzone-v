@@ -12,6 +12,7 @@ import { storeService } from '@/services/store-service';
 import { useAuthStore } from '@/store/useAuthStore';
 import { normalizeRedirectPath } from '@/lib/utils';
 import { authStorage } from '@/lib/auth';
+import { PHONE_MIN_LENGTH } from '@/lib/validations';
 import { getAuthErrorMessage } from '@/lib/auth/error-handler';
 import type { AuthStep, ProfileUpdateRequest } from '@/types/auth';
 import { useCartMerge } from '@/hooks/cart';
@@ -76,7 +77,7 @@ export function useAuthFlowHandlers(options: UseAuthFlowHandlersOptions) {
         async (submittedPhone?: string) => {
             const phoneToUse = submittedPhone || phone;
 
-            if (!phoneToUse || phoneToUse.length < 9) {
+            if (!phoneToUse || phoneToUse.length < PHONE_MIN_LENGTH) {
                 return;
             }
 
@@ -127,10 +128,7 @@ export function useAuthFlowHandlers(options: UseAuthFlowHandlersOptions) {
             }
 
             if (!tempToken) {
-                toast.error(
-                    t('sessionExpired') ||
-                        'انتهت صلاحية الجلسة. يرجى المحاولة مرة أخرى',
-                );
+                toast.error(t('sessionExpired'));
                 setStep('phone');
                 return;
             }
