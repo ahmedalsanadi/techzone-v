@@ -327,6 +327,7 @@ export default function CartItemConfigModal({
                                     {activeProduct.variants &&
                                         activeProduct.variants.length > 0 && (
                                             <VariantSelector
+                                                product={activeProduct}
                                                 variants={
                                                     activeProduct.variants
                                                 }
