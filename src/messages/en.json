@@ -510,13 +510,19 @@
     "branch_not_found_title": "Branch information not available",
     "branch_not_found_message": "The requested branch could not be loaded. Showing store contact information instead.",
     "form": {
+      "name": "Your Name",
       "email": "Email Address",
+      "phone": "Phone Number",
       "subject": "Subject",
       "message": "Write your message here:",
       "send": "Send",
+      "placeholder_name": "Enter your full name",
       "placeholder_email": "someone@gmail.com",
+      "placeholder_phone": "e.g. 966500000000",
       "placeholder_subject": "Enter subject here",
-      "placeholder_message": "Type your message here..."
+      "placeholder_message": "Type your message here...",
+      "success": "Your message was sent successfully.",
+      "error": "Failed to send message. Please try again."
     }
   },
   "Signup": {
@@ -830,6 +836,8 @@
   },
   "Validation": {
     "required": "This field is required",
+    "nameRequired": "Name is required",
+    "emailOrPhoneRequired": "Please provide either email or phone number",
     "invalidEmail": "Invalid email address",
     "phoneMin": "Phone number must be at least 9 digits",
     "otpLength": "OTP must be 4 digits",

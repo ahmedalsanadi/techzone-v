@@ -29,11 +29,24 @@ export const addressSchema = z.object({
     recipient_name: z.string().min(1, 'required'),
 });
 
-export const contactSchema = z.object({
-    email: z.string().email('invalidEmail'),
-    subject: z.string().min(3, 'subjectMin'),
-    message: z.string().min(10, 'messageMin'),
-});
+/** Contact form: name required; at least one of email or phone; subject & message required; channel optional (default 1). */
+export const contactSchema = z
+    .object({
+        name: z.string().min(1, 'nameRequired'),
+        email: z.string().email('invalidEmail').optional().or(z.literal('')),
+        phone: z.string().min(9, 'phoneMin').optional().or(z.literal('')),
+        subject: z.string().min(3, 'subjectMin'),
+        message: z.string().min(10, 'messageMin'),
+        channel: z.number().int().min(1).max(4).optional().default(1),
+    })
+    .refine(
+        (data) => {
+            const hasEmail = !!data.email?.trim();
+            const hasPhone = !!data.phone?.trim();
+            return hasEmail || hasPhone;
+        },
+        { message: 'emailOrPhoneRequired', path: ['email'] },
+    );
 
 export const reportProblemSchema = z.object({
     problem_type: z.string().min(1, 'problemTypeRequired'),

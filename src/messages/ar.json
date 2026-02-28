@@ -511,13 +511,19 @@
     "branch_not_found_title": "معلومات الفرع غير متاحة",
     "branch_not_found_message": "تعذر تحميل الفرع المطلوب. يتم عرض معلومات الاتصال بالمتجر بدلاً من ذلك.",
     "form": {
-      "email": "بريدك الالكتروني",
+      "name": "اسمك",
+      "email": "البريد الإلكتروني",
+      "phone": "رقم الهاتف",
       "subject": "العنوان",
       "message": "اكتب رسالتك هنا:",
-      "send": "ارسال",
+      "send": "إرسال",
+      "placeholder_name": "أدخل اسمك الكامل",
       "placeholder_email": "someone@example.com",
+      "placeholder_phone": "مثال: 966500000000",
       "placeholder_subject": "أدخل عنوان الرسالة هنا",
-      "placeholder_message": "اكتب رسالتك هنا..."
+      "placeholder_message": "اكتب رسالتك هنا...",
+      "success": "تم إرسال رسالتك بنجاح.",
+      "error": "فشل إرسال الرسالة. يرجى المحاولة مرة أخرى."
     }
   },
   "Signup": {
@@ -834,6 +840,8 @@
   },
   "Validation": {
     "required": "هذا الحقل مطلوب",
+    "nameRequired": "الاسم مطلوب",
+    "emailOrPhoneRequired": "يرجى إدخال البريد الإلكتروني أو رقم الهاتف",
     "invalidEmail": "البريد الإلكتروني غير صحيح",
     "phoneMin": "رقم الهاتف يجب أن يكون 9 أرقام على الأقل",
     "otpLength": "كود التحقق يجب أن يكون 4 أرقام",

@@ -1,52 +1,98 @@
 'use client';
-/**
- * Contact form component
- */
 
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
-import { useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { contactSchema } from '@/lib/validations';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { toast } from 'sonner';
+import {
+    useSendContactMessage,
+    getContactErrorMessage,
+    type ContactFormValues,
+} from '@/hooks/contact';
 
-export const ContactForm: React.FC = () => {
+const defaultValues: ContactFormValues = {
+    name: '',
+    email: '',
+    phone: '',
+    subject: '',
+    message: '',
+    channel: 1,
+};
+
+export function ContactForm() {
     const t = useTranslations('Contact');
     const vt = useTranslations('Validation');
+    const { mutateAsync: sendMessage, isPending } = useSendContactMessage();
 
     const {
         register,
         handleSubmit,
         reset,
-        formState: { errors, isValid, isSubmitting },
-    } = useForm({
-        resolver: zodResolver(contactSchema),
+        formState: { errors, isValid },
+    } = useForm<ContactFormValues>({
+        resolver: zodResolver(contactSchema) as Resolver<ContactFormValues>,
         mode: 'onChange',
-        defaultValues: {
-            email: '',
-            subject: '',
-            message: '',
-        },
+        defaultValues,
     });
 
-    const onSubmit = async (data: any) => {
+    const onSubmit = async (data: ContactFormValues) => {
         try {
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            console.log('Contact form submitted:', data);
-            toast.success(t('form.success') || 'Message sent successfully!');
-            reset();
+            await sendMessage({
+                name: data.name,
+                email: data.email?.trim() || undefined,
+                phone: data.phone?.trim() || undefined,
+                subject: data.subject,
+                message: data.message,
+                channel: data.channel ?? 1,
+            });
+            toast.success(t('form.success'));
+            reset(defaultValues);
         } catch (error) {
-            toast.error(t('form.error') || 'Failed to send message.');
+            const message = getContactErrorMessage(
+                error,
+                t('form.error'),
+            );
+            toast.error(message);
         }
     };
+
+    const emailError = errors.email?.message
+        ? vt(errors.email.message as string)
+        : undefined;
+    const phoneError = errors.phone?.message
+        ? vt(errors.phone.message as string)
+        : undefined;
+
+    const inputClass =
+        'h-14 px-6 rounded-2xl bg-gray-50/50 border border-gray-100 focus-within:border-theme-primary-border focus-within:ring-4 focus-within:ring-theme-primary/5 shadow-none text-start';
 
     return (
         <div className="bg-white rounded-3xl p-8 md:p-10 shadow-sm border border-gray-100 h-full">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
                 <div className="space-y-6">
+                    {/* Name */}
+                    <div className="space-y-2">
+                        <label className="text-sm font-bold text-gray-700 block text-start">
+                            {t('form.name')}
+                        </label>
+                        <Input
+                            type="text"
+                            placeholder={t('form.placeholder_name')}
+                            {...register('name')}
+                            error={
+                                errors.name?.message
+                                    ? vt(errors.name.message as string)
+                                    : undefined
+                            }
+                            containerClassName={inputClass}
+                            className="text-start"
+                        />
+                    </div>
+
                     {/* Email */}
                     <div className="space-y-2">
                         <label className="text-sm font-bold text-gray-700 block text-start">
@@ -56,12 +102,23 @@ export const ContactForm: React.FC = () => {
                             type="email"
                             placeholder={t('form.placeholder_email')}
                             {...register('email')}
-                            error={
-                                errors.email?.message
-                                    ? vt(errors.email.message as any)
-                                    : undefined
-                            }
-                            containerClassName="h-14 px-6 rounded-2xl bg-gray-50/50 border border-gray-100 focus-within:border-theme-primary-border focus-within:ring-4 focus-within:ring-theme-primary/5 shadow-none"
+                            error={emailError}
+                            containerClassName={inputClass}
+                            className="text-start"
+                        />
+                    </div>
+
+                    {/* Phone */}
+                    <div className="space-y-2">
+                        <label className="text-sm font-bold text-gray-700 block text-start">
+                            {t('form.phone')}
+                        </label>
+                        <Input
+                            type="tel"
+                            placeholder={t('form.placeholder_phone')}
+                            {...register('phone')}
+                            error={phoneError}
+                            containerClassName={inputClass}
                             className="text-start"
                         />
                     </div>
@@ -77,10 +134,10 @@ export const ContactForm: React.FC = () => {
                             {...register('subject')}
                             error={
                                 errors.subject?.message
-                                    ? vt(errors.subject.message as any)
+                                    ? vt(errors.subject.message as string)
                                     : undefined
                             }
-                            containerClassName="h-14 px-6 rounded-2xl bg-gray-50/50 border border-gray-100 focus-within:border-theme-primary-border focus-within:ring-4 focus-within:ring-theme-primary/5 shadow-none"
+                            containerClassName={inputClass}
                             className="text-start"
                         />
                     </div>
@@ -95,7 +152,7 @@ export const ContactForm: React.FC = () => {
                             {...register('message')}
                             error={
                                 errors.message?.message
-                                    ? vt(errors.message.message as any)
+                                    ? vt(errors.message.message as string)
                                     : undefined
                             }
                             placeholder={t('form.placeholder_message')}
@@ -108,10 +165,13 @@ export const ContactForm: React.FC = () => {
                         type="submit"
                         variant="primary"
                         size="lg"
-                        disabled={isSubmitting || !isValid}
-                        className="px-14 active:scale-95">
-                        {isSubmitting ? (
-                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        disabled={isPending || !isValid}
+                        className="px-14 active:scale-95"
+                    >
+                        {isPending ? (
+                            <span className="inline-flex items-center justify-center gap-2">
+                                <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            </span>
                         ) : (
                             t('form.send')
                         )}
@@ -120,4 +180,4 @@ export const ContactForm: React.FC = () => {
             </form>
         </div>
     );
-};
+}
