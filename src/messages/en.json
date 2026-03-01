@@ -718,17 +718,32 @@
   "ReportProblem": {
     "title": "Report a Problem",
     "problemType": "Select Problem Type:",
-    "problemDescription": "Write something about the problem:",
-    "addImages": "Add images explaining your problem:",
+    "subjectLabel": "Subject",
+    "subjectPlaceholder": "Brief title for your complaint",
+    "problemDescription": "Describe the problem in detail:",
+    "descriptionPlaceholder": "E.g. wrong item received, damaged packaging, missing items…",
+    "addImages": "Add images (optional, max 5)",
     "submit": "Submit",
-    "types": {
-      "type1": "Type 1",
-      "type2": "Type 2",
-      "type3": "Type 3",
-      "type4": "Type 4",
-      "type5": "Type 5"
+    "success": "Complaint submitted successfully. We will get back to you soon.",
+    "error": "Failed to submit complaint. Please try again.",
+    "fileTooLarge": "Each image must be 5MB or less.",
+    "categories": {
+      "1": "Order",
+      "2": "Shipping",
+      "3": "Payment",
+      "4": "Product",
+      "5": "Other"
     },
-    "uploadDesc": "Click or drag images here to upload"
+    "priorities": {
+      "1": "Low",
+      "2": "Medium",
+      "3": "High",
+      "4": "Urgent"
+    },
+    "priorityLabel": "Priority",
+    "uploadDesc": "Click or drag images here (jpg, png, webp, gif — max 5MB each)",
+    "removeFile": "Remove",
+    "maxFiles": "Maximum 5 images allowed."
   },
   "Wallet": {
     "title": "Wallet",

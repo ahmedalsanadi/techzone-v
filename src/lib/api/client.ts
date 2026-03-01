@@ -78,9 +78,6 @@ export async function fetchLibero<T>(
     options: FetchOptions = {},
 ): Promise<T> {
     const result = await fetchLiberoFull<T>(endpoint, options);
-    if (env.isDev) {
-        console.log('result', result);
-    }
     return result.data;
 }
 
@@ -125,9 +122,14 @@ export async function fetchLiberoFull<T>(
         });
     }
 
+    // For FormData body, do not set Content-Type so the browser sets it with boundary
+    const isFormData = typeof init.body !== 'undefined' && init.body instanceof FormData;
+    const contentTypeFromInit = (init.headers as Record<string, string>)?.['Content-Type'];
+    const contentTypeForHeaders = isFormData ? 'multipart/form-data' : contentTypeFromInit;
+
     const headers = await getBaseHeaders(
         locale,
-        (init.headers as Record<string, string>)?.['Content-Type'],
+        contentTypeForHeaders,
         isProtected,
     );
 
@@ -135,7 +137,10 @@ export async function fetchLiberoFull<T>(
         const overrideHeaders = new Headers(
             init.headers as Record<string, string>,
         );
-        overrideHeaders.forEach((v, k) => headers.set(k, v));
+        overrideHeaders.forEach((v, k) => {
+            if (isFormData && k.toLowerCase() === 'content-type') return;
+            headers.set(k, v);
+        });
     }
 
     if (env.isDev) {

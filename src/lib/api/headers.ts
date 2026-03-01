@@ -78,6 +78,7 @@ export async function getBaseHeaders(
         }
     }
 
+    // For multipart/form-data we do not set Content-Type so the browser (or proxy) sets it with boundary
     if (contentType && !contentType.includes('multipart/form-data')) {
         headers.set('Content-Type', contentType);
     } else if (!contentType || contentType === 'application/json') {

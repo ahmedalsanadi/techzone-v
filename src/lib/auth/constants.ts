@@ -28,7 +28,8 @@ export const PROTECTED_API_ENDPOINTS = [
     '/store/addresses',
     '/store/wallet',
     '/store/reviews/can-review',
-    ] as const;
+    '/store/complaints',
+] as const;
 
 /**
  * Session storage keys for auth flow

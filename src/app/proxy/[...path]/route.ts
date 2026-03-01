@@ -40,9 +40,10 @@ async function handleRequest(
 
     // Build headers: getBaseHeaders (server) adds Accept, Content-Type, and may add branch from request cookies.
     // We then inject X-Store-Key and ensure x-branch-id from incoming request cookies (see below).
+    const incomingContentType = request.headers.get('Content-Type');
     const headers = await getBaseHeaders(
         request.headers.get('Accept-Language') || 'ar',
-        request.headers.get('Content-Type'),
+        incomingContentType,
         isProtected,
     );
 
@@ -79,6 +80,12 @@ async function handleRequest(
     // Use the token we already read from cookies (more reliable than getBaseHeaders reading it again)
     if (isProtected && token) {
         headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    // CRITICAL: For multipart/form-data, forward the incoming Content-Type (includes boundary)
+    // so the backend can parse the body. getBaseHeaders intentionally does not set Content-Type for multipart.
+    if (incomingContentType?.includes('multipart/form-data')) {
+        headers.set('Content-Type', incomingContentType);
     }
 
     let body: BodyInit | undefined;

@@ -1,4 +1,4 @@
-// src/app/[locale]/my-orders/utils/components/ReportProblemView.tsx
+// src/components/orders/ReportProblemView.tsx
 'use client';
 
 import React from 'react';
@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import { OrderSummaryCard } from './OrderSummaryCard';
 import { Order } from '@/types/orders';
-import { ReportProblemForm } from './ReportProblemForm';
+import { ReportProblemForm } from './report-problem';
 
 interface ReportProblemViewProps {
     order: Order;
@@ -44,7 +44,7 @@ export default function ReportProblemView({ order }: ReportProblemViewProps) {
 
                 {/* Main Content: Problem Form (Left side in RTL) */}
                 <div className="lg:col-span-2">
-                    <ReportProblemForm />
+                    <ReportProblemForm orderId={order.id} />
                 </div>
             </div>
         </section>
