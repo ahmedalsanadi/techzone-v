@@ -238,10 +238,13 @@ export default function OrderCard({ order }: OrderCardProps) {
                 ) : (
                     <>
                         <Button
+                            asChild
                             variant="secondaryMuted"
                             size="card"
                             className="flex-1">
-                            {t('reportProblem')}
+                            <Link href={`/my-orders/${order.id}/report-problem`}>
+                                {t('reportProblem')}
+                            </Link>
                         </Button>
                         <Button
                             asChild
