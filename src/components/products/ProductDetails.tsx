@@ -368,6 +368,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                             }
                             prepTime={product.prepTime}
                             categories={product.categories}
+                            brand={product.brand}
                         />
 
                         {/* Notes */}

@@ -3,6 +3,7 @@ import { useTranslations } from 'next-intl';
 import { Flame, Clock } from 'lucide-react';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
 import { Badge } from '@/components/ui/Badge';
+import type { ProductBrand } from '@/types/store';
 
 interface ProductInfoProps {
     name: string;
@@ -13,6 +14,7 @@ interface ProductInfoProps {
     calories?: number;
     prepTime?: number;
     categories?: Array<{ id: number; name: string }>;
+    brand?: ProductBrand | null;
 }
 
 export default function ProductInfo({
@@ -24,6 +26,7 @@ export default function ProductInfo({
     calories,
     prepTime,
     categories,
+    brand,
 }: ProductInfoProps) {
     const t = useTranslations('Product');
 
@@ -56,13 +59,21 @@ export default function ProductInfo({
     return (
         <>
             <div className="space-y-5">
-                {categories && categories.length > 0 && (
-                    <div className="flex gap-2">
-                        {categories.map((cat) => (
+                {(brand || (categories && categories.length > 0)) && (
+                    <div className="flex flex-wrap items-center gap-2">
+                        {brand && (
+                            <span className="inline-flex items-center text-sm font-bold text-gray-600 uppercase tracking-wider px-3 py-1.5 rounded-xl bg-gray-100 border border-gray-200">
+                                {brand.name}
+                            </span>
+                        )}
+                        {categories && categories.length > 0 && categories.map((cat) => (
                             <Badge
-                             className="text-md md:text-lg"
+                                className="text-md md:text-lg"
                                 key={cat.id}
-                                variant="primary">{cat.name}</Badge>
+                                variant="primary"
+                            >
+                                {cat.name}
+                            </Badge>
                         ))}
                     </div>
                 )}

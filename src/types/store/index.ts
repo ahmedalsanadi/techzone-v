@@ -202,6 +202,14 @@ export interface ProductMedia {
     gallery: ProductMediaSizes[];
 }
 
+/** Product brand from API; may be null when product has no brand. */
+export interface ProductBrand {
+    id: number;
+    name: string;
+    slug: string;
+    image_url: string | null;
+}
+
 export interface Product {
     id: number;
     title: string;
@@ -220,7 +228,8 @@ export interface Product {
     prepTime?: number;
     rating?: number;
     review_count?: number;
-    categories?: Array<{ id: number; name: string }>;
+    categories?: Array<{ id: number; name: string; slug?: string; image_url?: string | null }>;
+    brand?: ProductBrand | null;
     is_variation?: boolean;
     variation_options?: Record<string, string[]> | null;
     variants?: ProductVariant[];

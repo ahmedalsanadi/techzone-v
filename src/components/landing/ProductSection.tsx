@@ -74,6 +74,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
                                     : undefined
                             }
                             media={product.media}
+                            brand={product.brand}
                             onAddToCartClick={() => handleAddClick(product)}
                             isAdding={loadingProductId === product.id}
                             index={index}

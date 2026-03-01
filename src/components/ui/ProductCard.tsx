@@ -18,7 +18,7 @@ import { Link } from '@/i18n/navigation';
 import { useCartActions, useCartProductSummary } from '@/hooks/cart';
 import { useWishlistActions } from '@/hooks/wishlist';
 import { useWishlistStore } from '@/store/useWishlistStore';
-import type { ProductMedia } from '@/types/store';
+import type { ProductMedia, ProductBrand } from '@/types/store';
 
 interface ProductCardProps {
     name: string;
@@ -39,6 +39,8 @@ interface ProductCardProps {
     index?: number;
     media?: ProductMedia;
     showDelete?: boolean;
+    /** Optional brand; only shown when present */
+    brand?: ProductBrand | null;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -60,6 +62,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     index = 0,
     media,
     showDelete = false,
+    brand,
 }) => {
     const cardRef = useRef<HTMLDivElement | null>(null);
     const hasPrefetchedRef = useRef(false);
@@ -180,6 +183,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
                 {/* Product Info */}
                 <div className="p-2 sm:p-4 text-start flex flex-col flex-1">
+                    {brand && (
+                        <span className="inline-block text-[11px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 sm:mb-2">
+                            {brand.name}
+                        </span>
+                    )}
                     <h3 className="text-sm sm:text-[16px] font-medium text-gray-900 line-clamp-2 leading-tight mb-2 sm:mb-3 h-8 sm:h-10">
                         {name}
                     </h3>
