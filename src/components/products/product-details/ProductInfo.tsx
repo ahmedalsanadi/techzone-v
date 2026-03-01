@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Flame, Clock } from 'lucide-react';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
@@ -62,8 +63,23 @@ export default function ProductInfo({
                 {(brand || (categories && categories.length > 0)) && (
                     <div className="flex flex-wrap items-center gap-2">
                         {brand && (
-                            <span className="inline-flex items-center text-sm font-bold text-gray-600 uppercase tracking-wider px-3 py-1.5 rounded-xl bg-gray-100 border border-gray-200">
-                                {brand.name}
+                            <span className="inline-flex items-center gap-2.5 text-sm font-bold text-gray-600 uppercase tracking-wider px-3 py-2 rounded-xl bg-gray-100 border border-gray-200">
+                                {brand.image_url ? (
+                                    <>
+                                        <span className="relative flex items-center justify-center shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-white border border-gray-100 overflow-hidden">
+                                            <Image
+                                                src={brand.image_url}
+                                                alt={brand.name}
+                                                fill
+                                                sizes="36px"
+                                                className="object-contain object-center p-1"
+                                            />
+                                        </span>
+                                        <span>{brand.name}</span>
+                                    </>
+                                ) : (
+                                    <span>{brand.name}</span>
+                                )}
                             </span>
                         )}
                         {categories && categories.length > 0 && categories.map((cat) => (
