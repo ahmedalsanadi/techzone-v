@@ -39,7 +39,20 @@
   "Notifications": {
     "title": "الإشعارات",
     "empty": "لا توجد إشعارات جديدة",
-    "viewAll": "عرض الكل"
+    "viewAll": "عرض الكل",
+    "markAllAsRead": "تحديد الكل كمقروء",
+    "filterAll": "الكل",
+    "filterUnread": "غير مقروءة",
+    "filterOrders": "الطلبات",
+    "filterPromotions": "العروض",
+    "filterSystem": "النظام",
+    "badgeOrder": "طلب",
+    "badgePromotion": "عرض",
+    "badgeSystem": "نظام",
+    "new": "جديد",
+    "markAsRead": "تحديد كمقروء",
+    "markAsUnread": "تحديد كغير مقروء",
+    "noResults": "لا توجد إشعارات مطابقة للفلاتر المختارة"
   },
   "SubHeader": {
     "selectOrderType": "حدد نوع الطلب:",

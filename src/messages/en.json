@@ -38,7 +38,20 @@
   "Notifications": {
     "title": "Notifications",
     "empty": "No new notifications",
-    "viewAll": "View All"
+    "viewAll": "View All",
+    "markAllAsRead": "Mark all as read",
+    "filterAll": "All",
+    "filterUnread": "Unread",
+    "filterOrders": "Orders",
+    "filterPromotions": "Offers",
+    "filterSystem": "System",
+    "badgeOrder": "Order",
+    "badgePromotion": "Offer",
+    "badgeSystem": "System",
+    "new": "New",
+    "markAsRead": "Mark as read",
+    "markAsUnread": "Mark as unread",
+    "noResults": "No notifications match your filters"
   },
   "SubHeader": {
     "selectOrderType": "Select order type:",
