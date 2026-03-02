@@ -107,7 +107,10 @@
     "deliveryToSmall": "to",
     "fee": "Fee",
     "notes": "Order notes",
-    "notesPlaceholder": "Add any notes or special instructions (optional)"
+    "notesPlaceholder": "Add any notes or special instructions (optional)",
+    "couponTitle": "Coupons & Offers",
+    "couponPlaceholder": "Coupon code",
+    "couponApply": "Apply"
   },
   "Order": {
     "orderType": "Order Type",

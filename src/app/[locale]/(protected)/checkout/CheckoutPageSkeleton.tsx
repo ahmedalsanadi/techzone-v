@@ -18,7 +18,7 @@ export default function CheckoutPageSkeleton() {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Left: order type + payment + coupon */}
+                    {/* Left: checkout cards */}
                     <div className="lg:col-span-2 space-y-6">
                         {Array.from({ length: 3 }).map((_, i) => (
                             <div
@@ -43,6 +43,11 @@ export default function CheckoutPageSkeleton() {
                                     <div className="h-4 w-16 rounded bg-gray-100 animate-pulse" />
                                 </div>
                             ))}
+                            <div className="border-t border-gray-100 pt-4 mt-2 space-y-3">
+                                <div className="h-4 w-36 rounded bg-gray-100 animate-pulse" />
+                                <div className="h-12 w-full rounded-2xl bg-gray-100 animate-pulse" />
+                                <div className="h-12 w-full rounded-2xl bg-gray-100 animate-pulse" />
+                            </div>
                             <div className="h-12 w-full rounded-2xl bg-gray-100 animate-pulse mt-3" />
                         </div>
                     </div>

@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/Button';
 import CheckoutCard from '@/components/checkout/CheckoutCard';
 import OrderTypeCard from '@/components/checkout/OrderTypeCard';
 import PaymentMethodCard from '@/components/checkout/PaymentMethodCard';
-import CouponCard from '@/components/checkout/CouponCard';
 import OrderSummaryCard from '@/components/checkout/OrderSummaryCard';
 import { PaymentMethodType } from '@/types/orders';
 import { useCartStore } from '@/store/useCartStore';
@@ -17,7 +16,6 @@ import {
     useOrderStore,
     getCustomerPickupDatetimeAsDate,
 } from '@/store/useOrderStore';
-import { useUiStore } from '@/store/useUiStore';
 import { formatCurrency } from '@/lib/utils';
 import { getApiErrorMessage } from '@/lib/api';
 import { useCheckoutInit, useCreateOrder } from '@/hooks/checkout';
@@ -109,27 +107,28 @@ export default function CheckoutPage() {
 
     // Handle shipping speed validity
     useEffect(() => {
+        let shouldReset = false;
+
         if (orderType !== 'delivery') {
-            if (selectedShippingSpeedTypeId !== null) {
-                setSelectedShippingSpeedTypeId(null);
+            shouldReset = selectedShippingSpeedTypeId !== null;
+        } else {
+            const availableSpeeds = initData?.shipping_speed_types || [];
+            const validIds = availableSpeeds.map((s) => s.value);
+
+            if (availableSpeeds.length > 0) {
+                shouldReset =
+                    selectedShippingSpeedTypeId !== null &&
+                    !validIds.includes(selectedShippingSpeedTypeId);
+            } else {
+                shouldReset = selectedShippingSpeedTypeId !== null;
             }
-            return;
         }
 
-        const availableSpeeds = initData?.shipping_speed_types || [];
-        const validIds = availableSpeeds.map((s) => s.value);
-
-        if (availableSpeeds.length > 0) {
-            // Keep selection if it's still valid, otherwise wait for user interaction
-            if (
-                selectedShippingSpeedTypeId !== null &&
-                !validIds.includes(selectedShippingSpeedTypeId)
-            ) {
-                setSelectedShippingSpeedTypeId(null);
-            }
-        } else if (selectedShippingSpeedTypeId !== null) {
+        if (!shouldReset) return;
+        const tid = window.setTimeout(() => {
             setSelectedShippingSpeedTypeId(null);
-        }
+        }, 0);
+        return () => clearTimeout(tid);
     }, [initData, selectedShippingSpeedTypeId, orderType]);
 
     const createOrderMutation = useCreateOrder();
@@ -432,8 +431,6 @@ export default function CheckoutPage() {
                                 isLoading={isLoadingData}
                             />
                         )}
-
-                    <CouponCard />
 
                     <CheckoutCard title={t('notes')}>
                         <div className="space-y-2">

@@ -108,7 +108,10 @@
     "deliveryToSmall": "إلى",
     "fee": "رسوم",
     "notes": "ملاحظات الطلب",
-    "notesPlaceholder": "أضف أي ملاحظات أو تعليمات خاصة (اختياري)"
+    "notesPlaceholder": "أضف أي ملاحظات أو تعليمات خاصة (اختياري)",
+    "couponTitle": "الكوبونات والعروض",
+    "couponPlaceholder": "كود الكوبون",
+    "couponApply": "تحقق"
   },
   "Order": {
     "orderType": "نوع الطلب",

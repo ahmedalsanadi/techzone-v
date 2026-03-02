@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/Button';
 import { cn, formatMoneyAmount } from '@/lib/utils';
 import CurrencySymbol from '../ui/CurrencySymbol';
 import React from 'react';
+import CouponCard from '@/components/checkout/CouponCard';
 
 interface OrderSummaryCardProps {
     items: SummaryItem[];
@@ -92,6 +93,8 @@ export default function OrderSummaryCard({
                         </div>
                     </div>
                 </div>
+
+                <CouponCard />
 
                 {disabled && disabledReason && (
                     <p className="text-amber-700 text-xs mt-2">
