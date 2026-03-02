@@ -5,6 +5,9 @@ import NotificationsView, {
 export const dynamic = 'force-dynamic';
 
 export default async function NotificationsPage() {
+    // Simulate network latency so the loading skeleton is visible while testing.
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
     // TODO: Replace with real API call when backend is ready.
     // For now we use static, themed dummy data.
     const dummyNotifications: NotificationItem[] = [
