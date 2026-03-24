@@ -490,7 +490,8 @@
     "removeError": "فشل حذف المنتج من قائمة الرغبات",
     "toggleError": "فشل تحديث قائمة الرغبات",
     "addToCart": "إضافة إلى السلة",
-    "discount": "خصم"
+    "discount": "خصم",
+    "save": "وفر {amount}"
   },
   "Category": {
     "categories": "الأقسام",

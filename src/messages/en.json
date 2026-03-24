@@ -489,7 +489,8 @@
     "removeError": "Failed to remove product from wishlist",
     "toggleError": "Failed to update wishlist",
     "addToCart": "Add to Cart",
-    "discount": "Sale"
+    "discount": "Sale",
+    "save": "Save {amount}"
   },
   "Category": {
     "categories": "Categories",
