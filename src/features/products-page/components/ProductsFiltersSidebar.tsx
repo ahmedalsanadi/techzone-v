@@ -71,7 +71,28 @@ export function ProductsFiltersSidebar({
         setCollapsed((prev) => ({ ...prev, [key]: !prev[key] }));
     };
 
-    // Note: drafts are reset by parent changing the component key on URL navigation.
+    // Sync drafts from parent state (e.g. when cleared from breadcrumbs or URL navigation)
+    useEffect(() => {
+        setSearchDraft(state.filters.search);
+    }, [state.filters.search]);
+
+    useEffect(() => {
+        setMinDraft(
+            state.filters.min_price != null
+                ? String(state.filters.min_price)
+                : '',
+        );
+    }, [state.filters.min_price]);
+
+    useEffect(() => {
+        setMaxDraft(
+            state.filters.max_price != null
+                ? String(state.filters.max_price)
+                : '',
+        );
+    }, [state.filters.max_price]);
+
+    // Note: full remount (and thus state reset) only happens via parent key (filtersResetNonce) on explicit "Reset All".
 
     // Debounce search
     useEffect(() => {

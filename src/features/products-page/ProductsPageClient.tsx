@@ -401,14 +401,9 @@ export default function ProductsPageClient() {
                     {/* Prevent sticky “bounce”: cap height and scroll internally */}
                     <div className="max-h-[calc(100vh-7rem)] overflow-auto overscroll-contain custom-scrollbar scrollbar-side-outer">
                         <ProductsFiltersSidebar
-                            // IMPORTANT: do NOT include `page` in the key; otherwise pagination
-                            // remounts the sidebar and the debounced search will reset page to 1.
-                            key={[
-                                filtersResetNonce,
-                                state.filters.search,
-                                state.filters.min_price ?? '',
-                                state.filters.max_price ?? '',
-                            ].join(':')}
+                            // IMPORTANT: only remount on full reset to keep focus during typing.
+                            // The sidebar now internalizes state-sync via effects.
+                            key={filtersResetNonce}
                             vars={filtersVarsQuery.data}
                             isLoading={filtersVarsQuery.isLoading}
                             state={state}
