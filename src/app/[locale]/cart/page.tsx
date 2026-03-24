@@ -193,12 +193,12 @@ const CartPage = () => {
                             return (
                                 <div
                                     key={item.id}
-                                    className="bg-white border border-gray-100 p-4 md:p-5 rounded-2xl flex flex-col md:flex-row md:items-center gap-4 md:gap-6 shadow-sm hover:shadow-md transition-shadow">
+                                    className="bg-white border border-gray-100 p-3 md:p-5 rounded-2xl flex flex-row md:items-center gap-4 md:gap-6 shadow-sm hover:shadow-md transition-shadow">
                                     {/* Product Image - Clickable */}
                                     {productUrl ? (
                                         <Link
                                             href={productUrl}
-                                            className="relative w-20 h-20 md:w-28 md:h-28 bg-gray-50 rounded-xl overflow-hidden shrink-0 hover:opacity-90 transition-opacity">
+                                            className="relative size-24 md:w-28 md:h-28 bg-gray-50 rounded-xl overflow-hidden shrink-0 hover:opacity-90 transition-opacity">
                                             <DynamicImage
                                                 src={item.image}
                                                 alt={item.name}
@@ -206,7 +206,7 @@ const CartPage = () => {
                                             />
                                         </Link>
                                     ) : (
-                                        <div className="relative w-20 h-20 md:w-28 md:h-28 bg-gray-50 rounded-xl overflow-hidden shrink-0">
+                                        <div className="relative size-24 md:w-28 md:h-28 bg-gray-50 rounded-xl overflow-hidden shrink-0">
                                             <DynamicImage
                                                 src={item.image}
                                                 alt={item.name}
@@ -215,25 +215,25 @@ const CartPage = () => {
                                         </div>
                                     )}
 
-                                    <div className="flex-1 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                    <div className="flex-1 min-w-0 flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-4">
                                         {/* Product Info Content */}
-                                        <div className="flex-1">
+                                        <div className="flex-1 min-w-0">
                                             {productUrl ? (
                                                 <Link
                                                     href={productUrl}
                                                     className="group/title block">
-                                                    <h3 className="font-bold text-gray-900 text-lg md:text-xl group-hover/title:text-theme-primary transition-colors">
+                                                    <h3 className="font-bold text-gray-900 text-base md:text-xl group-hover/title:text-theme-primary transition-colors truncate">
                                                         {item.name}
                                                     </h3>
                                                 </Link>
                                             ) : (
-                                                <h3 className="font-bold text-gray-900 text-lg md:text-xl">
+                                                <h3 className="font-bold text-gray-900 text-base md:text-xl truncate">
                                                     {item.name}
                                                 </h3>
                                             )}
 
                                             {item.metadata?.variety ? (
-                                                <p className="text-sm text-gray-400 font-medium -mt-1">
+                                                <p className="text-xs md:text-sm text-gray-400 font-medium -mt-0.5 md:-mt-1">
                                                     {item.metadata.variety.name}
                                                 </p>
                                             ) : null}
@@ -242,7 +242,7 @@ const CartPage = () => {
                                             {item.metadata?.addonDetails &&
                                             item.metadata.addonDetails.length >
                                                 0 ? (
-                                                <div className="mt-2 space-y-1">
+                                                <div className="mt-1 md:mt-2 space-y-0.5 md:space-y-1">
                                                     {item.metadata.addonDetails.map(
                                                         (
                                                             addonGroup: {
@@ -258,7 +258,7 @@ const CartPage = () => {
                                                         ) => (
                                                             <div
                                                                 key={groupIdx}
-                                                                className="space-y-0.5">
+                                                                className="flex flex-wrap gap-x-2 md:block md:space-y-0.5">
                                                                 {addonGroup.items.map(
                                                                     (
                                                                         addonItem: {
@@ -277,7 +277,7 @@ const CartPage = () => {
                                                                         return (
                                                                             <div
                                                                                 key={`${groupIdx}-${itemIdx}`}
-                                                                                className="text-xs text-gray-600 flex items-center gap-1.5 flex-wrap">
+                                                                                className="text-[10px] md:text-xs text-gray-600 flex items-center gap-1.5 flex-wrap">
                                                                                 <span className="text-gray-700">
                                                                                     {
                                                                                         addonItem.name
@@ -286,6 +286,7 @@ const CartPage = () => {
                                                                                     {
                                                                                         displayQty
                                                                                     }
+
                                                                                     )
                                                                                 </span>
                                                                                 <span className="font-medium text-gray-800 inline-flex items-center gap-0.5">
@@ -293,7 +294,7 @@ const CartPage = () => {
                                                                                         addonItem.price,
                                                                                         locale,
                                                                                     )}
-                                                                                    <CurrencySymbol className="w-3 h-3" />
+                                                                                    <CurrencySymbol className="size-2.5 md:w-3 md:h-3" />
                                                                                 </span>
                                                                             </div>
                                                                         );
@@ -311,7 +312,7 @@ const CartPage = () => {
                                                     item.metadata
                                                         .variant_options,
                                                 ).length > 0 && (
-                                                    <div className="mt-2 flex flex-wrap gap-1.5">
+                                                    <div className="mt-1.5 md:mt-2 flex flex-wrap gap-1 md:gap-1.5">
                                                         {Object.entries(
                                                             item.metadata
                                                                 .variant_options,
@@ -319,7 +320,7 @@ const CartPage = () => {
                                                             ([key, value]) => (
                                                                 <span
                                                                     key={key}
-                                                                    className="text-[11px] font-bold text-gray-500 bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100">
+                                                                    className="text-[10px] md:text-[11px] font-bold text-gray-500 bg-gray-50 px-1.5 md:px-2 py-0.5 rounded-md border border-gray-100">
                                                                     {key}:{' '}
                                                                     {String(
                                                                         value,
@@ -332,14 +333,14 @@ const CartPage = () => {
 
                                             {/* Display Notes */}
                                             {item.metadata?.notes && (
-                                                <div className="mt-2 text-xs text-gray-500 italic">
+                                                <div className="mt-1 md:mt-2 text-[10px] md:text-xs text-gray-500 italic">
                                                     {t('notes')}:{' '}
                                                     {item.metadata.notes}
                                                 </div>
                                             )}
 
-                                            {/* Price */}
-                                            <div className="flex items-center gap-1 mt-1 text-theme-primary font-black">
+                                            {/* Price - Hidden on mobile, shown on desktop */}
+                                            <div className="hidden md:flex items-center gap-1 mt-1 text-theme-primary font-black">
                                                 <span>
                                                     {formatMoneyAmount(
                                                         getCartItemLineTotal(
@@ -356,7 +357,7 @@ const CartPage = () => {
                                                 Object.keys(
                                                     item.metadata.custom_fields,
                                                 ).length > 0 && (
-                                                    <div className="mt-2 space-y-0.5 border-t border-gray-100 pt-2">
+                                                    <div className="mt-2 space-y-0.5 border-t border-gray-100 pt-2 hidden md:block">
                                                         {Object.entries(
                                                             item.metadata
                                                                 .custom_fields,
@@ -390,10 +391,23 @@ const CartPage = () => {
                                         </div>
 
                                         <div
-                                            className="flex flex-wrap items-center gap-3 w-full md:w-auto"
+                                            className="flex flex-row md:flex-wrap items-center justify-between md:justify-start gap-4 md:gap-3 w-full md:w-auto mt-2 md:mt-0 pt-2 md:pt-0 border-t border-gray-50 md:border-0"
                                             onClick={(e) =>
                                                 e.stopPropagation()
                                             }>
+                                            {/* Price - Shown on mobile only here */}
+                                            <div className="md:hidden flex items-center gap-1 text-theme-primary font-black text-lg">
+                                                <span>
+                                                    {formatMoneyAmount(
+                                                        getCartItemLineTotal(
+                                                            item,
+                                                        ),
+                                                        locale,
+                                                    )}
+                                                </span>
+                                                <CurrencySymbol className="size-4" />
+                                            </div>
+
                                             <div className="flex items-center bg-gray-50 rounded-lg border border-gray-100 p-1 shrink-0">
                                                 <Button
                                                     type="button"
@@ -410,7 +424,7 @@ const CartPage = () => {
                                                     className="hover:bg-gray-200/50 active:scale-95">
                                                     <Minus />
                                                 </Button>
-                                                <span className="w-10 text-center font-bold text-gray-900">
+                                                <span className="w-8 md:w-10 text-center font-bold text-gray-900 text-sm md:text-base">
                                                     {item.quantity}
                                                 </span>
                                                 <Button
