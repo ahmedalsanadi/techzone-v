@@ -15,7 +15,8 @@ const LanguageSwitcher = () => {
         if (newLanguage === locale) return;
         document.cookie = `NEXT_LOCALE=${newLanguage}; path=/;`;
         router.push(pathname, { locale: newLanguage });
-        router.refresh();
+        // `router.push` already triggers the locale change and re-renders RSC.
+        // Calling `router.refresh()` immediately can amplify dev HMR reload loops.
     };
 
     return (
