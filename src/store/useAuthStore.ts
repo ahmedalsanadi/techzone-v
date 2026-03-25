@@ -104,6 +104,7 @@ export const useAuthStore = create<AuthState>()(
                 isProfileComplete: state.isProfileComplete,
                 tenantHost: state.tenantHost,
             }),
+            skipHydration: true,
             merge: (persisted, current) => {
                 const p = persisted as any;
                 if (!p) return current;

@@ -10,6 +10,7 @@ import React, {
 } from 'react';
 import { StoreConfig, Category, CMSPage } from '@/types/store';
 import { useCartStore } from '@/store/useCartStore';
+import { useAuthStore } from '@/store/useAuthStore';
 import { isValidColor, generateThemeVariables } from '@/lib/theme-utils';
 import { storeService } from '@/services/store-service';
 import { cmsService } from '@/services/cms-service';
@@ -40,9 +41,10 @@ export function StoreProvider({
     // Track previous theme colors to avoid unnecessary updates
     const prevThemeRef = useRef<string | null>(null);
 
-    // Hydrate cart store on mount (order store rehydrates automatically)
+    // Hydrate persisted stores on mount (deferred to avoid SSR/client tree mismatch)
     useEffect(() => {
         useCartStore.persist.rehydrate();
+        useAuthStore.persist.rehydrate();
     }, []);
 
     // Client fetching (cached) for non-critical, shared layout data.
