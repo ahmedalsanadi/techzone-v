@@ -8,7 +8,6 @@ import Footer from './Footer';
 import { useEffect } from 'react';
 import { usePathname } from '@/i18n/navigation';
 import FloatingButtons from './FloatingButtons';
-import { cn } from '@/lib/utils';
 
 export default function PageContainer({
     children,
