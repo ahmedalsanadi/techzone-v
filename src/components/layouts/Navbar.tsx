@@ -7,10 +7,10 @@ import NavItem from './NavItem';
 import { Input } from '../ui/Input';
 import { useLocale, useTranslations } from 'next-intl';
 import { useUiStore } from '@/store/useUiStore';
-import MobileSidebar from './MobileSidebar';
+const MobileSidebar = dynamic(() => import('./MobileSidebar'), { ssr: false });
 import { useStore } from '@/components/providers/StoreProvider';
 import LogoImage from './LogoImage';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import dynamic from 'next/dynamic';
@@ -21,7 +21,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 const LanguageSwitcher = dynamic(() => import('./LanguageSwitcher'), {
     ssr: false,
     loading: () => (
-        <div className="p-2 w-10 h-10 rounded-full bg-white/5 animate-pulse" />
+        <div className="size-10 rounded-md bg-white/5 animate-pulse" />
     ),
 });
 
@@ -65,19 +65,14 @@ export default function Navbar() {
     const { isAuthenticated } = useAuthStore();
     const router = useRouter();
     const searchParams = useSearchParams();
-    const [searchQuery, setSearchQuery] = useState(
-        searchParams.get('search') || '',
-    );
+    const searchParam = searchParams.get('search');
+    const [searchQuery, setSearchQuery] = useState(searchParam ?? '');
+    const [prevSearchParam, setPrevSearchParam] = useState(searchParam);
 
-    // Update search query state when URL parameter changes
-    useEffect(() => {
-        const query = searchParams.get('search');
-        if (query !== null) {
-            setSearchQuery(query);
-        } else {
-            setSearchQuery('');
-        }
-    }, [searchParams]);
+    if (searchParam !== prevSearchParam) {
+        setPrevSearchParam(searchParam);
+        setSearchQuery(searchParam ?? '');
+    }
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
