@@ -9,6 +9,7 @@ import {
 } from '@/lib/utils';
 import { useLocale, useTranslations } from 'next-intl';
 import CurrencySymbol from '../ui/CurrencySymbol';
+import { getOrderStatusPresentation } from '@/lib/orders/status';
 
 interface OrderSummaryCardProps {
     order: Order;
@@ -16,6 +17,7 @@ interface OrderSummaryCardProps {
 
 export function OrderSummaryCard({ order }: OrderSummaryCardProps) {
     const t = useTranslations('Orders.summary');
+    const tOrders = useTranslations('Orders');
     const locale = useLocale();
     const [mounted, setMounted] = React.useState(false);
 
@@ -43,7 +45,14 @@ export function OrderSummaryCard({ order }: OrderSummaryCardProps) {
 
     const details = [
         { label: t('orderNumber'), value: `#${order.id}` },
-        { label: t('status'), value: order.status_label },
+        {
+            label: t('status'),
+            value: getOrderStatusPresentation(
+                tOrders,
+                order.status,
+                order.status_label,
+            ).label,
+        },
         { label: t('createdAt'), value: formattedDate },
         { label: t('deliveryMethod'), value: order.fulfillment_label },
         {

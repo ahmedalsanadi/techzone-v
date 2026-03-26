@@ -20,8 +20,9 @@ import {
 } from '@/lib/utils';
 import CurrencySymbol from '../ui/CurrencySymbol';
 
-import { Order, OrderStatus, ORDER_STATUS_NUMBER_MAP } from '@/types/orders';
+import { Order, type OrderStatus } from '@/types/orders';
 import { Link } from '@/i18n/navigation';
+import { getOrderStatusPresentation } from '@/lib/orders/status';
 
 interface OrderCardProps {
     order: Order;
@@ -31,10 +32,12 @@ export default function OrderCard({ order }: OrderCardProps) {
     const t = useTranslations('Orders');
     const locale = useLocale();
 
-    const statusKey =
-        typeof order.status === 'number'
-            ? (ORDER_STATUS_NUMBER_MAP[order.status] ?? 'WAITING_APPROVAL')
-            : (order.status as OrderStatus);
+    const statusPresentation = getOrderStatusPresentation(
+        t,
+        order.status,
+        order.status_label,
+    );
+    const statusKey = statusPresentation.statusKey as OrderStatus;
 
     // Semantic colors: red = canceled/refunded, amber = waiting, gray = paid/in progress, green = fulfillment done
     const statusConfig: Record<
@@ -43,53 +46,53 @@ export default function OrderCard({ order }: OrderCardProps) {
     > = {
         WAITING_APPROVAL: {
             variant: 'warning',
-            label: order.status_label || t('status.waiting'),
+            label: statusPresentation.label,
         },
         WAITING_PAYMENT: {
             variant: 'warning',
-            label: order.status_label || t('status.waiting_payment'),
+            label: statusPresentation.label,
         },
         PAID: {
             variant: 'secondary',
-            label: order.status_label || t('status.paid'),
+            label: statusPresentation.label,
         },
         IN_PROCESS: {
             variant: 'secondary',
-            label: order.status_label || t('status.in_process'),
+            label: statusPresentation.label,
         },
         READY_FOR_PICKUP: {
             variant: 'info',
-            label: order.status_label || t('status.ready_for_pickup'),
+            label: statusPresentation.label,
         },
         SHIPPED: {
             variant: 'success',
-            label: order.status_label || t('status.shipped'),
+            label: statusPresentation.label,
         },
         DELIVERED: {
             variant: 'success',
-            label: order.status_label || t('status.delivered'),
+            label: statusPresentation.label,
         },
         COMPLETED: {
             variant: 'success',
-            label: order.status_label || t('status.completed'),
+            label: statusPresentation.label,
         },
         CANCELED: {
             variant: 'destructive',
-            label: order.status_label || t('status.canceled'),
+            label: statusPresentation.label,
         },
         REFUNDED: {
             variant: 'destructive',
-            label: order.status_label || t('status.refunded'),
+            label: statusPresentation.label,
         },
         PARTIALLY_REFUNDED: {
             variant: 'destructive',
-            label: order.status_label || t('status.partially_refunded'),
+            label: statusPresentation.label,
         },
     };
 
     const currentStatus = statusConfig[statusKey] || {
         variant: 'secondary',
-        label: order.status_label || String(order.status),
+        label: statusPresentation.label,
     };
 
     const [mounted, setMounted] = React.useState(false);
