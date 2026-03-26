@@ -159,10 +159,6 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
                                 subCategories={subCats}
                                 activeSubCategoryId={activeSubId}
                                 parentHref={`/categories/${cat.slug || cat.id}`}
-                                currentCategoryLabel={cat.name}
-                                currentCategoryImage={
-                                    cat.icon_url || cat.image_url
-                                }
                             />
                         </div>
                     );

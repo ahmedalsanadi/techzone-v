@@ -494,6 +494,7 @@
     "save": "وفر {amount}"
   },
   "Category": {
+    "all": "الكل",
     "categories": "الأقسام",
     "categories_description": "تصفح جميع أقسام المتجر",
     "explore_categories": "استكشف الأقسام",

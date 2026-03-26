@@ -493,6 +493,7 @@
     "save": "Save {amount}"
   },
   "Category": {
+    "all": "All",
     "categories": "Categories",
     "categories_description": "Browse all our store categories",
     "explore_categories": "Explore Categories",
