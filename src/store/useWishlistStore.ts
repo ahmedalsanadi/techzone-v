@@ -3,6 +3,8 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { ApiWishlistItem } from '@/types/wishlist';
 import { wishlistService } from '@/services/wishlist-service';
+import { storeService } from '@/services/store-service';
+import { ApiError } from '@/lib/api/client';
 import type { ProductMedia } from '@/types/store';
 
 export interface WishlistItem {
@@ -31,6 +33,9 @@ interface WishlistStore {
     isInWishlist: (productId: number) => boolean;
     getTotalItems: () => number;
 
+    // Validation
+    purgeDeletedItems: () => Promise<void>;
+
     // API sync methods (authenticated mode)
     syncWithAPI: () => Promise<void>;
     setGuestMode: (isGuest: boolean) => void;
@@ -42,7 +47,11 @@ interface WishlistStore {
 /**
  * Transform API wishlist item to local wishlist item format
  */
-function transformApiWishlistItemToLocal(item: ApiWishlistItem): WishlistItem {
+function transformApiWishlistItemToLocal(
+    item: ApiWishlistItem,
+): WishlistItem | null {
+    if (!item.product) return null;
+
     return {
         id: `api-${item.id}`,
         productId: item.product.id,
@@ -109,13 +118,58 @@ export const useWishlistStore = create<WishlistStore>()(
             getTotalItems: () => {
                 return get().items.length;
             },
+            purgeDeletedItems: async () => {
+                const snapshot = get().items;
+                if (snapshot.length === 0) return;
+
+                const checks = await Promise.allSettled(
+                    snapshot.map((item) =>
+                        storeService.getProduct(item.slug).then(
+                            () => ({ productId: item.productId, deleted: false }),
+                            (err: unknown) => ({
+                                productId: item.productId,
+                                deleted: err instanceof ApiError && err.status === 404,
+                            }),
+                        ),
+                    ),
+                );
+
+                const deletedIds = new Set(
+                    checks
+                        .filter(
+                            (r): r is PromiseFulfilledResult<{ productId: number; deleted: boolean }> =>
+                                r.status === 'fulfilled' && r.value.deleted,
+                        )
+                        .map((r) => r.value.productId),
+                );
+
+                if (deletedIds.size > 0) {
+                    set({
+                        items: get().items.filter(
+                            (item) => !deletedIds.has(item.productId),
+                        ),
+                    });
+                }
+            },
             syncWithAPI: async () => {
                 set({ isLoading: true });
                 try {
                     const wishlist = await wishlistService.getWishlist();
                     if (wishlist) {
+                        const orphanedItems = wishlist.filter(
+                            (item) => !item.product,
+                        );
+
                         get().setWishlistFromAPI(wishlist);
                         set({ lastSyncedAt: Date.now() });
+
+                        if (orphanedItems.length > 0) {
+                            void Promise.allSettled(
+                                orphanedItems.map((item) =>
+                                    wishlistService.removeItem(item.id),
+                                ),
+                            ).catch(() => {});
+                        }
                     } else {
                         set({ items: [] });
                     }
@@ -147,9 +201,9 @@ export const useWishlistStore = create<WishlistStore>()(
                     }
                 }
 
-                const localItems = itemsArray.map(
-                    transformApiWishlistItemToLocal,
-                );
+                const localItems = itemsArray
+                    .map(transformApiWishlistItemToLocal)
+                    .filter((item): item is WishlistItem => item !== null);
                 set({
                     items: localItems,
                 });

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useSyncExternalStore } from 'react';
+import React, { useEffect, useMemo, useSyncExternalStore } from 'react';
 import { useTranslations } from 'next-intl';
 import { useWishlistStore } from '@/store/useWishlistStore';
 import { useWishlistActions } from '@/hooks/wishlist';
@@ -13,11 +13,22 @@ import ProductCard from '@/components/ui/ProductCard';
 
 const WishlistPage = () => {
     const t = useTranslations('Wishlist');
-    const { items, getTotalItems, syncWithAPI, isLoading, isGuestMode } =
+    const { items, syncWithAPI, purgeDeletedItems, isLoading, isGuestMode } =
         useWishlistStore();
     const { isAuthenticated } = useAuthStore();
     const { toggleWishlist, removeFromWishlist } = useWishlistActions();
     const { loadingProductId, handleAddClick } = useProductConfigFlow();
+
+    const validItems = useMemo(
+        () =>
+            items.filter(
+                (item) =>
+                    Boolean(item.name?.trim()) &&
+                    Boolean(item.slug?.trim()) &&
+                    item.productId != null,
+            ),
+        [items],
+    );
 
     // const router = useRouter();
     const isMounted = useSyncExternalStore(
@@ -28,17 +39,17 @@ const WishlistPage = () => {
         () => false,
     );
 
-    // CRITICAL: Only sync wishlist with API when authenticated
-    // Guest users should only see local wishlist (no API calls)
+    // Authenticated: sync wishlist via protected wishlist API
+    // Guest: validate product existence via public product API, purge deleted ones
     useEffect(() => {
         if (!isMounted) return;
 
-        // Only make API call if user is authenticated
         if (isAuthenticated && !isGuestMode) {
             syncWithAPI();
+        } else {
+            purgeDeletedItems();
         }
-        // If not authenticated, wishlist page will show local guest wishlist (or empty)
-    }, [isMounted, isAuthenticated, isGuestMode, syncWithAPI]);
+    }, [isMounted, isAuthenticated, isGuestMode, syncWithAPI, purgeDeletedItems]);
 
     const handleMoveToCart = async (item: (typeof items)[0]) => {
         // Construct a partial product for the config flow
@@ -57,7 +68,7 @@ const WishlistPage = () => {
 
     if (!isMounted) return null;
 
-    if (items.length === 0) {
+    if (validItems.length === 0) {
         return (
             <div className="min-h-[70vh] flex flex-col items-center justify-center text-center">
                 <div className="w-24 h-24 md:w-32 md:h-32 bg-gray-50 rounded-full flex items-center justify-center mb-6">
@@ -85,12 +96,12 @@ const WishlistPage = () => {
             <h1 className="text-3xl md:text-4xl font-black text-gray-900 flex items-center gap-3">
                 {t('title')}
                 <span className="text-sm font-medium text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
-                    {t('items', { count: getTotalItems() })}
+                    {t('items', { count: validItems.length })}
                 </span>
             </h1>
 
             <div className="grid grid-cols-2 gap-4 md:gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                {items.map((item, index) => {
+                {validItems.map((item, index) => {
                     const finalPrice = item.salePrice || item.price;
                     const oldPrice =
                         item.salePrice && item.salePrice < item.price

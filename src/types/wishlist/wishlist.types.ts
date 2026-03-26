@@ -20,7 +20,7 @@ export interface WishlistProduct {
  */
 export interface ApiWishlistItem {
     id: number;
-    product: WishlistProduct;
+    product: WishlistProduct | null;
     added_at: string;
 }
 
