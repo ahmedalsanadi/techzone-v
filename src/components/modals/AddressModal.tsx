@@ -1,5 +1,5 @@
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
-import { Check, MapPin, Search, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
 import React, {
@@ -241,7 +241,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
                     <DialogPanel
                         transition
                         className="bg-white shadow-2xl w-full max-w-6xl overflow-hidden flex flex-col relative max-h-[92vh] sm:max-h-[90vh] rounded-xl sm:rounded-2xl md:rounded-4xl duration-300 ease-out data-closed:scale-95 data-closed:opacity-0">
-                        <header className="flex items-center justify-between gap-2 p-3 sm:p-4 md:p-6 border-b border-gray-100 shrink-0">
+                        <header className="flex items-center justify-between gap-2 py-2 px-3 md:px-4 lg:px-6 border-b border-gray-100 shrink-0">
                             <Button
                                 type="button"
                                 variant="ghost"
@@ -260,82 +260,35 @@ const AddressModal: React.FC<AddressModalProps> = ({
                             <div className="w-9 min-w-[44px]" />
                         </header>
 
-                        <main className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 min-h-[36vh] sm:min-h-[480px]">
+                        <main className="flex-1 overflow-y-auto  py-2 md:py-4 px-3 md:px-4 lg:px-6  min-h-[36vh] sm:min-h-[480px]">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-5 md:gap-8">
                                 {/* Map column first on mobile so user sees location feedback immediately */}
-                                <div className="flex flex-col gap-2.5 sm:gap-4 order-first lg:order-0">
-                                    {/* Location selected card - visible so user knows selection was made */}
-                                    {formattedAddress && (
-                                        <div className="p-2.5 sm:p-4 bg-theme-primary/5 rounded-md sm:rounded-xl border border-theme-primary/10 flex items-start gap-2 sm:gap-3 shrink-0">
-                                            <Check className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-theme-primary shrink-0 mt-0.5" />
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-[9px] sm:text-xs font-bold uppercase text-theme-primary/80 tracking-wide sm:tracking-wider mb-0.5">
-                                                    {t('locationSelected')}
-                                                </p>
-                                                <p className="text-[11px] sm:text-sm text-theme-primary/90 font-medium leading-snug line-clamp-2">
-                                                    {formattedAddress}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    )}
-                                    <div className="flex-1 min-h-[200px] sm:min-h-[280px] lg:min-h-[400px] rounded-md sm:rounded-2xl overflow-hidden relative shadow-inner border border-gray-100">
+                                <div className="flex min-h-0 flex-col gap-2.5 sm:gap-4 order-first lg:order-0">
+                                    {/* Taller map on small screens: search + status live on the map */}
+                                    <div className="relative min-h-[min(52vh,420px)] sm:min-h-[320px] lg:min-h-[380px] flex-1 overflow-hidden rounded-md sm:rounded-2xl border border-gray-100 shadow-inner">
                                         <AddressMap
                                             center={selectedLocation}
                                             onLocationSelect={
                                                 handleLocationSelect
                                             }
                                             searchQuery={searchQuery}
+                                            onSearchChange={setSearchQuery}
+                                            searchLabel={t('searchAddress')}
+                                            searchPlaceholder={t(
+                                                'searchPlaceholder',
+                                            )}
+                                            formattedAddress={formattedAddress}
+                                            locationSelectedLabel={t(
+                                                'locationSelected',
+                                            )}
+                                            locationNotSelectedLabel={t(
+                                                'locationNotSelectedYet',
+                                            )}
                                         />
-                                        <div className="absolute top-2 start-2 sm:top-3 sm:start-3 z-10 max-w-[calc(100%-1rem)] bg-white/95 backdrop-blur px-2 py-1 sm:px-3 sm:py-1.5 rounded-md sm:rounded-lg shadow-sm border border-gray-100 flex items-center gap-1.5 sm:gap-2">
-                                            <MapPin
-                                                className={cn(
-                                                    'w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 shrink-0',
-                                                    formattedAddress
-                                                        ? 'text-theme-primary'
-                                                        : 'text-gray-400',
-                                                )}
-                                            />
-                                            <span
-                                                className={cn(
-                                                    'text-[9px] sm:text-[10px] md:text-xs font-bold uppercase tracking-tight leading-tight',
-                                                    formattedAddress
-                                                        ? 'text-gray-500'
-                                                        : 'text-gray-400',
-                                                )}>
-                                                {formattedAddress
-                                                    ? t('locationSelected')
-                                                    : t(
-                                                          'locationNotSelectedYet',
-                                                      )}
-                                            </span>
-                                        </div>
                                     </div>
                                 </div>
 
                                 <div className="space-y-3 sm:space-y-5 md:space-y-6">
-                                    {/* Map Search */}
-                                    <div>
-                                        <label className="block text-xs md:text-sm font-bold text-gray-700 mb-1.5 md:mb-2">
-                                            {t('searchAddress')}
-                                        </label>
-                                        <div className="relative">
-                                            <Search className="absolute end-2.5 sm:end-3 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400 pointer-events-none" />
-                                            <input
-                                                type="text"
-                                                value={searchQuery}
-                                                onChange={(e) =>
-                                                    setSearchQuery(
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                placeholder={t(
-                                                    'searchPlaceholder',
-                                                )}
-                                                className="w-full pe-9 ps-3 sm:pe-10 sm:ps-4 py-2 md:py-3 min-h-[44px] md:min-h-[48px] border border-gray-200 rounded-lg md:rounded-xl lg:rounded-2xl focus:ring-2 focus:ring-theme-primary/20 outline-none transition-all text-sm md:text-base leading-snug"
-                                            />
-                                        </div>
-                                    </div>
-
                                     {/* Form Fields */}
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                                         <InputField
@@ -543,22 +496,21 @@ const AddressModal: React.FC<AddressModalProps> = ({
                             </div>
                         </main>
 
-                        <footer className="p-3 sm:p-4 md:p-6 border-t border-gray-100 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 shrink-0 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+                        <footer className="py-2 md:py-3 px-3 md:px-4 lg:px-6 border-t border-gray-100 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-2.5 shrink-0 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
                             <Button
                                 type="button"
                                 variant="secondary"
-                                size="xl"
-                                onClick={onClose}
-                                className="min-h-11 rounded-lg px-5 py-2.5 text-sm md:min-h-12 md:rounded-xl md:px-8 md:py-3.5 md:text-base">
+                                size="default"
+                                onClick={onClose}>
                                 {t('cancel')}
                             </Button>
                             <Button
                                 type="button"
                                 variant="primary"
-                                size="xl"
+                                size="lg"
                                 onClick={handleSubmit(handleSave)}
                                 disabled={!isTotalValid}
-                                className="active:scale-[0.98] min-h-11 rounded-lg px-5 py-2.5 text-sm md:min-h-12 md:rounded-xl md:px-8 md:py-3.5 md:text-base">
+                                className="active:scale-[0.98]">
                                 {activeAddress ? t('save') : t('addNew')}
                             </Button>
                         </footer>
