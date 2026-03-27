@@ -64,7 +64,7 @@ const BranchSelectionModal: React.FC = () => {
                 />
 
                 <div className="fixed inset-0 z-50 w-screen overflow-y-auto">
-                    <div className="flex min-h-full items-center justify-center p-2.5 sm:p-4 md:p-8">
+                    <div className="flex min-h-full items-center justify-center p-2.5 sm:p-4 md:p-6">
                         <DialogPanel
                             transition
                             className="bg-white w-full max-w-6xl h-[min(90svh,760px)] max-h-[90svh] md:h-[80vh] md:max-h-[80vh] rounded-3xl md:rounded-4xl shadow-2xl flex flex-col md:flex-row overflow-hidden relative duration-500 ease-out data-closed:translate-y-2 md:data-closed:translate-y-0 data-closed:scale-[0.99] md:data-closed:scale-95 data-closed:opacity-0">
