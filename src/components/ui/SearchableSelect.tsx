@@ -177,14 +177,14 @@ export const SearchableSelect = memo(
                             )}>
                             {displayLabel || placeholder}
                         </span>
-                        <span className="flex items-center gap-0.5 md:gap-1 shrink-0">
+                        <span className="absolute end-3 md:end-4 top-1/2 -translate-y-1/2 flex items-center gap-0.5 md:gap-1 shrink-0 pointer-events-none">
                             {isLoading && (
                                 <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin text-theme-primary" />
                             )}
                             <ChevronDown
                                 className={cn(
-                                    'w-4 h-4 md:w-5 md:h-5 text-gray-400 pointer-events-none rtl:rotate-180 transition-transform',
-                                    isOpen && 'rotate-180',
+                                    'w-4 h-4 md:w-5 md:h-5 text-gray-400 transition-transform duration-200',
+                                    isOpen ? 'rotate-180' : 'rotate-0',
                                 )}
                             />
                         </span>
