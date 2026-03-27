@@ -149,7 +149,7 @@ export const SearchableSelect = memo(
 
         return (
             <div className={cn('relative', className)} ref={containerRef}>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 pl-1">
+                <label className="block text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wide md:tracking-wider mb-1 md:mb-1.5 ps-1">
                     {label} {required && '*'}
                 </label>
                 <div className="relative">
@@ -158,10 +158,10 @@ export const SearchableSelect = memo(
                         onClick={openDropdown}
                         disabled={disabled}
                         className={cn(
-                            'w-full flex items-center justify-between gap-2 ps-4 pe-10 py-3 sm:py-3.5 min-h-[48px] rounded-xl sm:rounded-2xl',
+                            'w-full flex items-center justify-between gap-1.5 md:gap-2 ps-3 pe-9 md:ps-4 md:pe-10 py-2 md:py-3 min-h-[44px] md:min-h-[48px] rounded-lg md:rounded-xl lg:rounded-2xl',
                             'bg-gray-50 border border-gray-200',
                             'focus:border-theme-primary focus:ring-2 focus:ring-theme-primary/20 outline-none transition-all',
-                            'font-semibold text-base text-left text-gray-900',
+                            'font-semibold text-sm md:text-base text-start text-gray-900 leading-snug',
                             'disabled:opacity-50 disabled:cursor-not-allowed',
                             isOpen &&
                                 'border-theme-primary ring-2 ring-theme-primary/20',
@@ -177,13 +177,13 @@ export const SearchableSelect = memo(
                             )}>
                             {displayLabel || placeholder}
                         </span>
-                        <span className="flex items-center gap-1 shrink-0">
+                        <span className="flex items-center gap-0.5 md:gap-1 shrink-0">
                             {isLoading && (
-                                <Loader2 className="w-5 h-5 animate-spin text-theme-primary" />
+                                <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin text-theme-primary" />
                             )}
                             <ChevronDown
                                 className={cn(
-                                    'w-5 h-5 text-gray-400 pointer-events-none rtl:rotate-180 transition-transform',
+                                    'w-4 h-4 md:w-5 md:h-5 text-gray-400 pointer-events-none rtl:rotate-180 transition-transform',
                                     isOpen && 'rotate-180',
                                 )}
                             />
@@ -192,7 +192,7 @@ export const SearchableSelect = memo(
 
                     {isOpen && (
                         <div
-                            className="absolute z-50 w-full mt-1 py-1 rounded-xl sm:rounded-2xl bg-white border border-gray-200 shadow-lg"
+                            className="absolute z-50 w-full mt-1 py-1 rounded-lg md:rounded-xl lg:rounded-2xl bg-white border border-gray-200 shadow-lg"
                             role="listbox">
                             {/* Visible search input inside dropdown */}
                             <div className="p-2 border-b border-gray-100">
@@ -270,7 +270,7 @@ export const SearchableSelect = memo(
                     )}
                 </div>
                 {error && (
-                    <span className="text-xs text-red-500 font-medium px-1 mt-1 block text-start">
+                    <span className="text-[10px] md:text-xs text-red-500 font-medium ps-1 mt-0.5 md:mt-1 block text-start leading-tight">
                         {error}
                     </span>
                 )}

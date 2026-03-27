@@ -53,7 +53,7 @@ const InputField = ({
     vt?: any;
 }) => (
     <div className={className}>
-        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 pl-1">
+        <label className="block text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wide md:tracking-wider mb-1 md:mb-1.5 ps-1">
             {label} {required && '*'}
         </label>
         <input
@@ -62,12 +62,12 @@ const InputField = ({
             placeholder={placeholder}
             {...registration}
             className={cn(
-                'w-full px-4 py-3 sm:py-3.5 min-h-[48px] rounded-xl sm:rounded-2xl bg-gray-50 border border-gray-200 focus:border-theme-primary focus:ring-2 focus:ring-theme-primary/20 outline-none transition-all font-semibold text-base',
+                'w-full px-3 py-2 md:px-4 md:py-3 min-h-[44px] md:min-h-[48px] rounded-lg md:rounded-xl lg:rounded-2xl bg-gray-50 border border-gray-200 focus:border-theme-primary focus:ring-2 focus:ring-theme-primary/20 outline-none transition-all font-semibold text-sm md:text-base leading-snug',
                 error && 'border-red-500 ring-red-500/10',
             )}
         />
         {error && (
-            <span className="text-xs text-red-500 font-medium px-1 mt-1 block">
+            <span className="text-[10px] md:text-xs text-red-500 font-medium ps-1 mt-0.5 md:mt-1 block leading-tight">
                 {vt ? vt(error as any) : error}
             </span>
         )}
@@ -77,8 +77,10 @@ const InputField = ({
 const AddressMapLoadingFallback = () => {
     const t = useTranslations('Address');
     return (
-        <div className="w-full h-full bg-gray-50 flex items-center justify-center">
-            <span className="text-sm text-gray-400">{t('loadingMap')}</span>
+        <div className="w-full h-full bg-gray-50 flex items-center justify-center px-2">
+            <span className="text-xs md:text-sm text-gray-400 text-center">
+                {t('loadingMap')}
+            </span>
         </div>
     );
 };
@@ -235,11 +237,11 @@ const AddressModal: React.FC<AddressModalProps> = ({
             />
 
             <div className="fixed inset-0 z-50 w-screen overflow-y-auto">
-                <div className="flex min-h-full items-center justify-center p-3 sm:p-4 md:p-5">
+                <div className="flex min-h-full items-center justify-center p-2 sm:p-3 md:p-5">
                     <DialogPanel
                         transition
-                        className="bg-white shadow-2xl w-full max-w-6xl overflow-hidden flex flex-col relative max-h-[90vh] rounded-2xl md:rounded-4xl duration-300 ease-out data-closed:scale-95 data-closed:opacity-0">
-                        <header className="flex items-center justify-between p-4 sm:p-5 md:p-6 border-b border-gray-100 shrink-0">
+                        className="bg-white shadow-2xl w-full max-w-6xl overflow-hidden flex flex-col relative max-h-[92vh] sm:max-h-[90vh] rounded-xl sm:rounded-2xl md:rounded-4xl duration-300 ease-out data-closed:scale-95 data-closed:opacity-0">
+                        <header className="flex items-center justify-between gap-2 p-3 sm:p-4 md:p-6 border-b border-gray-100 shrink-0">
                             <Button
                                 type="button"
                                 variant="ghost"
@@ -250,7 +252,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
                             </Button>
                             <DialogTitle
                                 as="h2"
-                                className="text-base sm:text-lg md:text-xl font-bold text-gray-900">
+                                className="text-sm sm:text-base md:text-xl font-bold text-gray-900 text-center leading-tight px-1">
                                 {activeAddress
                                     ? t('editAddress')
                                     : t('addNewAddress')}
@@ -258,25 +260,25 @@ const AddressModal: React.FC<AddressModalProps> = ({
                             <div className="w-9 min-w-[44px]" />
                         </header>
 
-                        <main className="flex-1 overflow-y-auto p-4 sm:p-5 md:p-6 min-h-[40vh] sm:min-h-[480px]">
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
+                        <main className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 min-h-[36vh] sm:min-h-[480px]">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-5 md:gap-8">
                                 {/* Map column first on mobile so user sees location feedback immediately */}
-                                <div className="flex flex-col gap-3 sm:gap-4 order-first lg:order-0">
+                                <div className="flex flex-col gap-2.5 sm:gap-4 order-first lg:order-0">
                                     {/* Location selected card - visible so user knows selection was made */}
                                     {formattedAddress && (
-                                        <div className="p-3 sm:p-4 bg-theme-primary/5 rounded-lg sm:rounded-xl border border-theme-primary/10 flex items-start gap-2 sm:gap-3 shrink-0">
-                                            <Check className="w-4 h-4 sm:w-5 sm:h-5 text-theme-primary shrink-0 mt-0.5" />
+                                        <div className="p-2.5 sm:p-4 bg-theme-primary/5 rounded-md sm:rounded-xl border border-theme-primary/10 flex items-start gap-2 sm:gap-3 shrink-0">
+                                            <Check className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-theme-primary shrink-0 mt-0.5" />
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-[10px] sm:text-xs font-bold uppercase text-theme-primary/80 tracking-wider mb-0.5">
+                                                <p className="text-[9px] sm:text-xs font-bold uppercase text-theme-primary/80 tracking-wide sm:tracking-wider mb-0.5">
                                                     {t('locationSelected')}
                                                 </p>
-                                                <p className="text-xs sm:text-sm text-theme-primary/90 font-medium leading-snug line-clamp-2">
+                                                <p className="text-[11px] sm:text-sm text-theme-primary/90 font-medium leading-snug line-clamp-2">
                                                     {formattedAddress}
                                                 </p>
                                             </div>
                                         </div>
                                     )}
-                                    <div className="flex-1 min-h-[220px] sm:min-h-[280px] lg:min-h-[400px] rounded-lg sm:rounded-2xl overflow-hidden relative shadow-inner border border-gray-100">
+                                    <div className="flex-1 min-h-[200px] sm:min-h-[280px] lg:min-h-[400px] rounded-md sm:rounded-2xl overflow-hidden relative shadow-inner border border-gray-100">
                                         <AddressMap
                                             center={selectedLocation}
                                             onLocationSelect={
@@ -284,10 +286,10 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                             }
                                             searchQuery={searchQuery}
                                         />
-                                        <div className="absolute top-3 start-3 z-10 bg-white/95 backdrop-blur px-3 py-1.5 rounded-lg shadow-sm border border-gray-100 flex items-center gap-2">
+                                        <div className="absolute top-2 start-2 sm:top-3 sm:start-3 z-10 max-w-[calc(100%-1rem)] bg-white/95 backdrop-blur px-2 py-1 sm:px-3 sm:py-1.5 rounded-md sm:rounded-lg shadow-sm border border-gray-100 flex items-center gap-1.5 sm:gap-2">
                                             <MapPin
                                                 className={cn(
-                                                    'w-3.5 h-3.5 md:w-4 md:h-4 shrink-0',
+                                                    'w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 shrink-0',
                                                     formattedAddress
                                                         ? 'text-theme-primary'
                                                         : 'text-gray-400',
@@ -295,7 +297,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                             />
                                             <span
                                                 className={cn(
-                                                    'text-[10px] md:text-sm font-bold uppercase tracking-tight',
+                                                    'text-[9px] sm:text-[10px] md:text-xs font-bold uppercase tracking-tight leading-tight',
                                                     formattedAddress
                                                         ? 'text-gray-500'
                                                         : 'text-gray-400',
@@ -310,14 +312,14 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                     </div>
                                 </div>
 
-                                <div className="space-y-4 sm:space-y-6">
+                                <div className="space-y-3 sm:space-y-5 md:space-y-6">
                                     {/* Map Search */}
                                     <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-2">
+                                        <label className="block text-xs md:text-sm font-bold text-gray-700 mb-1.5 md:mb-2">
                                             {t('searchAddress')}
                                         </label>
                                         <div className="relative">
-                                            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                                            <Search className="absolute end-2.5 sm:end-3 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400 pointer-events-none" />
                                             <input
                                                 type="text"
                                                 value={searchQuery}
@@ -329,13 +331,13 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                                 placeholder={t(
                                                     'searchPlaceholder',
                                                 )}
-                                                className="w-full pr-10 pl-4 py-3 sm:py-3.5 border border-gray-200 rounded-xl sm:rounded-2xl focus:ring-2 focus:ring-theme-primary/20 outline-none transition-all text-base"
+                                                className="w-full pe-9 ps-3 sm:pe-10 sm:ps-4 py-2 md:py-3 min-h-[44px] md:min-h-[48px] border border-gray-200 rounded-lg md:rounded-xl lg:rounded-2xl focus:ring-2 focus:ring-theme-primary/20 outline-none transition-all text-sm md:text-base leading-snug"
                                             />
                                         </div>
                                     </div>
 
                                     {/* Form Fields */}
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                                         <InputField
                                             label={t('addressName')}
                                             registration={register('label')}
@@ -498,7 +500,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                             vt={vt}
                                         />
                                         <div className="sm:col-span-2">
-                                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 pl-1">
+                                            <label className="block text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wide md:tracking-wider mb-1 md:mb-1.5 ps-1">
                                                 {t('addressNotes')}
                                             </label>
                                             <textarea
@@ -508,13 +510,13 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                                     'addressNotesPlaceholder',
                                                 )}
                                                 className={cn(
-                                                    'w-full px-4 py-3 rounded-xl sm:rounded-2xl bg-gray-50 border border-gray-200 focus:border-theme-primary focus:ring-2 focus:ring-theme-primary/20 outline-none resize-none text-base min-h-[80px]',
+                                                    'w-full px-3 py-2 md:px-4 md:py-3 rounded-lg md:rounded-xl lg:rounded-2xl bg-gray-50 border border-gray-200 focus:border-theme-primary focus:ring-2 focus:ring-theme-primary/20 outline-none resize-none text-sm md:text-base min-h-[72px] md:min-h-[80px] leading-snug',
                                                     errors.notes &&
                                                         'border-red-500 ring-red-500/10',
                                                 )}
                                             />
                                             {errors.notes && (
-                                                <span className="text-xs text-red-500 font-medium px-1 mt-1 block">
+                                                <span className="text-[10px] md:text-xs text-red-500 font-medium ps-1 mt-0.5 md:mt-1 block">
                                                     {vt(
                                                         errors.notes
                                                             .message as any,
@@ -523,15 +525,15 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                             )}
                                         </div>
                                         {isAuthenticated && (
-                                            <div className="sm:col-span-2 flex items-center gap-3">
+                                            <div className="sm:col-span-2 flex items-start gap-2 md:gap-3">
                                                 <input
                                                     type="checkbox"
                                                     id="set-default"
-                                                    className="w-5 h-5 rounded border-gray-300 text-theme-primary focus:ring-theme-primary"
+                                                    className="mt-0.5 w-4 h-4 md:w-5 md:h-5 rounded border-gray-300 text-theme-primary focus:ring-theme-primary shrink-0"
                                                 />
                                                 <label
                                                     htmlFor="set-default"
-                                                    className="text-sm font-bold text-gray-700 cursor-pointer">
+                                                    className="text-xs md:text-sm font-bold text-gray-700 cursor-pointer leading-snug">
                                                     {t('setDefault')}
                                                 </label>
                                             </div>
@@ -541,13 +543,13 @@ const AddressModal: React.FC<AddressModalProps> = ({
                             </div>
                         </main>
 
-                        <footer className="p-4 sm:p-5 md:p-6 border-t border-gray-100 flex items-center justify-end gap-3 shrink-0">
+                        <footer className="p-3 sm:p-4 md:p-6 border-t border-gray-100 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 shrink-0 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
                             <Button
                                 type="button"
                                 variant="secondary"
                                 size="xl"
                                 onClick={onClose}
-                                className="px-6">
+                                className="min-h-11 rounded-lg px-5 py-2.5 text-sm md:min-h-12 md:rounded-xl md:px-8 md:py-3.5 md:text-base">
                                 {t('cancel')}
                             </Button>
                             <Button
@@ -556,7 +558,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                 size="xl"
                                 onClick={handleSubmit(handleSave)}
                                 disabled={!isTotalValid}
-                                className="active:scale-[0.98]">
+                                className="active:scale-[0.98] min-h-11 rounded-lg px-5 py-2.5 text-sm md:min-h-12 md:rounded-xl md:px-8 md:py-3.5 md:text-base">
                                 {activeAddress ? t('save') : t('addNew')}
                             </Button>
                         </footer>
