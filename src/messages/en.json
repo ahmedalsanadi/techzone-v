@@ -150,10 +150,12 @@
     "addNew": "Add New",
     "default": "Default",
     "addressSaved": "Address saved",
+    "addressSaveFailed": "Failed to save address",
     "pleaseSelectAddress": "Please select an address"
   },
   "Address": {
     "loading": "Loading...",
+    "loadingMap": "Loading map...",
     "fetchingAddress": "Loading address...",
     "fetchingLocationDetails": "Fetching accurate location details...",
     "locationSelected": "Location selected",

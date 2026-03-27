@@ -145,11 +145,11 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
             if (result) {
                 setTempDeliveryAddress(result);
             }
-            toast.success(t('addressSaved') || 'Address saved');
+            toast.success(t('addressSaved'));
             setShowAddressModal(false);
         } catch (error) {
             console.error('Failed to save address:', error);
-            toast.error('Failed to save address');
+            toast.error(t('addressSaveFailed'));
         }
     };
 
@@ -191,7 +191,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
         if (!tempOrderType) return;
 
         if (tempOrderType === 'delivery' && !tempDeliveryAddress) {
-            toast.error(t('pleaseSelectAddress') || 'Please select an address');
+            toast.error(t('pleaseSelectAddress'));
             return;
         }
 
@@ -319,8 +319,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                         ) : isErrorAddresses ? (
                                             <div className="p-6 sm:p-8 bg-gray-50 rounded-lg sm:rounded-xl border border-gray-100 text-center space-y-3">
                                                 <p className="text-sm sm:text-base font-semibold text-gray-700">
-                                                    {t('addressLoadFailed') ||
-                                                        'Failed to load addresses'}
+                                                    {t('addressLoadFailed')}
                                                 </p>
                                                 <button
                                                     type="button"
@@ -328,7 +327,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                                         refetchAddresses()
                                                     }
                                                     className="min-h-[44px] px-5 py-2.5 bg-white border border-gray-200 rounded-lg sm:rounded-xl text-sm font-bold text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition-all">
-                                                    {t('retry') || 'Retry'}
+                                                    {t('retry')}
                                                 </button>
                                             </div>
                                         ) : displayAddresses.length > 0 ? (

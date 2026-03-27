@@ -24,16 +24,6 @@ import { formatAddressForDisplay } from '@/lib/address';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 
-// Lazy load map component
-const AddressMap = dynamic(() => import('./AddressMap'), {
-    ssr: false,
-    loading: () => (
-        <div className="w-full h-full bg-gray-50 flex items-center justify-center">
-            <span className="text-sm text-gray-400">Loading map...</span>
-        </div>
-    ),
-});
-
 interface AddressModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -83,6 +73,20 @@ const InputField = ({
         )}
     </div>
 );
+
+const AddressMapLoadingFallback = () => {
+    const t = useTranslations('Address');
+    return (
+        <div className="w-full h-full bg-gray-50 flex items-center justify-center">
+            <span className="text-sm text-gray-400">{t('loadingMap')}</span>
+        </div>
+    );
+};
+
+const AddressMap = dynamic(() => import('./AddressMap'), {
+    ssr: false,
+    loading: () => <AddressMapLoadingFallback />,
+});
 
 const AddressModal: React.FC<AddressModalProps> = ({
     isOpen,
@@ -483,6 +487,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                             <textarea
                                                 {...register('notes')}
                                                 rows={2}
+                                                placeholder={t(
+                                                    'addressNotesPlaceholder',
+                                                )}
                                                 className={cn(
                                                     'w-full px-4 py-3 rounded-xl sm:rounded-2xl bg-gray-50 border border-gray-200 focus:border-theme-primary focus:ring-2 focus:ring-theme-primary/20 outline-none resize-none text-base min-h-[80px]',
                                                     errors.notes &&
