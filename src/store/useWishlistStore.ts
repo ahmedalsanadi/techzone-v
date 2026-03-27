@@ -45,6 +45,26 @@ interface WishlistStore {
 }
 
 /**
+ * Normalize wishlist payload from GET /store/wishlist — `data` may be a bare array
+ * or wrapped ({ data: [] } / { items: [] }) depending on the API.
+ */
+function normalizeApiWishlistItems(data: unknown): ApiWishlistItem[] {
+    if (Array.isArray(data)) {
+        return data;
+    }
+    if (data && typeof data === 'object') {
+        const maybe = data as { data?: unknown; items?: unknown };
+        if (Array.isArray(maybe.data)) {
+            return maybe.data as ApiWishlistItem[];
+        }
+        if (Array.isArray(maybe.items)) {
+            return maybe.items as ApiWishlistItem[];
+        }
+    }
+    return [];
+}
+
+/**
  * Transform API wishlist item to local wishlist item format
  */
 function transformApiWishlistItemToLocal(
@@ -154,13 +174,14 @@ export const useWishlistStore = create<WishlistStore>()(
             syncWithAPI: async () => {
                 set({ isLoading: true });
                 try {
-                    const wishlist = await wishlistService.getWishlist();
-                    if (wishlist) {
-                        const orphanedItems = wishlist.filter(
+                    const raw = await wishlistService.getWishlist();
+                    if (raw != null) {
+                        const normalized = normalizeApiWishlistItems(raw);
+                        const orphanedItems = normalized.filter(
                             (item) => !item.product,
                         );
 
-                        get().setWishlistFromAPI(wishlist);
+                        get().setWishlistFromAPI(raw);
                         set({ lastSyncedAt: Date.now() });
 
                         if (orphanedItems.length > 0) {
@@ -188,18 +209,7 @@ export const useWishlistStore = create<WishlistStore>()(
                 });
             },
             setWishlistFromAPI: (data) => {
-                let itemsArray: ApiWishlistItem[] = [];
-
-                if (Array.isArray(data)) {
-                    itemsArray = data;
-                } else if (data && typeof data === 'object') {
-                    const maybe = data as { data?: unknown; items?: unknown };
-                    if (Array.isArray(maybe.data)) {
-                        itemsArray = maybe.data as ApiWishlistItem[];
-                    } else if (Array.isArray(maybe.items)) {
-                        itemsArray = maybe.items as ApiWishlistItem[];
-                    }
-                }
+                const itemsArray = normalizeApiWishlistItems(data);
 
                 const localItems = itemsArray
                     .map(transformApiWishlistItemToLocal)
