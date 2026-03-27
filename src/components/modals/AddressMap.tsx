@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useEffect, useCallback, useRef, memo, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import {
     MapContainer,
     TileLayer,
@@ -162,6 +163,7 @@ const AddressMap: React.FC<AddressMapProps> = ({
     onLocationSelect,
     searchQuery,
 }) => {
+    const t = useTranslations('Address');
     const [hasInteracted, setHasInteracted] = useState(false);
 
     const isDefaultLocation =
@@ -227,10 +229,10 @@ const AddressMap: React.FC<AddressMapProps> = ({
                             <div className="w-3 h-3 bg-theme-primary rounded-full animate-ping" />
                         </div>
                         <p className="text-sm font-black text-theme-primary uppercase tracking-tight text-center">
-                            Pick Your Location on Map
+                            {t('mapPickLocationTitle')}
                         </p>
                         <p className="text-[10px] text-gray-400 font-bold">
-                            Click anywhere to pinpoint your address
+                            {t('mapPickLocationHint')}
                         </p>
                     </div>
                 </div>

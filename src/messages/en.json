@@ -156,9 +156,12 @@
   "Address": {
     "loading": "Loading...",
     "loadingMap": "Loading map...",
+    "mapPickLocationTitle": "Pick your location on the map",
+    "mapPickLocationHint": "Click anywhere to pinpoint your address",
     "fetchingAddress": "Loading address...",
     "fetchingLocationDetails": "Fetching accurate location details...",
     "locationSelected": "Location selected",
+    "locationNotSelectedYet": "No location selected yet",
     "addNewAddress": "Add New Address",
     "editAddress": "Edit Address",
     "searchAddress": "Search Address",

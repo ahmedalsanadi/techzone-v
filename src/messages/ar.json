@@ -157,9 +157,12 @@
   "Address": {
     "loading": "جاري التحميل...",
     "loadingMap": "جاري تحميل الخريطة...",
+    "mapPickLocationTitle": "قم بتحديد موقعك على الخريطة",
+    "mapPickLocationHint": "انقر في أي مكان لتحديد عنوانك",
     "fetchingAddress": "جاري تحميل العنوان...",
     "fetchingLocationDetails": "جاري جلب تفاصيل الموقع بدقة...",
     "locationSelected": "تم تحديد الموقع",
+    "locationNotSelectedYet": "لم يتم تحديد الموقع بعد",
     "addNewAddress": "إضافة عنوان جديد",
     "editAddress": "تعديل العنوان",
     "searchAddress": "البحث عن العنوان",
