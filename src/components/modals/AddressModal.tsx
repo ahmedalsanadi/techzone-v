@@ -284,10 +284,27 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                             }
                                             searchQuery={searchQuery}
                                         />
-                                        <div className="absolute top-3 start-3 z-10 bg-white/95 backdrop-blur px-3 py-1.5 rounded-xl shadow-sm border border-gray-100 flex items-center gap-2">
-                                            <MapPin className="w-3.5 h-3.5 text-theme-primary" />
-                                            <span className="text-[10px] font-bold uppercase text-gray-500 tracking-tight">
-                                                {t('locationSelected')}
+                                        <div className="absolute top-3 start-3 z-10 bg-white/95 backdrop-blur px-3 py-1.5 rounded-lg shadow-sm border border-gray-100 flex items-center gap-2">
+                                            <MapPin
+                                                className={cn(
+                                                    'w-3.5 h-3.5 md:w-4 md:h-4 shrink-0',
+                                                    formattedAddress
+                                                        ? 'text-theme-primary'
+                                                        : 'text-gray-400',
+                                                )}
+                                            />
+                                            <span
+                                                className={cn(
+                                                    'text-[10px] md:text-sm font-bold uppercase tracking-tight',
+                                                    formattedAddress
+                                                        ? 'text-gray-500'
+                                                        : 'text-gray-400',
+                                                )}>
+                                                {formattedAddress
+                                                    ? t('locationSelected')
+                                                    : t(
+                                                          'locationNotSelectedYet',
+                                                      )}
                                             </span>
                                         </div>
                                     </div>
