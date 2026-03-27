@@ -133,6 +133,8 @@
     "pickup": "Pickup from branch",
     "carPickup": "Car pickup",
     "deliveryAddress": "Delivery Address",
+    "addressLoadFailed": "Failed to load addresses",
+    "retry": "Retry",
     "addAddress": "Add Address",
     "selectOrderTime": "Select order time",
     "now": "Now",

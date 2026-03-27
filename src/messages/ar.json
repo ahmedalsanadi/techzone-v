@@ -134,6 +134,8 @@
     "pickup": "استلام من الفرع",
     "carPickup": "استلام بسيارة",
     "deliveryAddress": "عنوان التوصيل",
+    "addressLoadFailed": "تعذر تحميل العناوين",
+    "retry": "إعادة المحاولة",
     "addAddress": "إضافة عنوان",
     "selectOrderTime": "حدد وقت الطلب",
     "now": "الآن",
