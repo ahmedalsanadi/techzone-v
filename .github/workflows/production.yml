@@ -59,7 +59,7 @@ jobs:
             git pull origin main
 
             echo "Installing dependencies..."
-            npm ci
+            npm install
 
             echo "Building Next.js app..."
             npm run build
