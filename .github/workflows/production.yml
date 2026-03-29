@@ -25,11 +25,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
+          # cache: "npm"
 
       # 3. Install dependencies (local build step optional but useful)
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       # 4. Build Next.js app
       - name: Build Next.js app
