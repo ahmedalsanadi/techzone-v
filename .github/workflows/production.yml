@@ -63,8 +63,8 @@ jobs:
             cd ${{ secrets.REMOTE_PRODUCTION_PATH }}
 
             echo "Pulling latest code..."
-            # One fetch + checkout + reset matches origin/main. Do not run "git pull" — it is redundant
-            # after reset --hard and forces a second GitHub connection (often fails on VPS DNS).
+            # One fetch + checkout + reset matches origin/main. Do not run "git pull" on the server — it is
+            # redundant after reset --hard and forces a second GitHub connection (often fails on VPS DNS).
             git fetch origin
             git checkout main
             git reset --hard origin/main
