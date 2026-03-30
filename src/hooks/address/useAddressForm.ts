@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { addressSchema } from '@/lib/validations';
 import { AddressFormSubmitPayload } from '@/types/address';
+import type { z } from 'zod';
 
 export interface FormState {
     addressName: string;
@@ -30,11 +31,13 @@ const initialState: FormState = {
     isDefault: false,
 };
 
+type AddressFormValues = z.infer<typeof addressSchema>;
+
 /**
  * Hook to manage address form state and validation.
  */
 export function useAddressForm() {
-    const form = useForm({
+    const form = useForm<AddressFormValues>({
         resolver: zodResolver(addressSchema),
         mode: 'onChange',
         defaultValues: {
@@ -53,7 +56,7 @@ export function useAddressForm() {
     });
 
     const reset = useCallback(
-        (data?: any) => {
+        (data?: Partial<AddressFormValues>) => {
             form.reset(
                 data || {
                     label: '',

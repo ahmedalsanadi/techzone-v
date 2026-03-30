@@ -73,10 +73,12 @@ export function ProductsFiltersSidebar({
 
     // Sync drafts from parent state (e.g. when cleared from breadcrumbs or URL navigation)
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setSearchDraft(state.filters.search);
     }, [state.filters.search]);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setMinDraft(
             state.filters.min_price != null
                 ? String(state.filters.min_price)
@@ -85,6 +87,7 @@ export function ProductsFiltersSidebar({
     }, [state.filters.min_price]);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setMaxDraft(
             state.filters.max_price != null
                 ? String(state.filters.max_price)

@@ -2,7 +2,7 @@ import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import { Clock, Plus, Edit, X } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
 import { usePathname } from 'next/navigation';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { toast } from 'sonner';
 import {
     useOrderStore,
@@ -33,7 +33,7 @@ interface OrderTypeModalProps {
     onClose: () => void;
 }
 
-const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
+function OrderTypeModalInner({ onClose }: { onClose: () => void }) {
     const t = useTranslations('Order');
     const locale = useLocale();
     const { config } = useStore();
@@ -51,9 +51,8 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
         isError: isErrorAddresses,
         refetch: refetchAddresses,
         saveAddress,
-        setDefault,
     } = useAddressFlow();
-    const pathname = usePathname();
+    usePathname();
 
     const [showAddressModal, setShowAddressModal] = useState(false);
     const [editingAddress, setEditingAddress] = useState<Address | null>(null);
@@ -62,12 +61,16 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
     const [tempTime, setTempTime] = useState('');
 
     // Local state for modal selections - initialized to null for "isolated state" logic
-    const [tempOrderType, setTempOrderType] = useState<OrderType | null>(null);
+    const [tempOrderType, setTempOrderType] = useState<OrderType | null>(
+        () => storeOrderType,
+    );
     const [tempDeliveryAddress, setTempDeliveryAddress] =
-        useState<Address | null>(null);
-    const [tempOrderTime, setTempOrderTime] = useState<OrderTime | null>(null);
+        useState<Address | null>(() => storeDeliveryAddress);
+    const [tempOrderTime, setTempOrderTime] = useState<OrderTime | null>(
+        () => storeOrderTime,
+    );
     const [tempScheduledTime, setTempScheduledTime] = useState<Date | null>(
-        null,
+        () => getCustomerPickupDatetimeAsDate(storeCustomerPickupDatetimeRaw),
     );
 
     const scheduledTime = tempScheduledTime;
@@ -95,35 +98,22 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
             );
     }, [config?.fulfillment_methods]);
 
-    const availableOrderTypes = useMemo(
-        () => availableMethods.map((m: { type: OrderType }) => m.type),
-        [availableMethods],
-    );
+    const resetTempState = () => {
+        setTempOrderType(null);
+        setTempDeliveryAddress(null);
+        setTempOrderTime(null);
+        setTempScheduledTime(null);
+    };
 
-    // Unified logic: Sync from store ONLY (Run once on open)
-    useEffect(() => {
-        if (!isOpen) {
-            setTempOrderType(null);
-            setTempDeliveryAddress(null);
-            setTempOrderTime(null);
-            setTempScheduledTime(null);
-            return;
-        }
-
-        // 1. Initial Sync from Store
-        setTempOrderType(storeOrderType);
-        setTempDeliveryAddress(storeDeliveryAddress);
-        setTempOrderTime(storeOrderTime);
-        setTempScheduledTime(
-            getCustomerPickupDatetimeAsDate(storeCustomerPickupDatetimeRaw),
-        );
-    }, [
-        isOpen,
-        storeOrderType,
-        storeDeliveryAddress,
-        storeOrderTime,
-        storeCustomerPickupDatetimeRaw,
-    ]);
+    const handleClose = () => {
+        resetTempState();
+        setShowDateTimePicker(false);
+        setTempDate('');
+        setTempTime('');
+        setShowAddressModal(false);
+        setEditingAddress(null);
+        onClose();
+    };
 
     const handleAddAddress = () => {
         setEditingAddress(null);
@@ -186,7 +176,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
         }
     };
 
-    const queryClient = useQueryClient();
+    useQueryClient();
     const handleConfirmSave = () => {
         if (!tempOrderType) return;
 
@@ -202,7 +192,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
             customerPickupDatetime: tempScheduledTime,
         });
 
-        onClose();
+        handleClose();
     };
 
     const isSaveDisabled = tempOrderType === 'delivery' && !tempDeliveryAddress;
@@ -215,10 +205,10 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
     return (
         <>
             <Dialog
-                open={isOpen}
+                open={true}
                 as="div"
                 className="relative z-50 focus:outline-none"
-                onClose={onClose}>
+                onClose={handleClose}>
                 {/* Backdrop */}
                 <div
                     className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300"
@@ -237,7 +227,7 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
                                     {t('orderType')}
                                 </DialogTitle>
                                 <button
-                                    onClick={onClose}
+                                    onClick={handleClose}
                                     className="p-2 hover:bg-gray-100 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center touch-manipulation"
                                     aria-label={t('close')}>
                                     <X className="w-5 h-5 text-gray-500" />
@@ -534,6 +524,18 @@ const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
             )}
         </>
     );
+};
+
+/**
+ * React 19 guidance (`react-hooks/set-state-in-effect`):
+ * avoid synchronously copying store/props into local state inside an effect.
+ *
+ * We mount the modal content only when open, so local draft state can be
+ * initialized once from the store on mount (and naturally reset on unmount).
+ */
+const OrderTypeModal: React.FC<OrderTypeModalProps> = ({ isOpen, onClose }) => {
+    if (!isOpen) return null;
+    return <OrderTypeModalInner onClose={onClose} />;
 };
 
 export default OrderTypeModal;

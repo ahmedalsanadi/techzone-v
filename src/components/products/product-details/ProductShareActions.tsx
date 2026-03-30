@@ -73,6 +73,7 @@ export default function ProductShareActions({
             price: product.price,
             salePrice: product.sale_price || null,
             slug: product.slug,
+            isVariation: product.is_variation,
         });
     }, [product, toggleWishlist]);
 

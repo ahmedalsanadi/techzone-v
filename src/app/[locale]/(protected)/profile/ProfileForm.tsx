@@ -1,14 +1,16 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import type { CustomerProfile, ProfileUpdateRequest } from '@/types/auth';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Label } from '@/components/ui/LabelField';
 import { Loader2 } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { profileSchema } from '@/lib/validations';
+import type { z } from 'zod';
 
 interface ProfileFormProps {
     profile: CustomerProfile;
@@ -36,11 +38,14 @@ export default function ProfileForm({
     const t = useTranslations('Profile');
     const vt = useTranslations('Validation');
 
+    type ProfileFormValues = z.infer<typeof profileSchema>;
+
     const {
         register,
         handleSubmit,
+        control,
         formState: { errors, isDirty, isValid },
-    } = useForm({
+    } = useForm<ProfileFormValues>({
         resolver: zodResolver(profileSchema),
         mode: 'onChange',
         values: {
@@ -51,8 +56,40 @@ export default function ProfileForm({
         },
     });
 
-    const onSubmit = (data: any) => {
-        onSave(data);
+    const watchedFirstName = useWatch({ control, name: 'first_name' });
+    const watchedMiddleName = useWatch({ control, name: 'middle_name' });
+    const watchedLastName = useWatch({ control, name: 'last_name' });
+    const watchedEmail = useWatch({ control, name: 'email' });
+
+    const onFormDataChangeRef = useRef(onFormDataChange);
+
+    useEffect(() => {
+        onFormDataChangeRef.current = onFormDataChange;
+    }, [onFormDataChange]);
+
+    useEffect(() => {
+        if (!isEditing) return;
+        onFormDataChangeRef.current((prev) => ({
+            ...prev,
+            first_name: watchedFirstName ?? '',
+            middle_name: watchedMiddleName ?? '',
+            last_name: watchedLastName ?? '',
+            email: watchedEmail ?? '',
+        }));
+    }, [
+        isEditing,
+        watchedFirstName,
+        watchedMiddleName,
+        watchedLastName,
+        watchedEmail,
+    ]);
+
+    const onSubmit = (data: ProfileFormValues) => {
+        const payload: ProfileUpdateRequest = {
+            ...formData,
+            ...data,
+        };
+        onSave(payload);
     };
 
     return (
@@ -79,8 +116,9 @@ export default function ProfileForm({
                                 type="text"
                                 {...register('first_name')}
                                 error={
-                                    errors.first_name?.message
-                                        ? vt(errors.first_name.message as any)
+                                    typeof errors.first_name?.message ===
+                                    'string'
+                                        ? vt(errors.first_name.message)
                                         : undefined
                                 }
                                 placeholder={t('firstNamePlaceholder')}
@@ -104,8 +142,8 @@ export default function ProfileForm({
                                 type="text"
                                 {...register('last_name')}
                                 error={
-                                    errors.last_name?.message
-                                        ? vt(errors.last_name.message as any)
+                                    typeof errors.last_name?.message === 'string'
+                                        ? vt(errors.last_name.message)
                                         : undefined
                                 }
                                 placeholder={t('lastNamePlaceholder')}
@@ -129,8 +167,9 @@ export default function ProfileForm({
                                 type="text"
                                 {...register('middle_name')}
                                 error={
-                                    errors.middle_name?.message
-                                        ? vt(errors.middle_name.message as any)
+                                    typeof errors.middle_name?.message ===
+                                    'string'
+                                        ? vt(errors.middle_name.message)
                                         : undefined
                                 }
                                 placeholder={t('middleNamePlaceholder')}
@@ -154,8 +193,8 @@ export default function ProfileForm({
                                 type="email"
                                 {...register('email')}
                                 error={
-                                    errors.email?.message
-                                        ? vt(errors.email.message as any)
+                                    typeof errors.email?.message === 'string'
+                                        ? vt(errors.email.message)
                                         : undefined
                                 }
                                 placeholder={t('emailPlaceholder')}

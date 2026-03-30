@@ -29,8 +29,7 @@ function ProductGridCardInner({
         onAddToCart?.(product);
     }, [onAddToCart, product]);
 
-    const { price, originalPrice, discountPercent } =
-        getProductDisplayPrice(product);
+    const { price, originalPrice } = getProductDisplayPrice(product);
 
     return (
         <ProductCard
@@ -42,6 +41,7 @@ function ProductGridCardInner({
             href={`/products/${product.slug}`}
             productId={product.id}
             productSlug={product.slug}
+            isVariation={product.is_variation}
             priority={priority}
             index={index}
             media={product.media}

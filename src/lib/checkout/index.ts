@@ -13,6 +13,19 @@ import {
 
 export type OrderType = 'delivery' | 'pickup' | 'dineIn' | 'carPickup' | null;
 
+/**
+ * Keys under `SubHeader` in locale JSON — aligned with {@link OrderType}.
+ * Use with `useTranslations('SubHeader')` instead of casting.
+ */
+export const ORDER_TYPE_SUBHEADER_KEYS: {
+    readonly [K in NonNullable<OrderType>]: K;
+} = {
+    delivery: 'delivery',
+    pickup: 'pickup',
+    carPickup: 'carPickup',
+    dineIn: 'dineIn',
+};
+
 export const FULFILLMENT_VALUE_TO_TYPE: Record<number, OrderType> = {
     1: 'delivery',
     2: 'pickup',

@@ -18,7 +18,11 @@ import {
 import { Button } from '@/components/ui/Button';
 
 import { useStore } from '@/components/providers/StoreProvider';
-import { FULFILLMENT_VALUE_TO_TYPE, type OrderType } from '@/lib/checkout';
+import {
+    FULFILLMENT_VALUE_TO_TYPE,
+    ORDER_TYPE_SUBHEADER_KEYS,
+    type OrderType,
+} from '@/lib/checkout';
 
 export default function SubHeader() {
     const t = useTranslations('SubHeader');
@@ -58,7 +62,9 @@ export default function SubHeader() {
             const id = FULFILLMENT_VALUE_TO_TYPE[m.value];
             return {
                 id,
-                label: id ? t(id as any) : m.label,
+                label: id
+                    ? t(ORDER_TYPE_SUBHEADER_KEYS[id])
+                    : m.label,
             };
         })
         .filter(
@@ -67,7 +73,7 @@ export default function SubHeader() {
         );
 
     const activeOrderType =
-        orderType || (orderTypes[0]?.id as any) || 'delivery';
+        orderType || orderTypes[0]?.id || 'delivery';
 
     const activeStyle =
         'bg-theme-primary/5 text-theme-primary border-theme-primary-border';

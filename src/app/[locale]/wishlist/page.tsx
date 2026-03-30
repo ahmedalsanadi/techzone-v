@@ -10,13 +10,14 @@ import { Button } from '@/components/ui/Button';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useProductConfigFlow } from '@/hooks/products';
 import ProductCard from '@/components/ui/ProductCard';
+import type { Product } from '@/types/store';
 
 const WishlistPage = () => {
     const t = useTranslations('Wishlist');
-    const { items, syncWithAPI, purgeDeletedItems, isLoading, isGuestMode } =
+    const { items, syncWithAPI, purgeDeletedItems, isGuestMode } =
         useWishlistStore();
     const { isAuthenticated } = useAuthStore();
-    const { toggleWishlist, removeFromWishlist } = useWishlistActions();
+    const { removeFromWishlist } = useWishlistActions();
     const { loadingProductId, handleAddClick } = useProductConfigFlow();
 
     const validItems = useMemo(
@@ -52,16 +53,20 @@ const WishlistPage = () => {
     }, [isMounted, isAuthenticated, isGuestMode, syncWithAPI, purgeDeletedItems]);
 
     const handleMoveToCart = async (item: (typeof items)[0]) => {
-        // Construct a partial product for the config flow
-        // The flow will fetch full details using the slug
-        const partialProduct = {
+        // Construct a minimal Product that forces a details fetch by slug.
+        const partialProduct: Product = {
             id: item.productId,
             slug: item.slug,
             title: item.name,
             cover_image_url: item.image,
+            description: '',
             price: item.price,
             sale_price: item.salePrice || undefined,
-        } as any;
+            has_discount: Boolean(item.salePrice && item.salePrice < item.price),
+            is_available: true,
+            // When unknown, assume configurable product so we fetch full detail (variants/addons).
+            is_variation: item.isVariation ?? true,
+        };
 
         await handleAddClick(partialProduct);
     };
@@ -133,6 +138,7 @@ const WishlistPage = () => {
                             productId={item.productId}
                             productSlug={item.slug}
                             media={item.media}
+                            isVariation={item.isVariation}
                             showDelete={true}
                             onWishlistClick={() =>
                                 removeFromWishlist(item.productId)

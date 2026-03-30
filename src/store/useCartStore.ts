@@ -180,7 +180,7 @@ export function transformApiCartItemToLocal(item: ApiCartItem): CartItem {
         metadata: {
             productId: item.product.id,
             productSlug: item.product.slug,
-            media: (item.product as any).media,
+            media: (item.product as unknown as { media?: ProductMedia }).media,
             apiItemId: item.id, // Store API item ID for updates/deletes
             addons,
             addonDetails,

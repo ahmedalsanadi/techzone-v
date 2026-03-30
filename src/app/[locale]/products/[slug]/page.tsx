@@ -26,8 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
         // Use high-res cover for social sharing if available
         const ogImage =
-            (product as any).media?.cover?.sizes?.[2] ||
-            product.cover_image_url;
+            product.media?.cover?.sizes?.[2] || product.cover_image_url;
 
         return {
             title,

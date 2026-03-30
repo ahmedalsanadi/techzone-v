@@ -41,11 +41,9 @@ jobs:
             npm install
           fi
 
-      # 4. Build Next.js app
-      - name: Build Next.js app
-        run: npm run build
-        env:
-          NODE_ENV: production
+      # 4. Fast validation (the real build happens on the server)
+      - name: Lint
+        run: npm run lint
 
       # 5. Set up SSH
       - name: Set up SSH
@@ -67,7 +65,8 @@ jobs:
             echo "Pulling latest code..."
             git fetch origin
             git reset --hard origin/main
-            git clean -fd
+            # Keep runtime environment files on the server (they are gitignored/untracked).
+            git clean -fd -e .env -e .env.* -e "*.log"
             git checkout main
             git pull origin main
 
@@ -86,6 +85,7 @@ jobs:
 
             if command -v pm2 &> /dev/null
             then
+              export PORT="${PORT:-3000}"
               if pm2 describe next-app >/dev/null 2>&1; then
                 pm2 restart next-app --update-env
               else
@@ -98,6 +98,9 @@ jobs:
 
               # Basic verification (fails the deploy if the process isn't online)
               pm2 status next-app
+
+              # Real verification (fail deploy if HTTP isn't responding)
+              curl -fsS "http://127.0.0.1:${PORT}/sitemap.xml" >/dev/null
             else
               echo "PM2 not installed - starting manually"
               nohup npm start > app.log 2>&1 &

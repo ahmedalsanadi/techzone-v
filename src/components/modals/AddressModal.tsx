@@ -23,6 +23,7 @@ import { DEFAULT_COORDINATES } from '@/lib/address/constants';
 import { formatAddressForDisplay } from '@/lib/address';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
+import type { UseFormRegisterReturn } from 'react-hook-form';
 
 interface AddressModalProps {
     isOpen: boolean;
@@ -48,9 +49,9 @@ const InputField = ({
     placeholder?: string;
     dir?: string;
     className?: string;
-    registration: any;
+    registration: UseFormRegisterReturn;
     error?: string;
-    vt?: any;
+    vt?: (key: string) => string;
 }) => (
     <div className={className}>
         <label className="block text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wide md:tracking-wider mb-1 md:mb-1.5 ps-1">
@@ -68,7 +69,7 @@ const InputField = ({
         />
         {error && (
             <span className="text-[10px] md:text-xs text-red-500 font-medium ps-1 mt-0.5 md:mt-1 block leading-tight">
-                {vt ? vt(error as any) : error}
+                {vt ? vt(error) : error}
             </span>
         )}
     </div>
@@ -358,11 +359,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                                 'searchOptionPlaceholder',
                                             )}
                                             error={
-                                                errors.city_id?.message
-                                                    ? vt(
-                                                          errors.city_id
-                                                              .message as any,
-                                                      )
+                                                typeof errors.city_id?.message ===
+                                                'string'
+                                                    ? vt(errors.city_id.message)
                                                     : undefined
                                             }
                                             required
@@ -391,10 +390,11 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                                 'searchOptionPlaceholder',
                                             )}
                                             error={
-                                                errors.district_id?.message
+                                                typeof errors.district_id
+                                                    ?.message === 'string'
                                                     ? vt(
                                                           errors.district_id
-                                                              .message as any,
+                                                              .message,
                                                       )
                                                     : undefined
                                             }
@@ -470,10 +470,13 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                             />
                                             {errors.notes && (
                                                 <span className="text-[10px] md:text-xs text-red-500 font-medium ps-1 mt-0.5 md:mt-1 block">
-                                                    {vt(
-                                                        errors.notes
-                                                            .message as any,
-                                                    )}
+                                                    {typeof errors.notes
+                                                        ?.message === 'string'
+                                                        ? vt(
+                                                              errors.notes
+                                                                  .message,
+                                                          )
+                                                        : ''}
                                                 </span>
                                             )}
                                         </div>

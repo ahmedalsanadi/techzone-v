@@ -1,7 +1,7 @@
 //src/components/ui/ProductCard.tsx
 'use client';
 
-import React, { useRef } from 'react';
+import React from 'react';
 import DynamicImage from './DynamicImage';
 import {
     Heart,
@@ -40,6 +40,8 @@ interface ProductCardProps {
     showDelete?: boolean;
     /** Optional brand; only shown when present */
     brand?: ProductBrand | null;
+    /** From product list/detail; drives wishlist → cart detail fetch when true/unknown. */
+    isVariation?: boolean;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -61,6 +63,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     media,
     showDelete = false,
     brand,
+    isVariation,
 }) => {
     const { toggleWishlist } = useWishlistActions();
     const cartSummary = useCartProductSummary(productId);
@@ -102,6 +105,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 price: numericPrice,
                 salePrice: numericOldPrice,
                 slug: productSlug || href.replace('/products/', ''),
+                ...(isVariation !== undefined && { isVariation }),
             });
         }
     };

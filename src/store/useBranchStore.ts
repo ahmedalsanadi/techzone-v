@@ -98,7 +98,7 @@ export const useBranchStore = create<BranchState>()(
                 tenantHost: state.tenantHost,
             }),
             merge: (persisted, current) => {
-                const p = persisted as any;
+                const p = (persisted as Partial<PersistedState>) ?? null;
                 if (!p) return current;
 
                 const currentHost = getCurrentTenantHostForStorage();
@@ -117,7 +117,10 @@ export const useBranchStore = create<BranchState>()(
                     tenantHost: currentHost,
                 };
             },
-            migrate: (persistedState: unknown, version: number): any => {
+            migrate: (
+                persistedState: unknown,
+                version: number,
+            ): PersistedState => {
                 if (version !== BRANCH_STORAGE_VERSION) {
                     return {
                         selectedBranchId: null,
@@ -127,7 +130,9 @@ export const useBranchStore = create<BranchState>()(
                         tenantHost: getCurrentTenantHostForStorage(),
                     };
                 }
-                const state = persistedState as any;
+                const state = persistedState as Partial<
+                    PersistedState & { selectedBranch?: Branch | null }
+                >;
                 if (state?.selectedBranch && !state?.selectedBranchId) {
                     return {
                         selectedBranchId: state.selectedBranch?.id || null,
@@ -137,7 +142,14 @@ export const useBranchStore = create<BranchState>()(
                         tenantHost: getCurrentTenantHostForStorage(),
                     };
                 }
-                return state;
+                return {
+                    selectedBranchId: state.selectedBranchId ?? null,
+                    selectedBranchName: state.selectedBranchName ?? null,
+                    hasSelectedOnce: state.hasSelectedOnce ?? false,
+                    version: BRANCH_STORAGE_VERSION,
+                    tenantHost:
+                        state.tenantHost ?? getCurrentTenantHostForStorage(),
+                };
             },
             onRehydrateStorage: (state) => {
                 return () => state?.setHasHydrated(true);

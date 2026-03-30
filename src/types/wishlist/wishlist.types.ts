@@ -13,6 +13,8 @@ export interface WishlistProduct {
     media?: ProductMedia;
     is_available: boolean;
     type: string;
+    /** When false, list payload is enough for add-to-cart without a detail fetch. */
+    is_variation?: boolean;
 }
 
 /**

@@ -106,7 +106,18 @@ export const useAuthStore = create<AuthState>()(
             }),
             skipHydration: true,
             merge: (persisted, current) => {
-                const p = persisted as any;
+                const p =
+                    (persisted as Partial<
+                        Pick<
+                            AuthState,
+                            | 'user'
+                            | 'profile'
+                            | 'token'
+                            | 'isAuthenticated'
+                            | 'isProfileComplete'
+                            | 'tenantHost'
+                        >
+                    >) ?? null;
                 if (!p) return current;
 
                 const currentHost = getCurrentTenantHostForStorage();

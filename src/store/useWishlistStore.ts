@@ -16,6 +16,8 @@ export interface WishlistItem {
     salePrice: number | null;
     slug: string;
     media?: ProductMedia;
+    /** Mirrors API `is_variation`; omit when unknown (guest list from minimal cards). */
+    isVariation?: boolean;
     metadata?: Record<string, unknown>;
 }
 
@@ -81,6 +83,7 @@ function transformApiWishlistItemToLocal(
         salePrice: item.product.sale_price,
         slug: item.product.slug,
         media: item.product.media,
+        isVariation: item.product.is_variation,
         metadata: {
             apiItemId: item.id,
             addedAt: item.added_at,
@@ -234,7 +237,10 @@ export const useWishlistStore = create<WishlistStore>()(
                 isGuestMode: state.isGuestMode,
             }),
             merge: (persisted, current) => {
-                const p = persisted as any;
+                const p =
+                    (persisted as Partial<
+                        Pick<WishlistStore, 'items' | 'tenantHost' | 'isGuestMode'>
+                    >) ?? null;
                 if (!p) return current;
 
                 const currentHost = getCurrentTenantHostForStorage();

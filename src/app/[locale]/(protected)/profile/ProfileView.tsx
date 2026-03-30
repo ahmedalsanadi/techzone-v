@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -29,19 +29,22 @@ export default function ProfileView({ initialProfile }: ProfileViewProps) {
     const currentProfile =
         profile ?? profileQuery.data ?? initialProfile ?? null;
 
-    const formDataFromProfile = currentProfile
-        ? {
-              first_name: currentProfile.first_name || '',
-              middle_name: currentProfile.middle_name || '',
-              last_name: currentProfile.last_name || '',
-              email: currentProfile.email || '',
-            }
-        : {
-              first_name: '',
-              middle_name: '',
-              last_name: '',
-              email: '',
+    const formDataFromProfile = useMemo((): ProfileUpdateRequest => {
+        if (!currentProfile) {
+            return {
+                first_name: '',
+                middle_name: '',
+                last_name: '',
+                email: '',
             };
+        }
+        return {
+            first_name: currentProfile.first_name || '',
+            middle_name: currentProfile.middle_name || '',
+            last_name: currentProfile.last_name || '',
+            email: currentProfile.email || '',
+        };
+    }, [currentProfile]);
     const formData = isEditing && draft ? draft : formDataFromProfile;
 
     useEffect(() => {
@@ -50,10 +53,19 @@ export default function ProfileView({ initialProfile }: ProfileViewProps) {
         }
     }, [profileQuery.data, setProfile]);
 
-    const setFormData = (data: ProfileUpdateRequest | ((prev: ProfileUpdateRequest) => ProfileUpdateRequest)) => {
-        const next = typeof data === 'function' ? data(formData) : data;
-        setDraft(next);
-    };
+    const setFormData = useCallback(
+        (
+            data:
+                | ProfileUpdateRequest
+                | ((prev: ProfileUpdateRequest) => ProfileUpdateRequest),
+        ) => {
+            setDraft((prev) => {
+                const base = prev ?? formDataFromProfile;
+                return typeof data === 'function' ? data(base) : data;
+            });
+        },
+        [formDataFromProfile],
+    );
 
     const handleSave = async (data: ProfileUpdateRequest) => {
         updateMutation.mutate(data, {
