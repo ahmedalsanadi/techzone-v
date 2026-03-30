@@ -18,11 +18,11 @@ jobs:
     steps:
       # 1. Checkout repository
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      # 2. Setup Node.js
+      # 2. Setup Node.js for the app (matches package.json engines; action images use newer Node)
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: "20"
           cache: npm
@@ -45,7 +45,7 @@ jobs:
 
       # 5. Set up SSH
       - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.9.0
+        uses: webfactory/ssh-agent@v0.10.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
