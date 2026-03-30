@@ -65,11 +65,12 @@ jobs:
             cd ${{ secrets.REMOTE_PRODUCTION_PATH }}
 
             echo "Pulling latest code..."
+            # One fetch + reset matches origin/main; do not run "git pull" here — it is redundant
+            # after reset --hard and would hit GitHub again (extra DNS/network failure surface on the VPS).
             git fetch origin
-            git reset --hard origin/main
-            git clean -fd
             git checkout main
-            git pull origin main
+            git reset --hard origin/main
+            git clean -fd -e .env -e .env.* -e "*.log"
 
             echo "Installing dependencies..."
             if [ -f package-lock.json ]; then
