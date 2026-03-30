@@ -99,8 +99,8 @@ jobs:
               # Basic verification (fails the deploy if the process isn't online)
               pm2 status next-app
 
-              # HTTP health check: Next.js binds after PM2 reports "online" — immediate curl often gets
-              # "connection refused". Also align port with .env when set (shell may default to wrong PORT).
+              # HTTP health check: wait until Node responds (do not use /sitemap.xml here — loopback Host
+              # would make <loc> URLs 127.0.0.1, which is confusing; sitemap for SEO uses the real Host).
               APP_PORT="${PORT:-3000}"
               if [ -f .env ]; then
                 _line="$(grep -E '^[[:space:]]*PORT=' .env | tail -1 || true)"
@@ -114,17 +114,17 @@ jobs:
 
               ok=0
               for _i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30; do
-                if curl -fsS --connect-timeout 3 --max-time 10 "http://127.0.0.1:${APP_PORT}/sitemap.xml" >/dev/null 2>&1; then
+                if curl -fsS --connect-timeout 3 --max-time 10 -o /dev/null "http://127.0.0.1:${APP_PORT}/"; then
                   ok=1
                   break
                 fi
                 sleep 2
               done
               if [ "${ok}" -ne 1 ]; then
-                echo "Health check failed: no HTTP 200 from http://127.0.0.1:${APP_PORT}/sitemap.xml after ~60s"
+                echo "Health check failed: no HTTP response from http://127.0.0.1:${APP_PORT}/ after ~60s"
                 exit 1
               fi
-              echo "Health check OK: http://127.0.0.1:${APP_PORT}/sitemap.xml"
+              echo "Health check OK: GET http://127.0.0.1:${APP_PORT}/"
             else
               echo "PM2 not installed - starting manually"
               nohup npm start > app.log 2>&1 &

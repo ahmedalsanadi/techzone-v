@@ -94,7 +94,8 @@ These are the active variables after refactor:
   - Server uses it directly. Client uses `/proxy`.
 
 - `NEXT_PUBLIC_SITE_URL`
-  - Default site URL (used as fallback).
+  - **Not** a per-tenant public URL (do not set one store’s domain here for multi-tenant).
+  - Fallback when `Host` is missing (e.g. local scripts). SEO and sitemap use **`getRequestOrigin()`** from `x-forwarded-host` / `host` so each store’s domain is correct in production.
 
 #### Tenant Resolution
 - `STORE_DOMAIN_MAP`
