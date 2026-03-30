@@ -124,6 +124,7 @@ jobs:
                 echo "Health check failed: no HTTP 200 from http://127.0.0.1:${APP_PORT}/sitemap.xml after ~60s"
                 exit 1
               fi
+              echo "Health check OK: http://127.0.0.1:${APP_PORT}/sitemap.xml"
             else
               echo "PM2 not installed - starting manually"
               nohup npm start > app.log 2>&1 &
