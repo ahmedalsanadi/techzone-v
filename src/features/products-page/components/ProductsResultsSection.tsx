@@ -17,7 +17,6 @@ export function ProductsResultsSection({
     onAddToCart,
     getAddToCartLabel,
     isAddingProductId,
-    onPrefetchProduct,
     children,
 }: {
     products: Product[];
@@ -31,8 +30,6 @@ export function ProductsResultsSection({
     onAddToCart?: (product: Product) => void;
     getAddToCartLabel?: (product: Product) => string;
     isAddingProductId?: number | null;
-    onPrefetchProduct?: (product: Product) => void;
-    // for loading/empty/error content above/below grid
     children?: React.ReactNode;
 }) {
     const t = useTranslations('Product');
@@ -65,7 +62,6 @@ export function ProductsResultsSection({
                     onAddToCart={onAddToCart}
                     getAddToCartLabel={getAddToCartLabel}
                     isAddingProductId={isAddingProductId}
-                    onPrefetchProduct={onPrefetchProduct}
                 />
             </div>
         </div>

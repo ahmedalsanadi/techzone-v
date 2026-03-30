@@ -1,7 +1,7 @@
 //src/components/ui/ProductCard.tsx
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import DynamicImage from './DynamicImage';
 import {
     Heart,
@@ -35,7 +35,6 @@ interface ProductCardProps {
     onAddToCartClick?: (e: React.MouseEvent) => void;
     onClick?: () => void;
     isAdding?: boolean;
-    onPrefetch?: () => void;
     index?: number;
     media?: ProductMedia;
     showDelete?: boolean;
@@ -58,44 +57,23 @@ const ProductCard: React.FC<ProductCardProps> = ({
     onAddToCartClick,
     onClick,
     isAdding = false,
-    onPrefetch,
     index = 0,
     media,
     showDelete = false,
     brand,
 }) => {
-    const cardRef = useRef<HTMLDivElement | null>(null);
-    const hasPrefetchedRef = useRef(false);
     const { toggleWishlist } = useWishlistActions();
     const cartSummary = useCartProductSummary(productId);
     const { updateItemQuantity, removeFromCart } = useCartActions();
 
+    const isInWishlistState = useWishlistStore((state) =>
+        productId
+            ? state.items.some((item) => item.productId === productId)
+            : false,
+    );
+
     // Entrance stagger delay
     const animationDelay = `${(index % 8) * 50}ms`;
-
-    useEffect(() => {
-        if (!onPrefetch || !cardRef.current) return;
-        if (hasPrefetchedRef.current) return;
-
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries.some((entry) => entry.isIntersecting)) {
-                    hasPrefetchedRef.current = true;
-                    onPrefetch();
-                    observer.disconnect();
-                }
-            },
-            { rootMargin: '200px' },
-        );
-
-        observer.observe(cardRef.current);
-        return () => observer.disconnect();
-    }, [onPrefetch]);
-    // Subscribe to items array to make it reactive
-    const wishlistItems = useWishlistStore((state) => state.items);
-    const isInWishlistState = productId
-        ? wishlistItems.some((item) => item.productId === productId)
-        : false;
 
     const handleWishlistClick = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -130,7 +108,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
     return (
         <div
-            ref={cardRef}
             onClick={onClick}
             className="bg-white border border-gray-100 rounded-xl overflow-hidden relative group shadow-sm flex flex-col h-full animate-in fade-in slide-in-from-bottom-2 duration-700 fill-mode-both w-full mx-auto transform-gpu transition-all hover:shadow-md"
             style={{ animationDelay }}>
