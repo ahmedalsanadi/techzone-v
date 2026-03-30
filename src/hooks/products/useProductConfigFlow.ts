@@ -5,7 +5,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCartActions } from '@/hooks/cart';
 import { generateCartItemId } from '@/lib/cart/utils';
-import { requiresConfiguration } from '@/lib/products/requirements';
+import {
+    requiresConfiguration,
+    requiresDetailsFetch,
+} from '@/lib/products/requirements';
 import { storeService } from '@/services/store-service';
 import type { Product } from '@/types/store';
 import { toast } from 'sonner';
@@ -68,14 +71,24 @@ export function useProductConfigFlow() {
 
     const handleAddClick = async (product: Product) => {
         if (loadingProductId === product.id) return;
-        setLoadingProductId(product.id);
+
+        const needNetwork = requiresDetailsFetch(product);
+        if (needNetwork) {
+            setLoadingProductId(product.id);
+        }
 
         try {
-            const detail = await queryClient.fetchQuery({
-                queryKey: productKey(product.slug),
-                queryFn: () => storeService.getProduct(product.slug),
-                staleTime: PRODUCT_CACHE_TTL,
-            });
+            let detail: Product;
+            if (needNetwork) {
+                detail = await queryClient.fetchQuery({
+                    queryKey: productKey(product.slug),
+                    queryFn: () => storeService.getProduct(product.slug),
+                    staleTime: PRODUCT_CACHE_TTL,
+                });
+            } else {
+                queryClient.setQueryData(productKey(product.slug), product);
+                detail = product;
+            }
 
             if (!detail.is_available) {
                 toast.error(t('outOfStock') || 'Out of stock');
@@ -100,17 +113,16 @@ export function useProductConfigFlow() {
                 t('loadProductError') || 'Unable to load product details',
             );
         } finally {
-            setLoadingProductId(null);
+            if (needNetwork) {
+                setLoadingProductId(null);
+            }
         }
     };
 
-    const prefetchProduct = async (product: Product) => {
-        if (!product.slug) return;
-        await queryClient.prefetchQuery({
-            queryKey: productKey(product.slug),
-            queryFn: () => storeService.getProduct(product.slug),
-            staleTime: PRODUCT_CACHE_TTL,
-        });
+    /** Seeds React Query from list payload when detail is redundant — no extra network. */
+    const prefetchProduct = (product: Product) => {
+        if (!product.slug || requiresDetailsFetch(product)) return;
+        queryClient.setQueryData(productKey(product.slug), product);
     };
 
     return {
