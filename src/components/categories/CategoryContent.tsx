@@ -51,8 +51,7 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
     const { categories: allCategories } = useStore();
     const params = useParams();
     const router = useRouter();
-    const { loadingProductId, handleAddClick, prefetchProduct } =
-        useProductConfigFlow();
+    const { loadingProductId, handleAddClick } = useProductConfigFlow();
 
     const slug = (params?.slug as string | undefined) ?? undefined;
 
@@ -196,7 +195,6 @@ const CategoryContent = ({ initialCategory }: CategoryContentProps) => {
                                     : t('addToCart') || 'Add to cart'
                             }
                             isAddingProductId={loadingProductId}
-                            onPrefetchProduct={prefetchProduct}
                             hasNextPage={hasNextPage}
                             fetchNextPage={fetchNextPage}
                             isFetchingNextPage={isFetchingNextPage}

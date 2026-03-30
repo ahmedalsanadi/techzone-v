@@ -143,8 +143,7 @@ export default function ProductsPageClient() {
         ? meta.current_page
         : state.pagination.page;
 
-    const { loadingProductId, handleAddClick, prefetchProduct } =
-        useProductConfigFlow();
+    const { loadingProductId, handleAddClick } = useProductConfigFlow();
 
     const scrollResultsIntoView = useCallback(() => {
         requestAnimationFrame(() => {
@@ -466,8 +465,7 @@ export default function ProductsPageClient() {
                                     ? t('customize') || 'Customize'
                                     : t('addToCart') || 'Add to cart'
                             }
-                            isAddingProductId={loadingProductId}
-                            onPrefetchProduct={prefetchProduct}>
+                            isAddingProductId={loadingProductId}>
                             <AppliedFiltersBar
                                 state={state}
                                 vars={filtersVarsQuery.data}

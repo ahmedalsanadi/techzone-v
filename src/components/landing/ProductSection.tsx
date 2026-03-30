@@ -1,14 +1,14 @@
-//src/components/pages/landing-page/ProductSection.tsx
+// src/components/landing/ProductSection.tsx
 'use client';
 
 import React from 'react';
 import { useTranslations } from 'next-intl';
-import ProductCard from '@/components/ui/ProductCard';
 import { Link } from '@/i18n/navigation';
 import { Product } from '@/types/store';
 import { useProductConfigFlow } from '@/hooks/products';
 import { requiresConfiguration } from '@/lib/products/requirements';
 import { getProductDisplayPrice } from '@/lib/products/price';
+import { ProductGridCard } from '@/components/products/ProductGridCard';
 
 interface ProductSectionProps {
     title: string;
@@ -26,17 +26,14 @@ const ProductSection: React.FC<ProductSectionProps> = ({
     priority = false,
 }) => {
     const t = useTranslations(translationNamespace);
-    const { loadingProductId, handleAddClick, prefetchProduct } =
-        useProductConfigFlow();
+    const { loadingProductId, handleAddClick } = useProductConfigFlow();
 
-    // Don't render if no products
     if (!products || products.length === 0) {
         return null;
     }
 
     return (
         <section className="animate-in fade-in duration-700 fill-mode-both">
-            {/* Section Header */}
             <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">
                     {title}
@@ -48,24 +45,19 @@ const ProductSection: React.FC<ProductSectionProps> = ({
                 </Link>
             </div>
 
-            {/* Products Grid */}
             <div className="grid grid-cols-2 gap-4 md:gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 ">
                 {products.map((product, index) => {
-                    const { price, originalPrice, discountPercent } =
-                        getProductDisplayPrice(product);
-                    const productHref = `/products/${product.slug}`;
-
+                    const { discountPercent } = getProductDisplayPrice(product);
                     return (
-                        <ProductCard
+                        <ProductGridCard
                             key={product.id}
-                            name={product.title}
-                            image={product.cover_image_url}
-                            price={price}
-                            oldPrice={originalPrice}
-                            href={productHref}
-                            productId={product.id}
-                            productSlug={product.slug}
-                            priority={priority && index < 5}
+                            product={product}
+                            index={index}
+                            addToCartLabel={
+                                requiresConfiguration(product)
+                                    ? t('customize') || 'Customize'
+                                    : t('addToCart')
+                            }
                             discountBadge={
                                 discountPercent
                                     ? t('save', {
@@ -73,17 +65,9 @@ const ProductSection: React.FC<ProductSectionProps> = ({
                                       })
                                     : undefined
                             }
-                            media={product.media}
-                            brand={product.brand}
-                            onAddToCartClick={() => handleAddClick(product)}
-                            isAdding={loadingProductId === product.id}
-                            index={index}
-                            addToCartLabel={
-                                requiresConfiguration(product)
-                                    ? t('customize') || 'Customize'
-                                    : t('addToCart')
-                            }
-                            onPrefetch={() => prefetchProduct(product)}
+                            onAddToCart={handleAddClick}
+                            isAddingProductId={loadingProductId}
+                            priority={priority && index < 5}
                         />
                     );
                 })}

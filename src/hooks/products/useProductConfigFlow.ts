@@ -1,7 +1,13 @@
 // src/hooks/useProductConfigFlow.ts
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCartActions } from '@/hooks/cart';
 import { generateCartItemId } from '@/lib/cart/utils';
@@ -14,7 +20,7 @@ import type { Product } from '@/types/store';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import { useLocale } from 'next-intl';
-import { useProductConfigContext } from '@/components/providers/ProductConfigProvider';
+import { useProductConfigActions } from '@/components/providers/ProductConfigProvider';
 import { track } from '@vercel/analytics';
 import { useBranchStore } from '@/store/useBranchStore';
 import { branchCookies } from '@/lib/branches';
@@ -26,8 +32,12 @@ export function useProductConfigFlow() {
     const locale = useLocale();
     const queryClient = useQueryClient();
     const { addToCart } = useCartActions();
-    const { openWithProduct } = useProductConfigContext();
-    const [loadingProductId, setLoadingProductId] = useState<number | null>(null);
+    const { openWithProduct } = useProductConfigActions();
+    const [loadingProductId, setLoadingProductId] = useState<number | null>(
+        null,
+    );
+    const loadingProductIdRef = useRef(loadingProductId);
+    loadingProductIdRef.current = loadingProductId;
 
     const selectedBranchId = useBranchStore((s) => s.selectedBranchId);
     const branchIdFromCookie = useMemo(() => {
@@ -44,90 +54,92 @@ export function useProductConfigFlow() {
 
     const productKey = useMemo(
         () => (slug: string) =>
-            ['product', tenantHost, locale, branchId ?? 'no-branch', slug] as const,
+            [
+                'product',
+                tenantHost,
+                locale,
+                branchId ?? 'no-branch',
+                slug,
+            ] as const,
         [tenantHost, locale, branchId],
     );
 
-    // Avoid accumulating stale cross-branch product details in memory (optional but tidy).
     useEffect(() => {
-        // When branch/locale changes, any in-flight detail fetch should not surface as "current".
-        // Query keys already separate caches, so this is just a safety cancel.
         queryClient.cancelQueries({ queryKey: ['product', tenantHost, locale] });
     }, [branchId, locale, queryClient, tenantHost]);
 
-    const addBasicItem = (product: Product) => {
-        addToCart({
-            id: generateCartItemId(product.id, {}),
-            name: product.title,
-            image: product.cover_image_url || '',
-            price: product.sale_price || product.price,
-            categoryId: String(product.categories?.[0]?.id || ''),
-            metadata: {
-                productId: product.id,
-                productSlug: product.slug,
-            },
-        });
-    };
+    const addBasicItem = useCallback(
+        (product: Product) => {
+            addToCart({
+                id: generateCartItemId(product.id, {}),
+                name: product.title,
+                image: product.cover_image_url || '',
+                price: product.sale_price || product.price,
+                categoryId: String(product.categories?.[0]?.id || ''),
+                metadata: {
+                    productId: product.id,
+                    productSlug: product.slug,
+                },
+            });
+        },
+        [addToCart],
+    );
 
-    const handleAddClick = async (product: Product) => {
-        if (loadingProductId === product.id) return;
+    const handleAddClick = useCallback(
+        async (product: Product) => {
+            if (loadingProductIdRef.current === product.id) return;
 
-        const needNetwork = requiresDetailsFetch(product);
-        if (needNetwork) {
-            setLoadingProductId(product.id);
-        }
-
-        try {
-            let detail: Product;
+            const needNetwork = requiresDetailsFetch(product);
             if (needNetwork) {
-                detail = await queryClient.fetchQuery({
-                    queryKey: productKey(product.slug),
-                    queryFn: () => storeService.getProduct(product.slug),
-                    staleTime: PRODUCT_CACHE_TTL,
-                });
-            } else {
-                queryClient.setQueryData(productKey(product.slug), product);
-                detail = product;
+                setLoadingProductId(product.id);
             }
 
-            if (!detail.is_available) {
-                toast.error(t('outOfStock') || 'Out of stock');
-                return;
-            }
+            try {
+                let detail: Product;
+                if (needNetwork) {
+                    detail = await queryClient.fetchQuery({
+                        queryKey: productKey(product.slug),
+                        queryFn: () => storeService.getProduct(product.slug),
+                        staleTime: PRODUCT_CACHE_TTL,
+                    });
+                } else {
+                    queryClient.setQueryData(productKey(product.slug), product);
+                    detail = product;
+                }
 
-            if (requiresConfiguration(detail)) {
-                track('product_config_required', {
-                    productId: detail.id,
-                    slug: detail.slug,
-                });
-                openWithProduct(detail);
-            } else {
-                track('product_direct_add', {
-                    productId: detail.id,
-                    slug: detail.slug,
-                });
-                addBasicItem(detail);
-            }
-        } catch {
-            toast.error(
-                t('loadProductError') || 'Unable to load product details',
-            );
-        } finally {
-            if (needNetwork) {
-                setLoadingProductId(null);
-            }
-        }
-    };
+                if (!detail.is_available) {
+                    toast.error(t('outOfStock') || 'Out of stock');
+                    return;
+                }
 
-    /** Seeds React Query from list payload when detail is redundant — no extra network. */
-    const prefetchProduct = (product: Product) => {
-        if (!product.slug || requiresDetailsFetch(product)) return;
-        queryClient.setQueryData(productKey(product.slug), product);
-    };
+                if (requiresConfiguration(detail)) {
+                    track('product_config_required', {
+                        productId: detail.id,
+                        slug: detail.slug,
+                    });
+                    openWithProduct(detail);
+                } else {
+                    track('product_direct_add', {
+                        productId: detail.id,
+                        slug: detail.slug,
+                    });
+                    addBasicItem(detail);
+                }
+            } catch {
+                toast.error(
+                    t('loadProductError') || 'Unable to load product details',
+                );
+            } finally {
+                if (needNetwork) {
+                    setLoadingProductId(null);
+                }
+            }
+        },
+        [queryClient, productKey, t, addBasicItem, openWithProduct],
+    );
 
     return {
         loadingProductId,
         handleAddClick,
-        prefetchProduct,
     };
 }

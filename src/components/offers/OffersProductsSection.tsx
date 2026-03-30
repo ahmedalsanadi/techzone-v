@@ -30,8 +30,7 @@ export function OffersProductsSection({
     onPageChange,
 }: OffersProductsSectionProps) {
     const t = useTranslations('Collections');
-    const { loadingProductId, handleAddClick, prefetchProduct } =
-        useProductConfigFlow();
+    const { loadingProductId, handleAddClick } = useProductConfigFlow();
 
     return (
         <div className="space-y-6">
@@ -59,7 +58,6 @@ export function OffersProductsSection({
                             : t('addToCart') || 'Add to cart'
                     }
                     isAddingProductId={loadingProductId}
-                    onPrefetchProduct={prefetchProduct}
                 />
             </div>
         </div>

@@ -1,11 +1,10 @@
-// src/components/pages/products/ProductsGrid.tsx
+// src/components/products/ProductsGrid.tsx
 'use client';
 
 import React, { useEffect, useRef, useCallback } from 'react';
-import ProductCard from '@/components/ui/ProductCard';
 import ProductCardSkeleton from '@/components/ui/ProductCardSkeleton';
+import { ProductGridCard } from '@/components/products/ProductGridCard';
 import { useTranslations } from 'next-intl';
-import { cn } from '@/lib/utils';
 import { PaginationMeta } from '@/types/api';
 import { Product } from '@/types/store';
 import { getProductDisplayPrice } from '@/lib/products/price';
@@ -21,7 +20,6 @@ interface ProductsGridProps {
     onAddToCart?: (product: Product) => void;
     getAddToCartLabel?: (product: Product) => string;
     isAddingProductId?: number | null;
-    onPrefetchProduct?: (product: Product) => void;
     /** Infinite scroll: load more when sentinel is visible */
     hasNextPage?: boolean;
     fetchNextPage?: () => void;
@@ -34,11 +32,9 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
     onAddToCart,
     getAddToCartLabel,
     isAddingProductId,
-    onPrefetchProduct,
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-    // currentPage, pagination, onPageChange kept for other callers (search, offers)
 }) => {
     const t = useTranslations('Promotions');
     const loadMoreRef = useRef<HTMLDivElement>(null);
@@ -63,7 +59,6 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
     }, [handleLoadMore, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
     if (loading && products.length === 0) {
-        // ... skeleton remains same
         return (
             <div className="grid grid-cols-2 gap-4 md:gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 {Array.from({ length: 8 }).map((_, i) => (
@@ -85,15 +80,15 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
         <div className="flex-1 flex flex-col">
             <div className="grid grid-cols-2 gap-4 md:gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 {products.map((product, index) => {
-                    const { price, originalPrice, discountPercent } =
-                        getProductDisplayPrice(product);
+                    const { discountPercent } = getProductDisplayPrice(product);
                     return (
-                        <ProductCard
+                        <ProductGridCard
                             key={product.id}
-                            name={product.title}
-                            image={product.cover_image_url || ''}
-                            price={price}
-                            oldPrice={originalPrice}
+                            product={product}
+                            index={index}
+                            addToCartLabel={
+                                getAddToCartLabel?.(product) || t('addToCart')
+                            }
                             discountBadge={
                                 discountPercent
                                     ? t('save', {
@@ -101,24 +96,13 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
                                       })
                                     : undefined
                             }
-                            href={`/products/${product.slug}`}
-                            productId={product.id}
-                            productSlug={product.slug}
+                            onAddToCart={onAddToCart}
+                            isAddingProductId={isAddingProductId}
                             priority={index < 5}
-                            index={index}
-                            media={product.media}
-                            brand={product.brand}
-                            addToCartLabel={
-                                getAddToCartLabel?.(product) || t('addToCart')
-                            }
-                            onAddToCartClick={() => onAddToCart?.(product)}
-                            isAdding={isAddingProductId === product.id}
-                            onPrefetch={() => onPrefetchProduct?.(product)}
                         />
                     );
                 })}
             </div>
-            {/* Sentinel for infinite scroll: only mount when there are more pages */}
             {hasNextPage === true && (
                 <div
                     ref={loadMoreRef}
