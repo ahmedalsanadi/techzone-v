@@ -25,15 +25,23 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          # cache: "npm"
+          cache: npm
+          cache-dependency-path: package-lock.json
 
-      # 3. Install dependencies (local build step optional but useful)
+      # 3. Install dependencies (npm only — commit package-lock.json once; avoid pnpm-lock.yaml)
       - name: Install dependencies
-        run: npm install
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
 
       # 4. Build Next.js app
       - name: Build Next.js app
         run: npm run build
+        env:
+          NODE_ENV: production
 
       # 5. Set up SSH
       - name: Set up SSH
@@ -59,17 +67,25 @@ jobs:
             git pull origin main
 
             echo "Installing dependencies..."
-            npm install
+            if [ -f package-lock.json ]; then
+              npm ci
+            else
+              npm install
+            fi
 
             echo "Building Next.js app..."
+            export NODE_ENV=production
             npm run build
 
             echo "Restarting application..."
 
-            # if using pm2
             if command -v pm2 &> /dev/null
             then
-              pm2 restart next-app || pm2 start npm --name "next-app" -- start
+              if pm2 describe next-app >/dev/null 2>&1; then
+                pm2 restart next-app
+              else
+                pm2 start npm --name "next-app" -- start
+              fi
             else
               echo "PM2 not installed - starting manually"
               nohup npm start > app.log 2>&1 &
