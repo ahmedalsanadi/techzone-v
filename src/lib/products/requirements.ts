@@ -28,13 +28,15 @@ export function requiresConfiguration(product: Product): boolean {
     );
 }
 
+/**
+ * True only when the list payload cannot drive configure/add (missing variant tree).
+ * Omitted `addons` / `custom_fields` on list are treated like [] elsewhere — do not force a detail round-trip for that.
+ */
 export function requiresDetailsFetch(product: Product): boolean {
-    return (
+    const expectsVariants =
         product.is_variation === true ||
-        product.addons === undefined ||
-        product.custom_fields === undefined ||
-        product.variants === undefined
-    );
+        (product.variants !== undefined && product.variants.length > 0);
+    return expectsVariants && product.variants === undefined;
 }
 
 const isProvidedValue = (value: unknown): boolean => {

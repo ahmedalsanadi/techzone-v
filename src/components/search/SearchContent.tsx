@@ -17,8 +17,7 @@ interface SearchContentProps {
 
 const SearchContent = ({ initialQuery }: SearchContentProps) => {
     const t = useTranslations('Search');
-    const { loadingProductId, handleAddClick, prefetchProduct } =
-        useProductConfigFlow();
+    const { loadingProductId, handleAddClick } = useProductConfigFlow();
     const queryClient = useQueryClient();
     const [sort, setSort] = useState<string | undefined>(undefined);
     const [order, setOrder] = useState<string | undefined>(undefined);
@@ -95,7 +94,6 @@ const SearchContent = ({ initialQuery }: SearchContentProps) => {
                         : t('addToCart') || 'Add to cart'
                 }
                 isAddingProductId={loadingProductId}
-                onPrefetchProduct={prefetchProduct}
             />
 
             {!isLoading && productsResult?.data.length === 0 && (

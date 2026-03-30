@@ -3,13 +3,13 @@
 
 import React, { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
-import ProductCard from '@/components/ui/ProductCard';
 import type { Product } from '@/types/store';
 import { getProductDisplayPrice } from '@/lib/products/price';
 import { TRANSITIONS, MIN_HEIGHTS } from './constants';
 import ProductsSkeleton from './ProductsSkeleton';
 import { useProductConfigFlow } from '@/hooks/products';
 import { requiresConfiguration } from '@/lib/products/requirements';
+import { ProductGridCard } from '@/components/products/ProductGridCard';
 
 interface ProductsSectionProps {
     products: Product[];
@@ -17,11 +17,6 @@ interface ProductsSectionProps {
     isFetching: boolean;
 }
 
-/**
- * Products section with loading states, empty state handling, and smooth transitions.
- * Prevents layout shift by maintaining minimum height.
- * Uses key-based remounting for animations instead of state management.
- */
 export default function ProductsSection({
     products,
     isLoading,
@@ -29,10 +24,8 @@ export default function ProductsSection({
 }: ProductsSectionProps) {
     const t = useTranslations('Category');
     const tPromo = useTranslations('Promotions');
-    const { loadingProductId, handleAddClick, prefetchProduct } =
-        useProductConfigFlow();
+    const { loadingProductId, handleAddClick } = useProductConfigFlow();
 
-    // Generate a unique key from products to trigger animations on change
     const productsKey = useMemo(
         () => products.map((p) => p.id).join('-') || 'empty',
         [products],
@@ -73,8 +66,7 @@ export default function ProductsSection({
                     <div className="grid grid-cols-2 gap-4 md:gap-6 sm:grid-cols-3 lg:grid-cols-5">
                         {products.map((p, index) => {
                             const isAboveFold = index < 4;
-                            const { price, originalPrice, discountPercent } =
-                                getProductDisplayPrice(p);
+                            const { discountPercent } = getProductDisplayPrice(p);
 
                             return (
                                 <div
@@ -88,11 +80,14 @@ export default function ProductsSection({
                                         animationDuration: `${TRANSITIONS.PRODUCT_FADE_DURATION}ms`,
                                         animationFillMode: 'both',
                                     }}>
-                                    <ProductCard
-                                        name={p.title}
-                                        image={p.cover_image_url}
-                                        price={price}
-                                        oldPrice={originalPrice}
+                                    <ProductGridCard
+                                        product={p}
+                                        index={index}
+                                        addToCartLabel={
+                                            requiresConfiguration(p)
+                                                ? t('customize') || 'Customize'
+                                                : t('addToCart')
+                                        }
                                         discountBadge={
                                             discountPercent
                                                 ? tPromo('save', {
@@ -100,21 +95,9 @@ export default function ProductsSection({
                                                   })
                                                 : undefined
                                         }
-                                        href={`/products/${p.slug}`}
-                                        productId={p.id}
-                                        productSlug={p.slug}
-                                        media={p.media}
-                                        addToCartLabel={
-                                            requiresConfiguration(p)
-                                                ? t('customize') || 'Customize'
-                                                : t('addToCart')
-                                        }
+                                        onAddToCart={handleAddClick}
+                                        isAddingProductId={loadingProductId}
                                         priority={isAboveFold}
-                                        onAddToCartClick={() =>
-                                            handleAddClick(p)
-                                        }
-                                        isAdding={loadingProductId === p.id}
-                                        onPrefetch={() => prefetchProduct(p)}
                                     />
                                 </div>
                             );

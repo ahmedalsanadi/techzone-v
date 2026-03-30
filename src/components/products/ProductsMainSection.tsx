@@ -33,8 +33,7 @@ export function ProductsMainSection({
     onUpdateFilters,
 }: ProductsMainSectionProps) {
     const t = useTranslations('Product');
-    const { loadingProductId, handleAddClick, prefetchProduct } =
-        useProductConfigFlow();
+    const { loadingProductId, handleAddClick } = useProductConfigFlow();
 
     return (
         <div className="lg:col-span-3 space-y-8 relative z-0 p-1 pb-20">
@@ -73,7 +72,6 @@ export function ProductsMainSection({
                             : t('addToCart') || 'Add to cart'
                     }
                     isAddingProductId={loadingProductId}
-                    onPrefetchProduct={prefetchProduct}
                 />
             </div>
         </div>
