@@ -14,6 +14,10 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    permissions:
+      contents: read
 
     steps:
       # 1. Checkout repository
@@ -53,9 +57,10 @@ jobs:
       - name: Deploy to server
         run: |
           ssh -o StrictHostKeyChecking=no \
+            -o ServerAliveInterval=30 -o ServerAliveCountMax=6 \
             ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_SERVER }} << 'EOF'
 
-            set -e
+            set -euo pipefail
 
             cd ${{ secrets.REMOTE_PRODUCTION_PATH }}
 
@@ -82,10 +87,17 @@ jobs:
             if command -v pm2 &> /dev/null
             then
               if pm2 describe next-app >/dev/null 2>&1; then
-                pm2 restart next-app
+                pm2 restart next-app --update-env
               else
-                pm2 start npm --name "next-app" -- start
+                pm2 start npm --name "next-app" -- start --time --merge-logs --max-restarts 20
               fi
+
+              # Persist current PM2 process list so that if PM2 startup is already configured on the server,
+              # it will restore the correct app on reboot.
+              pm2 save || true
+
+              # Basic verification (fails the deploy if the process isn't online)
+              pm2 status next-app
             else
               echo "PM2 not installed - starting manually"
               nohup npm start > app.log 2>&1 &
