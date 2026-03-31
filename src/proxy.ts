@@ -64,5 +64,8 @@ export const config = {
     // Match all pathnames except for
     // - … if they start with `/api`, `/proxy`, `/_next` or `/_vercel`
     // - … the ones containing a dot (e.g. `favicon.ico`)
-    matcher: ['/((?!api|proxy|_next|_vercel|.*\\..*).*)'],
+    // Include `/` explicitly: some matcher engines / builds do not match the root path
+    // with only `/((?!…).*)`, so `/` would skip the proxy and 404 (no `app/page.tsx`).
+    // See next-intl docs → Proxy / middleware → Matcher config (logical OR between entries).
+    matcher: ['/((?!api|proxy|_next|_vercel|.*\\..*).*)', '/'],
 };
