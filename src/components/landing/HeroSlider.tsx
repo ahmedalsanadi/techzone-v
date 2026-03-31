@@ -89,12 +89,12 @@ const electronicsSlides = [
     },
     {
         id: 3,
-        subtitle: 'Smart Living',
-        title: 'GADGETS',
-        deal: 'Latest Electronics',
-        discount: '20% OFF',
-        image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=1200&q=80',
-        bgColor: 'bg-[#1e1b4b]',
+        subtitle: 'Power & Portability',
+        title: 'LAPTOPS',
+        deal: 'Work & Play Ready',
+        discount: '15% OFF',
+        image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=1200&q=80',
+        bgColor: 'bg-[#0c1829]',
     },
 ];
 
