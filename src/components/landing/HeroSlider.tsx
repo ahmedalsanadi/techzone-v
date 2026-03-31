@@ -84,7 +84,7 @@ const electronicsSlides = [
         title: 'AUDIO',
         deal: 'Noise Cancelling Deals',
         discount: '25% OFF',
-        image: 'https://images.unsplash.com/photo-1505740420922-5e560c06d30e?auto=format&fit=crop&w=1200&q=80',
+        image: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=1200&q=80',
         bgColor: 'bg-[#111827]',
     },
     {
@@ -93,7 +93,7 @@ const electronicsSlides = [
         title: 'GADGETS',
         deal: 'Latest Electronics',
         discount: '20% OFF',
-        image: 'https://images.unsplash.com/photo-1468495248735-e782a2172820?auto=format&fit=crop&w=1200&q=80',
+        image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=1200&q=80',
         bgColor: 'bg-[#1e1b4b]',
     },
 ];
