@@ -200,7 +200,7 @@ export default async function HomePage() {
     }
 
     return (
-        <div className="space-y-12">
+        <div className="space-y-12 pb-12 md:pb-38">
             <div className="animate-in fade-in duration-1000">
                 <HeroSlider />
             </div>
