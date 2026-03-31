@@ -219,13 +219,13 @@ const HeroSlider = () => {
                                 <div className="container mx-auto px-6 md:px-8 lg:px-20 grid grid-cols-1 md:grid-cols-2 items-center gap-4 md:gap-8 h-full relative z-10">
                                     {/* Content Side */}
                                     <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-1 md:space-y-4 pt-12 md:pt-0">
-                                        <span className="text-theme-primary text-lg md:text-2xl lg:text-3xl font-semibold tracking-tight uppercase">
+                                        <span className="text-theme-secondary text-lg md:text-2xl lg:text-3xl font-semibold tracking-tight uppercase">
                                             {slide.subtitle}
                                         </span>
                                         <h1 className="text-white text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-black leading-none tracking-tighter drop-shadow-lg">
                                             {slide.title}
                                         </h1>
-                                        <p className="text-theme-primary text-xl md:text-3xl lg:text-4xl italic font-serif leading-tight">
+                                        <p className="text-theme-secondary text-xl md:text-3xl lg:text-4xl italic font-serif leading-tight">
                                             {slide.deal}
                                         </p>
 
