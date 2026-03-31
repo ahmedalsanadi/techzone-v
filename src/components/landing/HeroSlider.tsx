@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useSyncExternalStore } from 'react';
 import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay, EffectFade } from 'swiper/modules';
@@ -8,6 +8,7 @@ import { MoveRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useStore } from '@/components/providers/StoreProvider';
 import { env } from '@/config/env';
+import { getSubdomainFromHost, normalizeHost } from '@/lib/tenant/resolve';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -35,7 +36,8 @@ const restaurantSlides = [
     },
 ];
 
-const storeSlides = [
+/** elitefashion & default “store” vertical — fashion imagery */
+const fashionSlides = [
     {
         id: 1,
         subtitle: 'New Collection',
@@ -65,16 +67,103 @@ const storeSlides = [
     },
 ];
 
+/** techzone — electronics / laptops (temporary until hero API is tenant-aware) */
+const electronicsSlides = [
+    {
+        id: 1,
+        subtitle: 'Power & Portability',
+        title: 'LAPTOPS',
+        deal: 'Work & Play Ready',
+        discount: '15% OFF',
+        image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=1200&q=80',
+        bgColor: 'bg-[#0c1829]',
+    },
+    {
+        id: 2,
+        subtitle: 'Premium Sound',
+        title: 'AUDIO',
+        deal: 'Noise Cancelling Deals',
+        discount: '25% OFF',
+        image: 'https://images.unsplash.com/photo-1505740420922-5e560c06d30e?auto=format&fit=crop&w=1200&q=80',
+        bgColor: 'bg-[#111827]',
+    },
+    {
+        id: 3,
+        subtitle: 'Smart Living',
+        title: 'GADGETS',
+        deal: 'Latest Electronics',
+        discount: '20% OFF',
+        image: 'https://images.unsplash.com/photo-1468495248735-e782a2172820?auto=format&fit=crop&w=1200&q=80',
+        bgColor: 'bg-[#1e1b4b]',
+    },
+];
+
+type KnownHeroTenant = 'techzone' | 'burgerstation' | 'elitefashion';
+
+const HERO_TENANT_ORDER: KnownHeroTenant[] = [
+    'techzone',
+    'burgerstation',
+    'elitefashion',
+];
+
+/**
+ * Temporary: pick hero vertical by API slug and/or request host (subdomain) until the
+ * backend exposes a dedicated hero/slider endpoint per tenant.
+ */
+function resolveHeroTenant(
+    slug: string | undefined | null,
+    hostname: string | undefined | null,
+): KnownHeroTenant | null {
+    const host = normalizeHost(hostname);
+    const sub = host ? getSubdomainFromHost(host) : null;
+    const ids = [slug, sub]
+        .filter((x): x is string => !!x && String(x).trim().length > 0)
+        .map((s) => s.toLowerCase());
+
+    for (const tenant of HERO_TENANT_ORDER) {
+        if (ids.includes(tenant)) return tenant;
+    }
+    return null;
+}
+
+const noopSubscribe = () => () => {};
+
+function useClientHostname(): string | undefined {
+    return useSyncExternalStore(
+        noopSubscribe,
+        () => window.location.hostname,
+        () => undefined,
+    );
+}
+
 const HeroSlider = () => {
     const { config } = useStore();
+    const hostname = useClientHostname();
+
+    const heroTenant = resolveHeroTenant(config?.store?.slug, hostname);
+
     // Prefer env override so each deployment can force hero type (e.g. when API returns wrong store_type)
     const storeType =
         env.storeHeroType === 'restaurant' || env.storeHeroType === 'store'
             ? env.storeHeroType
             : (config?.store?.store_type ?? 'restaurant');
     const isRestaurant = storeType === 'restaurant';
-    const slides = isRestaurant ? restaurantSlides : storeSlides;
-    const ctaLabel = isRestaurant ? 'ORDER NOW' : 'SHOP NOW';
+
+    const { slides, ctaLabel } = (() => {
+        if (heroTenant === 'techzone') {
+            return { slides: electronicsSlides, ctaLabel: 'SHOP NOW' as const };
+        }
+        if (heroTenant === 'burgerstation') {
+            return { slides: restaurantSlides, ctaLabel: 'ORDER NOW' as const };
+        }
+        if (heroTenant === 'elitefashion') {
+            return { slides: fashionSlides, ctaLabel: 'SHOP NOW' as const };
+        }
+        return {
+            slides: isRestaurant ? restaurantSlides : fashionSlides,
+            ctaLabel: isRestaurant ? ('ORDER NOW' as const) : ('SHOP NOW' as const),
+        };
+    })();
     return (
         <section className="container mx-auto ">
             <div className="relative rounded-2xl md:rounded-[2.5rem] overflow-hidden shadow-2xl group/slider">
