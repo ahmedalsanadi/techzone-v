@@ -48,22 +48,21 @@ jobs:
           git fetch origin
           git reset --hard origin/main
 
-          echo "Starting PM2..."
-
+          echo "Restarting PM2 on port 8080..."
+          
           if command -v pm2 &> /dev/null
           then
-            # فقط restart بدون install ولا build
             if pm2 describe next-app > /dev/null 2>&1; then
               pm2 restart next-app --update-env
             else
-              pm2 start npm --name "next-app" -- start
+              PORT=8080 pm2 start npm --name "next-app" -- start
             fi
-
+          
             pm2 save || true
-
-            echo "App restarted successfully"
           else
-            nohup npm start > app.log 2>&1 &
+            PORT=8080 nohup npm start > app.log 2>&1 &
           fi
+          
+          echo "Done"
 
           EOF
