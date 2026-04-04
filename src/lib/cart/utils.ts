@@ -174,8 +174,9 @@ export function summarizeCartProduct(
  *
  * Priority:
  * - If API pricing is present, trust `metadata.apiPricing.total_price`.
- * - Else, if localPricing is present (guest items), use:
- *     lineTotal = baseUnitPrice * quantity + flatAddonsTotal.
+ * - Else, if localPricing is present (guest items):
+ *     - New shape (`addonsSubtotal` set): (baseUnitPrice + addonsSubtotal) * quantity.
+ *     - Legacy (only `flatAddonsTotal`): baseUnitPrice * quantity + flatAddonsTotal.
  * - Else, fall back to `item.price * quantity`.
  */
 export function getCartItemLineTotal(item: CartItem): number {
@@ -190,10 +191,17 @@ export function getCartItemLineTotal(item: CartItem): number {
         typeof localPricing.baseUnitPrice === 'number' &&
         typeof item.quantity === 'number'
     ) {
-        const flat = typeof localPricing.flatAddonsTotal === 'number'
-            ? localPricing.flatAddonsTotal
-            : 0;
-        return localPricing.baseUnitPrice * item.quantity + flat;
+        if (typeof localPricing.addonsSubtotal === 'number') {
+            return (
+                (localPricing.baseUnitPrice + localPricing.addonsSubtotal) *
+                item.quantity
+            );
+        }
+        const legacyFlat =
+            typeof localPricing.flatAddonsTotal === 'number'
+                ? localPricing.flatAddonsTotal
+                : 0;
+        return localPricing.baseUnitPrice * item.quantity + legacyFlat;
     }
 
     return item.price * item.quantity;

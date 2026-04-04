@@ -255,14 +255,15 @@ export default function AddonSelector({
                                             </span>
                                             <CurrencySymbol className="w-4 h-4" />
                                             {item.multiply_price_by_quantity ? (
-                                                <span className="text-[10px] font-medium text-gray-500">
-                                                    (
-                                                    {t('perQuantity') ||
-                                                        'per quantity'}
-                                                    )
+                                                <span
+                                                    className="text-[10px] font-medium text-gray-500"
+                                                    title={t('perAddonQtyHint')}>
+                                                    ({t('perQuantity')})
                                                 </span>
                                             ) : (
-                                                <span className="text-[10px] font-medium text-gray-500" title={t('addonFixedPrice')}>
+                                                <span
+                                                    className="text-[10px] font-medium text-gray-500"
+                                                    title={t('flatAddonPriceHint')}>
                                                     ({t('addonFixedPrice')})
                                                 </span>
                                             )}
@@ -365,8 +366,16 @@ export default function AddonSelector({
                                             + {item.extra_price}
                                         </span>
                                         <CurrencySymbol className="w-4 h-4" />
-                                        {!item.multiply_price_by_quantity && (
-                                            <span className="text-[10px] font-medium text-gray-500" title={t('addonFixedPrice')}>
+                                        {item.multiply_price_by_quantity ? (
+                                            <span
+                                                className="text-[10px] font-medium text-gray-500"
+                                                title={t('perAddonQtyHint')}>
+                                                ({t('perQuantity')})
+                                            </span>
+                                        ) : (
+                                            <span
+                                                className="text-[10px] font-medium text-gray-500"
+                                                title={t('flatAddonPriceHint')}>
                                                 ({t('addonFixedPrice')})
                                             </span>
                                         )}

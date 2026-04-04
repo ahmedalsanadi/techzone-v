@@ -270,10 +270,7 @@ const CartPage = () => {
                                                                         itemIdx: number,
                                                                     ) => {
                                                                         const displayQty =
-                                                                            addonItem.multiplyByQuantity
-                                                                                ? addonItem.quantity *
-                                                                                  item.quantity
-                                                                                : addonItem.quantity;
+                                                                            addonItem.quantity;
                                                                         return (
                                                                             <div
                                                                                 key={`${groupIdx}-${itemIdx}`}

@@ -32,13 +32,18 @@ function computeApiAddonsPrice(
               multiply_by_quantity: boolean;
           }>
         | undefined,
-    productQty: number,
 ): number {
     if (!addons || addons.length === 0) return 0;
-    // Respect multiply_by_quantity from API: when true, scale with product qty; when false, flat per line.
+    // multiply_by_quantity: scale unit price by addon item qty; otherwise flat fee when qty > 0.
     return addons.reduce((sum, a) => {
-        const base = (a.price || 0) * (a.quantity || 0);
-        return sum + (a.multiply_by_quantity ? base * productQty : base);
+        const addonQty = a.quantity || 0;
+        const unit = a.price || 0;
+        const contrib = a.multiply_by_quantity
+            ? unit * addonQty
+            : addonQty > 0
+              ? unit
+              : 0;
+        return sum + contrib;
     }, 0);
 }
 
@@ -202,6 +207,11 @@ export const useCartActions = () => {
                     return;
                 }
 
+                const prevLineQty =
+                    typeof item.quantity === 'number' && item.quantity > 0
+                        ? item.quantity
+                        : 1;
+
                 // Optimistic UI first
                 updateQuantity(itemId, quantity);
 
@@ -212,16 +222,23 @@ export const useCartActions = () => {
                 const apiPricing = after?.metadata?.apiPricing;
                 const apiAddons = after?.metadata?.apiAddons;
                 if (after && apiPricing) {
-                    const addons_price = computeApiAddonsPrice(
-                        apiAddons as
-                            | Array<{
-                                  quantity: number;
-                                  price: number;
-                                  multiply_by_quantity: boolean;
-                              }>
-                            | undefined,
-                        quantity,
-                    );
+                    const lastAddons =
+                        typeof apiPricing.addons_price === 'number'
+                            ? apiPricing.addons_price
+                            : 0;
+                    // Match storefront rule: (unit_price + add-ons per unit) × line qty — approximate by scaling last server add-ons with qty.
+                    const addons_price =
+                        prevLineQty > 0
+                            ? (lastAddons / prevLineQty) * quantity
+                            : computeApiAddonsPrice(
+                                  apiAddons as
+                                      | Array<{
+                                            quantity: number;
+                                            price: number;
+                                            multiply_by_quantity: boolean;
+                                        }>
+                                      | undefined,
+                              ) * quantity;
                     const subtotal = apiPricing.unit_price * quantity;
                     const total_price = subtotal + addons_price;
                     useCartStore.setState((s) => ({

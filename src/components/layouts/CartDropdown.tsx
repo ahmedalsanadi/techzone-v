@@ -149,7 +149,7 @@ const CartDropdown = () => {
                                                                 </div>
                                                             )}
 
-                                                        {/* Addons Summary: "Name (qty) price" — qty scales with item qty when multiplyByQuantity */}
+                                                        {/* Addons Summary: "Name (qty) price" */}
                                                         {metadata?.addonDetails &&
                                                             metadata.addonDetails
                                                                 .length > 0 && (
@@ -169,9 +169,7 @@ const CartDropdown = () => {
                                                                                 },
                                                                             ) => {
                                                                                 const displayQty =
-                                                                                    i.multiplyByQuantity
-                                                                                        ? i.quantity * item.quantity
-                                                                                        : i.quantity;
+                                                                                    i.quantity;
                                                                                 return `${i.name} (${displayQty}) ${formatMoneyAmount(i.price, locale)}`;
                                                                             },
                                                                         )

@@ -1,12 +1,13 @@
 'use client';
 
 import React from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Plus, Minus } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
 import { Button } from '@/components/ui/Button';
+import { formatMoneyAmount } from '@/lib/utils';
 
 interface ProductActionBarProps {
     totalPrice: number;
@@ -50,6 +51,7 @@ export default function ProductActionBar({
     isValid = true,
 }: ProductActionBarProps) {
     const t = useTranslations('Product');
+    const locale = useLocale();
 
     const handleIncrement = React.useCallback(
         () => setQuantity((prev) => prev + 1),
@@ -103,18 +105,21 @@ export default function ProductActionBar({
                     </span>
                     {isAvailable && isValid && (
                         <div className="flex items-center gap-2 sm:gap-2.5">
-                            {originalPrice && (
+                            {originalPrice != null && originalPrice > 0 && (
                                 <div className="flex items-center gap-1 opacity-60">
                                     <span className="text-[10px] sm:text-sm line-through font-bold">
-                                        {originalPrice}
+                                        {formatMoneyAmount(
+                                            originalPrice,
+                                            locale,
+                                        )}
                                     </span>
                                     <CurrencySymbol className="brightness-0 invert w-2.5 h-2.5" />
                                 </div>
                             )}
 
                             <div className="flex items-center gap-1">
-                                <span className="text-base sm:text-xl font-black">
-                                    {totalPrice}
+                                <span className="text-base sm:text-xl font-black tabular-nums">
+                                    {formatMoneyAmount(totalPrice, locale)}
                                 </span>
                                 <CurrencySymbol className="brightness-0 invert w-3.5 h-3.5 sm:w-5 sm:h-5" />
                             </div>

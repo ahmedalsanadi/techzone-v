@@ -10,7 +10,10 @@ export type CartItemAddonDetailsItem = {
     name: string;
     quantity: number;
     price: number;
-    /** When true, displayed quantity scales with cart item quantity (e.g. 4 × 2 items). */
+    /**
+     * From API `multiply_by_quantity`: whether unit price scales with **addon item**
+     * quantity (vs flat fee when selected). Not used to multiply display qty by line qty.
+     */
     multiplyByQuantity?: boolean;
 };
 
@@ -44,19 +47,19 @@ export type CartItemMetadata = {
         total_price: number;
     };
     /**
-     * Local pricing components for guest items.
+     * Local pricing for guest items (and modal/detail adds).
      *
-     * baseUnitPrice: per-unit price for the product + any addons that should
-     *                scale with quantity (multiply_price_by_quantity = true).
-     * flatAddonsTotal: total price of addons that should NOT scale with
-     *                  quantity (multiply_price_by_quantity = false).
+     * baseUnitPrice: product (variant) unit price only — no add-ons.
+     * addonsSubtotal: add-on $ for one configured unit (extra_price rules × add-on qty).
+     * flatAddonsTotal: legacy persisted field; same role as addonsSubtotal when present.
      *
-     * Line total formula for guest items:
-     *   lineTotal = baseUnitPrice * quantity + flatAddonsTotal
+     * lineTotal = (baseUnitPrice + addonsSubtotal) * quantity
      */
     localPricing?: {
         baseUnitPrice: number;
-        flatAddonsTotal: number;
+        addonsSubtotal?: number;
+        /** @deprecated Prefer addonsSubtotal; kept for persisted guest carts */
+        flatAddonsTotal?: number;
     };
     custom_fields?: Record<string, unknown>;
     notes?: string;
@@ -140,7 +143,7 @@ export function transformApiCartItemToLocal(item: ApiCartItem): CartItem {
         });
     }
 
-    // Build addonDetails for display (include multiplyByQuantity so cart UI can scale displayed qty)
+    // Build addonDetails for display (multiplyByQuantity = price scales with addon qty)
     const addonDetails: CartItemAddonDetailsGroup[] = [];
 
     if (item.addons && item.addons.length > 0) {

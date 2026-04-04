@@ -15,6 +15,7 @@ import { generateCartItemId } from '@/lib/cart/utils';
 import { useCartActions } from '@/hooks/cart';
 import { Product } from '@/types/store';
 import { getEffectivePriceWithOriginal } from '@/lib/products/price';
+import { sumAddonSubtotalForProductSelection } from '@/lib/products/addonPrice';
 import { toast } from 'sonner';
 import ProductReviews from './product-details/ProductReviews';
 
@@ -156,40 +157,18 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     const validation = useMemo(() => validateAddons(), [validateAddons]);
 
     const calculatePriceComponents = () => {
-        // Decompose addons into:
-        // - baseUnitPrice: per-unit product price + addons that scale with quantity
-        // - flatAddonsTotal: addons charged once per line (do not scale with quantity)
-        let scaledAddonsPerUnit = 0;
-        let flatAddonsTotal = 0;
-
-        Object.entries(selectedAddons).forEach(([addonGroupId, items]) => {
-            const addonGroup = (product.addons || []).find(
-                (a) => a.id === parseInt(addonGroupId, 10),
-            );
-            if (!addonGroup) return;
-
-            Object.entries(items).forEach(([itemId, qty]) => {
-                const item = addonGroup.items.find(
-                    (i) => i.id === parseInt(itemId, 10),
-                );
-                if (!item || qty <= 0) return;
-
-                const selectionTotal = item.extra_price * qty;
-                if (item.multiply_price_by_quantity) {
-                    scaledAddonsPerUnit += selectionTotal;
-                } else {
-                    flatAddonsTotal += selectionTotal;
-                }
-            });
-        });
-
-        const baseUnitPrice = Number(currentPrice) + scaledAddonsPerUnit;
-        return { baseUnitPrice, flatAddonsTotal };
+        const baseUnitPrice = Number(currentPrice);
+        const addonsSubtotal = sumAddonSubtotalForProductSelection(
+            product,
+            selectedAddons,
+        );
+        return { baseUnitPrice, addonsSubtotal };
     };
 
+    /** Full line total: each unit pays base + configured add-ons, then × product quantity. */
     const calculateTotalPrice = () => {
-        const { baseUnitPrice, flatAddonsTotal } = calculatePriceComponents();
-        return baseUnitPrice * quantity + flatAddonsTotal;
+        const { baseUnitPrice, addonsSubtotal } = calculatePriceComponents();
+        return (baseUnitPrice + addonsSubtotal) * quantity;
     };
 
     const updateAddonSelection = (
@@ -297,7 +276,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             return;
         }
 
-        const { baseUnitPrice, flatAddonsTotal } = calculatePriceComponents();
+        const { baseUnitPrice, addonsSubtotal } = calculatePriceComponents();
 
         addToCart(
             {
@@ -309,7 +288,10 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 }), // Stable ID for this configuration
                 name: product.title,
                 image: product.cover_image_url,
-                price: calculateTotalPrice() / quantity,
+                price:
+                    quantity > 0
+                        ? calculateTotalPrice() / quantity
+                        : calculateTotalPrice(),
                 categoryId: product.categories?.[0]?.id?.toString() || '',
                 metadata: {
                     productId: product.id,
@@ -327,7 +309,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                     addonDetails, // Add names for display
                     localPricing: {
                         baseUnitPrice,
-                        flatAddonsTotal,
+                        addonsSubtotal,
                     },
                     custom_fields:
                         Object.keys(customFields).length > 0

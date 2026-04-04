@@ -11,6 +11,7 @@ import {
     validateRequiredSelections,
 } from '@/lib/products/requirements';
 import { getEffectivePrice } from '@/lib/products/price';
+import { sumAddonSubtotalForProductSelection } from '@/lib/products/addonPrice';
 import AddonSelector from '@/components/products/product-details/AddonSelector';
 import VariantSelector from '@/components/products/product-details/VariantSelector';
 import CustomFieldsForm from '@/components/products/product-details/CustomFieldsForm';
@@ -75,41 +76,17 @@ export default function ProductConfigModal({
     const basePrice = getEffectivePrice(product, selectedVariant);
 
     const calculatePriceComponents = () => {
-        // For modal adds, quantity is always 1.
-        // We still decompose addons the same way as ProductDetails so
-        // later quantity changes in cart behave correctly.
-        let scaledAddonsPerUnit = 0;
-        let flatAddonsTotal = 0;
-
-        Object.entries(selectedAddons).forEach(([addonGroupId, items]) => {
-            const addonGroup = requiredAddonGroups.find(
-                (a) => a.id === parseInt(addonGroupId, 10),
-            );
-            if (!addonGroup) return;
-
-            Object.entries(items).forEach(([itemId, qty]) => {
-                const item = addonGroup.items.find(
-                    (i) => i.id === parseInt(itemId, 10),
-                );
-                if (!item || qty <= 0) return;
-
-                const selectionTotal = item.extra_price * qty;
-                if (item.multiply_price_by_quantity) {
-                    scaledAddonsPerUnit += selectionTotal;
-                } else {
-                    flatAddonsTotal += selectionTotal;
-                }
-            });
-        });
-
-        const baseUnitPrice = Number(basePrice) + scaledAddonsPerUnit;
-        return { baseUnitPrice, flatAddonsTotal };
+        const baseUnitPrice = Number(basePrice);
+        const addonsSubtotal = sumAddonSubtotalForProductSelection(
+            product,
+            selectedAddons,
+        );
+        return { baseUnitPrice, addonsSubtotal };
     };
 
     const calculateTotalPrice = () => {
-        const { baseUnitPrice, flatAddonsTotal } = calculatePriceComponents();
-        // Modal adds use quantity = 1 for the initial line.
-        return baseUnitPrice + flatAddonsTotal;
+        const { baseUnitPrice, addonsSubtotal } = calculatePriceComponents();
+        return baseUnitPrice + addonsSubtotal;
     };
 
     const validation = validateRequiredSelections(product, {
@@ -167,7 +144,7 @@ export default function ProductConfigModal({
             }
         });
 
-        const { baseUnitPrice, flatAddonsTotal } = calculatePriceComponents();
+        const { baseUnitPrice, addonsSubtotal } = calculatePriceComponents();
 
         addToCart({
             id: generateCartItemId(product.id, {
@@ -198,7 +175,7 @@ export default function ProductConfigModal({
                         : undefined,
                 localPricing: {
                     baseUnitPrice,
-                    flatAddonsTotal,
+                    addonsSubtotal,
                 },
             },
         });

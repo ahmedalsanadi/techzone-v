@@ -9,6 +9,7 @@ import { useCartActions } from '@/hooks/cart';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
 import { validateRequiredSelections } from '@/lib/products/requirements';
 import { getEffectivePrice } from '@/lib/products/price';
+import { sumAddonSubtotalFromFlatItemQty } from '@/lib/products/addonPrice';
 import AddonSelector from '@/components/products/product-details/AddonSelector';
 import VariantSelector from '@/components/products/product-details/VariantSelector';
 import CustomFieldsForm from '@/components/products/product-details/CustomFieldsForm';
@@ -154,30 +155,19 @@ export default function CartItemConfigModal({
         : 0;
 
     const calculatePriceComponents = () => {
-        // Match ProductDetails: decompose addons into per-unit and flat parts.
-        let scaledAddonsPerUnit = 0;
-        let flatAddonsTotal = 0;
-
-        (activeProduct?.addons || []).forEach((addonGroup) => {
-            addonGroup.items.forEach((addonItem) => {
-                const qtySelected = selectedAddonItemQty[addonItem.id] || 0;
-                if (qtySelected <= 0) return;
-                const selectionTotal = addonItem.extra_price * qtySelected;
-                if (addonItem.multiply_price_by_quantity) {
-                    scaledAddonsPerUnit += selectionTotal;
-                } else {
-                    flatAddonsTotal += selectionTotal;
-                }
-            });
-        });
-
-        const baseUnitPrice = Number(currentPrice) + scaledAddonsPerUnit;
-        return { baseUnitPrice, flatAddonsTotal };
+        const baseUnitPrice = Number(currentPrice);
+        const addonsSubtotal = activeProduct
+            ? sumAddonSubtotalFromFlatItemQty(
+                  activeProduct,
+                  selectedAddonItemQty,
+              )
+            : 0;
+        return { baseUnitPrice, addonsSubtotal };
     };
 
     const calculateTotalPrice = () => {
-        const { baseUnitPrice, flatAddonsTotal } = calculatePriceComponents();
-        return baseUnitPrice * quantity + flatAddonsTotal;
+        const { baseUnitPrice, addonsSubtotal } = calculatePriceComponents();
+        return (baseUnitPrice + addonsSubtotal) * quantity;
     };
 
     const totalPrice = calculateTotalPrice();
@@ -233,7 +223,7 @@ export default function CartItemConfigModal({
             }
         });
 
-        const { baseUnitPrice, flatAddonsTotal } = calculatePriceComponents();
+        const { baseUnitPrice, addonsSubtotal } = calculatePriceComponents();
 
         await updateItemConfiguration(
             item.id,
@@ -270,7 +260,7 @@ export default function CartItemConfigModal({
                     notes: notes || undefined,
                     localPricing: {
                         baseUnitPrice,
-                        flatAddonsTotal,
+                        addonsSubtotal,
                     },
                 },
             },
