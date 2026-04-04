@@ -118,12 +118,12 @@ const CartDropdown = () => {
                                                             </p>
                                                         ) : null}
 
-                                                        {/* Variant Options Summary */}
+                                                        {/* Variant options — one row each, easier to scan in RTL */}
                                                         {metadata?.variant_options &&
                                                             Object.keys(
                                                                 metadata.variant_options,
                                                             ).length > 0 && (
-                                                                <div className="flex flex-wrap gap-0.5 sm:gap-1 mb-0.5 sm:mb-1">
+                                                                <ul className="mb-0.5 sm:mb-1 space-y-0.5 list-none ps-0">
                                                                     {Object.entries(
                                                                         metadata.variant_options,
                                                                     ).map(
@@ -131,60 +131,90 @@ const CartDropdown = () => {
                                                                             k,
                                                                             v,
                                                                         ]) => (
-                                                                            <span
+                                                                            <li
                                                                                 key={
                                                                                     k
                                                                                 }
-                                                                                className="text-[8px] sm:text-[9px] text-gray-400 bg-gray-50 px-1 rounded border border-gray-100/50">
-                                                                                {
-                                                                                    k
-                                                                                }
+                                                                                className="text-[8px] sm:text-[9px] text-gray-500 leading-snug">
+                                                                                <span className="text-gray-400">
+                                                                                    {
+                                                                                        k
+                                                                                    }
 
-                                                                                :{' '}
-                                                                                {String(
-                                                                                    v,
-                                                                                )}
-                                                                            </span>
+                                                                                    :{' '}
+                                                                                </span>
+                                                                                <span className="font-semibold text-gray-700">
+                                                                                    {String(
+                                                                                        v,
+                                                                                    )}
+                                                                                </span>
+                                                                            </li>
                                                                         ),
                                                                     )}
-                                                                </div>
+                                                                </ul>
                                                             )}
 
-                                                        {/* Addons Summary: "Name (qty) price" */}
+                                                        {/* Add-ons — vertical list, ×qty + line amount + ريال */}
                                                         {metadata?.addonDetails &&
                                                             metadata.addonDetails
                                                                 .length > 0 && (
-                                                                <p className="text-[9px] sm:text-[10px] text-gray-500 mb-0.5 sm:mb-1 line-clamp-2">
-                                                                    {metadata.addonDetails
-                                                                        .flatMap(
-                                                                            (g) =>
-                                                                                g.items,
-                                                                        )
-                                                                        .map(
-                                                                            (
-                                                                                i: {
-                                                                                    name: string;
-                                                                                    quantity: number;
-                                                                                    price: number;
-                                                                                    multiplyByQuantity?: boolean;
+                                                                <ul className="mb-0.5 sm:mb-1 space-y-1 list-none ps-0">
+                                                                    {metadata.addonDetails.flatMap(
+                                                                        (g) =>
+                                                                            g.items.map(
+                                                                                (
+                                                                                    addonRow: {
+                                                                                        name: string;
+                                                                                        quantity: number;
+                                                                                        price: number;
+                                                                                        multiplyByQuantity?: boolean;
+                                                                                    },
+                                                                                    idx: number,
+                                                                                ) => {
+                                                                                    const lineAmount =
+                                                                                        addonContributionWithDefault(
+                                                                                            addonRow.price,
+                                                                                            addonRow.quantity,
+                                                                                            addonRow.multiplyByQuantity,
+                                                                                        );
+                                                                                    const q =
+                                                                                        Math.max(
+                                                                                            0,
+                                                                                            Math.floor(
+                                                                                                addonRow.quantity,
+                                                                                            ),
+                                                                                        );
+                                                                                    return (
+                                                                                        <li
+                                                                                            key={`${item.id}-${g.groupName}-${idx}`}
+                                                                                            className="flex items-start justify-between gap-2 text-[9px] sm:text-[10px] text-gray-600 leading-snug">
+                                                                                            <span className="min-w-0 text-gray-700 font-medium">
+                                                                                                {
+                                                                                                    addonRow.name
+                                                                                                }
+                                                                                                {q >
+                                                                                                0 ? (
+                                                                                                    <span className="text-gray-500 font-bold ms-0.5 tabular-nums">
+                                                                                                        ×
+                                                                                                        {
+                                                                                                            q
+                                                                                                        }
+                                                                                                    </span>
+                                                                                                ) : null}
+                                                                                            </span>
+                                                                                            <span className="shrink-0 inline-flex items-center gap-0.5 font-semibold text-gray-800 tabular-nums">
+                                                                                                {formatMoneyAmount(
+                                                                                                    lineAmount,
+                                                                                                    locale,
+                                                                                                )}
+                                                                                                <CurrencySymbol />
+                                                                                            </span>
+                                                                                        </li>
+                                                                                    );
                                                                                 },
-                                                                            ) => {
-                                                                                const displayQty =
-                                                                                    i.quantity;
-                                                                                return `${i.name} (${displayQty}) ${formatMoneyAmount(
-                                                                                    addonContributionWithDefault(
-                                                                                        i.price,
-                                                                                        i.quantity,
-                                                                                        i.multiplyByQuantity,
-                                                                                    ),
-                                                                                    locale,
-                                                                                )}`;
-                                                                            },
-                                                                        )
-                                                                        .join(
-                                                                            ' · ',
-                                                                        )}
-                                                                </p>
+                                                                            ),
+                                                                    )}
+                                                                </ul>
                                                             )}
 
                                                         {/* Custom Fields Summary */}
@@ -209,11 +239,11 @@ const CartDropdown = () => {
                                                                 </p>
                                                             )}
 
-                                                        <p className="text-[10px] sm:text-xs text-gray-500 mb-0.5 sm:mb-1">
-                                                            x{item.quantity}
+                                                        <p className="text-[10px] sm:text-xs text-gray-500 mb-0.5 sm:mb-1 font-semibold tabular-nums">
+                                                            ×{item.quantity}
                                                         </p>
                                                         <div className="flex items-center gap-1 text-xs sm:text-sm font-bold text-theme-primary">
-                                                            <span>
+                                                            <span className="tabular-nums">
                                                                 {formatMoneyAmount(
                                                                     getCartItemLineTotal(
                                                                         item,
@@ -221,7 +251,7 @@ const CartDropdown = () => {
                                                                     locale,
                                                                 )}
                                                             </span>
-                                                            <CurrencySymbol className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                                                            <CurrencySymbol />
                                                         </div>
                                                     </div>
                                                     <Button
@@ -258,10 +288,10 @@ const CartDropdown = () => {
                                 {t('total')}
                             </span>
                             <div className="flex items-center gap-1 text-base sm:text-lg font-bold text-gray-900">
-                                <span>
+                                <span className="tabular-nums">
                                     {formatMoneyAmount(getTotalPrice(), locale)}
                                 </span>
-                                <CurrencySymbol className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                <CurrencySymbol />
                             </div>
                         </div>
                         <div className="flex flex-col gap-1.5 sm:gap-2">
