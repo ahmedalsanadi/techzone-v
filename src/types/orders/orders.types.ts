@@ -44,6 +44,7 @@ export type PaymentMethodSlug = 'cod' | 'wallet' | 'epayment';
 
 export interface OrderItemAddon {
     addon_item_id: number;
+    /** Unit add-on price (before applying quantity / multiply_by_quantity rules). */
     price: number;
     quantity: number;
     multiply_by_quantity?: boolean;

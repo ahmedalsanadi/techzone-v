@@ -83,12 +83,19 @@ export default function OrderDetailsView({
                     await cartService.addItem(apiRequest);
                 } else {
                     // Guest mode: reconstruct CartItem for local store
+                    const qty = Math.max(1, item.quantity);
+                    const unitAllIn =
+                        Number(item.total_price) > 0
+                            ? Number(item.total_price) / qty
+                            : Number(
+                                  item.sale_unit_price ?? item.unit_price,
+                              );
                     addItemToStore(
                         {
                             id: `reorder-${item.id}`,
                             name: item.product_title,
                             image: item.product_image || '',
-                            price: item.sale_unit_price || item.unit_price,
+                            price: unitAllIn,
                             categoryId: String(item.product_id),
                             metadata: {
                                 productId: item.product_id,

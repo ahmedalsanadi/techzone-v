@@ -21,6 +21,22 @@ export function addonLineContribution(
         : extraPrice;
 }
 
+/**
+ * Display / subtotal helper when the multiply flag may be missing (cart snapshots, older API rows).
+ * Defaults to scaling **unit** price by add-on quantity.
+ */
+export function addonContributionWithDefault(
+    unitPrice: number,
+    addonQty: number,
+    multiplyPriceByAddonQuantity?: boolean,
+): number {
+    return addonLineContribution(
+        unitPrice,
+        addonQty,
+        multiplyPriceByAddonQuantity ?? true,
+    );
+}
+
 export function sumAddonSubtotalForProductSelection(
     product: Product,
     selectedAddons: Record<number, Record<number, number>>,

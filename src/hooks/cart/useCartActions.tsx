@@ -17,6 +17,7 @@ import {
     transformCartItemToApiRequest,
     transformLocalAddonsToApi,
 } from '@/lib/cart/utils';
+import { addonContributionWithDefault } from '@/lib/products/addonPrice';
 
 type PendingQty = {
     desiredQuantity: number;
@@ -29,22 +30,21 @@ function computeApiAddonsPrice(
         | Array<{
               quantity: number;
               price: number;
-              multiply_by_quantity: boolean;
+              multiply_by_quantity?: boolean;
           }>
         | undefined,
 ): number {
     if (!addons || addons.length === 0) return 0;
-    // multiply_by_quantity: scale unit price by addon item qty; otherwise flat fee when qty > 0.
-    return addons.reduce((sum, a) => {
-        const addonQty = a.quantity || 0;
-        const unit = a.price || 0;
-        const contrib = a.multiply_by_quantity
-            ? unit * addonQty
-            : addonQty > 0
-              ? unit
-              : 0;
-        return sum + contrib;
-    }, 0);
+    return addons.reduce(
+        (sum, a) =>
+            sum +
+            addonContributionWithDefault(
+                a.price || 0,
+                a.quantity || 0,
+                a.multiply_by_quantity,
+            ),
+        0,
+    );
 }
 
 const pendingQtyByLocalId = new Map<string, PendingQty>();

@@ -4,6 +4,7 @@ import React from 'react';
 import { OrderItem } from '@/types/orders/orders.types';
 import { Badge, type BadgeVariant } from '@/components/ui/Badge';
 import { formatMoneyAmount } from '@/lib/utils';
+import { addonContributionWithDefault } from '@/lib/products/addonPrice';
 import { useLocale, useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 import { Star } from 'lucide-react';
@@ -112,29 +113,37 @@ export function OrderProductsCard({
                                     {/* Display Addons */}
                                     {hasAddons && (
                                         <div className="mt-2 space-y-1">
-                                            {item.addons!.map((addon, idx) => (
-                                                <div
-                                                    key={idx}
-                                                    className="text-xs text-gray-600">
-                                                    <span className="font-semibold text-gray-700">
-                                                        {addon.group_name ||
-                                                            t('products.addon')}
-                                                        :
-                                                    </span>{' '}
-                                                    {addon.title || addon.name}
-                                                    {addon.quantity > 1
-                                                        ? ` (x${addon.quantity})`
-                                                        : ''}
-                                                    {' · '}
-                                                    <span className="text-gray-400 flex items-center gap-0.5">
-                                                        {formatMoneyAmount(
-                                                            addon.price,
-                                                            locale,
-                                                        )}
-                                                        <CurrencySymbol className="w-2.5 h-2.5" />
-                                                    </span>
-                                                </div>
-                                            ))}
+                                            {item.addons!.map((addon, idx) => {
+                                                const addonLineTotal =
+                                                    addonContributionWithDefault(
+                                                        Number(addon.price),
+                                                        addon.quantity,
+                                                        addon.multiply_by_quantity,
+                                                    );
+                                                return (
+                                                    <div
+                                                        key={idx}
+                                                        className="text-xs text-gray-600">
+                                                        <span className="font-semibold text-gray-700">
+                                                            {addon.group_name ||
+                                                                t('products.addon')}
+                                                            :
+                                                        </span>{' '}
+                                                        {addon.title || addon.name}
+                                                        {addon.quantity !== 1
+                                                            ? ` (×${addon.quantity})`
+                                                            : ''}
+                                                        {' · '}
+                                                        <span className="text-gray-400 inline-flex items-center gap-0.5">
+                                                            {formatMoneyAmount(
+                                                                addonLineTotal,
+                                                                locale,
+                                                            )}
+                                                            <CurrencySymbol className="w-2.5 h-2.5" />
+                                                        </span>
+                                                    </div>
+                                                );
+                                            })}
                                         </div>
                                     )}
 

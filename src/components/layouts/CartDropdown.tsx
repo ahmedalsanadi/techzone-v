@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/Button';
 import { useCartActions } from '@/hooks/cart';
 import { formatMoneyAmount } from '@/lib/utils';
 import { getCartItemLineTotal } from '@/lib/cart/utils';
+import { addonContributionWithDefault } from '@/lib/products/addonPrice';
 import type { CartItemMetadata } from '@/store/useCartStore';
 
 const CartDropdown = () => {
@@ -170,7 +171,14 @@ const CartDropdown = () => {
                                                                             ) => {
                                                                                 const displayQty =
                                                                                     i.quantity;
-                                                                                return `${i.name} (${displayQty}) ${formatMoneyAmount(i.price, locale)}`;
+                                                                                return `${i.name} (${displayQty}) ${formatMoneyAmount(
+                                                                                    addonContributionWithDefault(
+                                                                                        i.price,
+                                                                                        i.quantity,
+                                                                                        i.multiplyByQuantity,
+                                                                                    ),
+                                                                                    locale,
+                                                                                )}`;
                                                                             },
                                                                         )
                                                                         .join(

@@ -12,6 +12,7 @@ import CartItemConfigModal from '@/components/modals/CartItemConfigModal';
 import { Button } from '@/components/ui/Button';
 import { formatMoneyAmount } from '@/lib/utils';
 import { getCartItemLineTotal } from '@/lib/cart/utils';
+import { addonContributionWithDefault } from '@/lib/products/addonPrice';
 import DynamicImage from '@/components/ui/DynamicImage';
 
 const CartPage = () => {
@@ -288,7 +289,11 @@ const CartPage = () => {
                                                                                 </span>
                                                                                 <span className="font-medium text-gray-800 inline-flex items-center gap-0.5">
                                                                                     {formatMoneyAmount(
-                                                                                        addonItem.price,
+                                                                                        addonContributionWithDefault(
+                                                                                            addonItem.price,
+                                                                                            addonItem.quantity,
+                                                                                            addonItem.multiplyByQuantity,
+                                                                                        ),
                                                                                         locale,
                                                                                     )}
                                                                                     <CurrencySymbol className="size-2.5 md:w-3 md:h-3" />
