@@ -3,8 +3,8 @@
 import React from 'react';
 import { Controller, type Control } from 'react-hook-form';
 import { Label } from '@/components/ui/LabelField';
-import type { ComplaintFormValues } from './types';
-import { SECTION_CARD_CLASS, PRIORITIES } from './constants';
+import { COMPLAINT_PRIORITIES, type ComplaintFormValues } from '@/types/complaints';
+import { SECTION_CARD_CLASS } from './section-styles';
 
 export interface ComplaintPriorityFieldProps {
     control: Control<ComplaintFormValues>;
@@ -26,7 +26,7 @@ export function ComplaintPriorityField({ control, t }: ComplaintPriorityFieldPro
                 control={control}
                 render={({ field }) => (
                     <div className="flex flex-wrap gap-4">
-                        {PRIORITIES.map((p) => (
+                        {COMPLAINT_PRIORITIES.map((p) => (
                             <label
                                 key={p}
                                 className="flex items-center gap-2 cursor-pointer"

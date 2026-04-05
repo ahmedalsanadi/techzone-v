@@ -1,15 +1,15 @@
 'use client';
 
-import React, { memo } from 'react';
+import React, { memo, type ChangeEvent } from 'react';
 import { ImageIcon, X } from 'lucide-react';
 import { Label } from '@/components/ui/LabelField';
-import { COMPLAINT_ACCEPT_ATTRIBUTE } from '@/services/complaint-services';
-import { SECTION_CARD_CLASS } from './constants';
+import { COMPLAINT_ACCEPT_ATTRIBUTE } from '@/types/complaints';
+import { SECTION_CARD_CLASS } from './section-styles';
 
 export interface ComplaintAttachmentsFieldProps {
     attachments: File[];
     fileError: string | null;
-    onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onFileChange: (e: ChangeEvent<HTMLInputElement>) => void;
     onRemove: (index: number) => void;
     t: (key: string) => string;
 }

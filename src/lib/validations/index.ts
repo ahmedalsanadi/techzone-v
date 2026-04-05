@@ -51,10 +51,4 @@ export const contactSchema = z
         { message: 'emailOrPhoneRequired', path: ['email'] },
     );
 
-/** Complaints API: category 1–5, priority 1–4 optional; subject & description trimmed and required; attachments validated in form. */
-export const complaintSchema = z.object({
-    category: z.number().int().min(1).max(5),
-    priority: z.number().int().min(1).max(4).optional().default(2),
-    subject: z.string().trim().min(1, 'required').min(3, 'subjectMin'),
-    description: z.string().trim().min(1, 'required').min(10, 'descriptionMin'),
-});
+export { complaintSchema } from './complaints';

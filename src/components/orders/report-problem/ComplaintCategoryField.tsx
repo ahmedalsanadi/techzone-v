@@ -3,8 +3,8 @@
 import React from 'react';
 import { Controller, type Control, type FieldErrors } from 'react-hook-form';
 import { Label } from '@/components/ui/LabelField';
-import type { ComplaintFormValues } from './types';
-import { SECTION_CARD_CLASS, CATEGORIES } from './constants';
+import { COMPLAINT_CATEGORIES, type ComplaintFormValues } from '@/types/complaints';
+import { SECTION_CARD_CLASS } from './section-styles';
 
 export interface ComplaintCategoryFieldProps {
     control: Control<ComplaintFormValues>;
@@ -33,7 +33,7 @@ export function ComplaintCategoryField({
                 control={control}
                 render={({ field }) => (
                     <div className="space-y-0 divide-y divide-gray-50">
-                        {CATEGORIES.map((cat) => (
+                        {COMPLAINT_CATEGORIES.map((cat) => (
                             <label
                                 key={cat}
                                 className="flex items-center justify-between py-4 cursor-pointer group transition-colors"

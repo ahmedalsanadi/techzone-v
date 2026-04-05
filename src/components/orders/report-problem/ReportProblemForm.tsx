@@ -5,6 +5,12 @@ import { useTranslations } from 'next-intl';
 import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { complaintSchema } from '@/lib/validations';
+import {
+    type ComplaintFormValues,
+    COMPLAINT_MAX_ATTACHMENTS,
+    COMPLAINT_MAX_FILE_SIZE,
+    defaultComplaintFormValues,
+} from '@/types/complaints';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
@@ -12,21 +18,14 @@ import { Label } from '@/components/ui/LabelField';
 import { toast } from 'sonner';
 import { useCreateComplaint } from '@/hooks/complaints';
 import { getApiErrorMessage } from '@/lib/api';
-import type { ComplaintCategory, ComplaintPriority } from '@/types/complaints';
-import {
-    isAcceptedComplaintAttachment,
-    MAX_ATTACHMENTS,
-    MAX_FILE_SIZE,
-} from '@/services/complaint-services';
-import type { ComplaintFormValues } from './types';
-import { defaultComplaintFormValues } from './types';
-import { SECTION_CARD_CLASS, COMPLAINT_INPUT_CONTAINER } from './constants';
+import { isAcceptedComplaintAttachment } from '@/services/complaint-services';
+import { SECTION_CARD_CLASS, COMPLAINT_INPUT_CONTAINER } from './section-styles';
 import { ComplaintCategoryField } from './ComplaintCategoryField';
 import { ComplaintPriorityField } from './ComplaintPriorityField';
 import { ComplaintAttachmentsField } from './ComplaintAttachmentsField';
 
 export interface ReportProblemFormProps {
-    /** Order ID to link the complaint (complainable_type=order, complainable_id=orderId). */
+    /** Order ID (complainable_type=order, complainable_id=orderId). */
     orderId: number;
 }
 
@@ -44,6 +43,7 @@ export function ReportProblemForm({ orderId }: ReportProblemFormProps) {
         reset,
         formState: { errors, isValid },
     } = useForm<ComplaintFormValues>({
+        // zod `.default()` widens RHF input type vs output; cast aligns resolver with form values.
         resolver: zodResolver(complaintSchema) as Resolver<ComplaintFormValues>,
         mode: 'all',
         defaultValues: defaultComplaintFormValues,
@@ -56,9 +56,13 @@ export function ReportProblemForm({ orderId }: ReportProblemFormProps) {
             if (!files?.length) return;
 
             const next: File[] = [];
-            for (let i = 0; i < files.length && next.length < MAX_ATTACHMENTS; i++) {
+            for (
+                let i = 0;
+                i < files.length && next.length < COMPLAINT_MAX_ATTACHMENTS;
+                i++
+            ) {
                 const file = files[i];
-                if (file.size > MAX_FILE_SIZE) {
+                if (file.size > COMPLAINT_MAX_FILE_SIZE) {
                     setFileError(t('fileTooLarge'));
                     continue;
                 }
@@ -66,10 +70,12 @@ export function ReportProblemForm({ orderId }: ReportProblemFormProps) {
                 next.push(file);
             }
             const totalAfter = next.length + attachments.length;
-            if (totalAfter > MAX_ATTACHMENTS) {
+            if (totalAfter > COMPLAINT_MAX_ATTACHMENTS) {
                 setFileError(t('maxFiles'));
             }
-            setAttachments((prev) => [...prev, ...next].slice(0, MAX_ATTACHMENTS));
+            setAttachments((prev) =>
+                [...prev, ...next].slice(0, COMPLAINT_MAX_ATTACHMENTS),
+            );
             e.target.value = '';
         },
         [t, attachments.length],
@@ -81,14 +87,14 @@ export function ReportProblemForm({ orderId }: ReportProblemFormProps) {
     }, []);
 
     const onSubmit = async (data: ComplaintFormValues) => {
-        if (attachments.length > MAX_ATTACHMENTS) {
+        if (attachments.length > COMPLAINT_MAX_ATTACHMENTS) {
             setFileError(t('maxFiles'));
             return;
         }
         try {
             await createComplaint({
-                category: data.category as ComplaintCategory,
-                priority: (data.priority ?? 2) as ComplaintPriority,
+                category: data.category,
+                priority: data.priority,
                 subject: data.subject.trim(),
                 description: data.description.trim(),
                 complainable_type: 'order',
