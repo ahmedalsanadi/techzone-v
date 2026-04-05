@@ -1,5 +1,4 @@
 // src/app/[locale]/products/(list)/page.tsx
-import React from 'react';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import ProductsPageClient from '@/features/products-page/ProductsPageClient';
 import { getTranslations } from 'next-intl/server';

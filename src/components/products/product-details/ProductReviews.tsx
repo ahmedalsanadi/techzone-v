@@ -440,7 +440,7 @@ function ReviewCard({ review }: { review: Review }) {
             )}>
             {/* Accent edge on start side (right in RTL, left in LTR) */}
             <div
-                className="absolute top-0 bottom-0 start-0 w-1 bg-linear-to-b from-theme-primary/30 to-theme-primary/10 rounded-e-full"
+                className="absolute top-0 bottom-0 inset-s-0 w-1 bg-linear-to-b from-theme-primary/30 to-theme-primary/10 rounded-e-full"
                 aria-hidden
             />
 
