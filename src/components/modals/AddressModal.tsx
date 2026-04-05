@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import React, {
     useCallback,
     useEffect,
+    useLayoutEffect,
     useMemo,
     useRef,
     useState,
@@ -21,9 +22,33 @@ import { useLocationLogic } from '@/hooks/address/useLocationLogic';
 import { useAddressForm } from '@/hooks/address/useAddressForm';
 import { DEFAULT_COORDINATES } from '@/lib/address/constants';
 import { formatAddressForDisplay } from '@/lib/address';
+import { forwardGeocode } from '@/lib/address/geocoding';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import type { UseFormRegisterReturn } from 'react-hook-form';
+
+function parseSavedMapCoords(
+    address: Address | null,
+): [number, number] | null {
+    if (!address) return null;
+    const lat = Number(address.latitude);
+    const lng = Number(address.longitude);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+    if (Math.abs(lat) < 1e-6 && Math.abs(lng) < 1e-6) return null;
+    return [lat, lng];
+}
+
+function buildAddressGeocodeQuery(address: Address): string {
+    return [
+        address.street,
+        address.district_name,
+        address.city_name,
+        address.country_name,
+    ]
+        .map((s) => String(s || '').trim())
+        .filter(Boolean)
+        .join(', ');
+}
 
 interface AddressModalProps {
     isOpen: boolean;
@@ -100,7 +125,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
     const t = useTranslations('Address');
     const vt = useTranslations('Validation');
     const { isAuthenticated } = useAuthStore();
-    const location = useLocationLogic(undefined, isOpen);
+    const location = useLocationLogic(undefined, isOpen, {
+        suppressAutoSelectCountry: Boolean(initialAddressProp),
+    });
 
     const activeAddress = useMemo(
         () => normalizeAddress(initialAddressProp),
@@ -110,7 +137,6 @@ const AddressModal: React.FC<AddressModalProps> = ({
     const { form, buildPayload, reset } = useAddressForm();
     const {
         register,
-        watch,
         setValue,
         handleSubmit,
         formState: { errors, isValid: isFormValid },
@@ -123,14 +149,8 @@ const AddressModal: React.FC<AddressModalProps> = ({
     const [formattedAddress, setFormattedAddress] = useState('');
     const hasShownLocationToastRef = useRef(false);
 
-    const streetValue = watch('street');
-    const streetValueRef = useRef(streetValue);
-    useEffect(() => {
-        streetValueRef.current = streetValue;
-    }, [streetValue]);
-
-    // Re-initialize when modal opens or active data changes
-    useEffect(() => {
+    // Re-initialize when modal opens or active data changes (layout effect so map gets correct center before paint)
+    useLayoutEffect(() => {
         if (!isOpen) return;
         hasShownLocationToastRef.current = false;
         if (activeAddress) {
@@ -140,8 +160,12 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 phone: activeAddress.phone || '',
                 notes: activeAddress.description || '',
                 street: activeAddress.street || '',
-                building_number: activeAddress.building || '',
-                unit_number: activeAddress.unit || '',
+                building_number:
+                    activeAddress.building_number ??
+                    activeAddress.building ??
+                    '',
+                unit_number:
+                    activeAddress.unit_number ?? activeAddress.unit ?? '',
                 postal_code: activeAddress.postal_code || '',
                 additional_number: activeAddress.additional_number || '',
                 city_id: activeAddress.city_id
@@ -167,11 +191,8 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 },
             });
 
-            const coords: [number, number] = [
-                Number(activeAddress.latitude),
-                Number(activeAddress.longitude),
-            ];
-            setSelectedLocation(coords);
+            const coords = parseSavedMapCoords(activeAddress);
+            setSelectedLocation(coords ?? DEFAULT_COORDINATES);
             setFormattedAddress(formatAddressForDisplay(activeAddress));
             setSearchQuery('');
         } else {
@@ -184,17 +205,40 @@ const AddressModal: React.FC<AddressModalProps> = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps -- reset only when isOpen or activeAddress changes
     }, [isOpen, activeAddress]);
 
+    useEffect(() => {
+        if (!isOpen || !activeAddress) return;
+        if (parseSavedMapCoords(activeAddress)) return;
+        const q = buildAddressGeocodeQuery(activeAddress);
+        if (!q.trim()) return;
+        const ac = new AbortController();
+        forwardGeocode(q, ac.signal)
+            .then((res) => {
+                if (!res) return;
+                setSelectedLocation([res.lat, res.lon]);
+            })
+            .catch(() => {});
+        return () => ac.abort();
+    }, [isOpen, activeAddress]);
+
+    const handleSearchNavigate = useCallback(
+        (loc: [number, number], previewFormatted: string) => {
+            setSelectedLocation(loc);
+            setFormattedAddress(previewFormatted);
+            if (!activeAddress) {
+                setValue('street', '', { shouldValidate: true });
+            }
+        },
+        [activeAddress, setValue],
+    );
+
     const handleLocationSelect = useCallback(
         (loc: [number, number], formatted: string) => {
             setSelectedLocation(loc);
             setFormattedAddress(formatted);
+            setValue('street', formatted, { shouldValidate: true });
             if (!hasShownLocationToastRef.current) {
                 toast.success(t('locationSelected'), { duration: 2000 });
                 hasShownLocationToastRef.current = true;
-            }
-            // Only update street if empty to avoid overwriting user manual input
-            if (!streetValueRef.current?.trim()) {
-                setValue('street', formatted, { shouldValidate: true });
             }
         },
         [setValue, t],
@@ -268,9 +312,17 @@ const AddressModal: React.FC<AddressModalProps> = ({
                                     {/* Taller map on small screens: search + status live on the map */}
                                     <div className="relative min-h-[min(52vh,420px)] sm:min-h-[320px] lg:min-h-[380px] flex-1 overflow-hidden rounded-md sm:rounded-2xl border border-gray-100 shadow-inner">
                                         <AddressMap
+                                            key={
+                                                activeAddress
+                                                    ? `addr-${activeAddress.id}`
+                                                    : 'addr-new'
+                                            }
                                             center={selectedLocation}
                                             onLocationSelect={
                                                 handleLocationSelect
+                                            }
+                                            onSearchNavigate={
+                                                handleSearchNavigate
                                             }
                                             searchQuery={searchQuery}
                                             onSearchChange={setSearchQuery}

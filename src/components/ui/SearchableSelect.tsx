@@ -56,7 +56,10 @@ export const SearchableSelect = memo(
         const listRef = useRef<HTMLUListElement>(null);
 
         const selectedOption = useMemo(
-            () => options.find((o) => o.id === value),
+            () =>
+                value === ''
+                    ? undefined
+                    : options.find((o) => Number(o.id) === Number(value)),
             [options, value],
         );
         const displayLabel = selectedOption?.name ?? '';
@@ -228,7 +231,9 @@ export const SearchableSelect = memo(
                                     </li>
                                 ) : (
                                     filteredOptions.map((opt, index) => {
-                                        const isSelected = opt.id === value;
+                                        const isSelected =
+                                            value !== '' &&
+                                            Number(opt.id) === Number(value);
                                         const isHighlighted =
                                             index === highlightedIndex;
                                         return (

@@ -53,12 +53,22 @@ const initialState: LocationState = {
     selectedDistrict: '',
 };
 
+export interface UseLocationLogicOptions {
+    /**
+     * When true, do not auto-select the first country when selection is empty.
+     * Required for edit flows: otherwise the effect can run before the modal
+     * applies saved country/city and overwrite them (SET_COUNTRY clears city).
+     */
+    suppressAutoSelectCountry?: boolean;
+}
+
 /**
  * Hook to manage dependent location dropdowns (Country -> City -> District).
  */
 export function useLocationLogic(
     initialData?: Partial<LocationState>,
     enabled: boolean = true,
+    options?: UseLocationLogicOptions,
 ) {
     const [state, dispatch] = useReducer(locationReducer, {
         ...initialState,
@@ -74,13 +84,19 @@ export function useLocationLogic(
             enabled && state.selectedCity ? Number(state.selectedCity) : null,
         );
 
-    // Auto-select first country if none selected
+    // Auto-select first country if none selected (add flow only — see suppressAutoSelectCountry)
     useEffect(() => {
         if (!enabled) return;
+        if (options?.suppressAutoSelectCountry) return;
         if (!state.selectedCountry && countries.length > 0) {
             dispatch({ type: 'SET_COUNTRY', value: countries[0].id });
         }
-    }, [countries, state.selectedCountry, enabled]);
+    }, [
+        countries,
+        state.selectedCountry,
+        enabled,
+        options?.suppressAutoSelectCountry,
+    ]);
 
     return {
         state,

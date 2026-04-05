@@ -98,8 +98,18 @@ export function useAddressMutations() {
         onError: (err, newAddress, context) => {
             queryClient.setQueryData(['addresses'], context?.previousAddresses);
         },
-        onSuccess: (newAddress) => {
-            const normalized = normalizeAddress(newAddress) || newAddress;
+        onSuccess: (newAddress, variables) => {
+            const merged = {
+                ...newAddress,
+                building_number:
+                    newAddress.building_number ??
+                    variables.building_number ??
+                    null,
+                unit_number:
+                    newAddress.unit_number ?? variables.unit_number ?? null,
+                notes: newAddress.notes ?? variables.notes ?? null,
+            };
+            const normalized = normalizeAddress(merged as Address) || merged;
             queryClient.setQueryData(['addresses'], (old: Address[] = []) => {
                 const updatedList = old.map((a) =>
                     a.id < 0 ? normalized : a,
@@ -151,8 +161,21 @@ export function useAddressMutations() {
         onError: (err, variables, context) => {
             queryClient.setQueryData(['addresses'], context?.previousAddresses);
         },
-        onSuccess: (updatedAddress) => {
-            const normalized = normalizeAddress(updatedAddress) || updatedAddress;
+        onSuccess: (updatedAddress, variables) => {
+            const merged = {
+                ...updatedAddress,
+                building_number:
+                    updatedAddress.building_number ??
+                    variables.data.building_number ??
+                    null,
+                unit_number:
+                    updatedAddress.unit_number ??
+                    variables.data.unit_number ??
+                    null,
+                notes:
+                    updatedAddress.notes ?? variables.data.notes ?? null,
+            };
+            const normalized = normalizeAddress(merged as Address) || merged;
             queryClient.setQueryData(['addresses'], (old: Address[] = []) => {
                 const updatedList = old.map((a) =>
                     Number(a.id) === Number(normalized.id)

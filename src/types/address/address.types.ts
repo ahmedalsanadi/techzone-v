@@ -63,24 +63,60 @@ export interface Address {
  * Normalizes an address object from various sources (API, Local Storage, etc.)
  * to a consistent structure. Useful for avoiding "notes || description" checks.
  */
+function nonEmptyStr(
+    ...vals: (string | number | null | undefined)[]
+): string {
+    for (const v of vals) {
+        if (v === null || v === undefined) continue;
+        const s = String(v).trim();
+        if (s !== '') return s;
+    }
+    return '';
+}
+
+/** First finite numeric coordinate from API variants (latitude / lat / lng / lon). */
+function pickCoord(
+    ...candidates: (string | number | null | undefined)[]
+): number {
+    for (const v of candidates) {
+        if (v === null || v === undefined) continue;
+        if (typeof v === 'string' && v.trim() === '') continue;
+        const n = Number(v);
+        if (Number.isFinite(n)) return n;
+    }
+    return Number.NaN;
+}
+
 export function normalizeAddress(
     addr: Address | null | undefined,
 ): Address | null {
     if (!addr) return null;
+
+    const raw = addr as Address & {
+        lat?: string | number | null;
+        lng?: string | number | null;
+        lon?: string | number | null;
+    };
 
     return {
         ...addr,
         id: Number(addr.id),
         label: addr.label || addr.name || 'Address',
         is_default: !!(addr.is_default || addr.isDefault),
+        country_id: Number(addr.country_id),
+        city_id: Number(addr.city_id),
+        district_id:
+            addr.district_id === null || addr.district_id === undefined
+                ? null
+                : Number(addr.district_id),
         description: addr.notes || addr.description || '',
         notes: addr.notes || addr.description || '',
-        building: addr.building_number || addr.building || '',
-        building_number: addr.building_number || addr.building || '',
-        unit: addr.unit_number || addr.unit || '',
-        unit_number: addr.unit_number || addr.unit || '',
-        latitude: Number(addr.latitude),
-        longitude: Number(addr.longitude),
+        building: nonEmptyStr(addr.building_number, addr.building),
+        building_number: nonEmptyStr(addr.building_number, addr.building),
+        unit: nonEmptyStr(addr.unit_number, addr.unit),
+        unit_number: nonEmptyStr(addr.unit_number, addr.unit),
+        latitude: pickCoord(raw.latitude, raw.lat),
+        longitude: pickCoord(raw.longitude, raw.lng, raw.lon),
         country_name: addr.country_name || addr.country || '',
         city_name: addr.city_name || addr.city || '',
         district_name: addr.district_name || addr.district || '',

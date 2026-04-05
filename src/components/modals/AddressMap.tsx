@@ -1,7 +1,14 @@
 // src/components/modals/AddressMap.tsx
 'use client';
 
-import React, { useEffect, useCallback, useRef, memo, useState } from 'react';
+import React, {
+    useEffect,
+    useLayoutEffect,
+    useCallback,
+    useRef,
+    memo,
+    useState,
+} from 'react';
 import { useTranslations } from 'next-intl';
 import {
     MapContainer,
@@ -41,7 +48,13 @@ const SEARCH_DEBOUNCE_MS = 800;
 
 interface AddressMapProps {
     center: [number, number];
+    /** Map click / pin confirmation: commits coordinates and resolved address to the form. */
     onLocationSelect: (location: [number, number], formatted: string) => void;
+    /**
+     * Forward-geocode from search: move the map and show a preview only.
+     * Do not use this to fill form street — that should happen in onLocationSelect after the user picks on the map.
+     */
+    onSearchNavigate?: (location: [number, number], previewFormatted: string) => void;
     searchQuery?: string;
     onSearchChange?: (value: string) => void;
     searchLabel?: string;
@@ -93,34 +106,51 @@ MapClickHandler.displayName = 'MapClickHandler';
 
 const MapViewUpdater = memo(({ center }: { center: [number, number] }) => {
     const map = useMap();
-    const prevCenterRef = useRef(center);
-    useEffect(() => {
-        let cancelled = false;
-        const run = () => {
-            if (cancelled) return;
-            try {
-                if (
-                    prevCenterRef.current[0] !== center[0] ||
-                    prevCenterRef.current[1] !== center[1]
-                ) {
-                    if (map.getContainer()?.parentElement) {
-                        map.setView(center, map.getZoom());
-                        prevCenterRef.current = center;
-                    }
+    /** null = not synced yet — react-leaflet v5 MapContainer only applies center on create; always align once. */
+    const prevCenterRef = useRef<[number, number] | null>(null);
+    useLayoutEffect(() => {
+        try {
+            const prev = prevCenterRef.current;
+            if (
+                prev === null ||
+                prev[0] !== center[0] ||
+                prev[1] !== center[1]
+            ) {
+                if (map.getContainer()?.parentElement) {
+                    map.setView(center, map.getZoom(), { animate: false });
+                    prevCenterRef.current = center;
                 }
-            } catch {
-                // ignore if map pane not ready (_leaflet_pos)
             }
-        };
-        const id = requestAnimationFrame(() => run());
-        return () => {
-            cancelled = true;
-            cancelAnimationFrame(id);
-        };
+        } catch {
+            // ignore if map pane not ready (_leaflet_pos)
+        }
     }, [center, map]);
     return null;
 });
 MapViewUpdater.displayName = 'MapViewUpdater';
+
+/** Dialogs often finish layout after transition; Leaflet needs invalidateSize + setView. */
+const MapDialogLayoutSync = memo(({ center }: { center: [number, number] }) => {
+    const map = useMap();
+    useEffect(() => {
+        const run = () => {
+            try {
+                map.invalidateSize();
+                map.setView(center, map.getZoom(), { animate: false });
+            } catch {
+                // ignore
+            }
+        };
+        const t1 = setTimeout(run, 100);
+        const t2 = setTimeout(run, 400);
+        return () => {
+            clearTimeout(t1);
+            clearTimeout(t2);
+        };
+    }, [center, map]);
+    return null;
+});
+MapDialogLayoutSync.displayName = 'MapDialogLayoutSync';
 
 const MapSizeInvalidator = memo(() => {
     const map = useMap();
@@ -170,6 +200,7 @@ ScrollWheelZoomEnabler.displayName = 'ScrollWheelZoomEnabler';
 const AddressMap: React.FC<AddressMapProps> = ({
     center,
     onLocationSelect,
+    onSearchNavigate,
     searchQuery,
     onSearchChange,
     searchLabel,
@@ -205,7 +236,12 @@ const AddressMap: React.FC<AddressMapProps> = ({
             try {
                 const res = await forwardGeocode(q, abortRef.current.signal);
                 if (res) {
-                    handleLocationSelect([res.lat, res.lon], res.display_name);
+                    const loc: [number, number] = [res.lat, res.lon];
+                    if (onSearchNavigate) {
+                        onSearchNavigate(loc, res.display_name);
+                    } else {
+                        handleLocationSelect(loc, res.display_name);
+                    }
                     lastQueryRef.current = q;
                 }
             } catch {}
@@ -214,7 +250,7 @@ const AddressMap: React.FC<AddressMapProps> = ({
             clearTimeout(timer);
             abortRef.current?.abort();
         };
-    }, [searchQuery, handleLocationSelect]);
+    }, [searchQuery, handleLocationSelect, onSearchNavigate]);
 
     if (typeof window === 'undefined') return null;
 
@@ -232,6 +268,7 @@ const AddressMap: React.FC<AddressMapProps> = ({
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 <ZoomControl position="topleft" />
                 <MapViewUpdater center={center} />
+                <MapDialogLayoutSync center={center} />
                 <MapSizeInvalidator />
                 <ScrollWheelZoomEnabler />
                 <MapClickHandler
