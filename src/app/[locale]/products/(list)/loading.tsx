@@ -6,7 +6,7 @@ import {
     AppliedFiltersSkeleton,
     ProductsGridSkeleton,
     PaginationSkeleton,
-} from '@/features/products-page/components/ProductsSkeleton';
+} from '@/components/products/listing/ProductsSkeleton';
 
 export default function Loading() {
     return (

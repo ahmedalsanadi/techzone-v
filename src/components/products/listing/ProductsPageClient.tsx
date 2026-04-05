@@ -12,7 +12,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
     productsPageProductsQueryOptions,
     productsPageFiltersVarsQueryOptions,
-} from './queries';
+} from '@/lib/products/listing/queries';
 import {
     createInitialProductsPageState,
     getSafePaginationMeta,
@@ -20,18 +20,18 @@ import {
     productsPageStateFromUrlParams,
     productsPageStateToUrlParams,
     urlSearchParamsToUrlParams,
-} from './types';
-import type { ProductsPageOrder, ProductsPageSort } from './types';
-import { ProductsFiltersSidebar } from './components/ProductsFiltersSidebar';
-import { ProductsPaginationBar } from './components/ProductsPaginationBar';
+} from '@/lib/products/listing/listing-state';
+import type { ProductsPageOrder, ProductsPageSort } from '@/lib/products/listing/listing-state';
+import { ProductsFiltersSidebar } from './ProductsFiltersSidebar';
+import { ProductsPaginationBar } from './ProductsPaginationBar';
 import {
     ProductsGridSkeleton,
     FilterSidebarSkeleton,
     ResultsHeaderSkeleton,
-} from './components/ProductsSkeleton';
-import { EmptyState } from './components/EmptyState';
-import { ErrorState } from './components/ErrorState';
-import { ProductsResultsSection } from './components/ProductsResultsSection';
+} from './ProductsSkeleton';
+import { EmptyState } from './EmptyState';
+import { ErrorState } from './ErrorState';
+import { ProductsResultsSection } from './ProductsResultsSection';
 import { useProductConfigFlow } from '@/hooks/products';
 import { requiresConfiguration } from '@/lib/products/requirements';
 import { useTranslations } from 'next-intl';
@@ -39,7 +39,7 @@ import { useLocale } from 'next-intl';
 import { useBranchStore } from '@/store/useBranchStore';
 import { branchCookies } from '@/lib/branches';
 import { useUrlFilters } from '@/hooks/products/useUrlFilters';
-import { AppliedFiltersBar } from './components/AppliedFiltersBar';
+import { AppliedFiltersBar } from './AppliedFiltersBar';
 
 export default function ProductsPageClient() {
     const t = useTranslations('Product');

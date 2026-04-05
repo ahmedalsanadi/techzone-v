@@ -250,7 +250,7 @@ These values are treated as **part of the query cache identity** for product-rel
 
 ### React Query cache safety (tenant + branch + locale)
 
-We introduced a products-page query context:
+We introduced a products listing query context:
 
 - **`tenantHost`**
 - **`locale`**
@@ -258,8 +258,8 @@ We introduced a products-page query context:
 
 Key files:
 
-- `src/features/products-page/queryKeys.ts` — stable, context-aware keys + stable serialization (incl. canonical ordering for primitive arrays).
-- `src/features/products-page/queries.ts` — query options for products + filter vars.
+- `src/lib/products/listing/queryKeys.ts` — stable, context-aware keys + stable serialization (incl. canonical ordering for primitive arrays).
+- `src/lib/products/listing/queries.ts` — query options for products + filter vars.
 - `src/hooks/products/useProductConfigFlow.ts` — product detail prefetch/fetch is also context-aware.
 
 Why this matters:
@@ -293,7 +293,7 @@ The products list page now does an initial server prefetch and hydrates TanStack
 
 The page state is derived from the URL and updates the URL on user actions:
 
-- `src/features/products-page/types.ts`
+- `src/lib/products/listing/listing-state.ts`
   - `productsPageStateFromUrlParams`
   - `productsPageStateToUrlParams`
   - `buildProductsListParams` (canonicalizes arrays + attributes)
@@ -308,14 +308,14 @@ We keep previous results **only** for pure page changes. Filter changes do a rea
 
 Key file:
 
-- `src/features/products-page/ProductsPageClient.tsx`
+- `src/components/products/listing/ProductsPageClient.tsx`
 
 ### Applied filters UI + attribute filters
 
 - Applied filter “chips” with per-filter removal and Clear All:
-  - `src/features/products-page/components/AppliedFiltersBar.tsx`
+  - `src/components/products/listing/AppliedFiltersBar.tsx`
 - Dynamic attributes rendering in the sidebar (from API filters vars):
-  - `src/features/products-page/components/ProductsFiltersSidebar.tsx`
+  - `src/components/products/listing/ProductsFiltersSidebar.tsx`
 
 ### Availability semantics
 
@@ -339,7 +339,7 @@ Key files:
 
 - `src/messages/en.json`, `src/messages/ar.json`
 - `src/components/ui/Pagination.tsx`
-- `src/features/products-page/components/*`
+- `src/components/products/listing/*` (listing UI modules next to `ProductsPageClient`)
 
 ### How to test quickly (manual QA)
 

@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react';
 import type { ProductsFiltersVars } from '@/types/store';
-import type { ProductsPageState } from '../types';
+import type { ProductsPageState } from '@/lib/products/listing/listing-state';
 import { Button } from '@/components/ui/Button';
 import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';

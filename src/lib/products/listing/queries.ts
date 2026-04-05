@@ -1,7 +1,7 @@
 import { keepPreviousData, queryOptions } from '@tanstack/react-query';
 import { storeService } from '@/services/store-service';
-import type { ProductsPageState } from './types';
-import { buildProductsListParams } from './types';
+import type { ProductsPageState } from './listing-state';
+import { buildProductsListParams } from './listing-state';
 import { productsPageKeys } from './queryKeys';
 import type { ProductsPageQueryContext } from './queryKeys';
 import type { ProductsFiltersVars, Product } from '@/types/store';
@@ -43,4 +43,3 @@ export function productsPageFiltersVarsQueryOptions(
         refetchOnWindowFocus: false,
     });
 }
-

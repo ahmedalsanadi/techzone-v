@@ -410,4 +410,3 @@ export function getSafePaginationMeta(meta: PaginationMeta | undefined, state: P
         total,
     };
 }
-

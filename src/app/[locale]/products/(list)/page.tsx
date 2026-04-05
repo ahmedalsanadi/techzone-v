@@ -1,6 +1,6 @@
 // src/app/[locale]/products/(list)/page.tsx
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
-import ProductsPageClient from '@/features/products-page/ProductsPageClient';
+import ProductsPageClient from '@/components/products/listing/ProductsPageClient';
 import { getTranslations } from 'next-intl/server';
 import { Metadata } from 'next';
 import { resolveSiteIdentity } from '@/lib/tenant/resolve-site';
@@ -9,11 +9,11 @@ import { getQueryClient } from '@/lib/getQueryClient';
 import {
     productsPageStateFromUrlParams,
     type ProductsPageUrlParams,
-} from '@/features/products-page/types';
+} from '@/lib/products/listing/listing-state';
 import {
     productsPageProductsQueryOptions,
     productsPageFiltersVarsQueryOptions,
-} from '@/features/products-page/queries';
+} from '@/lib/products/listing/queries';
 import { cookies, headers } from 'next/headers';
 import { BRANCH_COOKIES } from '@/lib/branches/constants';
 

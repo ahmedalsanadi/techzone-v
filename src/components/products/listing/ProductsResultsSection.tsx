@@ -3,7 +3,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import type { Product } from '@/types/store';
-import type { ProductsPageOrder, ProductsPageSort } from '../types';
+import type { ProductsPageOrder, ProductsPageSort } from '@/lib/products/listing/listing-state';
 import ProductsSorting from '@/components/products/ProductsSorting';
 import { ProductsGrid } from './ProductsGrid';
 import { useTranslations } from 'next-intl';

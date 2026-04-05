@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Checkbox } from '@/components/ui/CheckboxField';
 import type { ProductsFiltersVars } from '@/types/store';
-import type { ProductsPageState } from '../types';
+import type { ProductsPageState } from '@/lib/products/listing/listing-state';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { ChevronDown, ChevronUp } from 'lucide-react';

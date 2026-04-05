@@ -1,4 +1,4 @@
-import type { ProductsPageState } from './types';
+import type { ProductsPageState } from './listing-state';
 
 function stableObject(value: unknown): unknown {
     if (Array.isArray(value)) {
@@ -53,4 +53,3 @@ export const productsPageKeys = {
         ctx: ProductsPageQueryContext,
     ) => [...productsPageKeys.all(ctx), 'filters', stableSerialize(args)] as const,
 } as const;
-
