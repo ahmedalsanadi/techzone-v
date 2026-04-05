@@ -4,12 +4,12 @@
 
 import { fetchLibero } from '@/lib/api';
 import {
-    type CreateComplaintRequest,
-    type CreateComplaintResponse,
     COMPLAINT_ACCEPTED_IMAGE_TYPES,
+    COMPLAINT_DEFAULT_PRIORITY,
     COMPLAINT_MAX_ATTACHMENTS,
     COMPLAINT_MAX_FILE_SIZE,
-} from '@/types/complaints';
+} from '@/constants/complaints';
+import type { CreateComplaintRequest, CreateComplaintResponse } from '@/types/complaints';
 
 /** Shared validation: accepted image type (form + multipart build). */
 export function isAcceptedComplaintAttachment(file: File): boolean {
@@ -22,7 +22,7 @@ export function isAcceptedComplaintAttachment(file: File): boolean {
 function buildFormData(payload: CreateComplaintRequest): FormData {
     const form = new FormData();
     form.append('category', String(payload.category));
-    form.append('priority', String(payload.priority ?? 2));
+    form.append('priority', String(payload.priority ?? COMPLAINT_DEFAULT_PRIORITY));
     form.append('subject', payload.subject.trim());
     form.append('description', payload.description.trim());
 

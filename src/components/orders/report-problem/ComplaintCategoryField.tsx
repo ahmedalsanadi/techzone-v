@@ -3,7 +3,8 @@
 import React from 'react';
 import { Controller, type Control, type FieldErrors } from 'react-hook-form';
 import { Label } from '@/components/ui/LabelField';
-import { COMPLAINT_CATEGORIES, type ComplaintFormValues } from '@/types/complaints';
+import type { ComplaintFormValues } from '@/types/complaints';
+import { COMPLAINT_CATEGORIES } from './options';
 import { SECTION_CARD_CLASS } from './section-styles';
 
 export interface ComplaintCategoryFieldProps {

@@ -3,7 +3,7 @@
 import React, { memo, type ChangeEvent } from 'react';
 import { ImageIcon, X } from 'lucide-react';
 import { Label } from '@/components/ui/LabelField';
-import { COMPLAINT_ACCEPT_ATTRIBUTE } from '@/types/complaints';
+import { COMPLAINT_ACCEPT_ATTRIBUTE } from '@/constants/complaints';
 import { SECTION_CARD_CLASS } from './section-styles';
 
 export interface ComplaintAttachmentsFieldProps {

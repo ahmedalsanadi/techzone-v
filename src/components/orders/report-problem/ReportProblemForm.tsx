@@ -5,12 +5,9 @@ import { useTranslations } from 'next-intl';
 import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { complaintSchema } from '@/lib/validations';
-import {
-    type ComplaintFormValues,
-    COMPLAINT_MAX_ATTACHMENTS,
-    COMPLAINT_MAX_FILE_SIZE,
-    defaultComplaintFormValues,
-} from '@/types/complaints';
+import { COMPLAINT_MAX_ATTACHMENTS, COMPLAINT_MAX_FILE_SIZE } from '@/constants/complaints';
+import type { ComplaintFormValues } from '@/types/complaints';
+import { defaultComplaintFormValues } from './form-defaults';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
