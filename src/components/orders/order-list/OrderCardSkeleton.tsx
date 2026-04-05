@@ -1,5 +1,4 @@
 // src/app/[locale]/my-orders/utils/components/OrderCardSkeleton.tsx
-import React from 'react';
 
 export default function OrderCardSkeleton() {
     return (

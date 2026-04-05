@@ -87,9 +87,7 @@ export default function OrderDetailsView({
                     const unitAllIn =
                         Number(item.total_price) > 0
                             ? Number(item.total_price) / qty
-                            : Number(
-                                  item.sale_unit_price ?? item.unit_price,
-                              );
+                            : Number(item.sale_unit_price ?? item.unit_price);
                     addItemToStore(
                         {
                             id: `reorder-${item.id}`,
@@ -299,7 +297,8 @@ export default function OrderDetailsView({
             if (isPickup) {
                 return order.timeline.filter(
                     (item) =>
-                        item.status !== 'SHIPPED' && item.status !== 'DELIVERED',
+                        item.status !== 'SHIPPED' &&
+                        item.status !== 'DELIVERED',
                 );
             }
             return order.timeline;
@@ -314,7 +313,8 @@ export default function OrderDetailsView({
         let currentIndex = timelineProgressSteps.indexOf(currentStatusKey);
         if (
             isPickup &&
-            (currentStatusKey === 'COMPLETED' || currentStatusKey === 'DELIVERED')
+            (currentStatusKey === 'COMPLETED' ||
+                currentStatusKey === 'DELIVERED')
         ) {
             currentIndex = timelineProgressSteps.length;
         } else if (currentIndex < 0) {
@@ -346,7 +346,8 @@ export default function OrderDetailsView({
         return timelineProgressSteps.map((status, index) => {
             const isCompleted = index < resolvedIndex;
             const isActive =
-                index === resolvedIndex && resolvedIndex < timelineProgressSteps.length;
+                index === resolvedIndex &&
+                resolvedIndex < timelineProgressSteps.length;
             const timestamp =
                 isActive && mounted
                     ? formatOrderTime(order.updated_at)

@@ -1,5 +1,5 @@
 import React from 'react';
-import OrderCardSkeleton from '@/components/orders/OrderCardSkeleton';
+import OrderCardSkeleton from '@/components/orders/order-list/OrderCardSkeleton';
 
 export default function Loading() {
     return (

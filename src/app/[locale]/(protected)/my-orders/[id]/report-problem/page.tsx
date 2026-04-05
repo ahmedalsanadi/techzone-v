@@ -1,11 +1,9 @@
 // src/app/[locale]/my-orders/[id]/report-problem/page.tsx
 import { notFound } from 'next/navigation';
 import { orderService } from '@/services/order-service';
-import ReportProblemView from '@/components/orders/ReportProblemView';
+import ReportProblemView from '@/components/orders/report-problem/ReportProblemView';
 import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-
-
 
 export async function generateMetadata({
     params,

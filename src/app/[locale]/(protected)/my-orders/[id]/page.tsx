@@ -1,8 +1,7 @@
 // src/app/[locale]/my-orders/[id]/page.tsx
 import { notFound } from 'next/navigation';
 import { orderService } from '@/services/order-service';
-import OrderDetailsView from '@/components/orders/OrderDetailsView';
-
+import OrderDetailsView from '@/components/orders/order-details/OrderDetailsView';
 
 export default async function OrderPage({
     params,

@@ -18,7 +18,7 @@ import {
     formatOrderDateAndTime,
     formatOrderDateTime,
 } from '@/lib/utils';
-import CurrencySymbol from '../ui/CurrencySymbol';
+import CurrencySymbol from '@/components/ui/CurrencySymbol';
 
 import { Order, type OrderStatus } from '@/types/orders';
 import { Link } from '@/i18n/navigation';
@@ -245,7 +245,8 @@ export default function OrderCard({ order }: OrderCardProps) {
                             variant="secondaryMuted"
                             size="card"
                             className="flex-1">
-                            <Link href={`/my-orders/${order.id}/report-problem`}>
+                            <Link
+                                href={`/my-orders/${order.id}/report-problem`}>
                                 {t('reportProblem')}
                             </Link>
                         </Button>

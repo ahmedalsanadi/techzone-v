@@ -27,7 +27,7 @@ import {
     buildSummaryItems,
     isEpaymentValid,
 } from '@/lib/checkout';
-import CheckoutPageSkeleton from './CheckoutPageSkeleton';
+import CheckoutPageSkeleton from '@/components/checkout/CheckoutPageSkeleton';
 import ShippingSpeedCard from '@/components/checkout/ShippingSpeedCard';
 
 const ORDER_TYPE_SCROLL_ID = 'checkout-order-type';
@@ -398,8 +398,6 @@ export default function CheckoutPage() {
                         {orderTypeCard}
                     </div>
 
-
-
                     <PaymentMethodCard
                         methods={paymentMethods}
                         summaryTotal={totalFromSummary}
@@ -451,7 +449,7 @@ export default function CheckoutPage() {
                             />
                             <div className="flex justify-end">
                                 <span className="text-xs text-gray-500 tabular-nums">
-                                    {(orderNotes?.length ?? 0)}/500
+                                    {orderNotes?.length ?? 0}/500
                                 </span>
                             </div>
                         </div>

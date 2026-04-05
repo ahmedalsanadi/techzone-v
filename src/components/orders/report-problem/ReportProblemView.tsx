@@ -1,12 +1,11 @@
 // src/components/orders/ReportProblemView.tsx
 'use client';
 
-import React from 'react';
 import { useTranslations } from 'next-intl';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
-import { OrderSummaryCard } from './OrderSummaryCard';
+import { OrderSummaryCard } from '../order-details/OrderSummaryCard';
 import { Order } from '@/types/orders';
-import { ReportProblemForm } from './report-problem';
+import { ReportProblemForm } from '.';
 
 interface ReportProblemViewProps {
     order: Order;

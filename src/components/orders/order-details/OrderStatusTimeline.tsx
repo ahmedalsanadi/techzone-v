@@ -29,7 +29,7 @@ export function OrderStatusTimeline({ timeline }: OrderStatusTimelineProps) {
                         {index !== timeline.length - 1 && (
                             <div
                                 className={cn(
-                                    'absolute start-[10px] top-[24px] bottom-[-8px] w-[2px]',
+                                    'absolute inset-s-[10px] top-[24px] bottom-[-8px] w-[2px]',
                                     item.completed
                                         ? 'bg-green-600'
                                         : 'bg-gray-200',

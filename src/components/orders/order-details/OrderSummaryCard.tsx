@@ -3,12 +3,9 @@
 
 import React from 'react';
 import { Order } from '@/types/orders';
-import {
-    formatMoneyAmount,
-    formatOrderDateTime,
-} from '@/lib/utils';
+import { formatMoneyAmount, formatOrderDateTime } from '@/lib/utils';
 import { useLocale, useTranslations } from 'next-intl';
-import CurrencySymbol from '../ui/CurrencySymbol';
+import CurrencySymbol from '@/components/ui/CurrencySymbol';
 import { getOrderStatusPresentation } from '@/lib/orders/status';
 
 interface OrderSummaryCardProps {

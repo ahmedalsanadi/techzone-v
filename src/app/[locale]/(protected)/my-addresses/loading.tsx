@@ -3,7 +3,6 @@ import React from 'react';
 export default function Loading() {
     return (
         <div className="space-y-6 py-2">
-
             {/* Header card skeleton (matches MyAddressesView hero card) */}
             <div className="bg-white shadow-sm border border-gray-100 flex flex-col md:flex-row items-center md:items-end justify-between gap-3 sm:gap-4 md:gap-6 overflow-hidden relative rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl p-3 sm:p-4 md:p-6 lg:p-8 xl:p-10">
                 <div className="absolute top-0 start-0 w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 bg-theme-primary/5 rounded-full -ms-10 -mt-10 sm:-ms-12 sm:-mt-12 md:-ms-16 md:-mt-16" />
@@ -46,4 +45,3 @@ export default function Loading() {
         </div>
     );
 }
-

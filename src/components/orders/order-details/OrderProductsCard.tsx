@@ -9,7 +9,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 import { Star } from 'lucide-react';
 import DynamicImage from '@/components/ui/DynamicImage';
-import CurrencySymbol from '../ui/CurrencySymbol';
+import CurrencySymbol from '@/components/ui/CurrencySymbol';
 
 interface OrderProductsCardProps {
     items: OrderItem[];
@@ -126,10 +126,13 @@ export function OrderProductsCard({
                                                         className="text-xs text-gray-600">
                                                         <span className="font-semibold text-gray-700">
                                                             {addon.group_name ||
-                                                                t('products.addon')}
+                                                                t(
+                                                                    'products.addon',
+                                                                )}
                                                             :
                                                         </span>{' '}
-                                                        {addon.title || addon.name}
+                                                        {addon.title ||
+                                                            addon.name}
                                                         {addon.quantity !== 1
                                                             ? ` (×${addon.quantity})`
                                                             : ''}
@@ -222,10 +225,13 @@ export function OrderProductsCard({
                                     <div className="flex items-center gap-3 mt-3 flex-wrap">
                                         <div className="flex items-center gap-1 text-theme-primary font-black text-lg">
                                             <div className="flex items-center gap-0.5">
-                                                {Number(item.total_discount) > 0 && (
+                                                {Number(item.total_discount) >
+                                                    0 && (
                                                     <span className="text-sm text-gray-400 line-through font-semibold">
                                                         {formatMoneyAmount(
-                                                            Number(item.unit_price),
+                                                            Number(
+                                                                item.unit_price,
+                                                            ),
                                                             locale,
                                                         )}
                                                         <CurrencySymbol className="w-3 h-3 inline ml-0.5" />
@@ -245,7 +251,8 @@ export function OrderProductsCard({
                                         </div>
                                         <span className="text-sm text-gray-400 bg-gray-50 px-2 py-1 rounded-lg">
                                             × {item.quantity}{' '}
-                                            {t('products.quantity_unit') || 'Qty'}
+                                            {t('products.quantity_unit') ||
+                                                'Qty'}
                                         </span>
                                     </div>
                                 </div>

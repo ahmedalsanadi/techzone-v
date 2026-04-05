@@ -9,7 +9,6 @@ import AddressCard from './AddressCard';
 import AddressModal from '@/components/modals/AddressModal';
 import ConfirmModal from '@/components/modals/ConfirmModal';
 import { Button } from '@/components/ui/Button';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import { toast } from 'sonner';
 import { useAddressFlow } from '@/hooks/address/useAddressFlow';
 
@@ -73,7 +72,9 @@ export default function MyAddressesView() {
                 payload,
                 editingAddress ? Number(editingAddress.id) : undefined,
             );
-            toast.success(editingAddress ? t('updateSuccess') : t('addSuccess'));
+            toast.success(
+                editingAddress ? t('updateSuccess') : t('addSuccess'),
+            );
             setIsModalOpen(false);
             setEditingAddress(null);
         } catch {
@@ -81,13 +82,14 @@ export default function MyAddressesView() {
         }
     };
 
-    const breadcrumbs = [{ label: t('home'), href: '/' }, { label: t('title') }];
+    const breadcrumbs = [
+        { label: t('home'), href: '/' },
+        { label: t('title') },
+    ];
 
     return (
         <div className="space-y-6 py-2">
-          
-                {/* <Breadcrumbs items={breadcrumbs} /> */}
-           
+            {/* <Breadcrumbs items={breadcrumbs} /> */}
 
             <div className="bg-white shadow-sm border border-gray-100 flex flex-col md:flex-row items-center md:items-end justify-between gap-3 sm:gap-4 md:gap-6 overflow-hidden relative rounded-lg sm:rounded-xl md:rounded-2xl  p-3 sm:p-4 md:p-6 lg:p-8 xl:p-10">
                 <div className="absolute top-0 start-0 w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 bg-theme-primary/5 rounded-full -ms-10 -mt-10 sm:-ms-12 sm:-mt-12 md:-ms-16 md:-mt-16" />
@@ -145,8 +147,7 @@ export default function MyAddressesView() {
                             <HomeIcon className="w-8 h-8 sm:w-10 sm:h-10 text-gray-400" />
                         </div>
                         <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">
-                            {t('loadErrorTitle') ||
-                                'Unable to load addresses'}
+                            {t('loadErrorTitle') || 'Unable to load addresses'}
                         </h3>
                         <p className="text-gray-500 text-sm sm:text-base max-w-xs mb-6 sm:mb-8">
                             {t('loadErrorSubtitle') ||
