@@ -53,7 +53,7 @@ src/
 │   ├── modals/             # BranchSelectionModal, AddressModal, ProductConfigModal, CartItemConfigModal, etc.
 │   ├── offers/             # OffersView, CollectionCard, OffersProductsSection
 │   ├── orders/             # MyOrdersView, OrderDetailsView, OrderCard, ReportProblemView, etc.
-│   ├── products/           # ProductsView, ProductDetails, product-details/* (gallery, addons, reviews, etc.)
+│   ├── products/           # ProductDetails, product-details/* (gallery, addons, reviews, etc.)
 │   ├── providers/          # StoreProvider, ThemeProvider, QueryProvider, ProductConfigProvider, ThemeStyles
 │   ├── search/             # SearchContent
 │   └── ui/                 # Shared primitives: Button, Input, Breadcrumbs, ProductCard, CategoryCard, etc.
@@ -75,7 +75,7 @@ src/
 │   ├── cart/               # useCartActions, useCartMerge
 │   ├── checkout/           # useCheckoutInit, useCreateOrder, usePaymentStatus, useCheckout (barrel: index.ts)
 │   ├── offers/             # useOffersView
-│   ├── products/           # useProductsView, useProductConfigFlow, useUrlFilters
+│   ├── products/           # useProductConfigFlow, useUrlFilters
 │   ├── ui/                 # useModalKeyboard
 │   └── wishlist/           # useWishlistActions, useWishlistMerge
 │

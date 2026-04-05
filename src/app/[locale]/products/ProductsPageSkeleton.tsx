@@ -5,7 +5,7 @@ export default function ProductsPageSkeleton() {
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                {/* Filters skeleton (matches ProductFiltersUI layout) */}
+                {/* Filters sidebar skeleton */}
                 <div className="lg:sticky lg:top-24 lg:self-start lg:z-10">
                     <div className="space-y-6">
                         {/* Sidebar header */}
