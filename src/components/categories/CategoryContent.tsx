@@ -5,7 +5,7 @@ import React, { useMemo } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { storeService } from '@/services/store-service';
 import { Category } from '@/types/store';
-import SubCategorySelection from '@/components/products/SubCategorySelection';
+import SubCategorySelection from '@/components/categories/SubCategorySelection';
 import ProductsGrid from '@/components/products/ProductsGrid';
 import CategoryTabs from '@/components/categories/CategoryTabs';
 import { cn } from '@/lib/utils';
