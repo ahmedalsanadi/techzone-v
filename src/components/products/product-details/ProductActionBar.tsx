@@ -3,7 +3,6 @@
 import React from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Plus, Minus } from 'lucide-react';
-import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
 import { Button } from '@/components/ui/Button';

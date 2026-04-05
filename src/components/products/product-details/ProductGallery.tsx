@@ -1,11 +1,9 @@
 'use client';
 
-import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import DynamicImage from '@/components/ui/DynamicImage';
 import { Button } from '@/components/ui/Button';
-import type { ProductMedia } from '@/types/store';
 
 // Import Swiper styles
 import 'swiper/css';

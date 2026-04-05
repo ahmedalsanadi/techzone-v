@@ -1,6 +1,6 @@
 // src/app/[locale]/products/[slug]/page.tsx
 import { notFound } from 'next/navigation';
-import ProductDetails from '@/components/products/ProductDetails';
+import ProductDetails from '@/components/products/product-details/ProductDetails';
 import { Metadata } from 'next';
 import { generateProductStructuredData } from '@/lib/metadata';
 import { storeService } from '@/services/store-service';

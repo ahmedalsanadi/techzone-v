@@ -7,7 +7,7 @@ import { storeService } from '@/services/store-service';
 import { Category } from '@/types/store';
 import SubCategorySelection from '@/components/products/SubCategorySelection';
 import ProductsGrid from '@/components/products/ProductsGrid';
-import CategoryTabs from '@/components/products/CategoryTabs';
+import CategoryTabs from '@/components/categories/CategoryTabs';
 import { cn } from '@/lib/utils';
 import { useProductConfigFlow } from '@/hooks/products';
 import { requiresConfiguration } from '@/lib/products/requirements';

@@ -289,7 +289,7 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
                                             }}
                                         />
                                     </div>
-                                    <span className="text-xs text-gray-500 min-w-[2rem] text-right">
+                                    <span className="text-xs text-gray-500 min-w-8 text-right">
                                         {
                                             ratingDistribution[
                                                 rating as keyof typeof ratingDistribution

@@ -3,13 +3,13 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
-import ProductGallery from './product-details/ProductGallery';
-import ProductInfo from './product-details/ProductInfo';
-import ProductActionBar from './product-details/ProductActionBar';
-import AddonSelector from './product-details/AddonSelector';
-import VariantSelector from './product-details/VariantSelector';
-import CustomFieldsForm from './product-details/CustomFieldsForm';
-import ProductShareActions from './product-details/ProductShareActions';
+import ProductGallery from './ProductGallery';
+import ProductInfo from './ProductInfo';
+import ProductActionBar from './ProductActionBar';
+import AddonSelector from './AddonSelector';
+import VariantSelector from './VariantSelector';
+import CustomFieldsForm from './CustomFieldsForm';
+import ProductShareActions from './ProductShareActions';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import { generateCartItemId } from '@/lib/cart/utils';
 import { useCartActions } from '@/hooks/cart';
@@ -17,7 +17,7 @@ import { Product } from '@/types/store';
 import { getEffectivePriceWithOriginal } from '@/lib/products/price';
 import { sumAddonSubtotalForProductSelection } from '@/lib/products/addonPrice';
 import { toast } from 'sonner';
-import ProductReviews from './product-details/ProductReviews';
+import ProductReviews from './ProductReviews';
 
 interface ProductDetailsProps {
     product: Product;

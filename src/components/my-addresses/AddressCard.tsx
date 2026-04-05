@@ -41,7 +41,7 @@ const AddressCard = ({
                     : 'border-gray-100 hover:border-theme-primary/30 shadow-sm',
             )}>
             {isOptimistic && (
-                <div className="absolute top-2 end-2 flex items-center gap-1.5 bg-theme-primary/10 px-2 py-1 rounded-full">
+                <div className="absolute top-2 inset-e-2 flex items-center gap-1.5 bg-theme-primary/10 px-2 py-1 rounded-full">
                     <Loader2 className="w-3 h-3 text-theme-primary animate-spin" />
                     <span className="text-[10px] font-bold text-theme-primary uppercase tracking-tighter">
                         Syncing...
@@ -136,7 +136,7 @@ const AddressCard = ({
             </div>
 
             {isDefault && (
-                <div className="absolute top-2.5 end-2.5 sm:top-3 sm:end-3 md:top-4 md:end-4">
+                <div className="absolute top-2.5 inset-e-2.5 sm:top-3 sm:inset-e-3 md:top-4 md:inset-e-4">
                     <div className="w-4 h-4  bg-theme-primary rounded-full flex items-center justify-center text-white shadow-sm ring-2 ring-white">
                         <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 stroke-2" />
                     </div>
