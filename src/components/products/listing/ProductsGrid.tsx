@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { ProductGridCard } from '@/components/products/ProductGridCard';
 import type { Product } from '@/types/store';
 import { getProductDisplayPrice } from '@/lib/products/price';

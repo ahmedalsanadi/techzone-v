@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import Pagination from '@/components/ui/Pagination';
 import type { PaginationMeta } from '@/types/api';
 import { cn } from '@/lib/utils';

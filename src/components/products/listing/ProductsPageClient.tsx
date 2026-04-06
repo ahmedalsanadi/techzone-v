@@ -26,7 +26,6 @@ import { ProductsFiltersSidebar } from './ProductsFiltersSidebar';
 import { ProductsPaginationBar } from './ProductsPaginationBar';
 import {
     ProductsGridSkeleton,
-    FilterSidebarSkeleton,
     ResultsHeaderSkeleton,
 } from './ProductsSkeleton';
 import { EmptyState } from './EmptyState';

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import type { ProductsFiltersVars } from '@/types/store';
 import type { ProductsPageState } from '@/lib/products/listing/listing-state';
 import { Button } from '@/components/ui/Button';

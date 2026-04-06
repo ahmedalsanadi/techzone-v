@@ -1,7 +1,5 @@
 'use client';
 
-import React from 'react';
-import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/Skeleton';
 
 export function ProductsGridSkeleton({ count = 8 }: { count?: number }) {
