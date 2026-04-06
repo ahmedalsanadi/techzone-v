@@ -33,10 +33,10 @@ Why: list responses don’t include `variants`, `addons`, `custom_fields` in a r
 Why: guest users must keep cart between refreshes.
 
 ### In-memory (React Query)
-- Product detail queries are cached by slug.
-- We also store a **short TTL** in localStorage to avoid refetch on immediate revisits.
+- Product detail is fetched on demand and cached with a **stale time** (see `useProductConfigFlow`).
+- Cache keys include **tenant host**, **locale**, and **branch** so lists and detail never bleed across stores or branches.
 
-Why: product details are expensive and should not refetch on every hover/click.
+Why: product details are expensive; context-aware keys avoid wrong-tenant or wrong-branch cache hits.
 
 ---
 
@@ -78,35 +78,46 @@ Why: backend already provides smart merge behavior. Avoids per‑item requests.
 ## 5) Files and Responsibilities
 
 ### UI and UX
-- `src/components/ui/ProductCard.tsx`
-  - Card UI, add-to-cart button, prefetch hooks.
-- `src/components/pages/products/ProductsGrid.tsx`
-  - Grid wrapper and add-to-cart wiring.
-- `src/components/pages/landing-page/ProductSection.tsx`
-  - Landing sections (featured, offers, new arrivals).
-- `src/components/pages/products/ProductsMainSection.tsx`
-  - Main products page list + filters.
-- `src/components/pages/collections/OffersProductsSection.tsx`
-  - Offers listing.
-- `src/components/pages/categories/CategoryContent.tsx`
-  - Category view list.
-- `src/components/pages/search/SearchContent.tsx`
-  - Search results list.
+- `src/components/products/ProductCard.tsx`
+  - Rich product card (wishlist, grid usage via `ProductGridCard`).
+- `src/components/products/ProductGridCard.tsx`
+  - List/grid card shell; wires add-to-cart and labels into `ProductCard`.
+- `src/components/products/ProductsGrid.tsx`
+  - Default product grid: skeletons, empty state, optional infinite scroll. Declares `pagination` / `onPageChange` / `currentPage` for callers such as offers; **page UI** for the PLP lives in `ProductsPaginationBar` next to `ProductsPageClient`.
+- `src/components/products/listing/ProductsGrid.tsx`
+  - PLP-only grid (card map + layout); used inside `ProductsResultsSection`.
+- `src/components/products/listing/ProductsPageClient.tsx`
+  - Client shell for `/products` list: URL state, filters, pagination, React Query.
+- `src/components/products/listing/ProductsResultsSection.tsx`
+  - PLP header (title + sort) + dimmed wrapper + embedded `listing/ProductsGrid`.
+- `src/components/products/listing/AppliedFiltersBar.tsx`, `ProductsFiltersSidebar.tsx`, `ProductsPaginationBar.tsx`, etc.
+  - Filters, chips, and page controls for the products list.
+- `src/components/landing/ProductSection.tsx`, `HomeProductSection.tsx`, `LandingPage.tsx`
+  - Home/landing product strips (not the same layout as PLP).
+- `src/components/offers/OffersView.tsx`
+  - Offers page: collections strip + products area.
+- `src/components/offers/OffersProductsSection.tsx`
+  - Title + loading/dim wrapper + `ProductsGrid` + configure/add-to-cart labels for offers.
+- `src/components/categories/CategoryContent.tsx`
+  - Categories listing pages (`/categories`, `/categories/[slug]`).
+- `src/app/[locale]/category/[[...segments]]/ProductsSection.tsx`
+  - Category tree route: product grid + `useProductConfigFlow` (infinite scroll via parent data).
+- **Search:** There is no separate search route or `SearchContent` component; keyword search is part of the **products list** URL state (`listing-state` + `ProductsPageClient`).
 - `src/components/modals/ProductConfigModal.tsx`
   - Required-only configuration modal.
 - `src/components/modals/CartItemConfigModal.tsx`
   - Edit configuration for items already in cart.
 - `src/app/[locale]/cart/page.tsx`
-  - Cart UI, edit items, loading skeletons.
+  - Cart route; UI pieces under `src/components/cart/` (e.g. line items, summary, skeletons).
 
 ### Providers and Hooks
 - `src/components/providers/ProductConfigProvider.tsx`
   - Global modal instance for all list pages.
-- `src/hooks/useProductConfigFlow.ts`
-  - Fetch + cache product detail, open modal, prefetch, analytics.
-- `src/hooks/useCartActions.tsx`
+- `src/hooks/products/useProductConfigFlow.ts`
+  - On “Add”: fetch or reuse detail in React Query (context-aware keys), open modal or add to cart, loading state per product.
+- `src/hooks/cart/useCartActions.tsx`
   - Add/update/remove items for guest or auth.
-- `src/hooks/useCartMerge.ts`
+- `src/hooks/cart/useCartMerge.ts`
   - Merge guest items after login (single request).
 
 ### State and Utilities
@@ -165,11 +176,11 @@ These are enforced:
 ## 8) Performance Considerations
 
 - Only fetch detail on demand.
-- Prefetch on hover/viewport to reduce wait.
-- Prefetch **next product page** after list fetch.
-- Cache detail in React Query + short localStorage TTL.
-- Single modal instance across all pages.
-- Track "configure required" vs "direct add" for UX analytics.
+- Prefetch on hover/viewport where implemented on cards.
+- Listing pages use React Query with **tenant / locale / branch**-aware keys (`src/lib/products/listing/queryKeys.ts`, `queries.ts`).
+- Product detail cache: React Query `staleTime` in `useProductConfigFlow` (no separate product-detail localStorage layer).
+- Single modal instance across all pages (`ProductConfigProvider`).
+- Track "configure required" vs "direct add" for UX analytics (Vercel Analytics in `useProductConfigFlow`).
 
 ---
 
@@ -185,20 +196,28 @@ These are enforced:
 
 - `src/app/[locale]/layout.tsx`
 - `src/app/[locale]/cart/page.tsx`
+- `src/app/[locale]/products/(list)/page.tsx`
+- `src/app/[locale]/products/[slug]/page.tsx`
 - `src/app/[locale]/category/[[...segments]]/ProductsSection.tsx`
+- `src/app/[locale]/offers/page.tsx`
 - `src/components/modals/ProductConfigModal.tsx`
 - `src/components/modals/CartItemConfigModal.tsx`
-- `src/components/pages/categories/CategoryContent.tsx`
-- `src/components/pages/collections/OffersProductsSection.tsx`
-- `src/components/pages/landing-page/ProductSection.tsx`
-- `src/components/pages/products/ProductsGrid.tsx`
-- `src/components/pages/products/ProductsMainSection.tsx`
-- `src/components/pages/search/SearchContent.tsx`
+- `src/components/categories/CategoryContent.tsx`
+- `src/components/offers/OffersView.tsx`
+- `src/components/offers/OffersProductsSection.tsx`
+- `src/components/landing/ProductSection.tsx`
+- `src/components/products/ProductsGrid.tsx`
+- `src/components/products/listing/ProductsPageClient.tsx`
+- `src/components/products/listing/ProductsResultsSection.tsx`
+- `src/components/products/listing/ProductsGrid.tsx`
+- `src/components/products/ProductGridCard.tsx`
+- `src/components/products/ProductCard.tsx`
 - `src/components/providers/ProductConfigProvider.tsx`
-- `src/components/ui/ProductCard.tsx`
-- `src/hooks/useCartActions.tsx`
-- `src/hooks/useCartMerge.ts`
-- `src/hooks/useProductConfigFlow.ts`
+- `src/hooks/cart/useCartActions.tsx`
+- `src/hooks/cart/useCartMerge.ts`
+- `src/hooks/products/useProductConfigFlow.ts`
+- `src/lib/products/listing/listing-state.ts`
+- `src/lib/products/listing/queryKeys.ts`
 - `src/lib/products/requirements.ts`
 - `src/messages/en.json`
 - `src/messages/ar.json`

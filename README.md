@@ -1,4 +1,4 @@
-# Store Restaurants — Multi-Tenant Frontend
+# Store — Multi-Tenant Frontend
 
 Next.js frontend for a multi-tenant restaurant/store platform. One app serves many stores; tenant is resolved server-side by host (subdomain or domain map). API key and store key are never exposed to the browser.
 
@@ -278,7 +278,7 @@ Replacement:
 
 The products list page now does an initial server prefetch and hydrates TanStack Query:
 
-- `src/app/[locale]/products/page.tsx`
+- `src/app/[locale]/products/(list)/page.tsx`
   - Parses `searchParams` → state
   - Resolves `tenantHost` from request headers and `branchId` from cookies
   - Prefetches:
