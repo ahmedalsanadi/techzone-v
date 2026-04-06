@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import CategoryCard from '@/components/ui/CategoryCard';
+import CategoryCard from '@/components/categories/CategoryCard';
 import type { Category } from '@/types/store';
 import { getRootCategories, getCategoryUrl } from './utils';
 

@@ -3,8 +3,8 @@
 
 import React from 'react';
 import { useTranslations } from 'next-intl';
-import CategoryCard from '@/components/ui/CategoryCard';
-import CategoryCardSkeleton from '@/components/ui/CategoryCardSkeleton';
+import CategoryCard from '@/components/categories/CategoryCard';
+import CategoryCardSkeleton from '@/components/categories/CategoryCardSkeleton';
 import { useStore } from '@/components/providers/StoreProvider';
 
 const CategorySection = () => {

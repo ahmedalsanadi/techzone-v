@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { Category } from '@/types/store';
-import CategoryCard from '@/components/ui/CategoryCard';
+import CategoryCard from '@/components/categories/CategoryCard';
 import { useTranslations } from 'next-intl';
 
 interface SubCategorySelectionProps {

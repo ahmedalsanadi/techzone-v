@@ -1,7 +1,7 @@
 'use client';
 
 import { memo, useCallback } from 'react';
-import ProductCard from '@/components/ui/ProductCard';
+import ProductCard from '@/components/products/ProductCard';
 import type { Product } from '@/types/store';
 import { getProductDisplayPrice } from '@/lib/products/price';
 

@@ -3,8 +3,8 @@
 import React from 'react';
 import { Link } from '@/i18n/navigation';
 import { LayoutGrid } from 'lucide-react';
-import DynamicImage from './DynamicImage';
-import SmallTileCard from './SmallTileCard';
+import DynamicImage from '../ui/DynamicImage';
+import SmallTileCard from '../ui/SmallTileCard';
 import { cn } from '@/lib/utils';
 
 interface CategoryCardProps {
@@ -111,8 +111,8 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
             scroll={scroll}
             priority={priority}
             index={index}
-                icon={
-                    isMain ? (
+            icon={
+                isMain ? (
                     <LayoutGrid
                         size={22}
                         className="text-theme-primary"

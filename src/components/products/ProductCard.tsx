@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import DynamicImage from './DynamicImage';
+import DynamicImage from '../ui/DynamicImage';
 import {
     Heart,
     Plus,
@@ -11,8 +11,8 @@ import {
     Loader2,
     Trash2,
 } from 'lucide-react';
-import CurrencySymbol from './CurrencySymbol';
-import { Button } from './Button';
+import CurrencySymbol from '../ui/CurrencySymbol';
+import { Button } from '../ui/Button';
 import { cn } from '@/lib/utils';
 import { Link } from '@/i18n/navigation';
 import { useCartActions, useCartProductSummary } from '@/hooks/cart';

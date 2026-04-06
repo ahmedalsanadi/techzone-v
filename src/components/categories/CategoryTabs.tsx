@@ -3,7 +3,7 @@
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { Category } from '@/types/store';
-import CategoryCard from '@/components/ui/CategoryCard';
+import CategoryCard from '@/components/categories/CategoryCard';
 import { useTranslations } from 'next-intl';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';

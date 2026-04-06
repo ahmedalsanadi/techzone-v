@@ -9,7 +9,7 @@ import { Heart } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useProductConfigFlow } from '@/hooks/products';
-import ProductCard from '@/components/ui/ProductCard';
+import ProductCard from '@/components/products/ProductCard';
 import type { Product } from '@/types/store';
 
 const WishlistPage = () => {
@@ -50,7 +50,13 @@ const WishlistPage = () => {
         } else {
             purgeDeletedItems();
         }
-    }, [isMounted, isAuthenticated, isGuestMode, syncWithAPI, purgeDeletedItems]);
+    }, [
+        isMounted,
+        isAuthenticated,
+        isGuestMode,
+        syncWithAPI,
+        purgeDeletedItems,
+    ]);
 
     const handleMoveToCart = async (item: (typeof items)[0]) => {
         // Construct a minimal Product that forces a details fetch by slug.
@@ -62,7 +68,9 @@ const WishlistPage = () => {
             description: '',
             price: item.price,
             sale_price: item.salePrice || undefined,
-            has_discount: Boolean(item.salePrice && item.salePrice < item.price),
+            has_discount: Boolean(
+                item.salePrice && item.salePrice < item.price,
+            ),
             is_available: true,
             // When unknown, assume configurable product so we fetch full detail (variants/addons).
             is_variation: item.isVariation ?? true,

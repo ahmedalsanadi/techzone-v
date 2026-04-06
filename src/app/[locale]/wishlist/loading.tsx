@@ -1,5 +1,5 @@
 import React from 'react';
-import ProductCardSkeleton from '@/components/ui/ProductCardSkeleton';
+import ProductCardSkeleton from '@/components/products/ProductCardSkeleton';
 
 export default function WishlistLoading() {
     return (

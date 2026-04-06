@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useEffect, useRef, useCallback } from 'react';
-import ProductCardSkeleton from '@/components/ui/ProductCardSkeleton';
+import ProductCardSkeleton from '@/components/products/ProductCardSkeleton';
 import { ProductGridCard } from '@/components/products/ProductGridCard';
 import { useTranslations } from 'next-intl';
 import { PaginationMeta } from '@/types/api';
