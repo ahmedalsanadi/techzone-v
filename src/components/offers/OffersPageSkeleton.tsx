@@ -1,5 +1,4 @@
 // src/app/[locale]/offers/OffersPageSkeleton.tsx
-import React from 'react';
 
 export default function OffersPageSkeleton() {
     return (

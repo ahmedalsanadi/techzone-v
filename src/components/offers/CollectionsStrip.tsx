@@ -1,7 +1,6 @@
 // src/components/pages/collections/CollectionsStrip.tsx
 'use client';
 
-import React from 'react';
 import CollectionCard from './CollectionCard';
 import { Collection } from '@/types/store';
 

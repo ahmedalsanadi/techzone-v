@@ -1,5 +1,4 @@
-import React from 'react';
-import OffersPageSkeleton from './OffersPageSkeleton';
+import OffersPageSkeleton from '@/components/offers/OffersPageSkeleton';
 
 export default function Loading() {
     return (
