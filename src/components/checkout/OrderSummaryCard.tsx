@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/Button';
 import { cn, formatMoneyAmount } from '@/lib/utils';
 import CurrencySymbol from '../ui/CurrencySymbol';
 import React from 'react';
-import CouponCard from '@/components/checkout/CouponCard';
+import CouponSection from '@/components/cart/CouponSection';
 
 interface OrderSummaryCardProps {
     items: SummaryItem[];
@@ -22,6 +22,7 @@ interface OrderSummaryCardProps {
     disabled?: boolean;
     /** Optional reason shown when submit is disabled (e.g. "Select address to continue") */
     disabledReason?: string;
+    onCouponSuccess?: () => void;
 }
 
 export default function OrderSummaryCard({
@@ -32,6 +33,7 @@ export default function OrderSummaryCard({
     isRefreshing,
     disabled,
     disabledReason,
+    onCouponSuccess,
 }: OrderSummaryCardProps) {
     const t = useTranslations('Checkout');
     const locale = useLocale();
@@ -94,7 +96,7 @@ export default function OrderSummaryCard({
                     </div>
                 </div>
 
-                <CouponCard />
+                <CouponSection onSuccess={onCouponSuccess} />
 
                 {disabled && disabledReason && (
                     <p className="text-amber-700 text-xs mt-2">

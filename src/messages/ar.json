@@ -124,7 +124,8 @@
     "notesPlaceholder": "أضف أي ملاحظات أو تعليمات خاصة (اختياري)",
     "couponTitle": "الكوبونات والعروض",
     "couponPlaceholder": "كود الكوبون",
-    "couponApply": "تحقق"
+    "couponApply": "تحقق",
+    "couponDiscount": "الخصم (كوبون)"
   },
   "Order": {
     "orderType": "نوع الطلب",
@@ -485,7 +486,18 @@
     "editItem": "تعديل العنصر",
     "loading": "جاري تحميل السلة...",
     "removeItem": "حذف العنصر",
-    "cartCleared": "تم حذف جميع عناصر السلة بنجاح"
+    "cartCleared": "تم حذف جميع عناصر السلة بنجاح",
+    "couponDiscount": "الخصم (كوبون)",
+    "couponsAvailable": "الكوبونات المتاحة",
+    "noCouponsAvailable": "لا توجد كوبونات متاحة حالياً.",
+    "failedToLoadCoupons": "فشل تحميل الكوبونات المتاحة.",
+    "couponApplySuccess": "تم تطبيق الكوبون بنجاح",
+    "couponApplyFailed": "فشل تطبيق الكوبون",
+    "couponRemoveSuccess": "تم إزالة الكوبون",
+    "couponRemoveFailed": "فشل إزالة الكوبون",
+    "couponApply": "تطبيق",
+    "couponTitle": "الكوبونات والعروض",
+    "couponPlaceholder": "كود الكوبون"
   },
   "Wishlist": {
     "title": "قائمة الرغبات",

@@ -85,6 +85,9 @@ export async function getBaseHeaders(
         headers.set('Content-Type', 'application/json');
     }
 
+    // Identify platform for backend analytics and API response condition (e.g., Coupons API)
+    headers.set('X-Platform', 'web');
+
     // Only inject Authorization if the route is protected
     // Customer token comes from cookies (set by auth service after login)
     if (isProtected) {

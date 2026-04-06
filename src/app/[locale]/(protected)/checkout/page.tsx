@@ -455,7 +455,6 @@ export default function CheckoutPage() {
                         </div>
                     </CheckoutCard>
                 </div>
-
                 <div className="lg:w-96">
                     <OrderSummaryCard
                         items={summaryItems}
@@ -465,6 +464,7 @@ export default function CheckoutPage() {
                         isRefreshing={isFetchingData}
                         disabled={submitDisabled || isFetchingData}
                         disabledReason={disabledReason}
+                        onCouponSuccess={() => refetch()}
                     />
                 </div>
             </div>

@@ -1,6 +1,7 @@
 /**
  * Cart-related types matching the API responses
  */
+import { AppliedCoupon } from '@/types/coupons';
 
 /**
  * Addon item in cart (from API response)
@@ -66,6 +67,8 @@ export interface ApiCart {
     items_count: number;
     subtotal: number;
     total_addons_price: number;
+    coupon_discount?: number;
+    applied_coupons?: AppliedCoupon[];
     total_price: number;
     created_at: string;
     updated_at: string;

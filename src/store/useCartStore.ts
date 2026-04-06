@@ -5,6 +5,7 @@ import { cartService } from '@/services/cart-service';
 import type { ApiCart, ApiCartItem } from '@/types/cart';
 import { generateCartItemId, getCartItemLineTotal } from '@/lib/cart/utils';
 import type { ProductMedia } from '@/types/store';
+import { AppliedCoupon } from '@/types/coupons';
 
 export type CartItemAddonDetailsItem = {
     name: string;
@@ -89,6 +90,8 @@ interface CartStore {
     /** Number of in-flight cart mutations (authenticated API writes). */
     mutationsInFlight: number;
     lastSyncedAt: number | null;
+    couponDiscount: number;
+    appliedCoupons: AppliedCoupon[];
 
     // Local cart methods (guest mode)
     addItem: (item: Omit<CartItem, 'quantity'>, quantity?: number) => void;
@@ -215,6 +218,8 @@ export const useCartStore = create<CartStore>()(
             isLoading: false,
             mutationsInFlight: 0,
             lastSyncedAt: null,
+            couponDiscount: 0,
+            appliedCoupons: [],
 
             addItem: (item, quantity = 1) => {
                 const currentItems = get().items;
@@ -317,6 +322,8 @@ export const useCartStore = create<CartStore>()(
                 set({
                     items: localItems,
                     cartId: cart.id,
+                    couponDiscount: cart.coupon_discount || 0,
+                    appliedCoupons: cart.applied_coupons || [],
                 });
             },
             getGuestCartItems: () => {

@@ -5,6 +5,8 @@ import { ArrowRight, Loader2 } from 'lucide-react';
 import CurrencySymbol from '@/components/ui/CurrencySymbol';
 import { Button } from '@/components/ui/Button';
 import { formatMoneyAmount } from '@/lib/utils';
+import { useCartStore } from '@/store/useCartStore';
+import CouponSection from './CouponSection';
 
 interface CartSummaryProps {
     subtotal: number;
@@ -19,6 +21,9 @@ export function CartSummary({
 }: CartSummaryProps) {
     const t = useTranslations('Cart');
     const locale = useLocale();
+    const { couponDiscount, syncWithAPI } = useCartStore();
+
+    const finalTotal = Math.max(0, subtotal - couponDiscount);
 
     return (
         <div className="bg-white border border-gray-100 rounded-xl p-6 md:p-8 shadow-sm">
@@ -40,6 +45,15 @@ export function CartSummary({
                         {t('deliveryAtCheckout')}
                     </span>
                 </div>
+                {couponDiscount > 0 && (
+                    <div className="flex justify-between text-theme-primary font-medium">
+                        <span>{t('couponDiscount') || 'الخصم'}</span>
+                        <div className="flex items-center gap-1">
+                            <span>- {formatMoneyAmount(couponDiscount, locale)}</span>
+                            <CurrencySymbol className="w-3.5 h-3.5" />
+                        </div>
+                    </div>
+                )}
             </div>
 
             <div className="border-t border-dashed border-gray-200 pt-6 mb-8">
@@ -48,11 +62,15 @@ export function CartSummary({
                         {t('total')}
                     </span>
                     <div className="flex items-center gap-1.5 text-2xl font-black text-theme-primary">
-                        <span>{formatMoneyAmount(subtotal, locale)}</span>
+                        <span>{formatMoneyAmount(finalTotal, locale)}</span>
                         <CurrencySymbol className="w-5 h-5" />
                     </div>
                 </div>
             </div>
+
+            <CouponSection onSuccess={() => syncWithAPI()} />
+            
+            <div className="mb-4"></div>
 
             <Button
                 variant="primary"

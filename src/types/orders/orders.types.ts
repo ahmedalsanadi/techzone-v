@@ -1,4 +1,5 @@
 // src/types/orders/orders.types.ts
+import { AppliedCoupon } from '@/types/coupons';
 
 // Matches backend Libero\OrdersModule\Enums\OrderStatus (1–10)
 export type OrderStatus =
@@ -280,6 +281,8 @@ export interface CheckoutInitSummary {
     shipping_fee: number;
     cod_fee: number;
     tax_amount: number;
+    coupon_discount?: number;
+    applied_coupons?: AppliedCoupon[];
     total: number;
 }
 

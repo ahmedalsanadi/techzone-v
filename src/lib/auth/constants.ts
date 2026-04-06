@@ -29,6 +29,7 @@ export const PROTECTED_API_ENDPOINTS = [
     '/store/wallet',
     '/store/reviews/can-review',
     '/store/complaints',
+    '/store/coupons', // Coupons endpoints
 ] as const;
 
 /**

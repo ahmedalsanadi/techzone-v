@@ -123,7 +123,8 @@
     "notesPlaceholder": "Add any notes or special instructions (optional)",
     "couponTitle": "Coupons & Offers",
     "couponPlaceholder": "Coupon code",
-    "couponApply": "Apply"
+    "couponApply": "Apply",
+    "couponDiscount": "Coupon Discount"
   },
   "Order": {
     "orderType": "Order Type",
@@ -483,7 +484,18 @@
     "editItem": "Edit item",
     "loading": "Loading your cart...",
     "removeItem": "Remove item",
-    "cartCleared": "Cart cleared successfully"
+    "cartCleared": "Cart cleared successfully",
+    "couponDiscount": "Coupon Discount",
+    "couponsAvailable": "Available Coupons",
+    "noCouponsAvailable": "No coupons available currently.",
+    "failedToLoadCoupons": "Failed to load available coupons.",
+    "couponApplySuccess": "Coupon applied successfully",
+    "couponApplyFailed": "Failed to apply coupon",
+    "couponRemoveSuccess": "Coupon removed successfully",
+    "couponRemoveFailed": "Failed to remove coupon",
+    "couponApply": "Apply",
+    "couponTitle": "Coupons & Offers",
+    "couponPlaceholder": "Coupon code"
   },
   "Wishlist": {
     "title": "Wishlist",

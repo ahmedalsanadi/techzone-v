@@ -10,6 +10,7 @@ import {
     type CreateOrderRequest,
     type PaymentMethod,
 } from '@/types/orders/orders.types';
+import { AppliedCoupon } from '@/types/coupons';
 
 export type OrderType = 'delivery' | 'pickup' | 'dineIn' | 'carPickup' | null;
 
@@ -191,6 +192,14 @@ export function buildSummaryItems(
                 label: t('tax') || 'Tax',
                 value: formatCurrency(summary.tax_amount, locale),
                 amount: summary.tax_amount,
+            });
+        }
+        if (summary.coupon_discount != null && summary.coupon_discount > 0) {
+            items.push({
+                label: t('couponDiscount') || 'الخصم كوبون',
+                value: `- ${formatCurrency(summary.coupon_discount, locale)}`,
+                amount: summary.coupon_discount,
+                isNegative: true,
             });
         }
     }
