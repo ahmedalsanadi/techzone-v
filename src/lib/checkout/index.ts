@@ -10,7 +10,6 @@ import {
     type CreateOrderRequest,
     type PaymentMethod,
 } from '@/types/orders/orders.types';
-import { AppliedCoupon } from '@/types/coupons';
 
 export type OrderType = 'delivery' | 'pickup' | 'dineIn' | 'carPickup' | null;
 
@@ -182,21 +181,21 @@ export function buildSummaryItems(
         );
         if (summary.cod_fee != null && summary.cod_fee > 0) {
             items.push({
-                label: t('codFee') || 'COD Fee',
+                label: t('codFee'),
                 value: formatCurrency(summary.cod_fee, locale),
                 amount: summary.cod_fee,
             });
         }
         if (summary.tax_amount != null && summary.tax_amount > 0) {
             items.push({
-                label: t('tax') || 'Tax',
+                label: t('tax'),
                 value: formatCurrency(summary.tax_amount, locale),
                 amount: summary.tax_amount,
             });
         }
         if (summary.coupon_discount != null && summary.coupon_discount > 0) {
             items.push({
-                label: t('couponDiscount') || 'الخصم كوبون',
+                label: t('couponDiscount'),
                 value: `- ${formatCurrency(summary.coupon_discount, locale)}`,
                 amount: summary.coupon_discount,
                 isNegative: true,
@@ -302,7 +301,7 @@ export function parsePaymentResult(
         if (paymentData && paymentData.status !== PAYMENT_STATUS_PAID) {
             message = paymentData.status_label;
         } else if (statusParam === 'error') {
-            message = String(t('paymentFailed') || 'Payment failed');
+            message = String(t('paymentFailed'));
         } else {
             message = String(t('checkoutFailed'));
         }

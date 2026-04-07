@@ -47,7 +47,7 @@ export function CartSummary({
                 </div>
                 {couponDiscount > 0 && (
                     <div className="flex justify-between text-theme-primary font-medium">
-                        <span>{t('couponDiscount') || 'الخصم'}</span>
+                        <span>{t('couponDiscount')}</span>
                         <div className="flex items-center gap-1">
                             <span>- {formatMoneyAmount(couponDiscount, locale)}</span>
                             <CurrencySymbol className="w-3.5 h-3.5" />
