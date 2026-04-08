@@ -17,11 +17,11 @@ import type { Branch } from '@/types/branches';
  * - Uses ref to prevent unnecessary re-runs
  * - Prefetches branches in background for instant modal display
  * - Fetches selected branch data if only ID is stored
+ * - If the API returns exactly one branch, selects it and skips the modal
  */
 export default function BranchModalInitializer() {
     const {
         hasSelectedOnce,
-        setModalOpen,
         selectedBranchId,
         selectedBranch,
         isModalOpen,
@@ -77,11 +77,57 @@ export default function BranchModalInitializer() {
             branchCookies.setBranchId(selectedBranchId);
         }
 
-        // Check on EVERY mount (refresh/navigation) if modal should auto-open
-        // IMPORTANT: Only check AFTER hydration to avoid CSR/SSR mismatch (auto-opening when localStorage hasn't loaded yet)
-        if (_hasHydrated && !selectedBranchId && !hasSelectedOnce) {
-            if (!isModalOpen) setModalOpen(true);
+        // After hydration: either auto-pick the sole branch or open the picker.
+        // Do not open the modal until we know the count — avoids a flash when there is only one branch.
+        // Skip when modal is already open (e.g. user cleared branch — list loads inside the modal).
+        if (
+            !_hasHydrated ||
+            selectedBranchId ||
+            hasSelectedOnce ||
+            isModalOpen
+        ) {
+            return;
         }
+
+        let cancelled = false;
+
+        (async () => {
+            try {
+                const branches = await queryClient.fetchQuery({
+                    queryKey: ['branches', { type: BRANCH_TYPES.BRANCH }],
+                    queryFn: () =>
+                        branchService.getBranches({
+                            type: BRANCH_TYPES.BRANCH,
+                        }),
+                    staleTime: 5 * 60 * 1000,
+                });
+                if (cancelled) return;
+
+                const store = useBranchStore.getState();
+                if (
+                    store.selectedBranchId ||
+                    store.hasSelectedOnce ||
+                    store.isModalOpen
+                ) {
+                    return;
+                }
+
+                if (branches.length === 1) {
+                    store.setSelectedBranch(branches[0]);
+                } else {
+                    store.setModalOpen(true);
+                }
+            } catch {
+                if (cancelled) return;
+                const store = useBranchStore.getState();
+                if (store.selectedBranchId || store.isModalOpen) return;
+                store.setModalOpen(true);
+            }
+        })();
+
+        return () => {
+            cancelled = true;
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedBranchId, hasSelectedOnce, isModalOpen, _hasHydrated]); // Re-run when branch selection, modal state, or hydration change
 
