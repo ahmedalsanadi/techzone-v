@@ -640,6 +640,8 @@
     "select_branch": "اختر الفرع الذي تريده",
     "open": "مفتوح",
     "closed": "مغلق",
+    "always_open": "مفتوح دائماً",
+    "always_open_desc": "هذا الفرع يعمل على مدار الساعة.",
     "free_delivery": "توصيل مجاني",
     "delivery_with_fee": "توصيل بـ {fee} ر.س",
     "working_hours": "أوقات العمل",

@@ -635,6 +635,8 @@
     "select_branch": "Select the branch you want",
     "open": "Open",
     "closed": "Closed",
+    "always_open": "Always open",
+    "always_open_desc": "This branch is open 24/7.",
     "free_delivery": "Free Delivery",
     "delivery_with_fee": "Delivery with {fee} SAR",
     "working_hours": "Working Hours",

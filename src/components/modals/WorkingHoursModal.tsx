@@ -81,7 +81,18 @@ const WorkingHoursModal: React.FC<WorkingHoursModalProps> = ({
 
                         {/* Content */}
                         <div className="p-4 md:p-6 space-y-2 md:space-y-3 max-h-[70vh] md:max-h-[60vh] overflow-y-auto">
-                            {schedule.length === 0 ? (
+                            {branch.working_hours === null ? (
+                                <div className="flex flex-col items-center justify-center p-8 text-center">
+                                    <Clock className="w-12 h-12 text-theme-primary/40 mb-4" />
+                                    <p className="text-sm font-bold text-gray-700">
+                                        {t('always_open') || 'Always open'}
+                                    </p>
+                                    <p className="text-xs text-gray-500 mt-2">
+                                        {t('always_open_desc') ||
+                                            'This branch is open 24/7.'}
+                                    </p>
+                                </div>
+                            ) : schedule.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center p-8 text-center">
                                     <AlertCircle className="w-12 h-12 text-gray-300 mb-4" />
                                     <p className="text-sm text-gray-500">

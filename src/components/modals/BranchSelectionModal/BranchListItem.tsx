@@ -33,6 +33,7 @@ export const BranchListItem: React.FC<BranchListItemProps> = ({
     const t = useTranslations('Branches');
     const branchName = branch.name || 'Branch';
     const isOpen = branch.is_open;
+    const isAlwaysOpen = branch.working_hours === null;
 
     return (
         <div
@@ -40,7 +41,9 @@ export const BranchListItem: React.FC<BranchListItemProps> = ({
             tabIndex={0}
             role="option"
             aria-selected={isSelected}
-            aria-label={`${branchName}, ${isOpen ? t('open') : t('closed')}`}
+            aria-label={`${branchName}, ${
+                isAlwaysOpen ? t('always_open') : isOpen ? t('open') : t('closed')
+            }`}
             onFocus={onFocus}
             onClick={onClick}
             onKeyDown={onKeyDown}
@@ -72,11 +75,15 @@ export const BranchListItem: React.FC<BranchListItemProps> = ({
                         <span
                             className={cn(
                                 'rounded-md px-2 py-1 text-xs font-semibold',
-                                isOpen
+                                    isAlwaysOpen || isOpen
                                     ? 'bg-green-50 text-green-600'
                                     : 'bg-gray-50 text-gray-400',
                             )}>
-                            {isOpen ? t('open') : t('closed')}
+                                {isAlwaysOpen
+                                    ? t('always_open')
+                                    : isOpen
+                                      ? t('open')
+                                      : t('closed')}
                         </span>
                         <span
                             className="size-1 shrink-0 rounded-full bg-gray-200"

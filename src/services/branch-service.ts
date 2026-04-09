@@ -5,7 +5,7 @@
 
 import { fetchLibero } from '@/lib/api';
 import type { Branch } from '@/types/branches';
-import { CACHE_STRATEGY, CACHE_TAGS } from '@/config/cache';
+import { CACHE_STRATEGY } from '@/config/cache';
 
 /**
  * Service for branch-related data fetching
@@ -46,8 +46,10 @@ export const branchService = {
                 typeof branch.name === 'string' &&
                 branch.address &&
                 typeof branch.address === 'object' &&
-                branch.working_hours &&
-                typeof branch.working_hours === 'object';
+                // working_hours can be null => means "always open"
+                (branch.working_hours === null ||
+                    (typeof branch.working_hours === 'object' &&
+                        branch.working_hours !== null));
 
             if (!isValid && process.env.NODE_ENV === 'development') {
                 console.warn('getBranches: Invalid branch structure:', branch);
@@ -82,7 +84,8 @@ export const branchService = {
                 typeof branch.id !== 'number' ||
                 typeof branch.name !== 'string' ||
                 !branch.address ||
-                !branch.working_hours
+                // working_hours can be null (always open)
+                !('working_hours' in branch)
             ) {
                 if (process.env.NODE_ENV === 'development') {
                     console.warn(

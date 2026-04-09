@@ -76,13 +76,18 @@ function isTimeInSlot(
  * @returns true if branch is currently open, false otherwise
  */
 export function calculateBranchIsOpen(branch: Branch): boolean {
-    // If branch is inactive, it's closed
-    if (!branch.working_hours?.is_active) {
+    // If branch status is inactive, it's closed
+    if (branch.status !== 1) {
         return false;
     }
 
-    // If branch status is inactive, it's closed
-    if (branch.status !== 1) {
+    // If working_hours is null => branch is always open
+    if (branch.working_hours === null) {
+        return true;
+    }
+
+    // If working hours exist but are inactive, it's closed
+    if (!branch.working_hours.is_active) {
         return false;
     }
 
@@ -194,6 +199,11 @@ export function getBranchStatusLabel(branch: Branch): string {
  * @returns Date of next opening time, or null if no future opening
  */
 export function getNextOpeningTime(branch: Branch): Date | null {
+    // Always-open branch has no "next opening"
+    if (branch.working_hours === null) {
+        return null;
+    }
+
     if (!branch.working_hours?.is_active || branch.status !== 1) {
         return null;
     }

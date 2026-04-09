@@ -67,7 +67,7 @@ export interface Branch {
     status_label: string;
     support_channels: BranchSupportChannel[] | null;
     address: BranchAddress;
-    working_hours: BranchWorkingHours;
+    working_hours: BranchWorkingHours | null;
     services: BranchServices;
     settings: BranchSettings;
     distance?: number; // Optional distance from user (calculated client-side)
