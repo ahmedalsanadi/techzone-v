@@ -2,18 +2,15 @@
 
 import * as React from "react";
 import { Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
+import { useTheme } from '@/components/providers/ThemeProvider';
 
 import { Button } from "../ui/Button";
 
 export function ModeToggle() {
-  const { setTheme } = useTheme();
-  //get the current theme
-  const { theme: themes } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
 
-  //change theme from current to opposite
   const toggleTheme = () => {
-    setTheme(themes === "light" ? "dark" : "light");
+    setTheme(resolvedTheme === "light" ? "dark" : "light");
   };
 
   return (

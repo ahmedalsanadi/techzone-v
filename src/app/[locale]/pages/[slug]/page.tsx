@@ -73,7 +73,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CMSPageDetail({ params }: Props) {
     const { locale, slug } = await params;
-    const t = await getTranslations({ locale });
+    const t = await getTranslations({ locale, namespace: 'Product' });
     const site = await resolveSiteIdentity();
 
     // Safety check: Prevent fallback for existing static routes if any logic fails
@@ -115,7 +115,7 @@ export default async function CMSPageDetail({ params }: Props) {
     }
 
     const breadcrumbItems = [
-        { label: t('Product.home'), href: `/${locale}` },
+        { label: t('home'), href: `/${locale}` },
         {
             label: page.title,
             href: `/${locale}/pages/${page.slug}`,

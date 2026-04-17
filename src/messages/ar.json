@@ -670,6 +670,8 @@
     },
     "all_day": "طوال اليوم",
     "confirm": "تأكيد اختيار الفرع",
+    "confirmSelectionTitle": "تأكيد الاختيار",
+    "confirmSelectionMessage": "هل أنت متأكد أنك تريد اختيار هذا الفرع؟",
     "confirmBranchChangeTitle": "تأكيد تغيير الفرع",
     "confirmBranchChangeMessage": "تغيير الفرع سيؤدي إلى حذف جميع الأصناف من السلة لأن الأسعار والتوفر تختلف بين الفروع. هل تريد الاستمرار؟",
     "cancel": "إلغاء"
