@@ -485,6 +485,7 @@
     "loading": "Loading your cart...",
     "removeItem": "Remove item",
     "cartCleared": "Cart cleared successfully",
+    "clearError": "Failed to clear cart",
     "couponDiscount": "Coupon Discount",
     "couponsAvailable": "Available Coupons",
     "noCouponsAvailable": "No coupons available currently.",
@@ -526,7 +527,8 @@
     "customize": "Customize",
     "no_products": "No products found in this category",
     "productsLoadError": "Something went wrong loading products. Please try again.",
-    "refreshPage": "Refresh page"
+    "refreshPage": "Refresh page",
+    "error_loading_products": "Failed to load products. Please try again."
   },
   "Search": {
     "results_for": "Results for",
@@ -629,7 +631,10 @@
     "completeProfile": "Complete Profile",
     "completeProfileRequired": "You must complete your profile to continue",
     "profileUpdated": "Profile updated successfully",
-    "profileError": "Failed to update profile"
+    "profileError": "Failed to update profile",
+    "tooManyRequests": "Too many requests. Please try again later.",
+    "networkError": "Network connection error",
+    "unauthorizedError": "You are not authorized to access this"
   },
   "Branches": {
     "select_branch": "Select the branch you want",
@@ -663,6 +668,8 @@
     },
     "all_day": "All Day",
     "confirm": "Confirm Selection",
+    "confirmSelectionTitle": "Confirm Selection",
+    "confirmSelectionMessage": "Are you sure you want to select this branch?",
     "confirmBranchChangeTitle": "Confirm Branch Change",
     "confirmBranchChangeMessage": "Changing the branch will remove all items from your cart because prices and availability differ between branches. Do you want to continue?",
     "cancel": "Cancel"
@@ -793,7 +800,8 @@
     "addBalance": "Add balance",
     "transactions": "Transaction History",
     "addBalanceTitle": "Add Balance",
-    "orderPurchase": "Order Purchase #{number}"
+    "orderPurchase": "Order Purchase #{number}",
+    "transactionsError": "Failed to load transactions."
   },
   "MyAddresses": {
     "title": "My Addresses",
@@ -812,7 +820,10 @@
     "defaultUpdated": "Default address updated",
     "defaultError": "Failed to update default address",
     "updateSuccess": "Address updated successfully",
-    "addSuccess": "Address added successfully"
+    "addSuccess": "Address added successfully",
+    "loadErrorTitle": "Unable to load addresses",
+    "loadErrorSubtitle": "Check your connection and try again.",
+    "retry": "Retry"
   },
   "FAQ": {
     "title": "FAQ",

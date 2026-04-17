@@ -16,6 +16,7 @@ import { storeService } from '@/services/store-service';
 import { cmsService } from '@/services/cms-service';
 import { useQuery } from '@tanstack/react-query';
 import { useLocale } from 'next-intl';
+import { useBranchStore } from '@/store';
 
 interface StoreContextType {
     config: StoreConfig;
@@ -45,7 +46,8 @@ export function StoreProvider({
     useEffect(() => {
         useCartStore.persist.rehydrate();
         useAuthStore.persist.rehydrate();
-    }, []);
+        useBranchStore.persist.rehydrate();
+    }, [locale]);
 
     // Client fetching (cached) for non-critical, shared layout data.
     // We include locale in the key so switching languages doesn't reuse stale labels.

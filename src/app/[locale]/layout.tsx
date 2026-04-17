@@ -6,10 +6,7 @@ import { setupLocale } from '@/i18n/setup-locale';
 import { Metadata } from 'next';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { Geist, Geist_Mono, IBM_Plex_Sans_Arabic } from 'next/font/google';
-import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from '@vercel/speed-insights/next';
 import { resolveSiteIdentity } from '@/lib/tenant/resolve-site';
-
 import '@/app/globals.css';
 import PageContainer from '@/components/layouts/PageContainer';
 import { ServiceUnavailableFallback } from '@/components/layouts/service-unavailable-fallback';
@@ -169,9 +166,6 @@ export default async function RootLayout({
                         )}
                     </ThemeProvider>
                 </NextIntlClientProvider>
-
-                <Analytics />
-                <SpeedInsights />
             </body>
         </html>
     );

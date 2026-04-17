@@ -487,6 +487,7 @@
     "loading": "جاري تحميل السلة...",
     "removeItem": "حذف العنصر",
     "cartCleared": "تم حذف جميع عناصر السلة بنجاح",
+    "clearError": "فشل تفريغ السلة",
     "couponDiscount": "الخصم (كوبون)",
     "couponsAvailable": "الكوبونات المتاحة",
     "noCouponsAvailable": "لا توجد كوبونات متاحة حالياً.",
@@ -528,7 +529,8 @@
     "customize": "تخصيص",
     "no_products": "لا توجد منتجات في هذا القسم حالياً",
     "productsLoadError": "حدث خطأ أثناء تحميل المنتجات. يرجى المحاولة مرة أخرى.",
-    "refreshPage": "تحديث الصفحة"
+    "refreshPage": "تحديث الصفحة",
+    "error_loading_products": "فشل تحميل المنتجات. يرجى المحاولة مرة أخرى."
   },
   "Search": {
     "results_for": "نتائج البحث عن",
@@ -798,7 +800,8 @@
     "addBalance": "اضافة رصيد",
     "transactions": "سجل العمليات",
     "addBalanceTitle": "اضافة رصيد",
-    "orderPurchase": "شراء الطلب #{number}"
+    "orderPurchase": "شراء الطلب #{number}",
+    "transactionsError": "فشل تحميل العمليات."
   },
   "MyAddresses": {
     "title": "عناويني",
@@ -817,7 +820,10 @@
     "defaultUpdated": "تم تحديث العنوان الافتراضي",
     "defaultError": "فشل تحديث العنوان الافتراضي",
     "updateSuccess": "تم تحديث العنوان بنجاح",
-    "addSuccess": "تمت إضافة العنوان بنجاح"
+    "addSuccess": "تمت إضافة العنوان بنجاح",
+    "loadErrorTitle": "تعذر تحميل العناوين",
+    "loadErrorSubtitle": "تحقق من اتصالك وحاول مرة أخرى.",
+    "retry": "إعادة المحاولة"
   },
   "FAQ": {
     "title": "الأسئلة الشائعة",

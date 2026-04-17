@@ -1,4 +1,4 @@
-// src/hooks/useProductConfigFlow.ts
+// src/hooks/products/useProductConfigFlow.ts
 'use client';
 
 import {
@@ -21,7 +21,6 @@ import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import { useLocale } from 'next-intl';
 import { useProductConfigActions } from '@/components/providers/ProductConfigProvider';
-import { track } from '@vercel/analytics';
 import { useBranchStore } from '@/store/useBranchStore';
 import { branchCookies } from '@/lib/branches';
 
@@ -113,16 +112,8 @@ export function useProductConfigFlow() {
                 }
 
                 if (requiresConfiguration(detail)) {
-                    track('product_config_required', {
-                        productId: detail.id,
-                        slug: detail.slug,
-                    });
                     openWithProduct(detail);
                 } else {
-                    track('product_direct_add', {
-                        productId: detail.id,
-                        slug: detail.slug,
-                    });
                     addBasicItem(detail);
                 }
             } catch {
