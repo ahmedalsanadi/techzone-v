@@ -9,6 +9,7 @@
     "dev": "next dev --webpack",
     "dev:turbo": "next dev",
     "build": "next build",
+    "build:clean": "rm -rf .next && next build",
     "start": "next start",
     "lint": "eslint",
     "i18n:check": "i18n-check -s en -l src/messages -f next-intl"
