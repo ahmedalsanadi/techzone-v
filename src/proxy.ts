@@ -4,6 +4,7 @@ import createMiddleware from 'next-intl/middleware';
 import { routing } from './i18n/routing';
 import { NextRequest, NextResponse } from 'next/server';
 import { PROTECTED_ROUTES, AUTH_COOKIES } from '@/lib/auth';
+
 const intlMiddleware = createMiddleware(routing);
 
 /**
@@ -12,10 +13,17 @@ const intlMiddleware = createMiddleware(routing);
  */
 export default async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
+    
+    // 🔥 CRITICAL: Handle root path - redirect to default locale
+    if (pathname === '/') {
+        const defaultLocale = routing.defaultLocale;
+        const url = new URL(`/${defaultLocale}`, request.url);
+        return NextResponse.redirect(url);
+    }
+    
     const token = request.cookies.get(AUTH_COOKIES.ACCESS_TOKEN)?.value;
 
     // Check if the current route is protected
-    // We check both with and without locale prefix
     const isProtected = PROTECTED_ROUTES.some((route) => {
         return (
             pathname === route ||
@@ -33,10 +41,9 @@ export default async function proxy(request: NextRequest) {
 
     // Redirect to auth if protected route and no token
     if (isProtected && !token && !isAuthPage) {
-        // Get locale from pathname or default to ar
         const segments = pathname.split('/');
         const locale =
-            segments[1] === 'en' || segments[1] === 'ar' ? segments[1] : 'ar';
+            segments[1] === 'en' || segments[1] === 'ar' ? segments[1] : routing.defaultLocale;
 
         const authUrl = new URL(`/${locale}/auth`, request.url);
         authUrl.searchParams.set('redirect', pathname);
@@ -45,10 +52,9 @@ export default async function proxy(request: NextRequest) {
 
     // If user is authenticated but profile is incomplete, redirect to signup step
     if (isProtected && token && !isProfileComplete && !isAuthPage) {
-        // Get locale from pathname or default to ar
         const segments = pathname.split('/');
         const locale =
-            segments[1] === 'en' || segments[1] === 'ar' ? segments[1] : 'ar';
+            segments[1] === 'en' || segments[1] === 'ar' ? segments[1] : routing.defaultLocale;
 
         const authUrl = new URL(`/${locale}/auth`, request.url);
         authUrl.searchParams.set('step', 'signup');
@@ -61,11 +67,5 @@ export default async function proxy(request: NextRequest) {
 }
 
 export const config = {
-    // Match all pathnames except for
-    // - … if they start with `/api`, `/proxy`, `/_next` or `/_vercel`
-    // - … the ones containing a dot (e.g. `favicon.ico`)
-    // Include `/` explicitly: some matcher engines / builds do not match the root path
-    // with only `/((?!…).*)`, so `/` would skip the proxy and 404 (no `app/page.tsx`).
-    // See next-intl docs → Proxy / middleware → Matcher config (logical OR between entries).
     matcher: ['/((?!api|proxy|_next|_vercel|.*\\..*).*)', '/'],
 };
