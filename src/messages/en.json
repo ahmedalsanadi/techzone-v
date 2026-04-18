@@ -18,7 +18,8 @@
       "categories": "Categories",
       "branches": "Branches",
       "offers": "Offers",
-      "my-orders": "My Orders"
+      "my-orders": "My Orders",
+      "test": "Test"
     }
   },
   "UserMenu": {

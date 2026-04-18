@@ -38,6 +38,13 @@ export const NAV_ITEMS: NavItemType[] = [
         icon: Percent,
         alt: 'Offers',
     },
+        {
+        id: 'test',
+        label: 'اختبار',
+        href: '#',
+        icon: ShoppingBag,
+        alt: 'My Orders',
+    },
     {
         id: 'my-orders',
         label: 'طلباتي',

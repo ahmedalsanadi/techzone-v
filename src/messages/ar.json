@@ -19,7 +19,8 @@
       "branches": "الفروع",
       "offers": "العروض",
       "my-orders": "طلباتي",
-      "my-account": "حسابي"
+      "my-account": "حسابي",
+      "test":"اختبار"
     }
   },
   "UserMenu": {
