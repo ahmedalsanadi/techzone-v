@@ -25,28 +25,7 @@ export function useAuthFlowState({
         getInitialAuthStep(initialStep, isAuthenticated, checkProfileComplete),
     );
 
-    // Run once on mount to restore OTP-related state when stored step is otp (step already set from getInitialAuthStep).
-    useEffect(() => {
-        const storedStep = authStorage.getStep();
-        const storedPhone = authStorage.getPhone();
-        const storedTempToken = authStorage.getTempToken();
-        if (storedStep !== 'otp' || !storedPhone || !storedTempToken) return;
-
-        setTempToken(storedTempToken);
-        const storedMaskedPhone = authStorage.getMaskedPhone();
-        if (storedMaskedPhone) setMaskedPhone(storedMaskedPhone);
-        const storedExpiresAt = authStorage.getOtpExpiresAt();
-        if (storedExpiresAt && !authStorage.isOtpExpired()) {
-            setOtpExpiresAt(storedExpiresAt);
-        } else if (storedExpiresAt && authStorage.isOtpExpired()) {
-            setOtpExpiresAt(null);
-            authStorage.setOtpExpiresAt(0);
-        }
-        // Intentionally run once on mount; step was already set via getInitialAuthStep.
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    // Form state
+    // Form state - all state declarations
     const [loading, setLoading] = useState(false);
     const [isNewUser, setIsNewUser] = useState(() => {
         if (typeof window === 'undefined') return false;
@@ -58,15 +37,39 @@ export function useAuthFlowState({
     });
     const [tempToken, setTempToken] = useState(() => {
         if (typeof window === 'undefined') return null;
-        return authStorage.getTempToken();
+        // Restore tempToken from storage on initial load
+        const storedStep = authStorage.getStep();
+        const storedPhone = authStorage.getPhone();
+        const storedTempToken = authStorage.getTempToken();
+        if (storedStep === 'otp' && storedPhone && storedTempToken) {
+            return storedTempToken;
+        }
+        return null;
     });
     const [maskedPhone, setMaskedPhone] = useState(() => {
         if (typeof window === 'undefined') return '';
-        return authStorage.getMaskedPhone() || '';
+        // Restore maskedPhone from storage on initial load
+        const storedStep = authStorage.getStep();
+        const storedPhone = authStorage.getPhone();
+        const storedTempToken = authStorage.getTempToken();
+        if (storedStep === 'otp' && storedPhone && storedTempToken) {
+            return authStorage.getMaskedPhone() || '';
+        }
+        return '';
     });
     const [otpExpiresAt, setOtpExpiresAt] = useState(() => {
         if (typeof window === 'undefined') return null;
-        return authStorage.getOtpExpiresAt();
+        // Restore otpExpiresAt from storage on initial load
+        const storedStep = authStorage.getStep();
+        const storedPhone = authStorage.getPhone();
+        const storedTempToken = authStorage.getTempToken();
+        if (storedStep === 'otp' && storedPhone && storedTempToken) {
+            const expiresAt = authStorage.getOtpExpiresAt();
+            if (expiresAt && !authStorage.isOtpExpired()) {
+                return expiresAt;
+            }
+        }
+        return null;
     });
     const [otp, setOtp] = useState('');
     const [formData, setFormData] = useState<ProfileUpdateRequest>({
@@ -75,6 +78,22 @@ export function useAuthFlowState({
         last_name: '',
         email: userEmail || '',
     });
+
+    // OTP expiry checker
+    useEffect(() => {
+        if (step !== 'otp' || !otpExpiresAt) return;
+        
+        const checkExpiry = () => {
+            if (authStorage.isOtpExpired()) {
+                setOtpExpiresAt(null);
+                authStorage.setOtpExpiresAt(0);
+            }
+        };
+        
+        checkExpiry();
+        const interval = setInterval(checkExpiry, 1000);
+        return () => clearInterval(interval);
+    }, [step, otpExpiresAt]);
 
     // Persist state to sessionStorage
     useEffect(() => {

@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 
 type Theme = 'light' | 'dark' | 'system';
 
@@ -57,17 +57,23 @@ export function ThemeProvider({
     applyTheme(newTheme);
   }, [applyTheme]);
 
-  // Initialize on mount
+  // Initialize on mount - using useState initializer instead of useEffect
   useEffect(() => {
+    // Read from localStorage only on client side
     const stored = localStorage.getItem('theme') as Theme | null;
     const initialTheme = stored && ['light', 'dark', 'system'].includes(stored) 
       ? stored 
       : defaultTheme;
     
-    setThemeState(initialTheme);
-    applyTheme(initialTheme);
+    // Only update if different from current theme
+    if (initialTheme !== theme) {
+      setThemeState(initialTheme);
+      applyTheme(initialTheme);
+    }
+    
     setMounted(true);
-  }, [defaultTheme, applyTheme]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty deps - run once on mount
 
   // Listen to system preference changes
   useEffect(() => {
@@ -84,13 +90,20 @@ export function ThemeProvider({
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, [theme, enableSystem, applyTheme]);
 
-  // Prevent hydration mismatch - render nothing until mounted
+  // Memoize context value - moved BEFORE the conditional return
+  const contextValue = useMemo(() => ({
+    theme,
+    setTheme,
+    resolvedTheme,
+  }), [theme, setTheme, resolvedTheme]);
+
+  // Prevent hydration mismatch - render children without provider until mounted
   if (!mounted) {
     return <>{children}</>;
   }
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, resolvedTheme }}>
+    <ThemeContext.Provider value={contextValue}>
       {children}
     </ThemeContext.Provider>
   );

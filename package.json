@@ -1,6 +1,6 @@
 {
-  "name": "resturant-store",
-  "version": "0.1.0",
+  "name": "web-store",
+  "version": "0.2.0",
   "private": true,
   "engines": {
     "node": ">=20"
@@ -22,7 +22,7 @@
     "clsx": "^2.1.1",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.562.0",
-    "next": "16.2.1",
+    "next": "^16.2.4",
     "next-intl": "^4.7.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
