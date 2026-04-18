@@ -16,8 +16,8 @@ export default async function proxy(request: NextRequest) {
     
     // 🔥 CRITICAL: Handle root path - redirect to default locale
     if (pathname === '/') {
-        const defaultLocale = routing.defaultLocale;
-        const url = new URL(`/${defaultLocale}`, request.url);
+        // const defaultLocale = routing.defaultLocale;
+        const url = new URL(`/ar`, request.url);
         return NextResponse.redirect(url);
     }
     
